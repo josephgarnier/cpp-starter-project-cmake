@@ -31,8 +31,8 @@ This project has been set up with a specific file/folder structure in mind. The 
   - `resources/`: Contains images, musics, maps and all resources needed if for your project.
   - `src/`: Project source files (*.cpp), including `main.cpp`, which contains example main-function for project build.
   - `tests/`: Project test source files (*.cpp) that are provided to the selecting unit testing framework.
-  - `cmake-project.bat`: Utility script for Windows to execute `cmake` command. It is strongly recommanded to use it, otherwise take note what you must to do by refering to [TODO](TODO).
-  - `cmake-project.sh`: Utility script for Linux to execute `cmake` command. It is strongly recommanded to use it, otherwise take note what you must to do by refering to [TODO](TODO).
+  - `cmake-project.bat`: Utility script for Windows to execute `cmake` command. It is strongly recommanded to use it, otherwise take note what you must to do by refering to [Build options](https://github.com/JosephGarnier/cmake-base-cpp/blob/master/README.md#build-options).
+  - `cmake-project.sh`: Utility script for Linux to execute `cmake` command. It is strongly recommanded to use it, otherwise take note what you must to do by refering to [Build options](https://github.com/JosephGarnier/cmake-base-cpp/blob/master/README.md#build-options).
   - `CMakeLists.txt`: main `CMakelists.txt` file for project (should not need to be modified for build).
   - `Doxyfile.in`: [Doxygen](http://www.doxygen.org "Doxygen homepage") configuration file, adapted for generic use within project build (should not need to be modified)
   - `LICENSE`: License file for project (copyright statement needs to be edited)
