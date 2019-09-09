@@ -32,7 +32,7 @@ The following dependencies are optional (see [Build options](https://github.com/
   2. If you use external libraries, add them in `/lib` directory, and add their header files in `/include` directory. Then, complete the `/cmake/project/Dependencies.cmake` file by relying on the commented example or do nothing and let the automation script scanning the directory.
   3. Add your source files (headers and sources) in `/src` directory. Please note that there are already some files for testing, remember to erase them before putting yours. Then, complete the `/cmake/project/ProjectSrcFiles.cmake` file by relying on the commented example or let them empty if you don't want to use the automation script scanning.
   4. Add your own [toolchains](https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html) file in `cmake/toolchains` or use one provided by default to configure your cmake generator (see [cmake-generators](https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html))
-  5. Customize all settings variables project prefixed with "export" (name, version, generator, etc) in `run-cmake.sh` (linux) or `run-cmake.bat` (windows). See [Build options](https://github.com/josephgarnier/cmake-base-cpp#build-options) for more details about their use.
+  5. Customize all settings variables project prefixed with "export" (name, version, generator, etc) in `run-cmake.sh` (linux) or `run-cmake.bat` (windows) and in `clean-cmake.sh` (linux) or `clean-cmake.bat` (windows). See [Build options](https://github.com/josephgarnier/cmake-base-cpp#build-options) for more details about their use.
 
 ## Compilation and Usage
 In project root directory, use the proposed scripts to clean the `/build` directory and to *generate the new build files* with `cmake` command. These scripts are optionnals, you can clean the `/build` directory and call the `cmake` command yourself.
@@ -41,25 +41,25 @@ In project root directory, use the proposed scripts to clean the `/build` direct
   #or
   ./clean-cmake.bat && pause 3 && ./run-cmake.bat
   ```
-In case of success, you should see the message `The solution was successfully generated!`. A new directory containing all build files was created in `\build` and named according to this pattern  `<ProjectName-MajorVersion-MinorVersion-PatchVersion-OsSystem>`.
+In case of success, you should see the message `The solution was successfully generated!`. A new directory containing all build files was created in `\build` and named according to this pattern `<ProjectName-MajorVersion-MinorVersion-PatchVersion-OsSystem>`.
 
 Now, you can *build* your solution to generate an executable file and/or a library file in `/bin` directory.
   ```bash
-  (cd ./build/ProjectName-0-0-0-Linux; cmake --build .)
+  (cd ./build/project-name-0-0-0-linux; cmake --build .)
   ```
 
 Optionnaly, you might want to *install* your projet in directory [defined by cmake](https://cmake.org/cmake/help/latest/variable/CMAKE_INSTALL_PREFIX.html). Conversely, you may want to uninstall it.
   ```bash
-  (cd ./build/ProjectName-0-0-0-Linux; sudo make install)
-  (cd ./build/ProjectName-0-0-0-Linux; sudo make uninstall)
+  (cd ./build/project-name-0-0-0-linux; sudo make install)
+  (cd ./build/project-name-0-0-0-linux; sudo make uninstall)
   ```
 
 Also, if you want to [*pack*](https://cmake.org/cmake/help/latest/manual/cpack.1.html) your projet to generate an installer in a variety of [formats](https://cmake.org/cmake/help/latest/manual/cpack.1.html) (deb, zip, rpm, etc).
   ```bash
   # pack only files install from the make install command
-  (cd ./build/ProjectName-0-0-0-Linux; cpack --config CPackConfig.cmake)
+  (cd ./build/project-name-0-0-0-linux; cpack --config CPackConfig.cmake)
   # pack all files
-  (cd ./build/ProjectName-0-0-0-Linux; cpack --config CPackSourceConfig.cmake)
+  (cd ./build/project-name-0-0-0-linux; cpack --config CPackSourceConfig.cmake)
   ```
 
 At any time you can clean the `/build` and `/bin` directories.
@@ -68,7 +68,7 @@ At any time you can clean the `/build` and `/bin` directories.
   #or
   ./clean-cmake.bat
 
-  (cd ./build/ProjectName-0-0-0-Linux; make clean)
+  (cd ./build/project-name-0-0-0-linux; make clean)
   ```
 
 ## Build options
