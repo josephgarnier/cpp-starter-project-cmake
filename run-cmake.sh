@@ -14,6 +14,7 @@ export PROJECT_VERSION_MAJOR="0" 			# -DPROJECT_VERSION_MAJOR: project major ver
 export PROJECT_VERSION_MINOR="0" 			# -DPROJECT_VERSION_MINOR: project minor version
 export PROJECT_VERSION_PATCH="0" 			# -DPROJECT_VERSION_PATCH: project patch version
 export GENERATOR="Unix Makefiles" 			# -DGENERATOR: see https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html
+export COMPILE_VERSION="17"					# -DCOMPILE_VERSION=[11|14|17 (default)|20]: see https://cmake.org/cmake/help/v3.1/variable/CMAKE_CXX_STANDARD.html
 export BUILD_TYPE="debug"					# -DBUILD_TYPE=[(default) debug|release]: set type of build
 export DEBUG_OPT_LVL="low"					# -DDEBUG_OPT_LVL=[(default) low|high]: set level of debug
 export ASSERT_ENABLE="off"					# -DASSERT_ENABLE=[ON|OFF (default)]: enable or disable assert
@@ -31,6 +32,7 @@ CMAKE_FLAGS+=("-DPARAM_PROJECT_VERSION_MAJOR=${PROJECT_VERSION_MAJOR}")
 CMAKE_FLAGS+=("-DPARAM_PROJECT_VERSION_MINOR=${PROJECT_VERSION_MINOR}")
 CMAKE_FLAGS+=("-DPARAM_PROJECT_VERSION_PATCH=${PROJECT_VERSION_PATCH}")
 CMAKE_FLAGS+=("-DPARAM_GENERATOR=${GENERATOR}")
+CMAKE_FLAGS+=("-DPARAM_COMPILE_VERSION=${COMPILE_VERSION}")
 CMAKE_FLAGS+=("-DPARAM_BUILD_TYPE=${BUILD_TYPE}")
 CMAKE_FLAGS+=("-DPARAM_DEBUG_OPT_LVL=${DEBUG_OPT_LVL}")
 CMAKE_FLAGS+=("-DPARAM_ASSERT_ENABLE=${ASSERT_ENABLE}")

@@ -2,26 +2,26 @@
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="CrCC BY-NC-SA 4.0" src="https://img.shields.io/badge/license-CC%20BY--NC--SA%204.0-brightgreen.svg"/></a> <img alt="plateform-windows-linux" src="https://img.shields.io/badge/platform-windows%20%7C%20linux-lightgrey.svg"/> <img alt="languages-cmake-c++" src="https://img.shields.io/badge/languages-CMake%20%7C%20C%2B%2B-blue.svg"/> <img alt="goal-progress-60" src="https://img.shields.io/badge/goal%20progress-60%25-orange.svg"/>
 
 CMakeBaseCpp is a template for a structured CMake-based C++ project that can be used as the basis for new projects on windows and linux. It includes:
-  * A general directory structure common to C++ projects (see [Project structure](https://github.com/josephgarnier/cmake-base-cpp#project-structure))
-  * A customizable script to run cmake (`run-cmake.sh` or `run-cmake.bat`)
-  * A script to clean cmake generated files (`clean-cmake.sh` or `clean-cmake.bat`)
-  * Install script (`make install`)
-  * Uninstall script (`make uninstall`)
-  * CPack script for packaging (`cpack`)
-  * Use [Cotire](https://github.com/sakra/cotire) to build as executable or library with precompiled headers file (pch)
-  * Automatic API documentation with [Doxygen](http://www.doxygen.nl/) => ** in progress**
-  * A unit testing framework with [GTest](https://github.com/google/googletest) => **in progress**
-  * Separate file to manualy include external libraries (in `Dependencies.cmake` module) or recursivly and automaticaly scan `/lib` directory
-  * Separate file to manualy specify source project files (in `ProjectSrcFiles.cmake` module) or recursivly and automaticaly scan source file in `/src` directory
+  - A general directory structure common to C++ projects (see [Project structure](https://github.com/josephgarnier/cmake-base-cpp#project-structure))
+  - A customizable script to run cmake (`run-cmake.sh` or `run-cmake.bat`)
+  - A script to clean cmake generated files (`clean-cmake.sh` or `clean-cmake.bat`)
+  - Install script (`make install`)
+  - Uninstall script (`make uninstall`)
+  - CPack script for packaging (`cpack`)
+  - Use [Cotire](https://github.com/sakra/cotire) to build as executable or library with precompiled headers file (pch)
+  - Automatic API documentation with [Doxygen](http://www.doxygen.nl/) => ** in progress**
+  - A unit testing framework with [GTest](https://github.com/google/googletest) => **in progress**
+  - Separate file to manualy include external libraries (in `Dependencies.cmake` module) or recursivly and automaticaly scan `/lib` directory
+  - Separate file to manualy specify source project files (in `ProjectSrcFiles.cmake` module) or recursivly and automaticaly scan source file in `/src` directory
 
 ## Requirements
 Before using this project, please ensure that you have installed the following (install guides are provided on the respective websites):
-  * A C++ compiler, e.g [GCC](https://gcc.gnu.org/), [Clang C++](https://clang.llvm.org/cxx_status.html) or [Visual Studio](https://visualstudio.microsoft.com)
-  * [CMake](https://cmake.org/) > 3.12
+  - A C++ compiler, e.g [GCC](https://gcc.gnu.org/), [Clang C++](https://clang.llvm.org/cxx_status.html) or [Visual Studio](https://visualstudio.microsoft.com)
+  - [CMake](https://cmake.org/) > 3.12
 
 The following dependencies are optional (see [Build options](https://github.com/josephgarnier/cmake-base-cpp#build-options)):
-  * [Doxygen](http://www.doxygen.nl/) (necessary when `DBUILD_DOXYGEN_DOCS` build option is set to `on`)
-  * [GTest](https://github.com/google/googletest) (necessary when `DBUILD_TESTS` build option is set to `on`)
+  - [Doxygen](http://www.doxygen.nl/) (necessary when `DBUILD_DOXYGEN_DOCS` build option is set to `on`)
+  - [GTest](https://github.com/google/googletest) (necessary when `DBUILD_TESTS` build option is set to `on`)
 
 ## Installation
   1. Clone the repo.
@@ -54,12 +54,12 @@ Optionnaly, you might want to *install* your projet in directory [defined by cma
   (cd ./build/project-name-0-0-0-linux; sudo make uninstall)
   ```
 
-Also, if you want to [*pack*](https://cmake.org/cmake/help/latest/manual/cpack.1.html) your projet to generate an installer in a variety of [formats](https://cmake.org/cmake/help/latest/manual/cpack.1.html) (deb, zip, rpm, etc).
+Also, if you want to [*pack*](https://cmake.org/cmake/help/latest/manual/cpack.1.html) your projet to generate an installer in a variety of [formats](https://cmake.org/cmake/help/latest/manual/cpack.1.html) (deb, zip, rpm, etc) in `/bin` directory.
   ```bash
   # pack only files install from the make install command
-  (cd ./build/project-name-0-0-0-linux; cpack --config CPackConfig.cmake)
+  (cd ./build/project-name-0-0-0-linux; cpack --config CPackConfig.cmake && sleep 2s && rm -r ../../bin/_CPack_Packages)
   # pack all files
-  (cd ./build/project-name-0-0-0-linux; cpack --config CPackSourceConfig.cmake)
+  (cd ./build/project-name-0-0-0-linux; cpack --config CPackSourceConfig.cmake && sleep 2s && rm -r ../../bin/_CPack_Packages)
   ```
 
 At any time you can clean the `/build` and `/bin` directories.
@@ -73,21 +73,22 @@ At any time you can clean the `/build` and `/bin` directories.
 
 ## Build options
 You can pass the following command-line options when running CMake, otherwise they will be set with a default value:
-  - `DPROJECT_NAME`: specifies a name for project
-  - `DPROJECT_SUMMARY`: short description of the project
-  - `DPROJECT_VENDOR_NAME`: project author
-  - `DPROJECT_VENDOR_CONTACT`: author contact
-  - `DPROJECT_VERSION_MAJOR`: project major version
-  - `DPROJECT_VERSION_MINOR`: project minor version
-  - `DPROJECT_VERSION_PATCH`: project patch version
-  - `DGENERATOR`: see [cmake-generators](https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html)
-  - `DBUILD_TYPE=[(default) debug|release]`: set type of build
-  - `DDEBUG_OPT_LVL=[(default) low|high]`: set level of debug
-  - `DASSERT_ENABLE=[ON|OFF (default)]`: enable or disable assert
-  - `DBUILD_SHARED_LIBS=[(default) ON|OFF]`: build shared libraries instead of static
-  - `DBUILD_MAIN=[(default) ON|OFF]`: build the main-function
-  - `DBUILD_TESTS=[ON|OFF (default)]`: build tests
-  - `DBUILD_DOXYGEN_DOCS=[ON|OFF (default)]`: build documentation
+  - `DPARAM_PROJECT_NAME`: specifies a name for project
+  - `DPARAM_PROJECT_SUMMARY`: short description of the project
+  - `DPARAM_PROJECT_VENDOR_NAME`: project author
+  - `DPARAM_PROJECT_VENDOR_CONTACT`: author contact
+  - `DPARAM_PROJECT_VERSION_MAJOR`: project major version
+  - `DPARAM_PROJECT_VERSION_MINOR`: project minor version
+  - `DPARAM_PROJECT_VERSION_PATCH`: project patch version
+  - `DPARAM_GENERATOR`: see [cmake-generators](https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html)
+  - `DPARAM_COMPILE_VERSION=[11|14|17 (default)|20]`: see [CMAKE_CXX_STANDARD](https://cmake.org/cmake/help/v3.1/variable/CMAKE_CXX_STANDARD.html)
+  - `DPARAM_BUILD_TYPE=[(default) debug|release]`: set type of build
+  - `DPARAM_DEBUG_OPT_LVL=[(default) low|high]`: set level of debug
+  - `DPARAM_ASSERT_ENABLE=[ON|OFF (default)]`: enable or disable assert
+  - `DPARAM_BUILD_SHARED_LIBS=[(default) ON|OFF]`: build shared libraries instead of static
+  - `DPARAM_BUILD_MAIN=[(default) ON|OFF]`: build the main-function
+  - `DPARAM_BUILD_TESTS=[ON|OFF (default)]`: build tests
+  - `DPARAM_BUILD_DOXYGEN_DOCS=[ON|OFF (default)]`: build documentation
 
 ## Project structure
 This project has been set up with a specific file/folder structure in mind. The following describes some important features of this setup:

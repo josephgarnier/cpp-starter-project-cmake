@@ -4,21 +4,22 @@
 # This source code is licensed under the license found in the
 # LICENSE file in the root directory of this source tree.
 
-# -DPROJECT_NAME: specifies a name for project
-# -DPROJECT_SUMMARY: short description of the project
-# -DPROJECT_VENDOR_NAME: project author
-# -DPROJECT_VENDOR_CONTACT: author contact
-# -DPROJECT_VERSION_MAJOR: project major version
-# -DPROJECT_VERSION_MINOR: project minor version
-# -DPROJECT_VERSION_PATCH: project patch version
-# -DGENERATOR: see https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html
-# -DBUILD_TYPE=[(default) debug|release]: set type of build
-# -DDEBUG_OPT_LVL=[(default) low|high]: set level of debug
-# -DASSERT_ENABLE=[ON|OFF (default)]: enable or disable assert
-# -DBUILD_SHARED_LIBS=[(default) ON|OFF]: build shared libraries instead of static
-# -DBUILD_MAIN=[(default) ON|OFF]: build the main-function
-# -DBUILD_TESTS=[ON|OFF (default)]: build tests
-# -DBUILD_DOXYGEN_DOCS=[ON|OFF (default)]: build documentation
+# -DPARAM_PROJECT_NAME: specifies a name for project
+# -DPARAM_PROJECT_SUMMARY: short description of the project
+# -DPARAM_PROJECT_VENDOR_NAME: project author
+# -DPARAM_PROJECT_VENDOR_CONTACT: author contact
+# -DPARAM_PROJECT_VERSION_MAJOR: project major version
+# -DPARAM_PROJECT_VERSION_MINOR: project minor version
+# -DPARAM_PROJECT_VERSION_PATCH: project patch version
+# -DPARAM_GENERATOR: see https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html
+# -DPARAM_COMPILE_VERSION=[11|14|17 (default)|20]: see https://cmake.org/cmake/help/v3.1/variable/CMAKE_CXX_STANDARD.html
+# -DPARAM_BUILD_TYPE=[(default) debug|release]: set type of build
+# -DPARAM_DEBUG_OPT_LVL=[(default) low|high]: set level of debug
+# -DPARAM_ASSERT_ENABLE=[ON|OFF (default)]: enable or disable assert
+# -DPARAM_BUILD_SHARED_LIBS=[(default) ON|OFF]: build shared libraries instead of static
+# -DPARAM_BUILD_MAIN=[(default) ON|OFF]: build the main-function
+# -DPARAM_BUILD_TESTS=[ON|OFF (default)]: build tests
+# -DPARAM_BUILD_DOXYGEN_DOCS=[ON|OFF (default)]: build documentation
 
 cmake_minimum_required (VERSION 3.12)
 
@@ -32,7 +33,8 @@ set(PROJECT_VERSION_MAJOR_DESC	"Project major version")
 set(PROJECT_VERSION_MINOR_DESC	"Project minor version")
 set(PROJECT_VERSION_PATCH_DESC	"Project patch version")
 set(GENERATOR_DESC				"Specifies CMake Generator, see https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html")
-set(BUILD_TYPE_DESC				"Specifies type of build, \"debug\" or \"release\"")
+set(COMPILE_VERSION_DESC		"Specifies compiler version \"11\" or \"14\" or \"17\" or \"20\"")
+set(BUILD_TYPE_DESC				"Specifies type of build \"debug\" or \"release\"")
 set(DEBUG_OPT_LVL_DESC			"Specifies level of debug \"low\" or \"high\"")
 set(ASSERT_ENABLE_DESC			"Specifies whether to use assert")
 set(BUILD_SHARED_LIBS_DESC		"Specifies whether build shared libraries instead of static")
@@ -48,6 +50,7 @@ set(PARAM_PROJECT_VERSION_MAJOR	"0"					CACHE	STRING	"${PROJECT_VERSION_MAJOR_DE
 set(PARAM_PROJECT_VERSION_MINOR	"0"					CACHE	STRING	"${PROJECT_VERSION_MINOR_DESC}")
 set(PARAM_PROJECT_VERSION_PATCH	"0"					CACHE	STRING	"${PROJECT_VERSION_PATCH_DESC}")
 set(PARAM_GENERATOR				"Unix Makefiles"	CACHE	STRING	"${GENERATOR_DESC}")
+set(PARAM_COMPILE_VERSION		"17"				CACHE	STRING	"${COMPILE_VERSION_DESC}")
 set(PARAM_BUILD_TYPE			"debug"				CACHE	STRING	"${BUILD_TYPE_DESC}")
 set(PARAM_DEBUG_OPT_LVL			"low"				CACHE	STRING	"${DEBUG_OPT_LVL_DESC}")
 set(PARAM_ASSERT_ENABLE			OFF					CACHE	BOOL	"${ASSERT_ENABLE_DESC}")
@@ -69,6 +72,7 @@ message(" - Project major version: \"${PARAM_PROJECT_VERSION_MAJOR}\"")
 message(" - Project minor version: \"${PARAM_PROJECT_VERSION_MINOR}\"")
 message(" - Project patch version: \"${PARAM_PROJECT_VERSION_PATCH}\"")
 message(" - Generator: \"${PARAM_GENERATOR}\"")
+message(" - Compile version: \"${PARAM_COMPILE_VERSION}\"")
 message(" - Build type: \"${PARAM_BUILD_TYPE}\"")
 message(" - Debug option level: \"${PARAM_DEBUG_OPT_LVL}\"")
 message(" - Assert is enable: \"${PARAM_ASSERT_ENABLE}\"")
@@ -105,6 +109,21 @@ endif()
 # Set platform-specific compiler flags.
 if((NOT DEFINED PARAM_DEBUG_OPT_LVL) OR ((NOT "${PARAM_DEBUG_OPT_LVL}" STREQUAL "low") AND (NOT "${PARAM_DEBUG_OPT_LVL}" STREQUAL "high")))
 	message(FATAL_ERROR "DEBUG_OPT_LVL must be low or high!")
+else()
+	set(${PROJECT_NAME}_DEBUG_OPT_LVL "${PARAM_DEBUG_OPT_LVL}")
+	message(STATUS "Level of debug specified to ${${PROJECT_NAME}_DEBUG_OPT_LVL}!")
+endif()
+
+# Set compile version flag
+if((NOT DEFINED PARAM_COMPILE_VERSION) OR
+	((NOT "${PARAM_COMPILE_VERSION}" STREQUAL "11")
+	AND (NOT "${PARAM_COMPILE_VERSION}" STREQUAL "14")
+	AND (NOT "${PARAM_COMPILE_VERSION}" STREQUAL "17")
+	AND (NOT "${PARAM_COMPILE_VERSION}" STREQUAL "20")))
+	message(FATAL_ERROR "Compile version must be 11 or 14 or 17 or 20")
+else()
+	set (CMAKE_CXX_STANDARD "${PARAM_COMPILE_VERSION}")
+	message(STATUS "Compile version set to ${CMAKE_CXX_STANDARD}!")
 endif()
 
 # -------------------- Project settings ------------------------------
@@ -118,9 +137,9 @@ set(${PROJECT_NAME}_VENDOR_CONTACT	"${PARAM_PROJECT_VENDOR_CONTACT}")
 set(${PROJECT_NAME}_VERSION_MAJOR	"${PARAM_PROJECT_VERSION_MAJOR}")
 set(${PROJECT_NAME}_VERSION_MINOR	"${PARAM_PROJECT_VERSION_MINOR}")
 set(${PROJECT_NAME}_VERSION_PATCH	"${PARAM_PROJECT_VERSION_PATCH}")
-set(${PROJECT_NAME}_VERSION			"${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_PATCH}")
+set(${PROJECT_NAME}_VERSION			"${${PROJECT_NAME}_VERSION_MAJOR}-${${PROJECT_NAME}_VERSION_MINOR}-${${PROJECT_NAME}_VERSION_PATCH}")
 
-message(STATUS "Configure ${PROJECT_NAME}_VERSION at ${${PROJECT_NAME}_VERSION}")
+message(STATUS "Set projet version with ${${PROJECT_NAME}_VERSION}")
 
 # -------------------- Check project structure ----------------
 
@@ -170,7 +189,7 @@ list(APPEND ${PROJECT_NAME}_PROJECT_PATHS
 
 foreach(folder ${${PROJECT_NAME}_PROJECT_PATHS})
 	if((NOT EXISTS "${folder}") OR (NOT IS_DIRECTORY "${folder}"))
-		#message(FATAL_ERROR "missing folder: \"${folder}\"")
+		message(FATAL_ERROR "missing folder: \"${folder}\"")
 	endif()
 endforeach()
 
@@ -181,17 +200,17 @@ if(NOT CMAKE_SYSTEM_PROCESSOR)
 endif()
 
 set(SYSTEM_NAME "${CMAKE_SYSTEM_NAME}-${CMAKE_CXX_COMPILER_ID}-${CMAKE_SYSTEM_PROCESSOR}")
+string(TOLOWER ${SYSTEM_NAME} SYSTEM_NAME)
 set(${PROJECT_NAME}_LIB_NAME "${${PROJECT_NAME}_LIB_NAME}")
 set(${PROJECT_NAME}_MAIN_NAME "${${PROJECT_NAME}_MAIN_NAME}")
-set(${PROJECT_NAME}_PACKAGE_NAME "${${PROJECT_NAME}_PACKAGE_NAME}-${CMAKE_SYSTEM_NAME}-${CMAKE_CXX_COMPILER_ID}-${CMAKE_SYSTEM_PROCESSOR}")
-set(${PROJECT_NAME}_TEST_NAME "${${PROJECT_NAME}_TEST_NAME}-${CMAKE_SYSTEM_NAME}-${CMAKE_CXX_COMPILER_ID}-${CMAKE_SYSTEM_PROCESSOR}")
+set(${PROJECT_NAME}_PACKAGE_NAME "${${PROJECT_NAME}_PACKAGE_NAME}-${${PROJECT_NAME}_VERSION}-${CMAKE_SYSTEM_NAME}")
+string(TOLOWER ${${PROJECT_NAME}_PACKAGE_NAME} ${PROJECT_NAME}_PACKAGE_NAME)
+set(${PROJECT_NAME}_TEST_NAME "${${PROJECT_NAME}_TEST_NAME}--${${PROJECT_NAME}_VERSION}-${CMAKE_SYSTEM_NAME}")
+string(TOLOWER ${${PROJECT_NAME}_TEST_NAME} ${PROJECT_NAME}_TEST_NAME)
 
 # -------------------- Build settings ------------------------------
 
 message("\n== Build settings ==")
-
-# Force to use c++ 14
-set (CMAKE_CXX_STANDARD 14)
 
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 	if("${${PROJECT_NAME}_DEBUG_OPT_LVL}" STREQUAL "low")
@@ -374,7 +393,7 @@ endif()
 
 message("\n== Pack project ==")
 set(CPACK_SYSTEM_NAME					"${SYSTEM_NAME}")
-set(CPACK_TOPLEVEL_TAG					"${SYSTEM_NAME}")
+set(CPACK_TOPLEVEL_TAG					"")
 set(CPACK_PACKAGE_NAME					"${${PROJECT_NAME}_PACKAGE_NAME}")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY	"${${PROJECT_NAME}_SUMMARY}")
 set(CPACK_PACKAGE_VENDOR				"${${PROJECT_NAME}_VENDOR_NAME}")
@@ -384,8 +403,9 @@ set(CPACK_PACKAGE_VERSION_MAJOR			"${${PROJECT_NAME}_VERSION_MAJOR}")
 set(CPACK_PACKAGE_VERSION_MINOR			"${${PROJECT_NAME}_VERSION_MINOR}")
 set(CPACK_PACKAGE_VERSION_PATCH			"${${PROJECT_NAME}_VERSION_PATCH}")
 set(CPACK_PACKAGE_FILE_NAME				"${${PROJECT_NAME}_PACKAGE_NAME}")
-set(CPACK_SOURCE_PACKAGE_FILE_NAME 		"${${PROJECT_NAME}_PACKAGE_NAME}-source")
 set(CPACK_PACKAGE_INSTALL_DIRECTORY		"${${PROJECT_NAME}_BIN_PATH}")
+set(CPACK_PACKAGE_DIRECTORY				"${${PROJECT_NAME}_BIN_PATH}")
+set(CPACK_SOURCE_PACKAGE_FILE_NAME 		"${${PROJECT_NAME}_PACKAGE_NAME}-source")
 set(CPACK_SOURCE_IGNORE_FILES 			"")
 
 if( WIN32 )
