@@ -9,7 +9,7 @@ CMakeBaseCpp is a template for a structured CMake-based C++ project that can be 
   - Uninstall script (`make uninstall`)
   - CPack script for packaging (`cpack`)
   - Use [Cotire](https://github.com/sakra/cotire) to build as executable or library with precompiled headers file (pch)
-  - Automatic API documentation with [Doxygen](http://www.doxygen.nl/) => ** in progress**
+  - Automatic API documentation with [Doxygen](http://www.doxygen.nl/) => **in progress**
   - A unit testing framework with [GTest](https://github.com/google/googletest) => **in progress**
   - Separate file to manualy include external libraries (in `Dependencies.cmake` module) or recursivly and automaticaly scan `/lib` directory
   - Separate file to manualy specify source project files (in `ProjectSrcFiles.cmake` module) or recursivly and automaticaly scan source file in `/src` directory
