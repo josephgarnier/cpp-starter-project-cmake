@@ -31,10 +31,10 @@ The following dependencies are optional (see [Build options](https://github.com/
 ## Installation
 
 1. Clone the repo.
-  ```bash
-  git clone https://github.com/josephgarnier/cmake-base-cpp.git --recursive
-  cd cmake-base-cpp
-  ```
+```bash
+git clone https://github.com/josephgarnier/cmake-base-cpp.git --recursive
+cd cmake-base-cpp
+```
 2. Customize all settings *variables project* prefixed with "export" (name, version, generator, etc) in `run-cmake.sh` (linux) or `run-cmake.bat` (windows) and in `clean-cmake.sh` (linux) or `clean-cmake.bat` (windows). See [Build options](https://github.com/josephgarnier/cmake-base-cpp#build-options) for more details about their use.
 3. Set your *compiler* in [toolchains](https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html) file in `cmake/toolchains` or use one provided by default to configure your cmake generator (see [cmake-generators](https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html))
 4. Add your *source files* (headers and sources) in `/src` directory. Please note that there are already some files for testing, remember to erase them before putting yours. Then, complete the `/cmake/project/ProjectSrcFiles.cmake` file by relying on the commented example or let them empty if you don't want to use the automation script scanning. If you use a *precompiled header* file, rename it according to pattern `<ProjectName_pch.h>` or edit the related variable in `ProjectSrcFiles.cmake` file.
