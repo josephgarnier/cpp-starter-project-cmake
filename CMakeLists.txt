@@ -16,7 +16,7 @@
 # -DPARAM_BUILD_TYPE=[(default) debug|release]: set type of build
 # -DPARAM_ASSERT_ENABLE=[ON|OFF (default)]: enable or disable assert
 # -DPARAM_BUILD_SHARED_LIBS=[(default) ON|OFF]: build shared libraries instead of static
-# -DPARAM_BUILD_MAIN=[(default) ON|OFF]: build the main-function
+# -DPARAM_BUILD_EXEC=[(default) ON|OFF]: build the main-function
 # -DPARAM_BUILD_TESTS=[ON|OFF (default)]: build tests
 # -DPARAM_BUILD_DOXYGEN_DOCS=[ON|OFF (default)]: build documentation
 
@@ -36,7 +36,7 @@ set(COMPILE_VERSION_DESC        "Specifies compiler version \"11\" or \"14\" or 
 set(BUILD_TYPE_DESC             "Specifies type of build \"debug\" or \"release\"")
 set(ASSERT_ENABLE_DESC          "Specifies whether to use assert")
 set(BUILD_SHARED_LIBS_DESC      "Specifies whether build shared libraries instead of static")
-set(BUILD_MAIN_DESC             "Specifies whether build the main-function")
+set(BUILD_EXEC_DESC             "Specifies whether build the main-function")
 set(BUILD_TESTS_DESC            "Specifies whether build tests")
 set(BUILD_DOXYGEN_DOCS_DESC     "Specifies whether build documentation")
 
@@ -52,7 +52,7 @@ set(PARAM_COMPILE_VERSION       "17"                CACHE   STRING  "${COMPILE_V
 set(PARAM_BUILD_TYPE            "debug"             CACHE   STRING  "${BUILD_TYPE_DESC}")
 set(PARAM_ASSERT_ENABLE         OFF                 CACHE   BOOL    "${ASSERT_ENABLE_DESC}")
 set(PARAM_BUILD_SHARED_LIBS     OFF                 CACHE   BOOL    "${BUILD_SHARED_LIBS_DESC}")
-set(PARAM_BUILD_MAIN            ON                  CACHE   BOOL    "${BUILD_MAIN_DESC}")
+set(PARAM_BUILD_EXEC            ON                  CACHE   BOOL    "${BUILD_EXEC_DESC}")
 set(PARAM_BUILD_TESTS           OFF                 CACHE   BOOL    "${BUILD_TESTS_DESC}")
 set(PARAM_BUILD_DOXYGEN_DOCS    OFF                 CACHE   BOOL    "${BUILD_DOXYGEN_DOCS_DESC}")
 
@@ -73,7 +73,7 @@ message(" - Compile version: \"${PARAM_COMPILE_VERSION}\"")
 message(" - Build type: \"${PARAM_BUILD_TYPE}\"")
 message(" - Assert is enable: \"${PARAM_ASSERT_ENABLE}\"")
 message(" - Build shared libs: \"${PARAM_BUILD_SHARED_LIBS}\"")
-message(" - Build main: \"${PARAM_BUILD_MAIN}\"")
+message(" - Build main: \"${PARAM_BUILD_EXEC}\"")
 message(" - Build tests: \"${PARAM_BUILD_TESTS}\"")
 message(" - Build doxygen documentation: \"${PARAM_BUILD_DOXYGEN_DOCS}\"")
 message("")
@@ -248,7 +248,7 @@ endif()
 cotire("${${PROJECT_NAME}_LIB_NAME}")
 
 # Build executable
-if(${PARAM_BUILD_MAIN})
+if(${PARAM_BUILD_EXEC})
 	message(STATUS "Build main")
 	add_executable("${${PROJECT_NAME}_MAIN_NAME}" ${${PROJECT_NAME}_SRC_FILES})
 	target_link_libraries("${${PROJECT_NAME}_MAIN_NAME}" ${${PROJECT_NAME}_LIBRARIES_FILES})

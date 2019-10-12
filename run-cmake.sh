@@ -18,7 +18,7 @@ export COMPILE_VERSION="17"                 # -DCOMPILE_VERSION=[11|14|17 (defau
 export BUILD_TYPE="debug"                   # -DBUILD_TYPE=[(default) debug|release]: set type of build
 export ASSERT_ENABLE="off"                  # -DASSERT_ENABLE=[ON|OFF (default)]: enable or disable assert
 export BUILD_SHARED_LIBS="on"               # -DBUILD_SHARED_LIBS=[(default) ON|OFF]: build shared libraries instead of static
-export BUILD_MAIN="on"                      # -DBUILD_MAIN=[(default) ON|OFF]: build the main-function
+export BUILD_EXEC="on"                      # -DBUILD_EXEC=[(default) ON|OFF]: build the main-function
 export BUILD_TESTS="off"                    # -DBUILD_TESTS=[ON|OFF (default)]: build tests
 export BUILD_DOXYGEN_DOCS="off"             # -DBUILD_DOXYGEN_DOCS=[ON|OFF (default)]: build documentation
 
@@ -35,7 +35,7 @@ CMAKE_FLAGS+=("-DPARAM_COMPILE_VERSION=${COMPILE_VERSION}")
 CMAKE_FLAGS+=("-DPARAM_BUILD_TYPE=${BUILD_TYPE}")
 CMAKE_FLAGS+=("-DPARAM_ASSERT_ENABLE=${ASSERT_ENABLE}")
 CMAKE_FLAGS+=("-DPARAM_BUILD_SHARED_LIBS=${BUILD_SHARED_LIBS}")
-CMAKE_FLAGS+=("-DPARAM_BUILD_MAIN=${BUILD_MAIN}")
+CMAKE_FLAGS+=("-DPARAM_BUILD_EXEC=${BUILD_EXEC}")
 CMAKE_FLAGS+=("-DPARAM_BUILD_TESTS=${BUILD_TESTS}")
 CMAKE_FLAGS+=("-DPARAM_BUILD_DOXYGEN_DOCS=${BUILD_DOXYGEN_DOCS}")
 
