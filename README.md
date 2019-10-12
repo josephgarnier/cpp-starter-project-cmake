@@ -98,7 +98,6 @@ You can pass the following command-line options when running CMake, otherwise th
 - `DPARAM_GENERATOR`: see [cmake-generators](https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html)
 - `DPARAM_COMPILE_VERSION=[11|14|17 (default)|20]`: see [CMAKE_CXX_STANDARD](https://cmake.org/cmake/help/v3.1/variable/CMAKE_CXX_STANDARD.html)
 - `DPARAM_BUILD_TYPE=[(default) debug|release]`: set type of build
-- `DPARAM_DEBUG_OPT_LVL=[(default) low|high]`: set level of debug
 - `DPARAM_ASSERT_ENABLE=[ON|OFF (default)]`: enable or disable assert
 - `DPARAM_BUILD_SHARED_LIBS=[(default) ON|OFF]`: build shared libraries instead of static
 - `DPARAM_BUILD_MAIN=[(default) ON|OFF]`: build the main-function

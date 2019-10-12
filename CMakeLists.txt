@@ -14,7 +14,6 @@
 # -DPARAM_GENERATOR: see https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html
 # -DPARAM_COMPILE_VERSION=[11|14|17 (default)|20]: see https://cmake.org/cmake/help/v3.1/variable/CMAKE_CXX_STANDARD.html
 # -DPARAM_BUILD_TYPE=[(default) debug|release]: set type of build
-# -DPARAM_DEBUG_OPT_LVL=[(default) low|high]: set level of debug
 # -DPARAM_ASSERT_ENABLE=[ON|OFF (default)]: enable or disable assert
 # -DPARAM_BUILD_SHARED_LIBS=[(default) ON|OFF]: build shared libraries instead of static
 # -DPARAM_BUILD_MAIN=[(default) ON|OFF]: build the main-function
@@ -35,7 +34,6 @@ set(PROJECT_VERSION_PATCH_DESC  "Project patch version")
 set(GENERATOR_DESC              "Specifies CMake Generator, see https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html")
 set(COMPILE_VERSION_DESC        "Specifies compiler version \"11\" or \"14\" or \"17\" or \"20\"")
 set(BUILD_TYPE_DESC             "Specifies type of build \"debug\" or \"release\"")
-set(DEBUG_OPT_LVL_DESC          "Specifies level of debug \"low\" or \"high\"")
 set(ASSERT_ENABLE_DESC          "Specifies whether to use assert")
 set(BUILD_SHARED_LIBS_DESC      "Specifies whether build shared libraries instead of static")
 set(BUILD_MAIN_DESC             "Specifies whether build the main-function")
@@ -52,7 +50,6 @@ set(PARAM_PROJECT_VERSION_PATCH "0"                 CACHE   STRING  "${PROJECT_V
 set(PARAM_GENERATOR             "Unix Makefiles"    CACHE   STRING  "${GENERATOR_DESC}")
 set(PARAM_COMPILE_VERSION       "17"                CACHE   STRING  "${COMPILE_VERSION_DESC}")
 set(PARAM_BUILD_TYPE            "debug"             CACHE   STRING  "${BUILD_TYPE_DESC}")
-set(PARAM_DEBUG_OPT_LVL         "low"               CACHE   STRING  "${DEBUG_OPT_LVL_DESC}")
 set(PARAM_ASSERT_ENABLE         OFF                 CACHE   BOOL    "${ASSERT_ENABLE_DESC}")
 set(PARAM_BUILD_SHARED_LIBS     OFF                 CACHE   BOOL    "${BUILD_SHARED_LIBS_DESC}")
 set(PARAM_BUILD_MAIN            ON                  CACHE   BOOL    "${BUILD_MAIN_DESC}")
@@ -74,7 +71,6 @@ message(" - Project patch version: \"${PARAM_PROJECT_VERSION_PATCH}\"")
 message(" - Generator: \"${PARAM_GENERATOR}\"")
 message(" - Compile version: \"${PARAM_COMPILE_VERSION}\"")
 message(" - Build type: \"${PARAM_BUILD_TYPE}\"")
-message(" - Debug option level: \"${PARAM_DEBUG_OPT_LVL}\"")
 message(" - Assert is enable: \"${PARAM_ASSERT_ENABLE}\"")
 message(" - Build shared libs: \"${PARAM_BUILD_SHARED_LIBS}\"")
 message(" - Build main: \"${PARAM_BUILD_MAIN}\"")
@@ -104,14 +100,6 @@ if((NOT DEFINED PARAM_BUILD_TYPE) OR ("${PARAM_BUILD_TYPE}" STREQUAL "Release"))
 elseif("${PARAM_BUILD_TYPE}" STREQUAL "Debug")
 	message(STATUS "Building debug version!")
 	set(CMAKE_BUILD_TYPE Debug)
-endif()
-
-# Set platform-specific compiler flags.
-if((NOT DEFINED PARAM_DEBUG_OPT_LVL) OR ((NOT "${PARAM_DEBUG_OPT_LVL}" STREQUAL "low") AND (NOT "${PARAM_DEBUG_OPT_LVL}" STREQUAL "high")))
-	message(FATAL_ERROR "DEBUG_OPT_LVL must be low or high!")
-else()
-	set(${PROJECT_NAME}_DEBUG_OPT_LVL "${PARAM_DEBUG_OPT_LVL}")
-	message(STATUS "Level of debug specified to ${${PROJECT_NAME}_DEBUG_OPT_LVL}!")
 endif()
 
 # Set compile version flag
