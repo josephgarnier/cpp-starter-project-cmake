@@ -1,0 +1,31 @@
+# Copyright 2019-present, Joseph Garnier
+# All rights reserved.
+#
+# This source code is licensed under the license found in the
+# LICENSE file in the root directory of this source tree.
+
+# CMAKE_SYSTEM_NAME - on unix use command "uname -s", for windows write "Windows" OR use command "cmake --system-information"
+set(CMAKE_SYSTEM_NAME Windows)
+# CMAKE_SYSTEM_VERSION - on unix use command "uname -r", for windows use command "cmake --system-information"
+set(CMAKE_SYSTEM_VERSION 10.0)
+# CMAKE_SYSTEM - see https://cmake.org/cmake/help/latest/variable/CMAKE_SYSTEM.html
+set(CMAKE_SYSTEM "${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_VERSION}")
+
+#cl command on windows
+set(triple 19)
+
+# specify the cross compiler
+set(CMAKE_C_COMPILER cl)
+set(CMAKE_C_COMPILER_TARGET ${triple})
+set(CMAKE_CXX_COMPILER cl)
+set(CMAKE_CXX_COMPILER_TARGET ${triple})
+
+# where is the target environment
+list(APPEND CMAKE_FIND_ROOT_PATH "${${PROJECT_NAME}_PROJECT_PATH}")
+
+# search for programs in the build host directories
+set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+# for libraries and headers in the target directories
+set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE BOTH)
