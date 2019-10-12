@@ -29,3 +29,33 @@ set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE BOTH)
+
+# compile flags: general
+add_compile_options("/Zm200")
+add_compile_options("$<$<CONFIG:DEBUG>:/Zi")
+add_compile_options("$<$<CONFIG:DEBUG>:/MP")
+
+# compile flags: code generation
+add_compile_options("$<$<CONFIG:DEBUG>:/EHsc")
+add_compile_options("$<$<CONFIG:DEBUG>:/MDd")
+add_compile_options("$<$<CONFIG:DEBUG>:/Gy")
+add_compile_options("$<$<CONFIG:DEBUG>:/Qpar")
+add_compile_options("$<$<CONFIG:DEBUG>:/fp:fast")
+STRING(REGEX REPLACE "/RTC(su|[1su])" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
+
+# compile flags: disable optimizations. Comment "enable optimizations" flags to use it
+add_compile_options("$<$<CONFIG:DEBUG>:/Od")
+
+# compile flags: enable optimizations. Comment "disable optimizations" flags to use it
+add_compile_options("$<$<CONFIG:DEBUG>:/O2")
+add_compile_options("$<$<CONFIG:DEBUG>:/Ob2")
+add_compile_options("$<$<CONFIG:DEBUG>:/Oi")
+add_compile_options("$<$<CONFIG:DEBUG>:/Oy")
+#add_compile_options("$<$<CONFIG:DEBUG>:/GL") # disable /ZI to use it
+
+# compile flags: linker
+add_link_options("$<$<CONFIG:DEBUG>:/INCREMENTAL")
+add_link_options("$<$<CONFIG:DEBUG>:/DEBUG")
+#add_link_options("$<$<CONFIG:DEBUG>:/OPT:REF") # disable /ZI to use it
+#add_link_options("$<$<CONFIG:DEBUG>:/OPT:NOICF") # disable /ZI to use it
+#add_link_options("$<$<CONFIG:DEBUG>:/LTCG:incremental") # disable /ZI to use it
