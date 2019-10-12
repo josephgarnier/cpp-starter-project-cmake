@@ -17,7 +17,7 @@ declare -r SOLUTION_PATH="${BUILD_PATH}/${PROJECT_NAME}-${PROJECT_VERSION_MAJOR}
 
 if [ -d ${SOLUTION_PATH} ]; then
 	cd "${SOLUTION_PATH}"
-	make clean
+	cmake --build . --target clean
 	cd "${WORKSPACE_PATH}"
 	rm -r "${SOLUTION_PATH}"
 fi

@@ -55,7 +55,7 @@ In case of success, you should see the message `The solution was successfully ge
 Now, you can *build* your solution to generate an executable file and/or a library file in `/bin` directory.
 
 ```bash
-(cd ./build/project-name-0-0-0-linux; cmake --build .)
+(cd ./build/project-name-0-0-0-linux; cmake --build . --clean-first)
 ```
 
 Optionnaly, you might want to *install* your projet in directory [defined by cmake](https://cmake.org/cmake/help/latest/variable/CMAKE_INSTALL_PREFIX.html). Conversely, you may want to uninstall it.
@@ -81,7 +81,7 @@ At any time you can clean the `/build` and `/bin` directories.
 #or
 ./clean-cmake.bat
 
-(cd ./build/project-name-0-0-0-linux; make clean)
+(cd ./build/project-name-0-0-0-linux; cmake --build . --target clean)
 ```
 
 ## Build options
