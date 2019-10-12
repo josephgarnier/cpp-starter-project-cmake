@@ -4,11 +4,12 @@
 # This source code is licensed under the license found in the
 # LICENSE file in the root directory of this source tree.
 
-# CMAKE_SYSTEM_NAME - on unix this is uname -s, for windows it is Windows OR use cmake --system-information
+# CMAKE_SYSTEM_NAME - on unix use command "uname -s", for windows write "Windows" OR use command "cmake --system-information"
 set(CMAKE_SYSTEM_NAME Linux)
-# CMAKE_SYSTEM_VERSION - on unix this is uname -r, for windows it is empty OR use cmake --system-information
+# CMAKE_SYSTEM_VERSION - on unix use command "uname -r", for windows use command "cmake --system-information"
 set(CMAKE_SYSTEM_VERSION 4.4.0-21-generic)
-# CMAKE_SYSTEM - ${CMAKE_SYSTEM}-${CMAKE_SYSTEM_VERSION}, for windows: ${CMAKE_SYSTEM}
+# CMAKE_SYSTEM - see https://cmake.org/cmake/help/latest/variable/CMAKE_SYSTEM.html
+set(CMAKE_SYSTEM "${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_VERSION}")
 
 #clang++-6.0 --version on unix
 set(triple x86_64-pc-linux-gnu)
