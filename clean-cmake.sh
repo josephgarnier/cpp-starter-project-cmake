@@ -6,10 +6,10 @@
 
 #!/bin/bash
 
-export PROJECT_NAME="project-name" 			# -DPROJECT_NAME: specifies a name for project
-export PROJECT_VERSION_MAJOR="0" 			# -DPROJECT_VERSION_MAJOR: project major version
-export PROJECT_VERSION_MINOR="0" 			# -DPROJECT_VERSION_MINOR: project minor version
-export PROJECT_VERSION_PATCH="0" 			# -DPROJECT_VERSION_PATCH: project patch version
+export PROJECT_NAME="project-name"       # -DPROJECT_NAME: specifies a name for project
+export PROJECT_VERSION_MAJOR="0"         # -DPROJECT_VERSION_MAJOR: project major version
+export PROJECT_VERSION_MINOR="0"         # -DPROJECT_VERSION_MINOR: project minor version
+export PROJECT_VERSION_PATCH="0"         # -DPROJECT_VERSION_PATCH: project patch version
 
 readonly WORKSPACE_PATH=`pwd`
 declare -r BUILD_PATH="${WORKSPACE_PATH}/build"

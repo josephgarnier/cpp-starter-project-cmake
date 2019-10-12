@@ -6,22 +6,22 @@
 
 #!/bin/bash
 
-export PROJECT_NAME="project-name" 			# -DPROJECT_NAME: specifies a name for project
-export PROJECT_SUMMARY="description" 		# -DPROJECT_SUMMARY: short description of the project
-export PROJECT_VENDOR_NAME="your-name" 		# -DPROJECT_VENDOR_NAME: project author
-export PROJECT_VENDOR_CONTACT="contact" 	# -DPROJECT_VENDOR_CONTACT: author contact
-export PROJECT_VERSION_MAJOR="0" 			# -DPROJECT_VERSION_MAJOR: project major version
-export PROJECT_VERSION_MINOR="0" 			# -DPROJECT_VERSION_MINOR: project minor version
-export PROJECT_VERSION_PATCH="0" 			# -DPROJECT_VERSION_PATCH: project patch version
-export GENERATOR="Unix Makefiles" 			# -DGENERATOR: see https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html
-export COMPILE_VERSION="17"					# -DCOMPILE_VERSION=[11|14|17 (default)|20]: see https://cmake.org/cmake/help/v3.1/variable/CMAKE_CXX_STANDARD.html
-export BUILD_TYPE="debug"					# -DBUILD_TYPE=[(default) debug|release]: set type of build
-export DEBUG_OPT_LVL="low"					# -DDEBUG_OPT_LVL=[(default) low|high]: set level of debug
-export ASSERT_ENABLE="off"					# -DASSERT_ENABLE=[ON|OFF (default)]: enable or disable assert
-export BUILD_SHARED_LIBS="on"				# -DBUILD_SHARED_LIBS=[(default) ON|OFF]: build shared libraries instead of static
-export BUILD_MAIN="on"						# -DBUILD_MAIN=[(default) ON|OFF]: build the main-function
-export BUILD_TESTS="off"					# -DBUILD_TESTS=[ON|OFF (default)]: build tests
-export BUILD_DOXYGEN_DOCS="off"				# -DBUILD_DOXYGEN_DOCS=[ON|OFF (default)]: build documentation
+export PROJECT_NAME="project-name"          # -DPROJECT_NAME: specifies a name for project
+export PROJECT_SUMMARY="description"        # -DPROJECT_SUMMARY: short description of the project
+export PROJECT_VENDOR_NAME="your-name"      # -DPROJECT_VENDOR_NAME: project author
+export PROJECT_VENDOR_CONTACT="contact"     # -DPROJECT_VENDOR_CONTACT: author contact
+export PROJECT_VERSION_MAJOR="0"            # -DPROJECT_VERSION_MAJOR: project major version
+export PROJECT_VERSION_MINOR="0"            # -DPROJECT_VERSION_MINOR: project minor version
+export PROJECT_VERSION_PATCH="0"            # -DPROJECT_VERSION_PATCH: project patch version
+export GENERATOR="Unix Makefiles"           # -DGENERATOR: see https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html
+export COMPILE_VERSION="17"                 # -DCOMPILE_VERSION=[11|14|17 (default)|20]: see https://cmake.org/cmake/help/v3.1/variable/CMAKE_CXX_STANDARD.html
+export BUILD_TYPE="debug"                   # -DBUILD_TYPE=[(default) debug|release]: set type of build
+export DEBUG_OPT_LVL="low"                  # -DDEBUG_OPT_LVL=[(default) low|high]: set level of debug
+export ASSERT_ENABLE="off"                  # -DASSERT_ENABLE=[ON|OFF (default)]: enable or disable assert
+export BUILD_SHARED_LIBS="on"               # -DBUILD_SHARED_LIBS=[(default) ON|OFF]: build shared libraries instead of static
+export BUILD_MAIN="on"                      # -DBUILD_MAIN=[(default) ON|OFF]: build the main-function
+export BUILD_TESTS="off"                    # -DBUILD_TESTS=[ON|OFF (default)]: build tests
+export BUILD_DOXYGEN_DOCS="off"             # -DBUILD_DOXYGEN_DOCS=[ON|OFF (default)]: build documentation
 
 declare -a CMAKE_FLAGS=()
 CMAKE_FLAGS+=("-DPARAM_PROJECT_NAME=${PROJECT_NAME}")
