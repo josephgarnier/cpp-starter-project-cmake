@@ -18,7 +18,7 @@ export COMPILE_VERSION="17"                 # -DCOMPILE_VERSION=[11|14|17 (defau
 export BUILD_TYPE="debug"                   # -DBUILD_TYPE=[(default) debug|release]: set type of build
 export ASSERT_ENABLE="off"                  # -DASSERT_ENABLE=[ON|OFF (default)]: enable or disable assert
 export BUILD_SHARED_LIBS="on"               # -DBUILD_SHARED_LIBS=[(default) ON|OFF]: build shared libraries instead of static
-export BUILD_EXEC="on"                      # -DBUILD_EXEC=[(default) ON|OFF]: build the main-function
+export BUILD_EXEC="on"                      # -DBUILD_EXEC=[(default) ON|OFF]: build an executable
 export BUILD_TESTS="off"                    # -DBUILD_TESTS=[ON|OFF (default)]: build tests
 export BUILD_DOXYGEN_DOCS="off"             # -DBUILD_DOXYGEN_DOCS=[ON|OFF (default)]: build documentation
 

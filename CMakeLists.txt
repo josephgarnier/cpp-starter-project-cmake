@@ -16,7 +16,7 @@
 # -DPARAM_BUILD_TYPE=[(default) debug|release]: set type of build
 # -DPARAM_ASSERT_ENABLE=[ON|OFF (default)]: enable or disable assert
 # -DPARAM_BUILD_SHARED_LIBS=[(default) ON|OFF]: build shared libraries instead of static
-# -DPARAM_BUILD_EXEC=[(default) ON|OFF]: build the main-function
+# -DPARAM_BUILD_EXEC=[(default) ON|OFF]: build an executable
 # -DPARAM_BUILD_TESTS=[ON|OFF (default)]: build tests
 # -DPARAM_BUILD_DOXYGEN_DOCS=[ON|OFF (default)]: build documentation
 
@@ -36,7 +36,7 @@ set(COMPILE_VERSION_DESC        "Specifies compiler version \"11\" or \"14\" or 
 set(BUILD_TYPE_DESC             "Specifies type of build \"debug\" or \"release\"")
 set(ASSERT_ENABLE_DESC          "Specifies whether to use assert")
 set(BUILD_SHARED_LIBS_DESC      "Specifies whether build shared libraries instead of static")
-set(BUILD_EXEC_DESC             "Specifies whether build the main-function")
+set(BUILD_EXEC_DESC             "Specifies whether build an executable")
 set(BUILD_TESTS_DESC            "Specifies whether build tests")
 set(BUILD_DOXYGEN_DOCS_DESC     "Specifies whether build documentation")
 
@@ -73,7 +73,7 @@ message(" - Compile version: \"${PARAM_COMPILE_VERSION}\"")
 message(" - Build type: \"${PARAM_BUILD_TYPE}\"")
 message(" - Assert is enable: \"${PARAM_ASSERT_ENABLE}\"")
 message(" - Build shared libs: \"${PARAM_BUILD_SHARED_LIBS}\"")
-message(" - Build main: \"${PARAM_BUILD_EXEC}\"")
+message(" - Build executable: \"${PARAM_BUILD_EXEC}\"")
 message(" - Build tests: \"${PARAM_BUILD_TESTS}\"")
 message(" - Build doxygen documentation: \"${PARAM_BUILD_DOXYGEN_DOCS}\"")
 message("")
@@ -94,12 +94,14 @@ endif()
 set(BUILD_SHARED_LIBS ${PARAM_BUILD_SHARED_LIBS})
 
 # Set CMake build-type. If it not supplied by the user, the default built type is "Release".
-if((NOT DEFINED PARAM_BUILD_TYPE) OR ("${PARAM_BUILD_TYPE}" STREQUAL "Release"))
-	message(STATUS "Building release version!")
+if((NOT DEFINED PARAM_BUILD_TYPE) OR ("${PARAM_BUILD_TYPE}" STREQUAL "release"))
 	set(CMAKE_BUILD_TYPE Release)
-elseif("${PARAM_BUILD_TYPE}" STREQUAL "Debug")
-	message(STATUS "Building debug version!")
+	message(STATUS "Building release version")
+elseif("${PARAM_BUILD_TYPE}" STREQUAL "debug")
 	set(CMAKE_BUILD_TYPE Debug)
+	message(STATUS "Building debug version")
+else()
+	message(FATAL_ERROR "Build type should be \"debug\" or \"release\"!")
 endif()
 
 # Set compile version flag
@@ -111,7 +113,7 @@ if((NOT DEFINED PARAM_COMPILE_VERSION) OR
 	message(FATAL_ERROR "Compile version must be 11 or 14 or 17 or 20")
 else()
 	set (CMAKE_CXX_STANDARD "${PARAM_COMPILE_VERSION}")
-	message(STATUS "Compile version set to ${CMAKE_CXX_STANDARD}!")
+	message(STATUS "Compile version set to ${CMAKE_CXX_STANDARD}")
 endif()
 
 # -------------------- Project settings ------------------------------
@@ -151,7 +153,7 @@ set(${PROJECT_NAME}_DOC_PATH                     "${${PROJECT_NAME}_PROJECT_PATH
 set(${PROJECT_NAME}_INCLUDE_PATH                 "${${PROJECT_NAME}_PROJECT_PATH}/include")
 set(${PROJECT_NAME}_LIB_PATH                     "${${PROJECT_NAME}_PROJECT_PATH}/lib")
 set(${PROJECT_NAME}_LIB_NAME                     "lib${PROJECT_NAME}")
-set(${PROJECT_NAME}_MAIN_NAME                    "${PROJECT_NAME}")
+set(${PROJECT_NAME}_EXEC_NAME                    "${PROJECT_NAME}")
 set(${PROJECT_NAME}_PACKAGE_NAME                 "${PROJECT_NAME}")
 set(${PROJECT_NAME}_RESOURCES_PATH               "${${PROJECT_NAME}_PROJECT_PATH}/resources")
 set(${PROJECT_NAME}_SRC_PATH                     "${${PROJECT_NAME}_PROJECT_PATH}/src")
@@ -190,7 +192,7 @@ endif()
 set(SYSTEM_NAME "${CMAKE_SYSTEM_NAME}-${CMAKE_CXX_COMPILER_ID}-${CMAKE_SYSTEM_PROCESSOR}")
 string(TOLOWER ${SYSTEM_NAME} SYSTEM_NAME)
 set(${PROJECT_NAME}_LIB_NAME "${${PROJECT_NAME}_LIB_NAME}")
-set(${PROJECT_NAME}_MAIN_NAME "${${PROJECT_NAME}_MAIN_NAME}")
+set(${PROJECT_NAME}_EXEC_NAME "${${PROJECT_NAME}_EXEC_NAME}")
 set(${PROJECT_NAME}_PACKAGE_NAME "${${PROJECT_NAME}_PACKAGE_NAME}-${${PROJECT_NAME}_VERSION}-${CMAKE_SYSTEM_NAME}")
 string(TOLOWER ${${PROJECT_NAME}_PACKAGE_NAME} ${PROJECT_NAME}_PACKAGE_NAME)
 set(${PROJECT_NAME}_TEST_NAME "${${PROJECT_NAME}_TEST_NAME}--${${PROJECT_NAME}_VERSION}-${CMAKE_SYSTEM_NAME}")
@@ -249,14 +251,14 @@ cotire("${${PROJECT_NAME}_LIB_NAME}")
 
 # Build executable
 if(${PARAM_BUILD_EXEC})
-	message(STATUS "Build main")
-	add_executable("${${PROJECT_NAME}_MAIN_NAME}" ${${PROJECT_NAME}_SRC_FILES})
-	target_link_libraries("${${PROJECT_NAME}_MAIN_NAME}" ${${PROJECT_NAME}_LIBRARIES_FILES})
+	message(STATUS "Build executable")
+	add_executable("${${PROJECT_NAME}_EXEC_NAME}" ${${PROJECT_NAME}_SRC_FILES})
+	target_link_libraries("${${PROJECT_NAME}_EXEC_NAME}" ${${PROJECT_NAME}_LIBRARIES_FILES})
 	if(${PROJECT_NAME}_PRECOMPILED_HEADER_PATH)
 		message(STATUS "Add a precompiled header file for executable")
-		set_target_properties("${${PROJECT_NAME}_MAIN_NAME}" PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "${${PROJECT_NAME}_PRECOMPILED_HEADER_PATH}")
+		set_target_properties("${${PROJECT_NAME}_EXEC_NAME}" PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "${${PROJECT_NAME}_PRECOMPILED_HEADER_PATH}")
 	endif()
-	cotire("${${PROJECT_NAME}_MAIN_NAME}")
+	cotire("${${PROJECT_NAME}_EXEC_NAME}")
 endif()
 
 # -------------------- Documentation --------------------------
@@ -303,7 +305,7 @@ install(DIRECTORY ${${PROJECT_NAME}_SRC_PATH} ${${PROJECT_NAME}_INCLUDE_PATH}
 	DESTINATION include
 	FILES_MATCHING PATTERN "*.h")
 install(TARGETS ${${PROJECT_NAME}_LIB_NAME} DESTINATION lib)
-install(TARGETS ${${PROJECT_NAME}_MAIN_NAME} DESTINATION bin)
+install(TARGETS ${${PROJECT_NAME}_EXEC_NAME} DESTINATION bin)
 
 if(NOT TARGET uninstall)
 	configure_file(

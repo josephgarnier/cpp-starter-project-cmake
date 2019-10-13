@@ -100,7 +100,7 @@ You can pass the following command-line options when running CMake, otherwise th
 - `DPARAM_BUILD_TYPE=[(default) debug|release]`: set type of build
 - `DPARAM_ASSERT_ENABLE=[ON|OFF (default)]`: enable or disable assert
 - `DPARAM_BUILD_SHARED_LIBS=[(default) ON|OFF]`: build shared libraries instead of static
-- `DPARAM_BUILD_EXEC=[(default) ON|OFF]`: build the main-function
+- `DPARAM_BUILD_EXEC=[(default) ON|OFF]`: build an executable
 - `DPARAM_BUILD_TESTS=[ON|OFF (default)]`: build tests
 - `DPARAM_BUILD_DOXYGEN_DOCS=[ON|OFF (default)]`: build documentation
 
