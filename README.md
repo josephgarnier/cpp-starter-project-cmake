@@ -55,23 +55,23 @@ In case of success, you should see the message `The solution was successfully ge
 Now, you can *build* your solution to generate an executable file and/or a library file in `/bin` directory.
 
 ```bash
-(cd ./build/project-name-0-0-0-linux; cmake --build . --clean-first)
+(cd ./build/project-name-0-0-0-linux && cmake --build . --clean-first)
 ```
 
 Optionnaly, you might want to *install* your projet in directory [defined by cmake](https://cmake.org/cmake/help/latest/variable/CMAKE_INSTALL_PREFIX.html). Conversely, you may want to uninstall it.
 
 ```bash
-(cd ./build/project-name-0-0-0-linux; sudo make install)
-(cd ./build/project-name-0-0-0-linux; sudo make uninstall)
+(cd ./build/project-name-0-0-0-linux && sudo make install)
+(cd ./build/project-name-0-0-0-linux && sudo make uninstall)
 ```
 
 Also, if you want to [*pack*](https://cmake.org/cmake/help/latest/manual/cpack.1.html) your projet to generate an installer in a variety of [formats](https://cmake.org/cmake/help/latest/manual/cpack.1.html) (deb, zip, rpm, etc) in `/bin` directory.
 
 ```bash
 # pack only files install from the make install command
-(cd ./build/project-name-0-0-0-linux; cpack --config CPackConfig.cmake && sleep 2s && rm -r ../../bin/_CPack_Packages)
+(cd ./build/project-name-0-0-0-linux && cpack --config CPackConfig.cmake && sleep 2s && rm -r ../../bin/_CPack_Packages)
 # pack all files
-(cd ./build/project-name-0-0-0-linux; cpack --config CPackSourceConfig.cmake && sleep 2s && rm -r ../../bin/_CPack_Packages)
+(cd ./build/project-name-0-0-0-linux && cpack --config CPackSourceConfig.cmake && sleep 2s && rm -r ../../bin/_CPack_Packages)
 ```
 
 At any time you can clean the `/build` and `/bin` directories.
@@ -81,7 +81,7 @@ At any time you can clean the `/build` and `/bin` directories.
 #or
 ./clean-cmake.bat
 
-(cd ./build/project-name-0-0-0-linux; cmake --build . --target clean)
+(cd ./build/project-name-0-0-0-linux && cmake --build . --target clean)
 ```
 
 ## Build options

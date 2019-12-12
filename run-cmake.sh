@@ -39,18 +39,18 @@ CMAKE_FLAGS+=("-DPARAM_BUILD_EXEC=${BUILD_EXEC}")
 CMAKE_FLAGS+=("-DPARAM_BUILD_TESTS=${BUILD_TESTS}")
 CMAKE_FLAGS+=("-DPARAM_BUILD_DOXYGEN_DOCS=${BUILD_DOXYGEN_DOCS}")
 
-readonly WORKSPACE_PATH=`pwd`
+readonly WORKSPACE_PATH=$(pwd)
 declare -r BUILD_PATH="${WORKSPACE_PATH}/build"
 declare -r CMAKE_PATH="${WORKSPACE_PATH}/cmake"
 declare -r SOLUTION_PATH="${BUILD_PATH}/${PROJECT_NAME}-${PROJECT_VERSION_MAJOR}-${PROJECT_VERSION_MINOR}-${PROJECT_VERSION_PATCH}-linux"
 
-if [ ! -d ${SOLUTION_PATH} ]; then
+if [[ ! -d "${SOLUTION_PATH}" ]]; then
 	mkdir "${SOLUTION_PATH}"
 fi
 
 cd "${SOLUTION_PATH}"
 cmake ${WORKSPACE_PATH} -G "${GENERATOR}" -DCMAKE_TOOLCHAIN_FILE="${CMAKE_PATH}/toolchains/Linux_clang.cmake" "${CMAKE_FLAGS[@]}"
-if [ $? -eq 0 ]; then
+if [[ "${?}" -eq 0 ]]; then
 	echo -e "\nThe solution was successfully generated!"
 fi
 
