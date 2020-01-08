@@ -15,9 +15,9 @@ set(CMAKE_SYSTEM "${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_VERSION}")
 set(triple x86_64-pc-linux-gnu)
 
 # specify the cross compiler
-set(CMAKE_C_COMPILER clang-6.0)
+set(CMAKE_C_COMPILER clang-9)
 set(CMAKE_C_COMPILER_TARGET ${triple})
-set(CMAKE_CXX_COMPILER clang++-6.0)
+set(CMAKE_CXX_COMPILER clang++-9)
 set(CMAKE_CXX_COMPILER_TARGET ${triple})
 
 # where is the target environment
