@@ -1,0 +1,95 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Clean and Run CMake",
+			"type": "shell",
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"command": "./clean-cmake.sh && sleep 3s && ./run-cmake.sh",
+			"presentation": {
+				"reveal": "always",
+				"focus": true,
+				"clear": true
+			}
+		},
+		{
+			"label": "Build",
+			"type": "shell",
+			"options": {
+				"cwd": "${workspaceFolder}/build/project-name-0-0-0-linux"
+			},
+			"command": "cmake --build . --clean-first",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"presentation": {
+				"reveal": "always",
+				"focus": true,
+				"clear": true
+			}
+		},
+		{
+			"label": "Install",
+			"type": "shell",
+			"options": {
+				"cwd": "${workspaceFolder}/build/project-name-0-0-0-linux"
+			},
+			"command": "sudo make install",
+			"presentation": {
+				"reveal": "always",
+				"focus": true,
+				"clear": true
+			}
+		},
+		{
+			"label": "Uninstall",
+			"type": "shell",
+			"options": {
+				"cwd": "${workspaceFolder}/build/project-name-0-0-0-linux"
+			},
+			"command": "sudo make uninstall",
+			"presentation": {
+				"reveal": "always",
+				"focus": true,
+				"clear": true
+			}
+		},
+		{
+			"label": "CPack",
+			"type": "shell",
+			"options": {
+				"cwd": "${workspaceFolder}/build/project-name-0-0-0-linux"
+			},
+			"command": "cpack --config CPackConfig.cmake && sleep 2s && rm -r ../../bin/_CPack_Packages",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"presentation": {
+				"reveal": "always",
+				"focus": true,
+				"clear": true
+			}
+		},
+		{
+			"label": "CPack All Files",
+			"type": "shell",
+			"options": {
+				"cwd": "${workspaceFolder}/build/project-name-0-0-0-linux"
+			},
+			"command": "cpack --config CPackSourceConfig.cmake && sleep 2s && rm -r ../../bin/_CPack_Packages",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"presentation": {
+				"reveal": "always",
+				"focus": true,
+				"clear": true
+			}
+		}
+	]
+}
