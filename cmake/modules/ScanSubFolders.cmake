@@ -5,7 +5,7 @@
 # LICENSE file in the root directory of this source tree.
 
 #[=======================================================================[.rst:
-Directory
+ScanSubFolders
 ---------
 
 Function for scanning a system of directories.
