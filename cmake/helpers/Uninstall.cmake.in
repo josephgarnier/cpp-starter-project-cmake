@@ -12,7 +12,7 @@ endif(NOT EXISTS "@CMAKE_BINARY_DIR@/install_manifest.txt")
 
 file(READ "@CMAKE_BINARY_DIR@/install_manifest.txt" files)
 string(REGEX REPLACE "\n" ";" files "${files}")
-foreach(file ${files})
+foreach(file IN ITEMS ${files})
 	message(STATUS "Uninstalling $ENV{DESTDIR}${file}")
 	if(IS_SYMLINK "$ENV{DESTDIR}${file}" OR EXISTS "$ENV{DESTDIR}${file}")
 		exec_program(

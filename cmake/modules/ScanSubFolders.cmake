@@ -60,7 +60,7 @@ function(scan_sub_folders return_files)
 	set(list_dirs "")
 	set(list_files "")
 
-	foreach(child ${children})
+	foreach(child IN ITEMS ${children})
 		if(IS_DIRECTORY "${SSF_ROOT_PATH}/${child}")
 			list(APPEND list_dirs ${child})
 		elseif("${child}" MATCHES "${SSF_INCLUDE_REGEX}")
@@ -76,7 +76,7 @@ function(scan_sub_folders return_files)
 	endif()
 	source_group("${source_group}" FILES "${list_files}")
 
-	foreach(subdirectory ${list_dirs})
+	foreach(subdirectory IN ITEMS ${list_dirs})
 		scan_sub_folders(${return_files} ROOT_PATH "${SSF_ROOT_PATH}/${subdirectory}" INCLUDE_REGEX "${SSF_INCLUDE_REGEX}")
 	endforeach()
 	

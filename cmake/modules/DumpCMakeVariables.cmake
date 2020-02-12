@@ -45,7 +45,7 @@ function(dump_cmake_variables)
 
 	get_cmake_property(variableNames VARIABLES)
 	list(SORT variableNames)
-	foreach (variableName IN LISTS variableNames)
+	foreach (variableName IN ITEMS ${variableNames})
 		if((NOT DV_EXCLUDE_REGEX) OR (NOT "${variableName}" MATCHES "${DV_EXCLUDE_REGEX}"))
 			message(STATUS "${variableName}= ${${variableName}}")
 		endif()
