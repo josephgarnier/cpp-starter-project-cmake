@@ -55,7 +55,7 @@ function(scan_sub_folders return_files)
 		message(FATAL_ERROR "Regex arguments missing")
 	endif()
 
-	file(GLOB relativePath RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "${SSF_ROOT_PATH}")
+	file(GLOB relative_path RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "${SSF_ROOT_PATH}")
 	file(GLOB children RELATIVE ${SSF_ROOT_PATH} "${SSF_ROOT_PATH}/*")
 	set(list_dirs "")
 	set(list_files "")
