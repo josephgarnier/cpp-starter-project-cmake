@@ -13,13 +13,21 @@ export PROJECT_VERSION_PATCH="0"         # -DPROJECT_VERSION_PATCH: project patc
 
 readonly WORKSPACE_PATH=$(pwd)
 declare -r BUILD_PATH="${WORKSPACE_PATH}/build"
+declare -r DOC_PATH="${WORKSPACE_PATH}/doc"
 declare -r SOLUTION_PATH="${BUILD_PATH}/${PROJECT_NAME}-${PROJECT_VERSION_MAJOR}-${PROJECT_VERSION_MINOR}-${PROJECT_VERSION_PATCH}-linux"
 
 if [[ -d "${SOLUTION_PATH}" ]]; then
 	cd "${SOLUTION_PATH}"
 	cmake --build . --target clean
 	cd "${WORKSPACE_PATH}"
+
+	# remove solution in build directory
 	rm -r "${SOLUTION_PATH}"
+
+	# remove doc
+	rm -r "${DOC_PATH}/html"
+	rm -r "${DOC_PATH}/latex"
+	rm -r "${DOC_PATH}/doxyfile"
 fi
 
 if [[ "${?}" -eq 0 ]]; then
