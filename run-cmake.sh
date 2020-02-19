@@ -20,7 +20,7 @@ export ASSERT_ENABLE="off"                  # -DASSERT_ENABLE=[ON|OFF (default)]
 export BUILD_SHARED_LIBS="on"               # -DBUILD_SHARED_LIBS=[(default) ON|OFF]: build shared libraries instead of static
 export BUILD_EXEC="on"                      # -DBUILD_EXEC=[(default) ON|OFF]: build an executable
 export BUILD_TESTS="off"                    # -DBUILD_TESTS=[ON|OFF (default)]: build tests
-export BUILD_DOXYGEN_DOCS="off"             # -DBUILD_DOXYGEN_DOCS=[ON|OFF (default)]: build documentation
+export BUILD_DOXYGEN_DOCS="off"              # -DBUILD_DOXYGEN_DOCS=[ON|OFF (default)]: build documentation
 
 declare -a CMAKE_FLAGS=()
 CMAKE_FLAGS+=("-DPARAM_PROJECT_NAME=${PROJECT_NAME}")
@@ -48,11 +48,10 @@ if [[ ! -d "${SOLUTION_PATH}" ]]; then
 	mkdir "${SOLUTION_PATH}"
 fi
 
-cd "${SOLUTION_PATH}"
-cmake ${WORKSPACE_PATH} -G "${GENERATOR}" -DCMAKE_TOOLCHAIN_FILE="${CMAKE_PATH}/toolchains/Linux_clang.cmake" "${CMAKE_FLAGS[@]}"
+cmake -S ${WORKSPACE_PATH} -B ${SOLUTION_PATH} -G "${GENERATOR}" -DCMAKE_TOOLCHAIN_FILE="${CMAKE_PATH}/toolchains/Linux_clang.cmake" "${CMAKE_FLAGS[@]}"
+
 if [[ "${?}" -eq 0 ]]; then
 	echo -e "\nThe solution was successfully generated!"
 fi
 
-cd "${WORKSPACE_PATH}"
 exit $?
