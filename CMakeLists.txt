@@ -22,8 +22,9 @@
 
 cmake_minimum_required (VERSION 3.12)
 
-# -------------------- Options --------------------------------
-
+#------------------------------------------------------------------------------
+# Set parameters
+#------------------------------------------------------------------------------
 set(PROJECT_NAME_DESC           "Specifies a name for project")
 set(PROJECT_SUMMARY_DESC        "Short description of the project")
 set(PROJECT_VENDOR_NAME_DESC    "Project author")
@@ -78,8 +79,9 @@ message(" - Build tests: \"${PARAM_BUILD_TESTS}\"")
 message(" - Build doxygen documentation: \"${PARAM_BUILD_DOXYGEN_DOCS}\"")
 message("")
 
-# -------------------- Check Options --------------------------
-
+#------------------------------------------------------------------------------
+# Check options
+#------------------------------------------------------------------------------
 message("== Check options ==")
 
 # Check if project name has been specified correctly.
@@ -104,7 +106,7 @@ else()
 	message(FATAL_ERROR "Build type should be \"debug\" or \"release\"!")
 endif()
 
-# Set compile version flag
+# Set compiler version flag
 if((NOT DEFINED PARAM_COMPILE_VERSION) OR
 	((NOT "${PARAM_COMPILE_VERSION}" STREQUAL "11")
 	AND (NOT "${PARAM_COMPILE_VERSION}" STREQUAL "14")
@@ -112,15 +114,14 @@ if((NOT DEFINED PARAM_COMPILE_VERSION) OR
 	AND (NOT "${PARAM_COMPILE_VERSION}" STREQUAL "20")))
 	message(FATAL_ERROR "Compile version must be 11 or 14 or 17 or 20")
 else()
-	set (CMAKE_CXX_STANDARD "${PARAM_COMPILE_VERSION}")
+	set(CMAKE_CXX_STANDARD "${PARAM_COMPILE_VERSION}")
 	message(STATUS "Compile version set to ${CMAKE_CXX_STANDARD}")
 endif()
 
-# -------------------- Project settings ------------------------------
-
+#------------------------------------------------------------------------------
+# Project settings
+#------------------------------------------------------------------------------
 message("\n== Project settings ==")
-
-project(${PARAM_PROJECT_NAME} CXX)
 set(${PROJECT_NAME}_SUMMARY         "${PARAM_PROJECT_SUMMARY}")
 set(${PROJECT_NAME}_VENDOR_NAME     "${PARAM_PROJECT_VENDOR_NAME}")
 set(${PROJECT_NAME}_VENDOR_CONTACT  "${PARAM_PROJECT_VENDOR_CONTACT}")
@@ -128,11 +129,17 @@ set(${PROJECT_NAME}_VERSION_MAJOR   "${PARAM_PROJECT_VERSION_MAJOR}")
 set(${PROJECT_NAME}_VERSION_MINOR   "${PARAM_PROJECT_VERSION_MINOR}")
 set(${PROJECT_NAME}_VERSION_PATCH   "${PARAM_PROJECT_VERSION_PATCH}")
 set(${PROJECT_NAME}_VERSION         "${${PROJECT_NAME}_VERSION_MAJOR}-${${PROJECT_NAME}_VERSION_MINOR}-${${PROJECT_NAME}_VERSION_PATCH}")
+project("${PARAM_PROJECT_NAME}"
+	VERSION "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_PATCH}"
+	DESCRIPTION "${${PROJECT_NAME}_SUMMARY}"
+	HOMEPAGE_URL "${${PROJECT_NAME}_VENDOR_CONTACT}"
+	LANGUAGES CXX)
 
 message(STATUS "Set projet version with ${${PROJECT_NAME}_VERSION}")
 
-# -------------------- Check project structure ----------------
-
+#------------------------------------------------------------------------------
+# Check project structure
+#------------------------------------------------------------------------------
 message("\n== Check project structure ==")
 set(${PROJECT_NAME}_PROJECT_PATH                 "${CMAKE_CURRENT_SOURCE_DIR}")
 set(${PROJECT_NAME}_ASSETS_PATH                  "${${PROJECT_NAME}_PROJECT_PATH}/assets")
@@ -143,7 +150,7 @@ set(${PROJECT_NAME}_CMAKE_HELPERS_PATH           "${${PROJECT_NAME}_CMAKE_PATH}/
 set(${PROJECT_NAME}_CMAKE_MODULES_PATH           "${${PROJECT_NAME}_CMAKE_PATH}/modules")
 set(${PROJECT_NAME}_CMAKE_PROJECT_PATH           "${${PROJECT_NAME}_CMAKE_PATH}/project")
 set(${PROJECT_NAME}_CMAKE_TOOLCHAINS_PATH        "${${PROJECT_NAME}_CMAKE_PATH}/toolchains")
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
+set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}"
 	"${${PROJECT_NAME}_CMAKE_HELPERS_PATH}"
 	"${${PROJECT_NAME}_CMAKE_MODULES_PATH}"
 	"${${PROJECT_NAME}_CMAKE_PROJECT_PATH}"
@@ -152,13 +159,9 @@ set(${PROJECT_NAME}_CONFIG_PATH                  "${${PROJECT_NAME}_PROJECT_PATH
 set(${PROJECT_NAME}_DOC_PATH                     "${${PROJECT_NAME}_PROJECT_PATH}/doc")
 set(${PROJECT_NAME}_INCLUDE_PATH                 "${${PROJECT_NAME}_PROJECT_PATH}/include")
 set(${PROJECT_NAME}_LIB_PATH                     "${${PROJECT_NAME}_PROJECT_PATH}/lib")
-set(${PROJECT_NAME}_LIB_NAME                     "lib${PROJECT_NAME}")
-set(${PROJECT_NAME}_EXEC_NAME                    "${PROJECT_NAME}")
-set(${PROJECT_NAME}_PACKAGE_NAME                 "${PROJECT_NAME}")
 set(${PROJECT_NAME}_RESOURCES_PATH               "${${PROJECT_NAME}_PROJECT_PATH}/resources")
 set(${PROJECT_NAME}_SRC_PATH                     "${${PROJECT_NAME}_PROJECT_PATH}/src")
 set(${PROJECT_NAME}_TEST_PATH                    "${${PROJECT_NAME}_PROJECT_PATH}/tests")
-set(${PROJECT_NAME}_TEST_NAME                    "${PROJECT_NAME}_test")
 
 list(APPEND ${PROJECT_NAME}_PROJECT_PATHS
 	"${${PROJECT_NAME}_ASSETS_PATH}"
@@ -177,38 +180,32 @@ list(APPEND ${PROJECT_NAME}_PROJECT_PATHS
 	"${${PROJECT_NAME}_SRC_PATH}"
 	"${${PROJECT_NAME}_TEST_PATH}")
 
-foreach(folder ${${PROJECT_NAME}_PROJECT_PATHS})
+foreach(folder IN ITEMS ${${PROJECT_NAME}_PROJECT_PATHS})
 	if((NOT EXISTS "${folder}") OR (NOT IS_DIRECTORY "${folder}"))
 		message(FATAL_ERROR "missing folder: \"${folder}\"")
 	endif()
 endforeach()
 
-# -------------------- Detect the system ---------------------------
-
+#------------------------------------------------------------------------------
+# Customize ouput names
+#------------------------------------------------------------------------------
 if(NOT CMAKE_SYSTEM_PROCESSOR)
 	set(CMAKE_SYSTEM_PROCESSOR ${CMAKE_HOST_SYSTEM_PROCESSOR})
 endif()
 
 set(SYSTEM_NAME "${CMAKE_SYSTEM_NAME}-${CMAKE_CXX_COMPILER_ID}-${CMAKE_SYSTEM_PROCESSOR}")
 string(TOLOWER ${SYSTEM_NAME} SYSTEM_NAME)
-set(${PROJECT_NAME}_LIB_NAME "${${PROJECT_NAME}_LIB_NAME}")
-set(${PROJECT_NAME}_EXEC_NAME "${${PROJECT_NAME}_EXEC_NAME}")
-set(${PROJECT_NAME}_PACKAGE_NAME "${${PROJECT_NAME}_PACKAGE_NAME}-${${PROJECT_NAME}_VERSION}-${CMAKE_SYSTEM_NAME}")
+set(${PROJECT_NAME}_LIB_NAME "lib${PROJECT_NAME}")
+set(${PROJECT_NAME}_EXEC_NAME "${PROJECT_NAME}")
+set(${PROJECT_NAME}_EXPORT_NAME "export${PROJECT_NAME}")
+set(${PROJECT_NAME}_PACKAGE_NAME "${PROJECT_NAME}-${${PROJECT_NAME}_VERSION}-${CMAKE_SYSTEM_NAME}")
 string(TOLOWER ${${PROJECT_NAME}_PACKAGE_NAME} ${PROJECT_NAME}_PACKAGE_NAME)
-set(${PROJECT_NAME}_TEST_NAME "${${PROJECT_NAME}_TEST_NAME}--${${PROJECT_NAME}_VERSION}-${CMAKE_SYSTEM_NAME}")
+set(${PROJECT_NAME}_TEST_NAME "${PROJECT_NAME}_test-${${PROJECT_NAME}_VERSION}-${CMAKE_SYSTEM_NAME}")
 string(TOLOWER ${${PROJECT_NAME}_TEST_NAME} ${PROJECT_NAME}_TEST_NAME)
 
-# -------------------- Build settings ------------------------------
-
-message("\n== Build settings ==")
-
-# -------------------- Build dependances ----------------------
-
-message("\n== Build dependances ==")
-include(Dependencies) # set ${PROJECT_NAME}_LIBRARIES_FILES
-
-# -------------------- Build project --------------------------
-
+#------------------------------------------------------------------------------
+# Build project
+#------------------------------------------------------------------------------
 message("\n== Build project ==")
 include(Cotire)
 include(ProjectSrcFiles)
@@ -218,14 +215,21 @@ endif()
 if(NOT DEFINED ${PROJECT_NAME}_PRECOMPILED_SOURCE_PATH)
 	message(FATAL_ERROR "${PROJECT_NAME}_PRECOMPILED_SOURCE_PATH must be specified!")
 endif()
-if(NOT DEFINED ${PROJECT_NAME}_SRC_FILES)
-	message(FATAL_ERROR "${PROJECT_NAME}_SRC_FILES must be specified!")
+if(NOT DEFINED ${PROJECT_NAME}_SRC_ALL_FILES)
+	message(FATAL_ERROR "${PROJECT_NAME}_SRC_ALL_FILES must be specified!")
 endif()
-if(NOT DEFINED ${PROJECT_NAME}_HEADER_FILES)
-	message(FATAL_ERROR "${PROJECT_NAME}_HEADER_FILES must be specified!")
+if(NOT DEFINED ${PROJECT_NAME}_SRC_HEADER_FILES)
+	message(FATAL_ERROR "${PROJECT_NAME}_SRC_HEADER_FILES must be specified!")
 endif()
-include_directories(AFTER "${${PROJECT_NAME}_SRC_PATH}")
-include_directories(AFTER "${${PROJECT_NAME}_INCLUDE_PATH}")
+if(NOT DEFINED ${PROJECT_NAME}_SRC_SOURCE_FILES)
+	message(FATAL_ERROR "${PROJECT_NAME}_SRC_SOURCE_FILES must be specified!")
+endif()
+if(NOT DEFINED ${PROJECT_NAME}_INCLUDE_HEADER_FILES)
+	message(FATAL_ERROR "${PROJECT_NAME}_INCLUDE_HEADER_FILES must be specified!")
+endif()
+if(NOT DEFINED ${PROJECT_NAME}_PUBLIC_HEADER_FILES)
+	message(FATAL_ERROR "${PROJECT_NAME}_PUBLIC_HEADER_FILES must be specified!")
+endif()
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${${PROJECT_NAME}_BIN_PATH}")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${${PROJECT_NAME}_BIN_PATH}")
@@ -236,33 +240,96 @@ set(CMAKE_SHARED_LIBRARY_PREFIX "")
 # Build library
 if(${BUILD_SHARED_LIBS})
 	message(STATUS "Build as a shared library")
-	add_library("${${PROJECT_NAME}_LIB_NAME}" SHARED ${${PROJECT_NAME}_SRC_FILES})
+	add_library("${${PROJECT_NAME}_LIB_NAME}" SHARED ${${PROJECT_NAME}_SRC_ALL_FILES})
 else()
 	message(STATUS "Build as a static library")
-	add_library("${${PROJECT_NAME}_LIB_NAME}" STATIC ${${PROJECT_NAME}_SRC_FILES})
+	add_library("${${PROJECT_NAME}_LIB_NAME}" STATIC ${${PROJECT_NAME}_SRC_ALL_FILES})
 endif()
 
-# Add a precompiled header file if existing
+# Add precompiled header to library
 if(${PROJECT_NAME}_PRECOMPILED_HEADER_PATH)
-	message(STATUS "Add a precompiled header file for library")
+	message(STATUS "Add precompiled header to library")
 	set_target_properties("${${PROJECT_NAME}_LIB_NAME}" PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "${${PROJECT_NAME}_PRECOMPILED_HEADER_PATH}")
 endif()
-cotire("${${PROJECT_NAME}_LIB_NAME}")
 
-# Build executable
+# Set compiler version to library
+message(STATUS "Set compiler version to library")
+target_compile_features("${${PROJECT_NAME}_LIB_NAME}" PUBLIC "cxx_std_${CMAKE_CXX_STANDARD}")
+
+# Add incude directories to library
+message(STATUS "Add include directories to library")
+target_include_directories("${${PROJECT_NAME}_LIB_NAME}"
+	PUBLIC
+		"$<BUILD_INTERFACE:${${PROJECT_NAME}_INCLUDE_PATH}>"
+		"$<INSTALL_INTERFACE:include>"
+	PRIVATE
+		"${${PROJECT_NAME}_SRC_PATH}"
+)
+
 if(${PARAM_BUILD_EXEC})
+	# Build executable
 	message(STATUS "Build executable")
-	add_executable("${${PROJECT_NAME}_EXEC_NAME}" ${${PROJECT_NAME}_SRC_FILES})
-	target_link_libraries("${${PROJECT_NAME}_EXEC_NAME}" ${${PROJECT_NAME}_LIBRARIES_FILES})
+	add_executable("${${PROJECT_NAME}_EXEC_NAME}" ${${PROJECT_NAME}_SRC_ALL_FILES})
+
+	# Add precompiled header to executable
 	if(${PROJECT_NAME}_PRECOMPILED_HEADER_PATH)
-		message(STATUS "Add a precompiled header file for executable")
+		message(STATUS "Add precompiled header to executable")
 		set_target_properties("${${PROJECT_NAME}_EXEC_NAME}" PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "${${PROJECT_NAME}_PRECOMPILED_HEADER_PATH}")
 	endif()
+	
+	# Set compiler version to executable
+	message(STATUS "Set compiler version to executable")
+	target_compile_features("${${PROJECT_NAME}_EXEC_NAME}" PUBLIC "cxx_std_${CMAKE_CXX_STANDARD}")
+	
+	# Add incude directories to executable
+	message(STATUS "Add include directories to executable")
+	target_include_directories("${${PROJECT_NAME}_EXEC_NAME}"
+		PUBLIC
+			"$<BUILD_INTERFACE:${${PROJECT_NAME}_INCLUDE_PATH}>"
+			"$<INSTALL_INTERFACE:include>"
+		PRIVATE
+			"${${PROJECT_NAME}_SRC_PATH}"
+	)
+endif()
+
+#------------------------------------------------------------------------------
+# Add project dependances
+#------------------------------------------------------------------------------
+message("\n== Add project dependancies ==")
+include(Dependencies)
+if(NOT DEFINED ${PROJECT_NAME}_LIBRARIES_FILES)
+	message(FATAL_ERROR "${PROJECT_NAME}_LIBRARIES_FILES must be specified!")
+endif()
+
+# Link externals libraries to library
+message(STATUS "Link externals libraries to project library")
+target_link_libraries("${${PROJECT_NAME}_LIB_NAME}"
+	PUBLIC
+		"$<BUILD_INTERFACE:${${PROJECT_NAME}_LIBRARIES_FILES}>"
+		"$<INSTALL_INTERFACE:${${PROJECT_NAME}_LIBRARIES_FILES}>"
+)
+
+# Link externals libraries to executable
+if(${PARAM_BUILD_EXEC})
+	message(STATUS "Link externals libraries to project executable")
+	target_link_libraries("${${PROJECT_NAME}_EXEC_NAME}"
+		PUBLIC
+			"$<BUILD_INTERFACE:${${PROJECT_NAME}_LIBRARIES_FILES}>"
+			"$<INSTALL_INTERFACE:${${PROJECT_NAME}_LIBRARIES_FILES}>"
+	)
+endif()
+
+#------------------------------------------------------------------------------
+# Speeds up the build process with Cotire
+#------------------------------------------------------------------------------
+cotire("${${PROJECT_NAME}_LIB_NAME}")
+if(${PARAM_BUILD_EXEC})
 	cotire("${${PROJECT_NAME}_EXEC_NAME}")
 endif()
 
-# -------------------- Documentation --------------------------
-
+#------------------------------------------------------------------------------
+# Build documentation
+#------------------------------------------------------------------------------
 if(${PARAM_BUILD_DOXYGEN_DOCS})
 	message("\n== Build documentation ==")
 	find_package(Doxygen REQUIRED)
@@ -271,8 +338,8 @@ if(${PARAM_BUILD_DOXYGEN_DOCS})
 	endif()
 
 	# set input and output files
-	set(DOXYGEN_IN "${${PROJECT_NAME}_DOC_PATH}/Doxyfile.in")
-	set(DOXYGEN_OUT "${${PROJECT_NAME}_DOC_PATH}/Doxyfile")
+	set(DOXYGEN_IN "${${PROJECT_NAME}_DOC_PATH}/doxyfile.in")
+	set(DOXYGEN_OUT "${${PROJECT_NAME}_DOC_PATH}/doxyfile")
 
 	# request to configure the file
 	configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} @ONLY)
@@ -287,8 +354,9 @@ if(${PARAM_BUILD_DOXYGEN_DOCS})
 		VERBATIM)
 endif()
 
-# -------------------- Testing --------------------------
-
+#------------------------------------------------------------------------------
+# Build tests
+#------------------------------------------------------------------------------
 if(${PARAM_BUILD_TESTS})
 	message("\n== Build tests ==")
 	include(CTest)
@@ -297,15 +365,23 @@ if(${PARAM_BUILD_TESTS})
 		COMMAND "${${PROJECT_NAME}_TEST_PATH}/${${PROJECT_NAME}_TEST_NAME}")
 endif()
 
-# -------------------- Make install/uninstall rules --------------------------
-
+#------------------------------------------------------------------------------
+# Make install/uninstall rules
+#------------------------------------------------------------------------------
 message("\n== Generates make install/uninstall rules ==")
 # destination is set by CMAKE_INSTALL_PREFIX and defaults to usual locations, unless overridden by user
-install(DIRECTORY ${${PROJECT_NAME}_SRC_PATH} ${${PROJECT_NAME}_INCLUDE_PATH}
-	DESTINATION include
-	FILES_MATCHING PATTERN "*.h")
-install(TARGETS ${${PROJECT_NAME}_LIB_NAME} DESTINATION lib)
-install(TARGETS ${${PROJECT_NAME}_EXEC_NAME} DESTINATION bin)
+install(TARGETS "${${PROJECT_NAME}_LIB_NAME}"
+	EXPORT "${PROJECT_NAME}_EXPORT_NAME"
+	LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+	ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+)
+install(TARGETS "${${PROJECT_NAME}_EXEC_NAME}"
+	RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
+)
+
+# install(DIRECTORY ${${PROJECT_NAME}_SRC_PATH} ${${PROJECT_NAME}_INCLUDE_PATH}
+# 	DESTINATION include
+# 	FILES_MATCHING PATTERN "*.h")
 
 if(NOT TARGET uninstall)
 	configure_file(
@@ -352,3 +428,57 @@ endif()
 include(CPack)
 
 message("\n===== End project ${PROJECT_NAME} building =====\n")
+
+
+# message("=== Start of debug messages ===")
+# include(DumpCMakeVariables)
+# dump_cmake_variables()
+
+# cmake_print_properties(
+# 	TARGETS "${${PROJECT_NAME}_EXEC_NAME}"
+# 	PROPERTIES
+# 		COTIRE_CXX_PREFIX_HEADER_INIT
+# 		INCLUDE_DIRECTORIES
+# 		INSTALL_NAME_DIR
+# 		INSTALL_REMOVE_ENVIRONMENT_RPATH
+# 		INSTALL_RPATH
+# 		INSTALL_RPATH_USE_LINK_PATH
+# 		INTERFACE_AUTOUIC_OPTIONS
+# 		INTERFACE_COMPILE_DEFINITIONS
+# 		INTERFACE_COMPILE_FEATURES
+# 		INTERFACE_COMPILE_OPTIONS
+# 		INTERFACE_INCLUDE_DIRECTORIES
+# 		INTERFACE_LINK_DEPENDS
+# 		INTERFACE_LINK_DIRECTORIES
+# 		INTERFACE_LINK_LIBRARIES
+# 		INTERFACE_LINK_OPTIONS
+# 		INTERFACE_PRECOMPILE_HEADERS
+# 		INTERFACE_POSITION_INDEPENDENT_CODE
+# 		INTERFACE_SOURCES
+# 		INTERFACE_SYSTEM_INCLUDE_DIRECTORIES
+# )
+# cmake_print_properties(
+# 	TARGETS
+# 		"${${PROJECT_NAME}_LIB_NAME}"
+# 	PROPERTIES
+# 		COTIRE_CXX_PREFIX_HEADER_INIT
+# 		INCLUDE_DIRECTORIES
+# 		INSTALL_NAME_DIR
+# 		INSTALL_REMOVE_ENVIRONMENT_RPATH
+# 		INSTALL_RPATH
+# 		INSTALL_RPATH_USE_LINK_PATH
+# 		INTERFACE_AUTOUIC_OPTIONS
+# 		INTERFACE_COMPILE_DEFINITIONS
+# 		INTERFACE_COMPILE_FEATURES
+# 		INTERFACE_COMPILE_OPTIONS
+# 		INTERFACE_INCLUDE_DIRECTORIES
+# 		INTERFACE_LINK_DEPENDS
+# 		INTERFACE_LINK_DIRECTORIES
+# 		INTERFACE_LINK_LIBRARIES
+# 		INTERFACE_LINK_OPTIONS
+# 		INTERFACE_PRECOMPILE_HEADERS
+# 		INTERFACE_POSITION_INDEPENDENT_CODE
+# 		INTERFACE_SOURCES
+# 		INTERFACE_SYSTEM_INCLUDE_DIRECTORIES
+# )
+# message("=== End of debug messages ===")
