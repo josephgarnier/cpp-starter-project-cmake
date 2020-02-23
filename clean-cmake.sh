@@ -22,12 +22,12 @@ if [[ -d "${SOLUTION_PATH}" ]]; then
 	cd "${WORKSPACE_PATH}"
 
 	# remove solution in build directory
-	rm -r "${SOLUTION_PATH}"
+	rm -rf "${SOLUTION_PATH}"
 
 	# remove doc
-	rm -r "${DOC_PATH}/html"
-	rm -r "${DOC_PATH}/latex"
-	rm -r "${DOC_PATH}/doxyfile"
+	rm -rf "${DOC_PATH}/html"
+	rm -rf "${DOC_PATH}/latex"
+	rm -rf "${DOC_PATH}/doxyfile"
 fi
 
 if [[ "${?}" -eq 0 ]]; then
