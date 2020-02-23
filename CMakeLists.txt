@@ -141,7 +141,7 @@ message(STATUS "Set projet version with ${${PROJECT_NAME}_VERSION}")
 # Check project structure
 #------------------------------------------------------------------------------
 message("\n== Check project structure ==")
-set(${PROJECT_NAME}_PROJECT_PATH                 "${CMAKE_CURRENT_SOURCE_DIR}")
+set(${PROJECT_NAME}_PROJECT_PATH                 "${CMAKE_SOURCE_DIR}")
 set(${PROJECT_NAME}_ASSETS_PATH                  "${${PROJECT_NAME}_PROJECT_PATH}/assets")
 set(${PROJECT_NAME}_BIN_PATH                     "${${PROJECT_NAME}_PROJECT_PATH}/bin")
 set(${PROJECT_NAME}_BUILD_PATH                   "${${PROJECT_NAME}_PROJECT_PATH}/build")
@@ -187,21 +187,36 @@ foreach(folder IN ITEMS ${${PROJECT_NAME}_PROJECT_PATHS})
 endforeach()
 
 #------------------------------------------------------------------------------
-# Customize ouput names
+# Set output names and output directories
 #------------------------------------------------------------------------------
+message("\n== Set output names and output directories ==")
 if(NOT CMAKE_SYSTEM_PROCESSOR)
 	set(CMAKE_SYSTEM_PROCESSOR ${CMAKE_HOST_SYSTEM_PROCESSOR})
 endif()
 
 set(SYSTEM_NAME "${CMAKE_SYSTEM_NAME}-${CMAKE_CXX_COMPILER_ID}-${CMAKE_SYSTEM_PROCESSOR}")
 string(TOLOWER ${SYSTEM_NAME} SYSTEM_NAME)
-set(${PROJECT_NAME}_LIB_NAME "lib${PROJECT_NAME}")
-set(${PROJECT_NAME}_EXEC_NAME "${PROJECT_NAME}")
-set(${PROJECT_NAME}_EXPORT_NAME "export${PROJECT_NAME}")
-set(${PROJECT_NAME}_PACKAGE_NAME "${PROJECT_NAME}-${${PROJECT_NAME}_VERSION}-${CMAKE_SYSTEM_NAME}")
+set(${PROJECT_NAME}_LIB_NAME         "lib${PROJECT_NAME}")
+set(${PROJECT_NAME}_EXEC_NAME        "${PROJECT_NAME}")
+set(${PROJECT_NAME}_EXPORT_NAME      "export${PROJECT_NAME}")
+set(${PROJECT_NAME}_PACKAGE_NAME     "${PROJECT_NAME}-${${PROJECT_NAME}_VERSION}-${CMAKE_SYSTEM_NAME}")
 string(TOLOWER ${${PROJECT_NAME}_PACKAGE_NAME} ${PROJECT_NAME}_PACKAGE_NAME)
-set(${PROJECT_NAME}_TEST_NAME "${PROJECT_NAME}_test-${${PROJECT_NAME}_VERSION}-${CMAKE_SYSTEM_NAME}")
+set(${PROJECT_NAME}_TEST_NAME        "${PROJECT_NAME}_test-${${PROJECT_NAME}_VERSION}-${CMAKE_SYSTEM_NAME}")
 string(TOLOWER ${${PROJECT_NAME}_TEST_NAME} ${PROJECT_NAME}_TEST_NAME)
+
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY   "${${PROJECT_NAME}_BIN_PATH}")
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY   "${${PROJECT_NAME}_BIN_PATH}")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY   "${${PROJECT_NAME}_BIN_PATH}")
+set(CMAKE_STATIC_LIBRARY_PREFIX      "")
+set(CMAKE_SHARED_LIBRARY_PREFIX      "")
+
+# Configure variables specifying the target directories. All destinations are
+# relative to CMAKE_INSTALL_PREFIX
+include(GNUInstallDirs)
+set(${PROJECT_NAME}_INSTALL_RUNTIME_DIR "${CMAKE_INSTALL_BINDIR}")
+set(${PROJECT_NAME}_INSTALL_LIBRARY_DIR "${CMAKE_INSTALL_LIBDIR}")
+set(${PROJECT_NAME}_INSTALL_ARCHIVE_DIR "${CMAKE_INSTALL_LIBDIR}")
+set(${PROJECT_NAME}_INSTALL_INCLUDE_DIR "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}")
 
 #------------------------------------------------------------------------------
 # Build project
@@ -231,12 +246,6 @@ if(NOT DEFINED ${PROJECT_NAME}_PUBLIC_HEADER_FILES)
 	message(FATAL_ERROR "${PROJECT_NAME}_PUBLIC_HEADER_FILES must be specified!")
 endif()
 
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${${PROJECT_NAME}_BIN_PATH}")
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${${PROJECT_NAME}_BIN_PATH}")
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${${PROJECT_NAME}_BIN_PATH}")
-set(CMAKE_STATIC_LIBRARY_PREFIX "")
-set(CMAKE_SHARED_LIBRARY_PREFIX "")
-
 # Build library
 if(${BUILD_SHARED_LIBS})
 	message(STATUS "Build as a shared library")
@@ -260,9 +269,12 @@ target_compile_features("${${PROJECT_NAME}_LIB_NAME}" PUBLIC "cxx_std_${CMAKE_CX
 message(STATUS "Add include directories to library")
 target_include_directories("${${PROJECT_NAME}_LIB_NAME}"
 	PUBLIC
+		# Used when building the library
 		"$<BUILD_INTERFACE:${${PROJECT_NAME}_INCLUDE_PATH}>"
-		"$<INSTALL_INTERFACE:include>"
+		# Used when installing the library
+		"$<INSTALL_INTERFACE:${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}>"
 	PRIVATE
+		# Used only when building the library
 		"${${PROJECT_NAME}_SRC_PATH}"
 )
 
@@ -285,9 +297,12 @@ if(${PARAM_BUILD_EXEC})
 	message(STATUS "Add include directories to executable")
 	target_include_directories("${${PROJECT_NAME}_EXEC_NAME}"
 		PUBLIC
+			# Used when building the executable
 			"$<BUILD_INTERFACE:${${PROJECT_NAME}_INCLUDE_PATH}>"
-			"$<INSTALL_INTERFACE:include>"
+			# Used when installing the executable
+			"$<INSTALL_INTERFACE:${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}>"
 		PRIVATE
+			# Used only when building the library
 			"${${PROJECT_NAME}_SRC_PATH}"
 	)
 endif()
@@ -337,15 +352,15 @@ if(${PARAM_BUILD_DOXYGEN_DOCS})
 		message(FATAL_ERROR "Doxygen is needed to build the documentation. Please make sure it is installed.")
 	endif()
 
-	# set input and output files
+	# Set input and output files
 	set(DOXYGEN_IN "${${PROJECT_NAME}_DOC_PATH}/doxyfile.in")
 	set(DOXYGEN_OUT "${${PROJECT_NAME}_DOC_PATH}/doxyfile")
 
-	# request to configure the file
+	# Request to configure the file
 	configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} @ONLY)
 	message(STATUS "Doxygen build started")
 
-	# note the option ALL which allows to build the docs together with the application
+	# Note the option ALL which allows to build the docs together with the application
 	add_custom_target(doxygen_docs ALL
 		COMMAND ${DOXYGEN_EXECUTABLE} "${DOXYGEN_OUT}"
 		SOURCES "${DOXYGEN_OUT}"
@@ -369,28 +384,36 @@ endif()
 # Make install/uninstall rules
 #------------------------------------------------------------------------------
 message("\n== Generates make install/uninstall rules ==")
-# destination is set by CMAKE_INSTALL_PREFIX and defaults to usual locations, unless overridden by user
 install(TARGETS "${${PROJECT_NAME}_LIB_NAME}"
 	EXPORT "${PROJECT_NAME}_EXPORT_NAME"
-	LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
-	ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+	LIBRARY DESTINATION "${${PROJECT_NAME}_INSTALL_LIBRARY_DIR}"
+	ARCHIVE DESTINATION "${${PROJECT_NAME}_INSTALL_ARCHIVE_DIR}"
 )
 install(TARGETS "${${PROJECT_NAME}_EXEC_NAME}"
-	RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
+	RUNTIME DESTINATION "${${PROJECT_NAME}_INSTALL_RUNTIME_DIR}"
 )
 
-# install(DIRECTORY ${${PROJECT_NAME}_SRC_PATH} ${${PROJECT_NAME}_INCLUDE_PATH}
-# 	DESTINATION include
-# 	FILES_MATCHING PATTERN "*.h")
+install(DIRECTORY ${${PROJECT_NAME}_SRC_PATH} ${${PROJECT_NAME}_INCLUDE_PATH}
+	DESTINATION "${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}"
+	FILES_MATCHING PATTERN "*.h"
+)
 
 if(NOT TARGET uninstall)
 	configure_file(
 		"${${PROJECT_NAME}_CMAKE_HELPERS_PATH}/Uninstall.cmake.in"
 		"${CMAKE_CURRENT_BINARY_DIR}/Uninstall.cmake"
-		IMMEDIATE @ONLY)
-
+		@ONLY
+	)
+	# call twice to substitute nested variable
+	configure_file(
+		"${CMAKE_CURRENT_BINARY_DIR}/Uninstall.cmake"
+		"${CMAKE_CURRENT_BINARY_DIR}/Uninstall.cmake"
+		@ONLY
+	)
+	
 	add_custom_target(uninstall
-		COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/Uninstall.cmake)
+		COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/Uninstall.cmake
+	)
 endif()
 
 # -------------------- Packager --------------------------
