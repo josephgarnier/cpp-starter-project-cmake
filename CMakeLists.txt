@@ -144,7 +144,7 @@ message("\n== Check project structure ==")
 set(${PROJECT_NAME}_PROJECT_PATH                 "${CMAKE_SOURCE_DIR}")
 set(${PROJECT_NAME}_ASSETS_PATH                  "${${PROJECT_NAME}_PROJECT_PATH}/assets")
 set(${PROJECT_NAME}_BIN_PATH                     "${${PROJECT_NAME}_PROJECT_PATH}/bin")
-set(${PROJECT_NAME}_BUILD_PATH                   "${${PROJECT_NAME}_PROJECT_PATH}/build")
+set(${PROJECT_NAME}_BUILD_PATH                   "${CMAKE_BINARY_DIR}")
 set(${PROJECT_NAME}_CMAKE_PATH                   "${${PROJECT_NAME}_PROJECT_PATH}/cmake")
 set(${PROJECT_NAME}_CMAKE_HELPERS_PATH           "${${PROJECT_NAME}_CMAKE_PATH}/helpers")
 set(${PROJECT_NAME}_CMAKE_MODULES_PATH           "${${PROJECT_NAME}_CMAKE_PATH}/modules")
@@ -182,9 +182,15 @@ list(APPEND ${PROJECT_NAME}_PROJECT_PATHS
 
 foreach(folder IN ITEMS ${${PROJECT_NAME}_PROJECT_PATHS})
 	if((NOT EXISTS "${folder}") OR (NOT IS_DIRECTORY "${folder}"))
-		message(FATAL_ERROR "missing folder: \"${folder}\"")
+		message(FATAL_ERROR "missing directory: \"${folder}\"")
 	endif()
 endforeach()
+
+# build path should be in /build directory
+get_filename_component(build_directory "${${PROJECT_NAME}_BUILD_PATH}" DIRECTORY)
+if(NOT ("${build_directory}" STREQUAL "${${PROJECT_NAME}_PROJECT_PATH}/build"))
+	message(FATAL_ERROR "\"${${PROJECT_NAME}_BUILD_PATH}\" is not under build directory")
+endif()
 
 #------------------------------------------------------------------------------
 # Set output names and output directories
@@ -401,18 +407,18 @@ install(DIRECTORY ${${PROJECT_NAME}_SRC_PATH} ${${PROJECT_NAME}_INCLUDE_PATH}
 if(NOT TARGET uninstall)
 	configure_file(
 		"${${PROJECT_NAME}_CMAKE_HELPERS_PATH}/Uninstall.cmake.in"
-		"${CMAKE_CURRENT_BINARY_DIR}/Uninstall.cmake"
+		"${${PROJECT_NAME}_BUILD_PATH}/Uninstall.cmake"
 		@ONLY
 	)
 	# call twice to substitute nested variable
 	configure_file(
-		"${CMAKE_CURRENT_BINARY_DIR}/Uninstall.cmake"
-		"${CMAKE_CURRENT_BINARY_DIR}/Uninstall.cmake"
+		"${${PROJECT_NAME}_BUILD_PATH}/Uninstall.cmake"
+		"${${PROJECT_NAME}_BUILD_PATH}/Uninstall.cmake"
 		@ONLY
 	)
 	
 	add_custom_target(uninstall
-		COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/Uninstall.cmake
+		COMMAND ${CMAKE_COMMAND} -P "${${PROJECT_NAME}_BUILD_PATH}/Uninstall.cmake"
 	)
 endif()
 
@@ -453,9 +459,9 @@ include(CPack)
 message("\n===== End project ${PROJECT_NAME} building =====\n")
 
 
-# message("=== Start of debug messages ===")
-# include(DumpCMakeVariables)
-# dump_cmake_variables()
+message("=== Start of debug messages ===")
+include(DumpCMakeVariables)
+dump_cmake_variables()
 
 # cmake_print_properties(
 # 	TARGETS "${${PROJECT_NAME}_EXEC_NAME}"
