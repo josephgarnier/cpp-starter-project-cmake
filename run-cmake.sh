@@ -44,10 +44,6 @@ declare -r BUILD_PATH="${WORKSPACE_PATH}/build"
 declare -r CMAKE_PATH="${WORKSPACE_PATH}/cmake"
 declare -r SOLUTION_PATH="${BUILD_PATH}/${PROJECT_NAME}-${PROJECT_VERSION_MAJOR}-${PROJECT_VERSION_MINOR}-${PROJECT_VERSION_PATCH}-linux"
 
-if [[ ! -d "${SOLUTION_PATH}" ]]; then
-	mkdir "${SOLUTION_PATH}"
-fi
-
 cmake -S ${WORKSPACE_PATH} -B ${SOLUTION_PATH} -G "${GENERATOR}" -DCMAKE_TOOLCHAIN_FILE="${CMAKE_PATH}/toolchains/Linux_clang.cmake" "${CMAKE_FLAGS[@]}"
 
 if [[ "${?}" -eq 0 ]]; then
