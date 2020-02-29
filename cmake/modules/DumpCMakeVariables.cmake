@@ -5,30 +5,32 @@
 # LICENSE file in the root directory of this source tree.
 
 #[=======================================================================[.rst:
+
 DumpCMakeVariables
----------
+------------------
 
-Function for displaying cmake variables.
+Function for displaying cmake variables. It requires CMake 3.12 or newer.
 
- Usage
- ^^^^^
-	dump_cmake_variables(
-		EXCLUDE_REGEX [ext1 [ext2 [ext3 ...]]])
-
-
- Arguments
- ^^^^^^^^^
-	``\group:EXCLUDE_REGEX``
-	specifies a regular expression that the file names (without path) must be
-	excluded of displaying.
+Usage
+^^^^^
+  dump_cmake_variables(
+    EXCLUDE_REGEX [ext1 [ext2 [ext3 ...]]])
 
 
- Requires these CMake modules
- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-	CMakePrintHelpers
+Arguments
+^^^^^^^^^
+  ``\group:EXCLUDE_REGEX``
+  specifies a regular expression that the file names (without path) must be
+  excluded of displaying.
 
- Requires CMake 3.12 or newer
- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Requires these CMake modules
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  CMakePrintHelpers
+
+Requires CMake 3.12 or newer
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 #]=======================================================================]
 
 cmake_minimum_required (VERSION 3.12)
