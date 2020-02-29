@@ -196,6 +196,7 @@ endif()
 # Set output names and output directories
 #------------------------------------------------------------------------------
 message("\n== Set output names and output directories ==")
+include(StringManip)
 if(NOT CMAKE_SYSTEM_PROCESSOR)
 	set(CMAKE_SYSTEM_PROCESSOR ${CMAKE_HOST_SYSTEM_PROCESSOR})
 endif()
@@ -205,10 +206,12 @@ string(TOLOWER ${SYSTEM_NAME} SYSTEM_NAME)
 set(${PROJECT_NAME}_LIB_NAME         "lib${PROJECT_NAME}")
 set(${PROJECT_NAME}_EXEC_NAME        "${PROJECT_NAME}")
 set(${PROJECT_NAME}_EXPORT_NAME      "export${PROJECT_NAME}")
-set(${PROJECT_NAME}_CPACK_NAME     "${PROJECT_NAME}-${${PROJECT_NAME}_VERSION}-${CMAKE_SYSTEM_NAME}")
-string(TOLOWER ${${PROJECT_NAME}_CPACK_NAME} ${PROJECT_NAME}_CPACK_NAME)
 set(${PROJECT_NAME}_TEST_NAME        "${PROJECT_NAME}_test-${${PROJECT_NAME}_VERSION}-${CMAKE_SYSTEM_NAME}")
 string(TOLOWER ${${PROJECT_NAME}_TEST_NAME} ${PROJECT_NAME}_TEST_NAME)
+set(${PROJECT_NAME}_PACKAGE_NAME     "${PROJECT_NAME}")
+string_manip(TRANSFORM ${PROJECT_NAME}_PACKAGE_NAME START_CASE)
+set(${PROJECT_NAME}_CPACK_NAME       "${PROJECT_NAME}-${${PROJECT_NAME}_VERSION}-${CMAKE_SYSTEM_NAME}")
+string(TOLOWER ${${PROJECT_NAME}_CPACK_NAME} ${PROJECT_NAME}_CPACK_NAME)
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY   "${${PROJECT_NAME}_BIN_PATH}")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY   "${${PROJECT_NAME}_BIN_PATH}")
@@ -216,13 +219,13 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY   "${${PROJECT_NAME}_BIN_PATH}")
 set(CMAKE_STATIC_LIBRARY_PREFIX      "")
 set(CMAKE_SHARED_LIBRARY_PREFIX      "")
 
-# Configure variables specifying the target directories. All destinations are
-# relative to CMAKE_INSTALL_PREFIX
+# Set directories relative to CMAKE_INSTALL_PREFIX for install command
 include(GNUInstallDirs)
 set(${PROJECT_NAME}_INSTALL_RUNTIME_DIR "${CMAKE_INSTALL_BINDIR}")
 set(${PROJECT_NAME}_INSTALL_LIBRARY_DIR "${CMAKE_INSTALL_LIBDIR}")
 set(${PROJECT_NAME}_INSTALL_ARCHIVE_DIR "${CMAKE_INSTALL_LIBDIR}")
 set(${PROJECT_NAME}_INSTALL_INCLUDE_DIR "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}")
+set(${PROJECT_NAME}_INSTALL_CMAKE_DIR   "${CMAKE_INSTALL_LIBDIR}/cmake")
 
 #------------------------------------------------------------------------------
 # Build project
