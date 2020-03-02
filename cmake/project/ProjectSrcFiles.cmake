@@ -20,32 +20,32 @@
 # policy by yours.
 
 # By default, you don't need to manually initialize these variables : this is
-# done by the blob function `scan_sub_folders()`. But if after all you decide
-# to use you own instructions, then remove the calls to `scan_sub_folders()`
+# done by the blob function `directory()`. But if after all you decide
+# to use you own instructions, then remove the calls to `directory()`
 # function, set the previously described variable, and don't forget to also set
 # `${PROJECT_NAME}_PRECOMPILED_HEADER_PATH and
 # `${PROJECT_NAME}_PRECOMPILED_SOURCE_PATH.
 
-include(ScanSubFolders)
+include(Directory)
 
 set(${PROJECT_NAME}_PRECOMPILED_HEADER_PATH "${${PROJECT_NAME}_SRC_PATH}/${PROJECT_NAME}_pch.h")
 set(${PROJECT_NAME}_PRECOMPILED_SOURCE_PATH "${${PROJECT_NAME}_SRC_PATH}/${PROJECT_NAME}_pch.cpp")
 
 # All source files (.cpp and .h) of /src directory go here
 set(${PROJECT_NAME}_SRC_ALL_FILES "")
-scan_sub_folders(${PROJECT_NAME}_SRC_ALL_FILES ROOT_PATH "${${PROJECT_NAME}_SRC_PATH}" INCLUDE_REGEX ".*[.]cpp$|.*[.]h$")
+directory(SCAN ${PROJECT_NAME}_SRC_ALL_FILES ROOT_PATH "${${PROJECT_NAME}_SRC_PATH}" INCLUDE_REGEX ".*[.]cpp$|.*[.]h$")
 
 # Only header files of /src directory go here
 set(${PROJECT_NAME}_SRC_HEADER_FILES "")
-scan_sub_folders(${PROJECT_NAME}_SRC_HEADER_FILES ROOT_PATH "${${PROJECT_NAME}_SRC_PATH}" INCLUDE_REGEX ".*[.]h$")
+directory(SCAN ${PROJECT_NAME}_SRC_HEADER_FILES ROOT_PATH "${${PROJECT_NAME}_SRC_PATH}" INCLUDE_REGEX ".*[.]h$")
 
 # Only cpp files of /src directiry go here
 set(${PROJECT_NAME}_SRC_SOURCE_FILES "")
-scan_sub_folders(${PROJECT_NAME}_SRC_SOURCE_FILES ROOT_PATH "${${PROJECT_NAME}_SRC_PATH}" INCLUDE_REGEX ".*[.]cpp$")
+directory(SCAN ${PROJECT_NAME}_SRC_SOURCE_FILES ROOT_PATH "${${PROJECT_NAME}_SRC_PATH}" INCLUDE_REGEX ".*[.]cpp$")
 
 # Only header files of /include/project-name directiry go here
 set(${PROJECT_NAME}_INCLUDE_HEADER_FILES "")
-scan_sub_folders(${PROJECT_NAME}_INCLUDE_HEADER_FILES ROOT_PATH "${${PROJECT_NAME}_INCLUDE_PATH}/${PROJECT_NAME}" INCLUDE_REGEX ".*[.]h$")
+directory(SCAN ${PROJECT_NAME}_INCLUDE_HEADER_FILES ROOT_PATH "${${PROJECT_NAME}_INCLUDE_PATH}/${PROJECT_NAME}" INCLUDE_REGEX ".*[.]h$")
 
 # By default, all header files (those of /src and /include/project-name) are publics and go here
 set(${PROJECT_NAME}_PUBLIC_HEADER_FILES "${${PROJECT_NAME}_SRC_HEADER_FILES}" "${${PROJECT_NAME}_INCLUDE_HEADER_FILES}")
