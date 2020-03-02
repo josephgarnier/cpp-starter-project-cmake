@@ -20,7 +20,7 @@
 # -DPARAM_BUILD_TESTS=[ON|OFF (default)]: build tests
 # -DPARAM_BUILD_DOXYGEN_DOCS=[ON|OFF (default)]: build documentation
 
-cmake_minimum_required (VERSION 3.12)
+cmake_minimum_required (VERSION 3.16)
 
 #------------------------------------------------------------------------------
 # Set parameters
