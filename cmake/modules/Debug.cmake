@@ -14,17 +14,17 @@ Synopsis
 ^^^^^^^^
 .. parsed-literal::
 
-    debug(`DUMP_VARIABLES`_ [EXCLUDE_REGEX <regular_expression>])
+    debug(`DUMP_VARIABLES`_ [EXCLUDE_REGEX <regular-expression>])
 
 Usage
 ^^^^^
 .. _DUMP_VARIABLES:
 .. code-block:: cmake
 
-  debug(DUMP_VARIABLES [EXCLUDE_REGEX <regular_expression>])
+  debug(DUMP_VARIABLES [EXCLUDE_REGEX <regular-expression>])
 
 Disaply all CMake variables except those that match with the optional 
-``<regular_expression>`` parameter.
+``<regular-expression>`` parameter.
 
 #]=======================================================================]
 cmake_minimum_required (VERSION 3.16)
@@ -37,7 +37,6 @@ function(debug)
 	set(one_value_args EXCLUDE_REGEX)
 	set(multi_value_args "")
 	cmake_parse_arguments(DB "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
-
 	if(DB_UNPARSED_ARGUMENTS)
 		message(FATAL_ERROR "Unrecognized arguments: \"${DB_UNPARSED_ARGUMENTS}\"")
 	endif()
@@ -51,7 +50,7 @@ function(debug)
 			endif()
 		endforeach()
 	else()
-		message(FATAL_ERROR "DUMP_VARIABLES argument is missing")
+		message(FATAL_ERROR "Operation argument is missing")
 	endif()
 endfunction()
 
