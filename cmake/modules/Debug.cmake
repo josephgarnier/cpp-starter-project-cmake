@@ -6,52 +6,53 @@
 
 #[=======================================================================[.rst:
 
-DumpCMakeVariables
-------------------
+Debug
+-----
+Operations for helping with debug. It requires CMake 3.16 or newer.
 
-Function for displaying cmake variables. It requires CMake 3.12 or newer.
+Synopsis
+^^^^^^^^
+.. parsed-literal::
+
+    debug(`DUMP_VARIABLES`_ [EXCLUDE_REGEX <regular_expression>])
 
 Usage
 ^^^^^
-  dump_cmake_variables(
-    EXCLUDE_REGEX [ext1 [ext2 [ext3 ...]]])
+.. _DUMP_VARIABLES:
+.. code-block:: cmake
 
+  debug(DUMP_VARIABLES [EXCLUDE_REGEX <regular_expression>])
 
-Arguments
-^^^^^^^^^
-  ``\group:EXCLUDE_REGEX``
-  specifies a regular expression that the file names (without path) must be
-  excluded of displaying.
-
-
-Requires these CMake modules
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  CMakePrintHelpers
-
-Requires CMake 3.12 or newer
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Disaply all CMake variables except those that match with the optional 
+``<regular_expression>`` parameter.
 
 #]=======================================================================]
-
-cmake_minimum_required (VERSION 3.12)
+cmake_minimum_required (VERSION 3.16)
 include(CMakePrintHelpers)
 
-function(dump_cmake_variables)
-	set(options "")
+#------------------------------------------------------------------------------
+# Public function of this module.
+function(debug)
+	set(options DUMP_VARIABLES)
 	set(one_value_args EXCLUDE_REGEX)
 	set(multi_value_args "")
-	cmake_parse_arguments(DV "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
-	if(DV_UNPARSED_ARGUMENTS)
-		message(FATAL_ERROR "Unrecognized arguments: \"${DV_UNPARSED_ARGUMENTS}\"")
+	cmake_parse_arguments(DB "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
+
+	if(DB_UNPARSED_ARGUMENTS)
+		message(FATAL_ERROR "Unrecognized arguments: \"${DB_UNPARSED_ARGUMENTS}\"")
 	endif()
 
-	get_cmake_property(variable_names VARIABLES)
-	list(SORT variable_names)
-	foreach (variable_name IN ITEMS ${variable_names})
-		if((NOT DV_EXCLUDE_REGEX) OR (NOT "${variable_name}" MATCHES "${DV_EXCLUDE_REGEX}"))
-			message(STATUS "${variable_name}= ${${variable_name}}")
-		endif()
-	endforeach()
+	if(DEFINED DB_DUMP_VARIABLES)
+		get_cmake_property(variable_names VARIABLES)
+		list(SORT variable_names)
+		foreach (variable_name IN ITEMS ${variable_names})
+			if((NOT DB_EXCLUDE_REGEX) OR (NOT "${variable_name}" MATCHES "${DB_EXCLUDE_REGEX}"))
+				message(STATUS "${variable_name}= ${${variable_name}}")
+			endif()
+		endforeach()
+	else()
+		message(FATAL_ERROR "DUMP_VARIABLES argument is missing")
+	endif()
 endfunction()
 
 #------------------------------------------------------------------------------
