@@ -12,17 +12,18 @@
 # (/src directory). Then, set the variable `${PROJECT_NAME}_SRC_HEADER_FILES`
 # with header files present in ${PROJECT_NAME}_SRC_PATH` (/src directory).
 # Finally, set the variable `${PROJECT_NAME}_INCLUDE_HEADER_FILES` with public
-# header files present in `${PROJECT_NAME}_INCLUDE_PATH/${PROJECT_NAME}`.
-# The last variable `${PROJECT_NAME}_PUBLIC_HEADER_FILES` is a list of public
-# header files that will be copy in `/include` directory by `install()`
-# command. By default, this variable is set with all header files of your
-# project ; that's mean all header files are public. Feel free to replace this
-# policy by yours.
+# header files present in `${PROJECT_NAME}_INCLUDE_PATH/${PROJECT_NAME}`
+# (this directory is optional). The last variable
+# `${PROJECT_NAME}_PUBLIC_HEADER_FILES` is a list of public header files
+# that will be copy in `/include` directory by `install()` command.
+# By default, this variable is set with all header files of your project ;
+# that's mean all header files are public. Feel free to replace this policy
+# by yours.
 
 # By default, you don't need to manually initialize these variables : this is
 # done by the blob function `directory()`. But if after all you decide
 # to use you own instructions, then remove the calls to `directory()`
-# function, set the previously described variable, and don't forget to also set
+# function, set the previously described variables, and don't forget to also set
 # `${PROJECT_NAME}_PRECOMPILED_HEADER_PATH and
 # `${PROJECT_NAME}_PRECOMPILED_SOURCE_PATH.
 
