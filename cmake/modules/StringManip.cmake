@@ -8,7 +8,7 @@
 
 StringManip
 -----------
-Operations strings. It requires CMake 3.16 or newer.
+Operations on strings. It requires CMake 3.16 or newer.
 
 Synopsis
 ^^^^^^^^
@@ -92,7 +92,7 @@ macro(string_manip_transform_string_list)
 	set(one_value_args TRANSFORM OUTPUT_VARIABLE)
 	set(multi_value_args "")
 	cmake_parse_arguments(SMTSL "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
-	
+
 	if(SMTSL_UNPARSED_ARGUMENTS)
 		message(FATAL_ERROR "Unrecognized arguments: \"${SMTSL_UNPARSED_ARGUMENTS}\"")
 	endif()
