@@ -20,7 +20,7 @@
 # -DPARAM_BUILD_TESTS=[ON|OFF (default)]: build tests
 # -DPARAM_BUILD_DOXYGEN_DOCS=[ON|OFF (default)]: build documentation
 
-cmake_minimum_required (VERSION 3.16)
+cmake_minimum_required(VERSION 3.16)
 
 #------------------------------------------------------------------------------
 # Set parameters
@@ -257,10 +257,12 @@ endif()
 
 # Build library
 if(${BUILD_SHARED_LIBS})
+	message("")
 	message(STATUS "Build as a shared library")
 	add_library("${${PROJECT_NAME}_LIB_NAME}" SHARED ${${PROJECT_NAME}_SRC_ALL_FILES})
 else()
-	message(STATUS "Build as a static library")
+	message("")
+	message(STATUS "\nBuild as a static library")
 	add_library("${${PROJECT_NAME}_LIB_NAME}" STATIC ${${PROJECT_NAME}_SRC_ALL_FILES})
 endif()
 
@@ -289,6 +291,7 @@ target_include_directories("${${PROJECT_NAME}_LIB_NAME}"
 
 if(${PARAM_BUILD_EXEC})
 	# Build executable
+	message("")
 	message(STATUS "Build executable")
 	add_executable("${${PROJECT_NAME}_EXEC_NAME}" ${${PROJECT_NAME}_SRC_ALL_FILES})
 
@@ -346,6 +349,7 @@ endif()
 #------------------------------------------------------------------------------
 # Speeds up the build process with Cotire
 #------------------------------------------------------------------------------
+message("\n== Speed up the build process with Cotire ==")
 cotire("${${PROJECT_NAME}_LIB_NAME}")
 if(${PARAM_BUILD_EXEC})
 	cotire("${${PROJECT_NAME}_EXEC_NAME}")
@@ -462,9 +466,9 @@ include(CPack)
 message("\n===== End project ${PROJECT_NAME} building =====\n")
 
 
-message("=== Start of debug messages ===")
-include(DumpCMakeVariables)
-dump_cmake_variables()
+# message("=== Start of debug messages ===")
+# include(Debug)
+# debug(DUMP_VARIABLES)
 
 # cmake_print_properties(
 # 	TARGETS "${${PROJECT_NAME}_EXEC_NAME}"
