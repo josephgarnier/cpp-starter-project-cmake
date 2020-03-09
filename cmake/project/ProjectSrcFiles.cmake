@@ -19,7 +19,7 @@
 # By default, this variable is set with all header files of your project ;
 # that's mean all header files are public. Feel free to replace this policy
 # by yours.
-
+#
 # By default, you don't need to manually initialize these variables : this is
 # done by the blob function `directory()`. But if after all you decide
 # to use you own instructions, then remove the calls to `directory()`
