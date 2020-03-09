@@ -1,0 +1,23 @@
+# Copyright 2019-present, Joseph Garnier
+# All rights reserved.
+#
+# This source code is licensed under the license found in the
+# LICENSE file in the root directory of this source tree.
+# =============================================================================
+# What Is This?
+# -------------
+# In this file, you provide dependency information of your project to CMake
+# based buildsystems for `find_package()` function. To know how fill this file,
+# please see cmake documentation of `find_package()`
+# (https://cmake.org/cmake/help/latest/command/find_package.html),
+# cmake-packages (https://cmake.org/cmake/help/latest/manual/cmake-packages.7.html)
+# and cmake-buildsystem (https://cmake.org/cmake/help/latest/manual/cmake-developer.7.html)
+
+include(CMakeFindDependencyMacro)
+
+@PACKAGE_INIT@
+
+set_and_check(@PROJECT_NAME@_LIBRARY_DIR "@PACKAGE_LOCAL_INSTALL_LIBRARY_DIR@")
+set_and_check(@PROJECT_NAME@_INCLUDE_DIR "@PACKAGE_LOCAL_INSTALL_INCLUDE_DIR@")
+
+check_required_components(@PROJECT_NAME@)

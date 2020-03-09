@@ -201,15 +201,13 @@ if(NOT CMAKE_SYSTEM_PROCESSOR)
 	set(CMAKE_SYSTEM_PROCESSOR ${CMAKE_HOST_SYSTEM_PROCESSOR})
 endif()
 
+# Set general directories and names
 set(SYSTEM_NAME "${CMAKE_SYSTEM_NAME}-${CMAKE_CXX_COMPILER_ID}-${CMAKE_SYSTEM_PROCESSOR}")
 string(TOLOWER ${SYSTEM_NAME} SYSTEM_NAME)
 set(${PROJECT_NAME}_LIB_NAME         "lib${PROJECT_NAME}")
 set(${PROJECT_NAME}_EXEC_NAME        "${PROJECT_NAME}")
-set(${PROJECT_NAME}_EXPORT_NAME      "export${PROJECT_NAME}")
 set(${PROJECT_NAME}_TEST_NAME        "${PROJECT_NAME}_test-${${PROJECT_NAME}_VERSION}-${CMAKE_SYSTEM_NAME}")
 string(TOLOWER ${${PROJECT_NAME}_TEST_NAME} ${PROJECT_NAME}_TEST_NAME)
-set(${PROJECT_NAME}_PACKAGE_NAME     "${PROJECT_NAME}")
-string_manip(TRANSFORM ${PROJECT_NAME}_PACKAGE_NAME START_CASE)
 set(${PROJECT_NAME}_CPACK_NAME       "${PROJECT_NAME}-${${PROJECT_NAME}_VERSION}-${CMAKE_SYSTEM_NAME}")
 string(TOLOWER ${${PROJECT_NAME}_CPACK_NAME} ${PROJECT_NAME}_CPACK_NAME)
 
@@ -219,13 +217,25 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY   "${${PROJECT_NAME}_BIN_PATH}")
 set(CMAKE_STATIC_LIBRARY_PREFIX      "")
 set(CMAKE_SHARED_LIBRARY_PREFIX      "")
 
-# Set directories relative to CMAKE_INSTALL_PREFIX for install command
+# Set directories and names for packaging and exporting commands
+set(${PROJECT_NAME}_PACKAGE_NAME            "${PROJECT_NAME}")
+string_manip(TRANSFORM ${PROJECT_NAME}_PACKAGE_NAME START_CASE)
+set(${PROJECT_NAME}_PACKAGE_CONFIG_FILE     "${${PROJECT_NAME}_BUILD_PATH}/${${PROJECT_NAME}_PACKAGE_NAME}Config.cmake")
+set(${PROJECT_NAME}_PACKAGE_VERSION_FILE    "${${PROJECT_NAME}_BUILD_PATH}/${${PROJECT_NAME}_PACKAGE_NAME}ConfigVersion.cmake")
+
+set(${PROJECT_NAME}_EXPORT_NAME             "${PROJECT_NAME}-targets")
+set(${PROJECT_NAME}_EXPORT_TARGET_NAME      "${${PROJECT_NAME}_PACKAGE_NAME}Target.cmake")
+set(${PROJECT_NAME}_EXPORT_TARGET_FILE      "${${PROJECT_NAME}_BUILD_PATH}/${${PROJECT_NAME}_EXPORT_TARGET_NAME}")
+
+# Set directories relative to CMAKE_INSTALL_PREFIX and names for install/uninstall commands
 include(GNUInstallDirs)
-set(${PROJECT_NAME}_INSTALL_RUNTIME_DIR "${CMAKE_INSTALL_BINDIR}")
-set(${PROJECT_NAME}_INSTALL_LIBRARY_DIR "${CMAKE_INSTALL_LIBDIR}")
-set(${PROJECT_NAME}_INSTALL_ARCHIVE_DIR "${CMAKE_INSTALL_LIBDIR}")
-set(${PROJECT_NAME}_INSTALL_INCLUDE_DIR "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}")
-set(${PROJECT_NAME}_INSTALL_CMAKE_DIR   "${CMAKE_INSTALL_LIBDIR}/cmake")
+set(${PROJECT_NAME}_INSTALL_RUNTIME_DIR     "${CMAKE_INSTALL_BINDIR}")
+set(${PROJECT_NAME}_INSTALL_LIBRARY_DIR     "${CMAKE_INSTALL_LIBDIR}/${PROJECT_NAME}")
+set(${PROJECT_NAME}_INSTALL_ARCHIVE_DIR     "${CMAKE_INSTALL_LIBDIR}/${PROJECT_NAME}")
+set(${PROJECT_NAME}_INSTALL_INCLUDE_DIR     "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}")
+set(${PROJECT_NAME}_INSTALL_CMAKE_DIR       "${CMAKE_INSTALL_LIBDIR}/${PROJECT_NAME}/cmake")
+
+set(${PROJECT_NAME}_UNINSTALL_CONFIG_FILE   "${${PROJECT_NAME}_BUILD_PATH}/Uninstall.cmake")
 
 #------------------------------------------------------------------------------
 # Build project
@@ -394,38 +404,104 @@ if(${PARAM_BUILD_TESTS})
 endif()
 
 #------------------------------------------------------------------------------
-# Make install/uninstall rules
+# Generate files for packaging and exporting
+#------------------------------------------------------------------------------
+message("\n== Generates files for packaging and exporting ==")
+include(CMakePackageConfigHelpers)
+
+# Generate a package config-file
+set(LOCAL_INSTALL_LIBRARY_DIR "${${PROJECT_NAME}_INSTALL_LIBRARY_DIR}")
+set(LOCAL_INSTALL_INCLUDE_DIR "${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}")
+configure_package_config_file(
+	"${${PROJECT_NAME}_CMAKE_PROJECT_PATH}/PackageConfig.cmake.in"
+	"${${PROJECT_NAME}_PACKAGE_CONFIG_FILE}"
+	INSTALL_DESTINATION "${PROJECT_NAME}_INSTALL_CMAKE_DIR"
+	PATH_VARS LOCAL_INSTALL_LIBRARY_DIR LOCAL_INSTALL_INCLUDE_DIR
+)
+unset(LOCAL_INSTALL_LIBRARY_DIR)
+unset(LOCAL_INSTALL_INCLUDE_DIR)
+if(EXISTS "${${PROJECT_NAME}_PACKAGE_CONFIG_FILE}")
+file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_PATH}" "${${PROJECT_NAME}_PACKAGE_CONFIG_FILE}")
+	message(STATUS "Package config-file generated into \"${relative_path}\"")
+else()
+	message(FATAL_ERROR "Package config-file can't be generate")
+endif()
+
+# Generate a package version-file
+write_basic_package_version_file(
+	"${${PROJECT_NAME}_PACKAGE_VERSION_FILE}"
+	VERSION "${${PROJECT_NAME}_VERSION}"
+	COMPATIBILITY AnyNewerVersion
+)
+if(EXISTS "${${PROJECT_NAME}_PACKAGE_VERSION_FILE}")
+	file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_PATH}" "${${PROJECT_NAME}_PACKAGE_VERSION_FILE}")
+	message(STATUS "Package version-file generated into \"${relative_path}\"")
+else()
+	message(FATAL_ERROR "Package version-file can't be generate")
+endif()
+
+# Generate the target file for exporting the library from the build tree (warning: it should never be installed).
+export(TARGETS "${${PROJECT_NAME}_LIB_NAME}"
+	FILE "${${PROJECT_NAME}_EXPORT_TARGET_FILE}"
+	NAMESPACE ""
+)
+export(PACKAGE "${${PROJECT_NAME}_PACKAGE_NAME}")
+file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_PATH}" "${${PROJECT_NAME}_EXPORT_TARGET_FILE}")
+message(STATUS "Export target-file for the project library generated into \"${relative_path}\"")
+
+#------------------------------------------------------------------------------
+# Make install/uninstall rules and exporting
 #------------------------------------------------------------------------------
 message("\n== Generates make install/uninstall rules ==")
+
+# Install the library and defined an export group
 install(TARGETS "${${PROJECT_NAME}_LIB_NAME}"
-	EXPORT "${PROJECT_NAME}_EXPORT_NAME"
+	EXPORT "${${PROJECT_NAME}_EXPORT_NAME}"
 	LIBRARY DESTINATION "${${PROJECT_NAME}_INSTALL_LIBRARY_DIR}"
 	ARCHIVE DESTINATION "${${PROJECT_NAME}_INSTALL_ARCHIVE_DIR}"
 )
-install(TARGETS "${${PROJECT_NAME}_EXEC_NAME}"
-	RUNTIME DESTINATION "${${PROJECT_NAME}_INSTALL_RUNTIME_DIR}"
+
+if(${PARAM_BUILD_EXEC})
+	# Install the executable
+	install(TARGETS "${${PROJECT_NAME}_EXEC_NAME}"
+		RUNTIME DESTINATION "${${PROJECT_NAME}_INSTALL_RUNTIME_DIR}"
+	)
+endif()
+
+# Install public header files in include directory
+install(FILES ${${PROJECT_NAME}_PUBLIC_HEADER_FILES}
+	DESTINATION "${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}"
 )
 
-install(DIRECTORY ${${PROJECT_NAME}_SRC_PATH} ${${PROJECT_NAME}_INCLUDE_PATH}
-	DESTINATION "${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}"
-	FILES_MATCHING PATTERN "*.h"
+# Install the config-file and the config-version-file in cmake directory
+install(FILES
+	"${${PROJECT_NAME}_PACKAGE_CONFIG_FILE}"
+	"${${PROJECT_NAME}_PACKAGE_VERSION_FILE}"
+	DESTINATION "${${PROJECT_NAME}_INSTALL_CMAKE_DIR}"
+)
+
+# Generate a target file for exporting from the install tree and install it
+install(EXPORT "${${PROJECT_NAME}_EXPORT_NAME}"
+	NAMESPACE ""
+	DESTINATION "${${PROJECT_NAME}_INSTALL_CMAKE_DIR}"
+	FILE "${${PROJECT_NAME}_EXPORT_TARGET_NAME}"
 )
 
 if(NOT TARGET uninstall)
+	set(LOCAL_BUILD_PATH "${${PROJECT_NAME}_BUILD_PATH}")
+	set(LOCAL_INSTALL_INCLUDE_DIR "${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}")
+	set(LOCAL_INSTALL_LIBRARY_DIR "${${PROJECT_NAME}_INSTALL_LIBRARY_DIR}")
 	configure_file(
 		"${${PROJECT_NAME}_CMAKE_HELPERS_PATH}/Uninstall.cmake.in"
-		"${${PROJECT_NAME}_BUILD_PATH}/Uninstall.cmake"
+		"${${PROJECT_NAME}_UNINSTALL_CONFIG_FILE}"
 		@ONLY
 	)
-	# call twice to substitute nested variable
-	configure_file(
-		"${${PROJECT_NAME}_BUILD_PATH}/Uninstall.cmake"
-		"${${PROJECT_NAME}_BUILD_PATH}/Uninstall.cmake"
-		@ONLY
-	)
-	
+	unset(LOCAL_BUILD_PATH)
+	unset(LOCAL_INSTALL_INCLUDE_DIR)
+	unset(LOCAL_INSTALL_LIBRARY_DIR)
+
 	add_custom_target(uninstall
-		COMMAND ${CMAKE_COMMAND} -P "${${PROJECT_NAME}_BUILD_PATH}/Uninstall.cmake"
+		COMMAND ${CMAKE_COMMAND} -P "${${PROJECT_NAME}_UNINSTALL_CONFIG_FILE}"
 	)
 endif()
 

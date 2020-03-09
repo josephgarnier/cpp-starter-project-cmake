@@ -6,11 +6,11 @@
 
 # Inspired from: https://gitlab.kitware.com/cmake/community/wikis/FAQ#can-i-do-make-uninstall-with-cmake
 
-if(NOT EXISTS "@@PROJECT_NAME@_BUILD_PATH@/install_manifest.txt")
-	message(FATAL_ERROR "Cannot find install manifest: @@PROJECT_NAME@_BUILD_PATH@/install_manifest.txt")
+if(NOT EXISTS "@LOCAL_BUILD_PATH@/install_manifest.txt")
+	message(FATAL_ERROR "Cannot find install manifest: @LOCAL_BUILD_PATH@/install_manifest.txt")
 endif()
 
-file(READ "@@PROJECT_NAME@_BUILD_PATH@/install_manifest.txt" files)
+file(READ "@LOCAL_BUILD_PATH@/install_manifest.txt" files)
 string(REGEX REPLACE "\n" ";" files "${files}")
 foreach(file IN ITEMS ${files})
 	message(STATUS "Uninstalling \"${file}\"")
@@ -27,12 +27,13 @@ foreach(file IN ITEMS ${files})
 		message(STATUS "File \"${file}\" does not exist.")
 	endif()
 	
-	# Remove sub folders in /include
+	# Remove sub folders in /include and in /lib
 	get_filename_component(path "${file}" DIRECTORY)
 	file(GLOB contents RELATIVE "${path}" "${path}/*" )
-	while(("${path}" MATCHES ".*@@PROJECT_NAME@_INSTALL_INCLUDE_DIR@.*")
+	while((("${path}" MATCHES ".*@LOCAL_INSTALL_INCLUDE_DIR@.*")
+		OR ("${path}" MATCHES ".*@LOCAL_INSTALL_LIBRARY_DIR@.*"))
 		AND (NOT contents))
-			message(STATUS "Removing empty directory: ${path}")
+			message(STATUS "Removing empty directory \"${path}\"")
 			execute_process(COMMAND
 				"@CMAKE_COMMAND@" -E remove_directory "${path}"
 				OUTPUT_VARIABLE rm_out
