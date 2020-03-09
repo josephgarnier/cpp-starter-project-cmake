@@ -58,12 +58,12 @@
 			}
 		},
 		{
-			"label": "CPack",
+			"label": "CPack Binary",
 			"type": "shell",
 			"options": {
 				"cwd": "${workspaceFolder}/build/project-name-0-0-0-linux"
 			},
-			"command": "cpack --config CPackConfig.cmake && sleep 2s && rm -r ../../bin/_CPack_Packages",
+			"command": "cpack --config CPackConfig.cmake && sleep 2s && rm -rf ../../bin/_CPack_Packages",
 			"group": {
 				"kind": "build",
 				"isDefault": true
@@ -75,12 +75,12 @@
 			}
 		},
 		{
-			"label": "CPack All Files",
+			"label": "CPack Sources",
 			"type": "shell",
 			"options": {
 				"cwd": "${workspaceFolder}/build/project-name-0-0-0-linux"
 			},
-			"command": "cpack --config CPackSourceConfig.cmake && sleep 2s && rm -r ../../bin/_CPack_Packages",
+			"command": "cpack --config CPackSourceConfig.cmake && sleep 2s && rm -rf ../../bin/_CPack_Packages",
 			"group": {
 				"kind": "build",
 				"isDefault": true
