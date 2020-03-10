@@ -395,13 +395,23 @@ if(${PARAM_BUILD_DOXYGEN_DOCS})
 		message(FATAL_ERROR "Doxygen config file can't be generate")
 	endif()
 
-	# Note: the option ALL allows to build the docs together with the application
+	# Add `make docs` command
 	add_custom_target(docs ALL
 		COMMAND ${DOXYGEN_EXECUTABLE} "${${PROJECT_NAME}_DOXYGEN_CONFIG_FILE}"
 		SOURCES "${${PROJECT_NAME}_DOXYGEN_CONFIG_FILE}"
 		WORKING_DIRECTORY "${${PROJECT_NAME}_DOC_PATH}"
 		COMMENT "Generating API documentation with Doxygen"
-		VERBATIM)
+		VERBATIM
+	)
+	
+	# Add the generated documentation files to `make clean` command
+	set_property(DIRECTORY "${${PROJECT_NAME}_PROJECT_PATH}"
+		APPEND
+		PROPERTY ADDITIONAL_CLEAN_FILES
+		"${${PROJECT_NAME}_DOC_PATH}/html"
+		"${${PROJECT_NAME}_DOC_PATH}/latex"
+		"${${PROJECT_NAME}_DOC_PATH}/doxyfile"
+	)
 endif()
 
 #------------------------------------------------------------------------------
