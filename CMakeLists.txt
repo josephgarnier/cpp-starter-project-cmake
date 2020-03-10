@@ -122,6 +122,7 @@ endif()
 # Project settings
 #------------------------------------------------------------------------------
 message("\n== Project settings ==")
+set(PROJECT_NAME                    "${PARAM_PROJECT_NAME}")
 set(${PROJECT_NAME}_SUMMARY         "${PARAM_PROJECT_SUMMARY}")
 set(${PROJECT_NAME}_VENDOR_NAME     "${PARAM_PROJECT_VENDOR_NAME}")
 set(${PROJECT_NAME}_VENDOR_CONTACT  "${PARAM_PROJECT_VENDOR_CONTACT}")
