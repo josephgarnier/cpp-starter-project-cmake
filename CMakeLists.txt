@@ -513,6 +513,7 @@ if(NOT TARGET uninstall)
 	unset(LOCAL_INSTALL_INCLUDE_DIR)
 	unset(LOCAL_INSTALL_LIBRARY_DIR)
 
+	# Add `make uninstall` command
 	add_custom_target(uninstall
 		COMMAND ${CMAKE_COMMAND} -P "${${PROJECT_NAME}_UNINSTALL_CONFIG_FILE}"
 	)
