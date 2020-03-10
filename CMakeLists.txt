@@ -451,7 +451,7 @@ export(TARGETS "${${PROJECT_NAME}_LIB_NAME}"
 )
 export(PACKAGE "${${PROJECT_NAME}_PACKAGE_NAME}")
 file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_PATH}" "${${PROJECT_NAME}_EXPORT_TARGET_FILE}")
-message(STATUS "Export target-file for the project library generated into \"${relative_path}\"")
+message(STATUS "Export target file for the project library generated into \"${relative_path}\"")
 
 #------------------------------------------------------------------------------
 # Make install/uninstall rules and exporting
@@ -554,9 +554,9 @@ endif()
 message("\n===== End project ${PROJECT_NAME} building =====\n")
 
 
-message("=== Start of debug messages ===")
-include(Debug)
-debug(DUMP_VARIABLES EXCLUDE_REGEX "CMAKE")
+# message("=== Start of debug messages ===")
+# include(Debug)
+# debug(DUMP_VARIABLES EXCLUDE_REGEX "CMAKE")
 # cmake_print_properties(
 # 	DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}"
 # 	PROPERTIES
