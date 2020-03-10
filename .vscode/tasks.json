@@ -63,7 +63,7 @@
 			"options": {
 				"cwd": "${workspaceFolder}/build/project-name-0-0-0-linux"
 			},
-			"command": "cpack --config CPackConfig.cmake && sleep 2s && rm -rf ../../bin/_CPack_Packages",
+			"command": "cpack --config CPackConfig.cmake && sleep 3s && rm -rf ../../bin/_CPack_Packages",
 			"group": {
 				"kind": "build",
 				"isDefault": true
@@ -80,7 +80,7 @@
 			"options": {
 				"cwd": "${workspaceFolder}/build/project-name-0-0-0-linux"
 			},
-			"command": "cpack --config CPackSourceConfig.cmake && sleep 2s && rm -rf ../../bin/_CPack_Packages",
+			"command": "cpack --config CPackSourceConfig.cmake && sleep 3s && rm -rf ../../bin/_CPack_Packages",
 			"group": {
 				"kind": "build",
 				"isDefault": true
