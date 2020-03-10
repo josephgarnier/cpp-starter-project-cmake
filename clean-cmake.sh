@@ -17,14 +17,12 @@ declare -r DOC_PATH="${WORKSPACE_PATH}/doc"
 declare -r SOLUTION_PATH="${BUILD_PATH}/${PROJECT_NAME}-${PROJECT_VERSION_MAJOR}-${PROJECT_VERSION_MINOR}-${PROJECT_VERSION_PATCH}-linux"
 
 if [[ -d "${SOLUTION_PATH}" ]]; then
-	cd "${SOLUTION_PATH}"
-	cmake --build . --target clean
-	cd "${WORKSPACE_PATH}"
+	cmake --build "${SOLUTION_PATH}" --target clean
 
-	# remove solution in build directory
+	# Remove solution in build directory
 	rm -rf "${SOLUTION_PATH}"
 
-	# remove doc
+	# Remove doc
 	rm -rf "${DOC_PATH}/html"
 	rm -rf "${DOC_PATH}/latex"
 	rm -rf "${DOC_PATH}/doxyfile"
