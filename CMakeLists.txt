@@ -216,6 +216,10 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY   "${${PROJECT_NAME}_BIN_PATH}")
 set(CMAKE_STATIC_LIBRARY_PREFIX      "")
 set(CMAKE_SHARED_LIBRARY_PREFIX      "")
 
+# Set directories and names for documentation
+set(${PROJECT_NAME}_DOXYGEN_TEMPLATE_CONFIG_FILE "${${PROJECT_NAME}_DOC_PATH}/doxyfile.in")
+set(${PROJECT_NAME}_DOXYGEN_CONFIG_FILE          "${${PROJECT_NAME}_DOC_PATH}/doxyfile")
+
 # Set directories and names for packaging and exporting commands
 set(${PROJECT_NAME}_PACKAGE_NAME                 "${PROJECT_NAME}")
 string_manip(TRANSFORM ${PROJECT_NAME}_PACKAGE_NAME START_CASE)
@@ -379,18 +383,22 @@ if(${PARAM_BUILD_DOXYGEN_DOCS})
 		message(FATAL_ERROR "Doxygen is needed to build the documentation. Please make sure it is installed.")
 	endif()
 
-	# Set input and output files
-	set(DOXYGEN_IN "${${PROJECT_NAME}_DOC_PATH}/doxyfile.in")
-	set(DOXYGEN_OUT "${${PROJECT_NAME}_DOC_PATH}/doxyfile")
+	configure_file(
+		"${${PROJECT_NAME}_DOXYGEN_TEMPLATE_CONFIG_FILE}"
+		"${${PROJECT_NAME}_DOXYGEN_CONFIG_FILE}"
+		@ONLY
+	)
+	if(EXISTS "${${PROJECT_NAME}_DOXYGEN_CONFIG_FILE}")
+		file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_PATH}" "${${PROJECT_NAME}_DOXYGEN_CONFIG_FILE}")
+		message(STATUS "Doxygen config file generated into \"${relative_path}\"")
+	else()
+		message(FATAL_ERROR "Doxygen config file can't be generate")
+	endif()
 
-	# Request to configure the file
-	configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} @ONLY)
-	message(STATUS "Doxygen build started")
-
-	# Note the option ALL which allows to build the docs together with the application
-	add_custom_target(doxygen_docs ALL
-		COMMAND ${DOXYGEN_EXECUTABLE} "${DOXYGEN_OUT}"
-		SOURCES "${DOXYGEN_OUT}"
+	# Note: the option ALL allows to build the docs together with the application
+	add_custom_target(docs ALL
+		COMMAND ${DOXYGEN_EXECUTABLE} "${${PROJECT_NAME}_DOXYGEN_CONFIG_FILE}"
+		SOURCES "${${PROJECT_NAME}_DOXYGEN_CONFIG_FILE}"
 		WORKING_DIRECTORY "${${PROJECT_NAME}_DOC_PATH}"
 		COMMENT "Generating API documentation with Doxygen"
 		VERBATIM)

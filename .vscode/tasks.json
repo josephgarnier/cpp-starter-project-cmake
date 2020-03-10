@@ -58,6 +58,19 @@
 			}
 		},
 		{
+			"label": "Documentation",
+			"type": "shell",
+			"options": {
+				"cwd": "${workspaceFolder}/build/project-name-0-0-0-linux"
+			},
+			"command": "make docs",
+			"presentation": {
+				"reveal": "always",
+				"focus": true,
+				"clear": true
+			}
+		},
+		{
 			"label": "CPack Binary",
 			"type": "shell",
 			"options": {
