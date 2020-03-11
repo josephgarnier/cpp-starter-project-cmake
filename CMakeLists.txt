@@ -34,6 +34,7 @@ set(PROJECT_VERSION_MINOR_DESC  "Project minor version")
 set(PROJECT_VERSION_PATCH_DESC  "Project patch version")
 set(GENERATOR_DESC              "Specifies CMake Generator, see https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html")
 set(COMPILE_VERSION_DESC        "Specifies compiler version \"11\" or \"14\" or \"17\" or \"20\"")
+set(COMPILE_DEFINITIONS_DESC    "Specifies a semicolon-separated list of preprocessor definitions (e.g -DFOO;-DBAR or FOO;BAR)")
 set(BUILD_TYPE_DESC             "Specifies type of build \"debug\" or \"release\"")
 set(ASSERT_ENABLE_DESC          "Specifies whether to use assert")
 set(BUILD_SHARED_LIBS_DESC      "Specifies whether build shared libraries instead of static")
@@ -50,6 +51,7 @@ set(PARAM_PROJECT_VERSION_MINOR "0"                 CACHE   STRING  "${PROJECT_V
 set(PARAM_PROJECT_VERSION_PATCH "0"                 CACHE   STRING  "${PROJECT_VERSION_PATCH_DESC}")
 set(PARAM_GENERATOR             "Unix Makefiles"    CACHE   STRING  "${GENERATOR_DESC}")
 set(PARAM_COMPILE_VERSION       "17"                CACHE   STRING  "${COMPILE_VERSION_DESC}")
+set(PARAM_COMPILE_DEFINITIONS   ""                  CACHE   STRING  "${COMPILE_DEFINITIONS_DESC}")
 set(PARAM_BUILD_TYPE            "debug"             CACHE   STRING  "${BUILD_TYPE_DESC}")
 set(PARAM_ASSERT_ENABLE         OFF                 CACHE   BOOL    "${ASSERT_ENABLE_DESC}")
 set(PARAM_BUILD_SHARED_LIBS     OFF                 CACHE   BOOL    "${BUILD_SHARED_LIBS_DESC}")
@@ -71,6 +73,7 @@ message(" - Project minor version: \"${PARAM_PROJECT_VERSION_MINOR}\"")
 message(" - Project patch version: \"${PARAM_PROJECT_VERSION_PATCH}\"")
 message(" - Generator: \"${PARAM_GENERATOR}\"")
 message(" - Compile version: \"${PARAM_COMPILE_VERSION}\"")
+message(" - Compile definitions: \"${PARAM_COMPILE_DEFINITIONS}\"")
 message(" - Build type: \"${PARAM_BUILD_TYPE}\"")
 message(" - Assert is enable: \"${PARAM_ASSERT_ENABLE}\"")
 message(" - Build shared libs: \"${PARAM_BUILD_SHARED_LIBS}\"")
@@ -202,19 +205,21 @@ if(NOT CMAKE_SYSTEM_PROCESSOR)
 	set(CMAKE_SYSTEM_PROCESSOR ${CMAKE_HOST_SYSTEM_PROCESSOR})
 endif()
 
-# Set general directories and names
+# Set build directories and names
 set(SYSTEM_NAME "${CMAKE_SYSTEM_NAME}-${CMAKE_CXX_COMPILER_ID}-${CMAKE_SYSTEM_PROCESSOR}")
 string(TOLOWER ${SYSTEM_NAME} SYSTEM_NAME)
-set(${PROJECT_NAME}_LIB_NAME         "lib${PROJECT_NAME}")
-set(${PROJECT_NAME}_EXEC_NAME        "${PROJECT_NAME}")
-set(${PROJECT_NAME}_TEST_NAME        "${PROJECT_NAME}_test-${${PROJECT_NAME}_VERSION}-${CMAKE_SYSTEM_NAME}")
+set(${PROJECT_NAME}_LIB_NAME               "lib${PROJECT_NAME}")
+set(${PROJECT_NAME}_EXEC_NAME              "${PROJECT_NAME}")
+set(${PROJECT_NAME}_TEST_NAME              "${PROJECT_NAME}_test-${${PROJECT_NAME}_VERSION}-${CMAKE_SYSTEM_NAME}")
 string(TOLOWER "${${PROJECT_NAME}_TEST_NAME}" ${PROJECT_NAME}_TEST_NAME)
 
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY   "${${PROJECT_NAME}_BIN_PATH}")
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY   "${${PROJECT_NAME}_BIN_PATH}")
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY   "${${PROJECT_NAME}_BIN_PATH}")
-set(CMAKE_STATIC_LIBRARY_PREFIX      "")
-set(CMAKE_SHARED_LIBRARY_PREFIX      "")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY         "${${PROJECT_NAME}_BIN_PATH}")
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY         "${${PROJECT_NAME}_BIN_PATH}")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY         "${${PROJECT_NAME}_BIN_PATH}")
+set(CMAKE_STATIC_LIBRARY_PREFIX            "")
+set(CMAKE_SHARED_LIBRARY_PREFIX            "")
+
+set(${PROJECT_NAME}_COMPILE_DEFINITIONS    "${PARAM_COMPILE_DEFINITIONS}")
 
 # Set directories and names for documentation
 set(${PROJECT_NAME}_DOXYGEN_TEMPLATE_CONFIG_FILE    "${${PROJECT_NAME}_DOC_PATH}/doxyfile.in")
@@ -310,6 +315,14 @@ target_include_directories("${${PROJECT_NAME}_LIB_NAME}"
 		"${${PROJECT_NAME}_SRC_PATH}"
 )
 
+# Add compile definitions to library
+message(STATUS "Add compile definitions to library")
+target_compile_definitions("${${PROJECT_NAME}_LIB_NAME}"
+	PUBLIC
+		"$<BUILD_INTERFACE:${${PROJECT_NAME}_COMPILE_DEFINITIONS}>"
+		"$<INSTALL_INTERFACE:${${PROJECT_NAME}_COMPILE_DEFINITIONS}>"
+)
+
 if(${PARAM_BUILD_EXEC})
 	# Build executable
 	message("")
@@ -337,6 +350,14 @@ if(${PARAM_BUILD_EXEC})
 		PRIVATE
 			# Used only when building the library
 			"${${PROJECT_NAME}_SRC_PATH}"
+	)
+	
+	# Add compile definitions to library
+	message(STATUS "Add compile definitions to executable")
+	target_compile_definitions("${${PROJECT_NAME}_EXEC_NAME}"
+		PUBLIC
+			"$<BUILD_INTERFACE:${${PROJECT_NAME}_COMPILE_DEFINITIONS}>"
+			"$<INSTALL_INTERFACE:${${PROJECT_NAME}_COMPILE_DEFINITIONS}>"
 	)
 endif()
 

@@ -15,6 +15,7 @@ export PROJECT_VERSION_MINOR="0"            # -DPROJECT_VERSION_MINOR: project m
 export PROJECT_VERSION_PATCH="0"            # -DPROJECT_VERSION_PATCH: project patch version
 export GENERATOR="Unix Makefiles"           # -DGENERATOR: see https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html
 export COMPILE_VERSION="17"                 # -DCOMPILE_VERSION=[11|14|17 (default)|20]: see https://cmake.org/cmake/help/v3.1/variable/CMAKE_CXX_STANDARD.html
+export COMPILE_DEFINITIONS=""               # -DCOMPILE_DEFINITIONS: semicolon-separated list of preprocessor definitions (e.g -DFOO;-DBAR or FOO;BAR)
 export BUILD_TYPE="debug"                   # -DBUILD_TYPE=[(default) debug|release]: set type of build
 export ASSERT_ENABLE="off"                  # -DASSERT_ENABLE=[ON|OFF (default)]: enable or disable assert
 export BUILD_SHARED_LIBS="on"               # -DBUILD_SHARED_LIBS=[(default) ON|OFF]: build shared libraries instead of static
@@ -32,6 +33,7 @@ CMAKE_FLAGS+=("-DPARAM_PROJECT_VERSION_MINOR=${PROJECT_VERSION_MINOR}")
 CMAKE_FLAGS+=("-DPARAM_PROJECT_VERSION_PATCH=${PROJECT_VERSION_PATCH}")
 CMAKE_FLAGS+=("-DPARAM_GENERATOR=${GENERATOR}")
 CMAKE_FLAGS+=("-DPARAM_COMPILE_VERSION=${COMPILE_VERSION}")
+CMAKE_FLAGS+=("-DPARAM_COMPILE_DEFINITIONS=${COMPILE_DEFINITIONS}")
 CMAKE_FLAGS+=("-DPARAM_BUILD_TYPE=${BUILD_TYPE}")
 CMAKE_FLAGS+=("-DPARAM_ASSERT_ENABLE=${ASSERT_ENABLE}")
 CMAKE_FLAGS+=("-DPARAM_BUILD_SHARED_LIBS=${BUILD_SHARED_LIBS}")
