@@ -6,12 +6,22 @@
 # =============================================================================
 # What Is This?
 # -------------
-# Put in this file all your library dependancies to include and link in your
-# library and executable. All libraries found by `directory()` function will be
-# automatically link, but if you use an external library (e.g Qt), you have
+# Put in this file all instructions to include and link your library dependancies
+# to your own library and own executable. All libraries (.dll or .so files) found by the
+# `directory()` function will be automatically link, but to include their header
+# file, you have to add this function.  For each directory in `/include`,
+# except for this containing your own headers, write the following instructions at
+# the end of file in remplacing `<library-name>` by the name of library:
+# 
+# set(<library-name>_include_header_files "")
+# directory(SCAN <library-name>_include_header_files ROOT_PATH "${${PROJECT_NAME}_INCLUDE_PATH}/${<library-name>}" INCLUDE_REGEX ".*[.]h$")
+# set(${PROJECT_NAME}_PUBLIC_HEADER_FILES "${${PROJECT_NAME}_PUBLIC_HEADER_FILES}" "${<library-name>_include_header_files}")
+#
+# On the contrary, if you want to use an external library (e.g Qt) in using
+# `find_package()` function, you don't need the previous code, but rather have
 # to add your special instructions like `find_package()`, `target_sources()`,
-# `target_include_directories()`, `target_compile_definitions()` and
-# `target_link_libraries()` here.
+# `target_include_directories()`, target_compile_definitions()` and
+# `target_link_libraries()` at the end of file.
 
 include(Directory)
 

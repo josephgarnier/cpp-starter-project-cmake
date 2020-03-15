@@ -6,7 +6,7 @@
 # =============================================================================
 # What Is This?
 # -------------
-# In this file, you provide dependency information of your project to CMake
+# In this file, you provide dependency information of your project for CMake
 # based buildsystems for `find_package()` function. To know how to fill this
 # file, please see cmake documentation of `find_package()`
 # (https://cmake.org/cmake/help/latest/command/find_package.html),
