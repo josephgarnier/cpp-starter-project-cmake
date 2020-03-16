@@ -9,7 +9,7 @@
 # Put in this file all instructions to include and link your library dependancies
 # to your own library and own executable. All libraries (.dll or .so files) found by the
 # `directory()` function will be automatically link, but to include their header
-# file, you have to add this function.  For each directory in `/include`,
+# file, you have to add this function. For each directory in `/include`,
 # except for this containing your own headers, write the following instructions at
 # the end of file in remplacing `<library-name>` by the name of library:
 # 
@@ -21,9 +21,13 @@
 # `find_package()` function, you don't need the previous code, but rather have
 # to add your special instructions like `find_package()`, `target_sources()`,
 # `target_include_directories()`, target_compile_definitions()` and
-# `target_link_libraries()` at the end of file. To know how import a such library
-# please read its documentation. An illustrated example for Qt, which you will have
-# to delete, is proposed at the end of the file.
+# `target_link_libraries()` at the end of file. You have to add these properties on
+# each target : `${${PROJECT_NAME}_LIB_NAME}` and `${${PROJECT_NAME}_EXEC_NAME}`.
+# To know how import a such library please read its documentation.
+# Last thing, this is in this file that you will use the parameter `DPARAM_ASSERT_ENABLE`
+# with a test like `if(${PARAM_ASSERT_ENABLE})`.
+#  An illustrated example for Qt, which you will have to delete, is proposed at the
+# end of the file.
 
 include(Directory)
 

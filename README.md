@@ -60,7 +60,7 @@ These variables correspond to the CMake options used when running `cmake` comman
 - `DPARAM_COMPILE_VERSION=[11|14|17 (default)|20]`: see [CMAKE_CXX_STANDARD](https://cmake.org/cmake/help/latest/variable/CMAKE_CXX_STANDARD.html)
 - `COMPILE_DEFINITIONS`: semicolon-separated list of preprocessor definitions (e.g -DFOO;-DBAR or FOO;BAR). Can be empty.
 - `DPARAM_BUILD_TYPE=[(default) debug|release]`: set type of build
-- `DPARAM_ASSERT_ENABLE=[ON|OFF (default)]`: enable or disable assert
+- `DPARAM_ASSERT_ENABLE=[ON|OFF (default)]`: enable or disable assert (optionally used in `cmake/project/Dependencies.cmake`)
 - `DPARAM_BUILD_SHARED_LIBS=[(default) ON|OFF]`: build shared libraries instead of static
 - `DPARAM_BUILD_EXEC=[(default) ON|OFF]`: build an executable
 - `DPARAM_BUILD_TESTS=[ON|OFF (default)]`: build tests
