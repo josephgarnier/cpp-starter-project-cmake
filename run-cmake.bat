@@ -1,8 +1,8 @@
-# Copyright 2019-present, Joseph Garnier
-# All rights reserved.
-#
-# This source code is licensed under the license found in the
-# LICENSE file in the root directory of this source tree.
+REM Copyright 2019-present, Joseph Garnier
+REM All rights reserved.
+REM
+REM This source code is licensed under the license found in the
+REM LICENSE file in the root directory of this source tree.
 
 set PROJECT_NAME="project-name"          REM -DPROJECT_NAME: specifies a name for project
 set PROJECT_SUMMARY="description"        REM -DPROJECT_SUMMARY: short description of the project
@@ -12,7 +12,7 @@ set PROJECT_VERSION_MAJOR="0"            REM -DPROJECT_VERSION_MAJOR: project ma
 set PROJECT_VERSION_MINOR="0"            REM -DPROJECT_VERSION_MINOR: project minor version
 set PROJECT_VERSION_PATCH="0"            REM -DPROJECT_VERSION_PATCH: project patch version
 set GENERATOR="Unix Makefiles"           REM -DGENERATOR: see https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html
-set COMPILE_VERSION="17"                 REM -DCOMPILE_VERSION=[11|14|17 (default)|20]: see https://cmake.org/cmake/help/v3.1/variable/CMAKE_CXX_STANDARD.html
+set COMPILE_VERSION="17"                 REM -DCOMPILE_VERSION=[11|14|17 (default)|20]: see https://cmake.org/cmake/help/latest/variable/CMAKE_CXX_STANDARD.html
 set COMPILE_DEFINITIONS=""               REM -DCOMPILE_DEFINITIONS: semicolon-separated list of preprocessor definitions (e.g -DFOO;-DBAR or FOO;BAR). Can be empty.
 set BUILD_TYPE="debug"                   REM -DBUILD_TYPE=[(default) debug|release]: set type of build
 set ASSERT_ENABLE="off"                  REM -DASSERT_ENABLE=[ON|OFF (default)]: enable or disable assert

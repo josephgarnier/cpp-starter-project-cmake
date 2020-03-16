@@ -57,7 +57,7 @@ These variables correspond to the CMake options used when running `cmake` comman
 - `DPARAM_PROJECT_VERSION_MINOR`: project minor version
 - `DPARAM_PROJECT_VERSION_PATCH`: project patch version
 - `DPARAM_GENERATOR`: see [cmake-generators](https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html)
-- `DPARAM_COMPILE_VERSION=[11|14|17 (default)|20]`: see [CMAKE_CXX_STANDARD](https://cmake.org/cmake/help/v3.1/variable/CMAKE_CXX_STANDARD.html)
+- `DPARAM_COMPILE_VERSION=[11|14|17 (default)|20]`: see [CMAKE_CXX_STANDARD](https://cmake.org/cmake/help/latest/variable/CMAKE_CXX_STANDARD.html)
 - `COMPILE_DEFINITIONS`: semicolon-separated list of preprocessor definitions (e.g -DFOO;-DBAR or FOO;BAR). Can be empty.
 - `DPARAM_BUILD_TYPE=[(default) debug|release]`: set type of build
 - `DPARAM_ASSERT_ENABLE=[ON|OFF (default)]`: enable or disable assert
@@ -78,7 +78,7 @@ In some cases, it's necessary to use a [precompiled header](https://en.wikipedia
 
 Now, if you use **external libraries** (.dll or .so files), add them in `lib/` directory, and add their header files each in a specific directory in `include/` directory. Then, complete the `cmake/project/Dependencies.cmake` file by relying on the commented instructions.
 
-The next file to configure is for **packaging and exporting** your application to be installed or included in another project. This **step is optional** if you plan to export your project only as executable. It's not an obligation either if your export as library, but strongly recommanded. For that, you have to edit `cmake/project/PackageConfig.cmake.in` and fill it from documentation of [`find_package()`](https://cmake.org/cmake/help/latest/command/find_package.html), [cmake-packages](https://cmake.org/cmake/help/latest/manual/cmake-packages.7.html) and [cmake-buildsystem](https://cmake.org/cmake/help/latest/manual/cmake-developer.7.html).
+The next file to configure is for **packaging and exporting** your application to be installed or included in another project. This **step is optional** if you plan to export your project only as executable. It's not an obligation either if you export as library, but strongly recommanded. For that, you have to edit `cmake/project/PackageConfig.cmake.in` and fill it from documentation of [`find_package()`](https://cmake.org/cmake/help/latest/command/find_package.html), [cmake-packages](https://cmake.org/cmake/help/latest/manual/cmake-packages.7.html) and [cmake-buildsystem](https://cmake.org/cmake/help/latest/manual/cmake-developer.7.html).
 
 The two next files to configure are to generate **binary and source package installers**. This **step is optional** if you don't plan to create an installer. By default, the project is provided with a basic configuration to generate an archive installer on Linux and an NSIS installer on Windows. If despite everything you want to customize the many options, edit the files `cmake/project/CPackInstallerConfig.cmake` and `cmake/project/CPackInstallerOptions.cmake.in` in following the documentation of [CPack](https://cmake.org/cmake/help/latest/module/CPack.html).
 

@@ -1,8 +1,8 @@
-# Copyright 2019-present, Joseph Garnier
-# All rights reserved.
-#
-# This source code is licensed under the license found in the
-# LICENSE file in the root directory of this source tree.
+REM Copyright 2019-present, Joseph Garnier
+REM All rights reserved.
+REM
+REM This source code is licensed under the license found in the
+REM LICENSE file in the root directory of this source tree.
 
 set PROJECT_NAME="project-name"       REM -DPROJECT_NAME: specifies a name for project
 set PROJECT_VERSION_MAJOR="0"         REM -DPROJECT_VERSION_MAJOR: project major version
