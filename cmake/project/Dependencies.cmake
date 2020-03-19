@@ -53,8 +53,8 @@ directory(SCAN ${PROJECT_NAME}_LIBRARIES_FILES ROOT_PATH "${${PROJECT_NAME}_LIB_
 # 		message(FATAL_ERROR "Minimum supported Qt5 version is 5.12.6!")
 # endif()
 
-# set(QOBJECT_SOURCE_FILES "")
-# set(QOBJECT_HEADER_FILES "")
+# set(QOBJECT_SOURCE_FILES "${${PROJECT_NAME}_SRC_PATH}/sub2/sub2.cpp")
+# set(QOBJECT_HEADER_FILES "${${PROJECT_NAME}_SRC_PATH}/sub2/sub2.h")
 # set(UI_FILES "")
 # set(RESSOURCE_FILES "")
 
@@ -62,33 +62,61 @@ directory(SCAN ${PROJECT_NAME}_LIBRARIES_FILES ROOT_PATH "${${PROJECT_NAME}_LIB_
 # qt5_wrap_ui_custom(UI_SOURCE_FILES ${UI_FILES})
 # qt5_add_resources_custom(RESSOURCE_SRCS ${RESSOURCE_FILES})
 
+# set(RELATIVE_QOBJECT_SOURCE_FILES "")
+# set(RELATIVE_QOBJECT_HEADER_FILES "")
+# set(RELATIVE_MOC_HEADER_FILES "")
+# set(RELATIVE_UI_FILES "")
+# set(RELATIVE_UI_SOURCE_FILES "")
+# set(RELATIVE_RESSOURCE_FILES "")
+# set(RELATIVE_RESSOURCE_SRCS "")
+
 # message(STATUS "QObject sources found:")
 # foreach(file IN ITEMS ${QOBJECT_SOURCE_FILES})
-# 	message("    ${file}")
+# 	file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_PATH}" "${file}")
+# 	message("    ${relative_path}")
+# 	list(APPEND RELATIVE_QOBJECT_SOURCE_FILES ${relative_path})
 # endforeach()
+
 # message(STATUS "QObject headers found:")
 # foreach(file IN ITEMS ${QOBJECT_HEADER_FILES})
-# 	message("    ${file}")
+# 	file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_PATH}" "${file}")
+# 	message("    ${relative_path}")
+# 	list(APPEND RELATIVE_QOBJECT_HEADER_FILES ${relative_path})
 # endforeach()
+
 # message(STATUS "QObject moc found:")
 # foreach(file IN ITEMS ${MOC_HEADER_FILES})
-# 	message("    ${file}")
+# 	file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_PATH}" "${file}")
+# 	message("    ${relative_path}")
+# 	list(APPEND RELATIVE_MOC_HEADER_FILES ${relative_path})
 # endforeach()
+
 # message(STATUS "UI files found:")
 # foreach(file IN ITEMS ${UI_FILES})
-# 	message("    ${file}")
+# 	file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_PATH}" "${file}")
+# 	message("    ${relative_path}")
+# 	list(APPEND RELATIVE_UI_FILES ${relative_path})
 # endforeach()
+
 # message(STATUS "UI sources found:")
 # foreach(file IN ITEMS ${UI_SOURCE_FILES})
-# 	message("    ${file}")
+# 	file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_PATH}" "${file}")
+# 	message("    ${relative_path}")
+# 	list(APPEND RELATIVE_UI_SOURCE_FILES ${relative_path})
 # endforeach()
+
 # message(STATUS "Ressources files found:")
 # foreach(file IN ITEMS ${RESSOURCE_FILES})
-# 	message("    ${file}")
+# 	file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_PATH}" "${file}")
+# 	message("    ${relative_path}")
+# 	list(APPEND RELATIVE_RESSOURCE_FILES ${relative_path})
 # endforeach()
+
 # message(STATUS "Ressources sources found:")
 # foreach(file IN ITEMS ${RESSOURCE_SRCS})
-# 	message("    ${file}")
+# 	file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_PATH}" "${file}")
+# 	message("    ${relative_path}")
+# 	list(APPEND RELATIVE_RESSOURCE_SRCS ${relative_path})
 # endforeach()
 # message("")
 
@@ -96,8 +124,8 @@ directory(SCAN ${PROJECT_NAME}_LIBRARIES_FILES ROOT_PATH "${${PROJECT_NAME}_LIB_
 # message(STATUS "Add Qt sources to library")
 # target_sources("${${PROJECT_NAME}_LIB_NAME}"
 # 	PUBLIC
-# 		"$<BUILD_INTERFACE:${QOBJECT_SOURCE_FILES};${MOC_HEADER_FILES};${UI_SOURCE_FILES};${RESSOURCE_SRCS}>"
-# 		"$<INSTALL_INTERFACE:${QOBJECT_SOURCE_FILES};${MOC_HEADER_FILES};${UI_SOURCE_FILES};${RESSOURCE_SRCS}>"
+# 		"$<BUILD_INTERFACE:${RELATIVE_QOBJECT_SOURCE_FILES};${RELATIVE_MOC_HEADER_FILES};${RELATIVE_UI_SOURCE_FILES};${RELATIVE_RESSOURCE_SRCS}>"
+# 		"$<INSTALL_INTERFACE:${RELATIVE_QOBJECT_SOURCE_FILES};${RELATIVE_MOC_HEADER_FILES};${RELATIVE_UI_SOURCE_FILES};${RELATIVE_RESSOURCE_SRCS}>"
 # )
 
 # # Add Qt incude directories to library
@@ -134,8 +162,8 @@ directory(SCAN ${PROJECT_NAME}_LIBRARIES_FILES ROOT_PATH "${${PROJECT_NAME}_LIB_
 # 	message(STATUS "Add Qt sources to executable")
 # 	target_sources("${${PROJECT_NAME}_EXEC_NAME}"
 # 		PUBLIC
-# 			"$<BUILD_INTERFACE:${QOBJECT_SOURCE_FILES};${MOC_HEADER_FILES};${UI_SOURCE_FILES};${RESSOURCE_SRCS}>"
-# 			"$<INSTALL_INTERFACE:${QOBJECT_SOURCE_FILES};${MOC_HEADER_FILES};${UI_SOURCE_FILES};${RESSOURCE_SRCS}>"
+# 			"$<BUILD_INTERFACE:${RELATIVE_QOBJECT_SOURCE_FILES};${RELATIVE_MOC_HEADER_FILES};${RELATIVE_UI_SOURCE_FILES};${RELATIVE_RESSOURCE_SRCS}>"
+# 			"$<INSTALL_INTERFACE:${RELATIVE_QOBJECT_SOURCE_FILES};${RELATIVE_MOC_HEADER_FILES};${RELATIVE_UI_SOURCE_FILES};${RELATIVE_RESSOURCE_SRCS}>"
 # 	)
 
 # 	# Add Qt incude directories to executable
