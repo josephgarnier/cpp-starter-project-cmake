@@ -288,7 +288,7 @@ if(${BUILD_SHARED_LIBS})
 	add_library("${${PROJECT_NAME}_LIB_NAME}" SHARED ${${PROJECT_NAME}_SRC_ALL_FILES})
 else()
 	message("")
-	message(STATUS "\nBuild as a static library")
+	message(STATUS "Build as a static library")
 	add_library("${${PROJECT_NAME}_LIB_NAME}" STATIC ${${PROJECT_NAME}_SRC_ALL_FILES})
 endif()
 
@@ -296,6 +296,9 @@ endif()
 if(${PROJECT_NAME}_PRECOMPILED_HEADER_PATH)
 	message(STATUS "Add precompiled header to library")
 	set_target_properties("${${PROJECT_NAME}_LIB_NAME}" PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "${${PROJECT_NAME}_PRECOMPILED_HEADER_PATH}")
+else()
+	message(STATUS "Precompiled header disabled for library")
+	set_target_properties("${${PROJECT_NAME}_LIB_NAME}" PROPERTIES COTIRE_ENABLE_PRECOMPILED_HEADER FALSE)
 endif()
 
 # Set compiler version to library
@@ -333,6 +336,9 @@ if(${PARAM_BUILD_EXEC})
 	if(${PROJECT_NAME}_PRECOMPILED_HEADER_PATH)
 		message(STATUS "Add precompiled header to executable")
 		set_target_properties("${${PROJECT_NAME}_EXEC_NAME}" PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "${${PROJECT_NAME}_PRECOMPILED_HEADER_PATH}")
+	else()
+		message(STATUS "Precompiled header disabled for executable")
+		set_target_properties("${${PROJECT_NAME}_EXEC_NAME}" PROPERTIES COTIRE_ENABLE_PRECOMPILED_HEADER FALSE)
 	endif()
 	
 	# Set compiler version to executable
