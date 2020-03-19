@@ -25,8 +25,12 @@
 # done by the blob function `directory()`. But if after all you decide
 # to use you own instructions, then remove the calls to `directory()`
 # function, set the previously described variables, and don't forget to also set
-# `${PROJECT_NAME}_PRECOMPILED_HEADER_PATH and
-# `${PROJECT_NAME}_PRECOMPILED_SOURCE_PATH.
+# `${PROJECT_NAME}_PRECOMPILED_HEADER_PATH` and
+# `${PROJECT_NAME}_PRECOMPILED_SOURCE_PATH`.
+#
+# Warning: if you don'y use precompiled header features, set to empty string
+# the variables `${PROJECT_NAME}_PRECOMPILED_HEADER_PATH` and
+# `${PROJECT_NAME}_PRECOMPILED_SOURCE_PATH`.
 
 include(Directory)
 

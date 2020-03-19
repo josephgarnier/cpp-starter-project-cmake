@@ -26,7 +26,7 @@
 # To know how import a such library please read its documentation.
 # Last thing, this is in this file that you will use the parameter `DPARAM_ASSERT_ENABLE`
 # with a test like `if(${PARAM_ASSERT_ENABLE})`.
-#  An illustrated example for Qt, which you will have to delete, is proposed at the
+# An illustrated example for Qt, which you will have to delete, is proposed at the
 # end of the file.
 
 include(Directory)
