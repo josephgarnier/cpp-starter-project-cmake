@@ -24,7 +24,7 @@ if EXIST %SOLUTION_PATH% (
 	cmake --build %SOLUTION_PATH% --target clean
 
 	REM Remove solution in build directory
-	Del %SOLUTION_PATH%
+	@RD /S /Q "%SOLUTION_PATH%"
 )
 
 if %errorlevel%==0 (
