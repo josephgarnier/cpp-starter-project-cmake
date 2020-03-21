@@ -37,7 +37,7 @@
 			"options": {
 				"cwd": "${workspaceFolder}/build/project-name-0-0-0-linux"
 			},
-			"command": "sudo make install",
+			"command": "sudo cmake --build . --target install",
 			"presentation": {
 				"reveal": "always",
 				"focus": true,
@@ -50,7 +50,7 @@
 			"options": {
 				"cwd": "${workspaceFolder}/build/project-name-0-0-0-linux"
 			},
-			"command": "sudo make uninstall",
+			"command": "sudo cmake --build . --target uninstall",
 			"presentation": {
 				"reveal": "always",
 				"focus": true,
@@ -63,7 +63,7 @@
 			"options": {
 				"cwd": "${workspaceFolder}/build/project-name-0-0-0-linux"
 			},
-			"command": "make docs",
+			"command": "cmake --build . --target docs",
 			"presentation": {
 				"reveal": "always",
 				"focus": true,
