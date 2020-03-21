@@ -93,7 +93,7 @@ In project root directory, you will find the two scripts proposed to **clean** t
 ```bash
 ./clean-cmake.sh && sleep 3s && ./run-cmake.sh
 #or
-./clean-cmake.bat && pause 3 && ./run-cmake.bat
+start clean-cmake.bat && pause 3 && start run-cmake.bat
 ```
 
 In case of success, you should see the message `The solution was successfully generated!`. A new directory containing all build files will be created in `build/`, with a name according to pattern `<project-name>-<major-version>-<minor-version>-<patch-version>-<os-system>`. Now you can **build** your project to generate an executable file and/or a library file in `bin/` directory.
@@ -105,14 +105,14 @@ In case of success, you should see the message `The solution was successfully ge
 That's all ! In addition to executable and library in `bin/` directory, you will find in `doc/` the **documentation** generated if you set `DPARAM_BUILD_DOXYGEN_DOCS` to on. You can generate only the documentation with the command :
 
 ```bash
-(cd ./build/<project-build-directory> && make docs)
+(cd ./build/<project-build-directory> && cmake --build . --target docs)
 ```
 
 Optionnaly, you might want to [**install**](https://cmake.org/cmake/help/latest/command/install.html#command:install) your project in directory [defined by cmake](https://cmake.org/cmake/help/latest/variable/CMAKE_INSTALL_PREFIX.html), or conversely you may want to **uninstall** it. In a terminal, write these commands:
 
 ```bash
-(cd ./build/<project-build-directory> && sudo make install)
-(cd ./build/<project-build-directory> && sudo make uninstall)
+(cd ./build/<project-build-directory> && sudo cmake --build . --target install)
+(cd ./build/<project-build-directory> && sudo cmake --build . --target uninstall)
 ```
 
 Also, if you want to [**pack**](https://cmake.org/cmake/help/latest/manual/cpack.1.html) your projet to generate an installer in a variety of [formats](https://cmake.org/cmake/help/latest/manual/cpack.1.html) (deb, zip, nsis, etc) in `bin/` directory, write these commands:
@@ -129,7 +129,7 @@ Not that at any time you can clean the `build/`, `bin/` and `doc/` directories w
 ```bash
 ./clean-cmake.sh
 #or
-./clean-cmake.bat
+start clean-cmake.bat
 ```
 
 ## Folder structure overview
