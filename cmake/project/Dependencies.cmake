@@ -153,7 +153,7 @@ directory(SCAN ${PROJECT_NAME}_LIBRARIES_FILES ROOT_PATH "${${PROJECT_NAME}_LIB_
 # get_target_property(Qt5Concurrent_location ${Qt5Concurrent_LIBRARIES} LOCATION)
 # target_link_libraries("${${PROJECT_NAME}_LIB_NAME}"
 # 	PUBLIC
-# 		"$<BUILD_INTERFACE:${Qt5Widgets_location};${Qt5Gui_location};${Qt5Core_location};${Qt5Svg_location};${Qt5Concurrent_location}>"
+# 		"$<BUILD_INTERFACE:Qt5::Widgets;Qt5::Gui;Qt5::Core;Qt5::Svg;Qt5::Concurrent>"
 # 		"$<INSTALL_INTERFACE:${Qt5Widgets_location};${Qt5Gui_location};${Qt5Core_location};${Qt5Svg_location};${Qt5Concurrent_location}>"
 # )
 
@@ -186,7 +186,7 @@ directory(SCAN ${PROJECT_NAME}_LIBRARIES_FILES ROOT_PATH "${${PROJECT_NAME}_LIB_
 # 			"$<BUILD_INTERFACE:-fPIC;-fPIE>"
 # 			"$<INSTALL_INTERFACE:-fPIC;-fPIE>"
 # 	)
-# 	set_target_properties("${${PROJECT_NAME}_EXEC_NAME}" PROPERTIES INTERFACE_POSITION_INDEPENDENT_CODE "ON")
+# 	set_target_properties("${${PROJECT_NAME}_EXEC_NAME}" PROPERTIES INTERFACE_POSITION_INDEPENDENT_CODE ON)
 	
 # 	# Link Qt to executable
 # 	message(STATUS "Link Qt to executable\n")
@@ -197,7 +197,7 @@ directory(SCAN ${PROJECT_NAME}_LIBRARIES_FILES ROOT_PATH "${${PROJECT_NAME}_LIB_
 # 	get_target_property(Qt5Concurrent_location ${Qt5Concurrent_LIBRARIES} LOCATION)
 # 	target_link_libraries("${${PROJECT_NAME}_EXEC_NAME}"
 # 		PUBLIC
-# 			"$<BUILD_INTERFACE:${Qt5Widgets_location};${Qt5Gui_location};${Qt5Core_location};${Qt5Svg_location};${Qt5Concurrent_location}>"
+# 			"$<BUILD_INTERFACE:Qt5::Widgets;Qt5::Gui;Qt5::Core;Qt5::Svg;Qt5::Concurrent>"
 # 			"$<INSTALL_INTERFACE:${Qt5Widgets_location};${Qt5Gui_location};${Qt5Core_location};${Qt5Svg_location};${Qt5Concurrent_location}>"
 # 	)
 # endif()
