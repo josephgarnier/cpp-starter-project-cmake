@@ -557,6 +557,10 @@ if(NOT TARGET uninstall)
 	add_custom_target(uninstall
 		COMMAND ${CMAKE_COMMAND} -P "${${PROJECT_NAME}_UNINSTALL_CONFIG_FILE}"
 	)
+
+	# Add uninstall target in a folder
+	get_property(target_folder GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER)
+	set_target_properties(uninstall PROPERTIES FOLDER "${target_folder}")
 endif()
 
 #------------------------------------------------------------------------------

@@ -24,11 +24,16 @@ set(CMAKE_CXX_COMPILER_TARGET ${triple})
 list(APPEND CMAKE_FIND_ROOT_PATH "${${PROJECT_NAME}_PROJECT_PATH}")
 
 # search for programs in the build host directories
-set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM BOTH)
 # for libraries and headers in the target directories
-set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
-set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)
+set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE BOTH)
 set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE BOTH)
+
+# settings of directories organisation
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "CMakeTargets")
+set(CMAKE_FOLDER "")
 
 # compile flags: general
 add_compile_options("/Zm200")
