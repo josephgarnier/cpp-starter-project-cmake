@@ -145,55 +145,55 @@ message(STATUS "Set projet version with ${${PROJECT_NAME}_VERSION}")
 # Check project structure
 #------------------------------------------------------------------------------
 message("\n== Check project structure ==")
-set(${PROJECT_NAME}_PROJECT_PATH                 "${CMAKE_SOURCE_DIR}")
-set(${PROJECT_NAME}_ASSETS_PATH                  "${${PROJECT_NAME}_PROJECT_PATH}/assets")
-set(${PROJECT_NAME}_BIN_PATH                     "${${PROJECT_NAME}_PROJECT_PATH}/bin")
-set(${PROJECT_NAME}_BUILD_PATH                   "${CMAKE_BINARY_DIR}")
-set(${PROJECT_NAME}_CMAKE_PATH                   "${${PROJECT_NAME}_PROJECT_PATH}/cmake")
-set(${PROJECT_NAME}_CMAKE_HELPERS_PATH           "${${PROJECT_NAME}_CMAKE_PATH}/helpers")
-set(${PROJECT_NAME}_CMAKE_MODULES_PATH           "${${PROJECT_NAME}_CMAKE_PATH}/modules")
-set(${PROJECT_NAME}_CMAKE_PROJECT_PATH           "${${PROJECT_NAME}_CMAKE_PATH}/project")
-set(${PROJECT_NAME}_CMAKE_TOOLCHAINS_PATH        "${${PROJECT_NAME}_CMAKE_PATH}/toolchains")
+set(${PROJECT_NAME}_PROJECT_DIR                 "${CMAKE_SOURCE_DIR}")
+set(${PROJECT_NAME}_ASSETS_DIR                  "${${PROJECT_NAME}_PROJECT_DIR}/assets")
+set(${PROJECT_NAME}_BIN_DIR                     "${${PROJECT_NAME}_PROJECT_DIR}/bin")
+set(${PROJECT_NAME}_BUILD_DIR                   "${CMAKE_BINARY_DIR}")
+set(${PROJECT_NAME}_CMAKE_DIR                   "${${PROJECT_NAME}_PROJECT_DIR}/cmake")
+set(${PROJECT_NAME}_CMAKE_HELPERS_DIR           "${${PROJECT_NAME}_CMAKE_DIR}/helpers")
+set(${PROJECT_NAME}_CMAKE_MODULES_DIR           "${${PROJECT_NAME}_CMAKE_DIR}/modules")
+set(${PROJECT_NAME}_CMAKE_PROJECT_DIR           "${${PROJECT_NAME}_CMAKE_DIR}/project")
+set(${PROJECT_NAME}_CMAKE_TOOLCHAINS_DIR        "${${PROJECT_NAME}_CMAKE_DIR}/toolchains")
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}"
-	"${${PROJECT_NAME}_CMAKE_HELPERS_PATH}"
-	"${${PROJECT_NAME}_CMAKE_MODULES_PATH}"
-	"${${PROJECT_NAME}_CMAKE_PROJECT_PATH}"
-	"${${PROJECT_NAME}_CMAKE_TOOLCHAINS_PATH}")
-set(${PROJECT_NAME}_CONFIG_PATH                  "${${PROJECT_NAME}_PROJECT_PATH}/config")
-set(${PROJECT_NAME}_DOC_PATH                     "${${PROJECT_NAME}_PROJECT_PATH}/doc")
-set(${PROJECT_NAME}_INCLUDE_PATH                 "${${PROJECT_NAME}_PROJECT_PATH}/include")
-set(${PROJECT_NAME}_LIB_PATH                     "${${PROJECT_NAME}_PROJECT_PATH}/lib")
-set(${PROJECT_NAME}_RESOURCES_PATH               "${${PROJECT_NAME}_PROJECT_PATH}/resources")
-set(${PROJECT_NAME}_SRC_PATH                     "${${PROJECT_NAME}_PROJECT_PATH}/src")
-set(${PROJECT_NAME}_TEST_PATH                    "${${PROJECT_NAME}_PROJECT_PATH}/tests")
+	"${${PROJECT_NAME}_CMAKE_HELPERS_DIR}"
+	"${${PROJECT_NAME}_CMAKE_MODULES_DIR}"
+	"${${PROJECT_NAME}_CMAKE_PROJECT_DIR}"
+	"${${PROJECT_NAME}_CMAKE_TOOLCHAINS_DIR}")
+set(${PROJECT_NAME}_CONFIG_DIR                  "${${PROJECT_NAME}_PROJECT_DIR}/config")
+set(${PROJECT_NAME}_DOC_DIR                     "${${PROJECT_NAME}_PROJECT_DIR}/doc")
+set(${PROJECT_NAME}_INCLUDE_DIR                 "${${PROJECT_NAME}_PROJECT_DIR}/include")
+set(${PROJECT_NAME}_LIB_DIR                     "${${PROJECT_NAME}_PROJECT_DIR}/lib")
+set(${PROJECT_NAME}_RESOURCES_DIR               "${${PROJECT_NAME}_PROJECT_DIR}/resources")
+set(${PROJECT_NAME}_SRC_DIR                     "${${PROJECT_NAME}_PROJECT_DIR}/src")
+set(${PROJECT_NAME}_TEST_DIR                    "${${PROJECT_NAME}_PROJECT_DIR}/tests")
 
-list(APPEND ${PROJECT_NAME}_PROJECT_PATHS
-	"${${PROJECT_NAME}_ASSETS_PATH}"
-	"${${PROJECT_NAME}_BIN_PATH}"
-	"${${PROJECT_NAME}_BUILD_PATH}"
-	"${${PROJECT_NAME}_CMAKE_PATH}"
-	"${${PROJECT_NAME}_CMAKE_HELPERS_PATH}"
-	"${${PROJECT_NAME}_CMAKE_MODULES_PATH}"
-	"${${PROJECT_NAME}_CMAKE_PROJECT_PATH}"
-	"${${PROJECT_NAME}_CMAKE_TOOLCHAINS_PATH}"
-	"${${PROJECT_NAME}_CONFIG_PATH}"
-	"${${PROJECT_NAME}_DOC_PATH}"
-	"${${PROJECT_NAME}_INCLUDE_PATH}"
-	"${${PROJECT_NAME}_LIB_PATH}"
-	"${${PROJECT_NAME}_RESOURCES_PATH}"
-	"${${PROJECT_NAME}_SRC_PATH}"
-	"${${PROJECT_NAME}_TEST_PATH}")
+list(APPEND ${PROJECT_NAME}_PROJECT_DIRS
+	"${${PROJECT_NAME}_ASSETS_DIR}"
+	"${${PROJECT_NAME}_BIN_DIR}"
+	"${${PROJECT_NAME}_BUILD_DIR}"
+	"${${PROJECT_NAME}_CMAKE_DIR}"
+	"${${PROJECT_NAME}_CMAKE_HELPERS_DIR}"
+	"${${PROJECT_NAME}_CMAKE_MODULES_DIR}"
+	"${${PROJECT_NAME}_CMAKE_PROJECT_DIR}"
+	"${${PROJECT_NAME}_CMAKE_TOOLCHAINS_DIR}"
+	"${${PROJECT_NAME}_CONFIG_DIR}"
+	"${${PROJECT_NAME}_DOC_DIR}"
+	"${${PROJECT_NAME}_INCLUDE_DIR}"
+	"${${PROJECT_NAME}_LIB_DIR}"
+	"${${PROJECT_NAME}_RESOURCES_DIR}"
+	"${${PROJECT_NAME}_SRC_DIR}"
+	"${${PROJECT_NAME}_TEST_DIR}")
 
-foreach(folder IN ITEMS ${${PROJECT_NAME}_PROJECT_PATHS})
+foreach(folder IN ITEMS ${${PROJECT_NAME}_PROJECT_DIRS})
 	if((NOT EXISTS "${folder}") OR (NOT IS_DIRECTORY "${folder}"))
 		message(FATAL_ERROR "missing directory: \"${folder}\"")
 	endif()
 endforeach()
 
 # build path should be in /build directory
-get_filename_component(build_directory "${${PROJECT_NAME}_BUILD_PATH}" DIRECTORY)
-if(NOT ("${build_directory}" STREQUAL "${${PROJECT_NAME}_PROJECT_PATH}/build"))
-	message(FATAL_ERROR "\"${${PROJECT_NAME}_BUILD_PATH}\" is not under build directory")
+get_filename_component(build_directory "${${PROJECT_NAME}_BUILD_DIR}" DIRECTORY)
+if(NOT ("${build_directory}" STREQUAL "${${PROJECT_NAME}_PROJECT_DIR}/build"))
+	message(FATAL_ERROR "\"${${PROJECT_NAME}_BUILD_DIR}\" is not under build directory")
 endif()
 
 #------------------------------------------------------------------------------
@@ -213,28 +213,28 @@ set(${PROJECT_NAME}_EXEC_NAME              "${PROJECT_NAME}")
 set(${PROJECT_NAME}_TEST_NAME              "${PROJECT_NAME}_test-${${PROJECT_NAME}_VERSION}-${CMAKE_SYSTEM_NAME}")
 string(TOLOWER "${${PROJECT_NAME}_TEST_NAME}" ${PROJECT_NAME}_TEST_NAME)
 
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY         "${${PROJECT_NAME}_BIN_PATH}")
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY         "${${PROJECT_NAME}_BIN_PATH}")
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY         "${${PROJECT_NAME}_BIN_PATH}")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY         "${${PROJECT_NAME}_BIN_DIR}")
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY         "${${PROJECT_NAME}_BIN_DIR}")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY         "${${PROJECT_NAME}_BIN_DIR}")
 set(CMAKE_STATIC_LIBRARY_PREFIX            "")
 set(CMAKE_SHARED_LIBRARY_PREFIX            "")
 
 set(${PROJECT_NAME}_COMPILE_DEFINITIONS    "${PARAM_COMPILE_DEFINITIONS}")
 
 # Set directories and names for documentation
-set(${PROJECT_NAME}_DOXYGEN_TEMPLATE_CONFIG_FILE    "${${PROJECT_NAME}_DOC_PATH}/doxyfile.in")
-set(${PROJECT_NAME}_DOXYGEN_CONFIG_FILE             "${${PROJECT_NAME}_DOC_PATH}/doxyfile")
+set(${PROJECT_NAME}_DOXYGEN_TEMPLATE_CONFIG_FILE    "${${PROJECT_NAME}_DOC_DIR}/doxyfile.in")
+set(${PROJECT_NAME}_DOXYGEN_CONFIG_FILE             "${${PROJECT_NAME}_DOC_DIR}/doxyfile")
 
 # Set directories and names for packaging and exporting commands
 set(${PROJECT_NAME}_PACKAGE_NAME                    "${PROJECT_NAME}")
 string_manip(TRANSFORM ${PROJECT_NAME}_PACKAGE_NAME START_CASE)
-set(${PROJECT_NAME}_PACKAGE_TEMPLATE_CONFIG_FILE    "${${PROJECT_NAME}_CMAKE_PROJECT_PATH}/PackageConfig.cmake.in")
-set(${PROJECT_NAME}_PACKAGE_CONFIG_FILE             "${${PROJECT_NAME}_BUILD_PATH}/${${PROJECT_NAME}_PACKAGE_NAME}Config.cmake")
-set(${PROJECT_NAME}_PACKAGE_VERSION_FILE            "${${PROJECT_NAME}_BUILD_PATH}/${${PROJECT_NAME}_PACKAGE_NAME}ConfigVersion.cmake")
+set(${PROJECT_NAME}_PACKAGE_TEMPLATE_CONFIG_FILE    "${${PROJECT_NAME}_CMAKE_PROJECT_DIR}/PackageConfig.cmake.in")
+set(${PROJECT_NAME}_PACKAGE_CONFIG_FILE             "${${PROJECT_NAME}_BUILD_DIR}/${${PROJECT_NAME}_PACKAGE_NAME}Config.cmake")
+set(${PROJECT_NAME}_PACKAGE_VERSION_FILE            "${${PROJECT_NAME}_BUILD_DIR}/${${PROJECT_NAME}_PACKAGE_NAME}ConfigVersion.cmake")
 
 set(${PROJECT_NAME}_EXPORT_NAME                     "${PROJECT_NAME}-targets")
 set(${PROJECT_NAME}_EXPORT_TARGET_FILE_NAME         "${${PROJECT_NAME}_PACKAGE_NAME}Target.cmake")
-set(${PROJECT_NAME}_EXPORT_TARGET_FILE              "${${PROJECT_NAME}_BUILD_PATH}/${${PROJECT_NAME}_EXPORT_TARGET_FILE_NAME}")
+set(${PROJECT_NAME}_EXPORT_TARGET_FILE              "${${PROJECT_NAME}_BUILD_DIR}/${${PROJECT_NAME}_EXPORT_TARGET_FILE_NAME}")
 
 # Set directories relative to CMAKE_INSTALL_PREFIX and names for install/uninstall commands
 include(GNUInstallDirs)
@@ -244,14 +244,14 @@ set(${PROJECT_NAME}_INSTALL_ARCHIVE_DIR             "${CMAKE_INSTALL_LIBDIR}/${P
 set(${PROJECT_NAME}_INSTALL_INCLUDE_DIR             "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}")
 set(${PROJECT_NAME}_INSTALL_CMAKE_DIR               "${CMAKE_INSTALL_LIBDIR}/${PROJECT_NAME}/cmake")
 
-set(${PROJECT_NAME}_UNINSTALL_TEMPLATE_CONFIG_FILE  "${${PROJECT_NAME}_CMAKE_HELPERS_PATH}/Uninstall.cmake.in")
-set(${PROJECT_NAME}_UNINSTALL_CONFIG_FILE           "${${PROJECT_NAME}_BUILD_PATH}/Uninstall.cmake")
+set(${PROJECT_NAME}_UNINSTALL_TEMPLATE_CONFIG_FILE  "${${PROJECT_NAME}_CMAKE_HELPERS_DIR}/Uninstall.cmake.in")
+set(${PROJECT_NAME}_UNINSTALL_CONFIG_FILE           "${${PROJECT_NAME}_BUILD_DIR}/Uninstall.cmake")
 
 # Set directories and names for package installers
-set(${PROJECT_NAME}_CPACK_CONFIG_FILE               "${${PROJECT_NAME}_BUILD_PATH}/CPackConfig.cmake")
-set(${PROJECT_NAME}_CPACK_SOURCE_CONFIG_FILE        "${${PROJECT_NAME}_BUILD_PATH}/CPackSourceConfig.cmake")
-set(${PROJECT_NAME}_CPACK_TEMPLATE_OPTIONS_FILE     "${${PROJECT_NAME}_CMAKE_PROJECT_PATH}/CPackInstallerOptions.cmake.in")
-set(${PROJECT_NAME}_CPACK_OPTIONS_FILE              "${${PROJECT_NAME}_BUILD_PATH}/CMakeCPackOptions.cmake")
+set(${PROJECT_NAME}_CPACK_CONFIG_FILE               "${${PROJECT_NAME}_BUILD_DIR}/CPackConfig.cmake")
+set(${PROJECT_NAME}_CPACK_SOURCE_CONFIG_FILE        "${${PROJECT_NAME}_BUILD_DIR}/CPackSourceConfig.cmake")
+set(${PROJECT_NAME}_CPACK_TEMPLATE_OPTIONS_FILE     "${${PROJECT_NAME}_CMAKE_PROJECT_DIR}/CPackInstallerOptions.cmake.in")
+set(${PROJECT_NAME}_CPACK_OPTIONS_FILE              "${${PROJECT_NAME}_BUILD_DIR}/CMakeCPackOptions.cmake")
 
 #------------------------------------------------------------------------------
 # Build project
@@ -259,11 +259,11 @@ set(${PROJECT_NAME}_CPACK_OPTIONS_FILE              "${${PROJECT_NAME}_BUILD_PAT
 message("\n== Build project ==")
 include(Cotire)
 include(ProjectSrcFiles)
-if(NOT DEFINED ${PROJECT_NAME}_PRECOMPILED_HEADER_PATH)
-	message(FATAL_ERROR "${PROJECT_NAME}_PRECOMPILED_HEADER_PATH must be specified!")
+if(NOT DEFINED ${PROJECT_NAME}_PRECOMPILED_HEADER_FILE)
+	message(FATAL_ERROR "${PROJECT_NAME}_PRECOMPILED_HEADER_FILE must be specified!")
 endif()
-if(NOT DEFINED ${PROJECT_NAME}_PRECOMPILED_SOURCE_PATH)
-	message(FATAL_ERROR "${PROJECT_NAME}_PRECOMPILED_SOURCE_PATH must be specified!")
+if(NOT DEFINED ${PROJECT_NAME}_PRECOMPILED_SOURCE_FILE)
+	message(FATAL_ERROR "${PROJECT_NAME}_PRECOMPILED_SOURCE_FILE must be specified!")
 endif()
 if(NOT DEFINED ${PROJECT_NAME}_SRC_ALL_FILES)
 	message(FATAL_ERROR "${PROJECT_NAME}_SRC_ALL_FILES must be specified!")
@@ -293,9 +293,9 @@ else()
 endif()
 
 # Add precompiled header to library
-if(${PROJECT_NAME}_PRECOMPILED_HEADER_PATH)
+if(${PROJECT_NAME}_PRECOMPILED_HEADER_FILE)
 	message(STATUS "Add precompiled header to library")
-	set_target_properties("${${PROJECT_NAME}_LIB_NAME}" PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "${${PROJECT_NAME}_PRECOMPILED_HEADER_PATH}")
+	set_target_properties("${${PROJECT_NAME}_LIB_NAME}" PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "${${PROJECT_NAME}_PRECOMPILED_HEADER_FILE}")
 else()
 	message(STATUS "Precompiled header disabled for library")
 	set_target_properties("${${PROJECT_NAME}_LIB_NAME}" PROPERTIES COTIRE_ENABLE_PRECOMPILED_HEADER FALSE)
@@ -310,12 +310,12 @@ message(STATUS "Add include directories to library")
 target_include_directories("${${PROJECT_NAME}_LIB_NAME}"
 	PUBLIC
 		# Used when building the library
-		"$<BUILD_INTERFACE:${${PROJECT_NAME}_INCLUDE_PATH}>"
+		"$<BUILD_INTERFACE:${${PROJECT_NAME}_INCLUDE_DIR}>"
 		# Used when installing the library
 		"$<INSTALL_INTERFACE:${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}>"
 	PRIVATE
 		# Used only when building the library
-		"${${PROJECT_NAME}_SRC_PATH}"
+		"${${PROJECT_NAME}_SRC_DIR}"
 )
 
 # Add compile definitions to library
@@ -333,9 +333,9 @@ if(${PARAM_BUILD_EXEC})
 	add_executable("${${PROJECT_NAME}_EXEC_NAME}" ${${PROJECT_NAME}_SRC_ALL_FILES})
 
 	# Add precompiled header to executable
-	if(${PROJECT_NAME}_PRECOMPILED_HEADER_PATH)
+	if(${PROJECT_NAME}_PRECOMPILED_HEADER_FILE)
 		message(STATUS "Add precompiled header to executable")
-		set_target_properties("${${PROJECT_NAME}_EXEC_NAME}" PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "${${PROJECT_NAME}_PRECOMPILED_HEADER_PATH}")
+		set_target_properties("${${PROJECT_NAME}_EXEC_NAME}" PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "${${PROJECT_NAME}_PRECOMPILED_HEADER_FILE}")
 	else()
 		message(STATUS "Precompiled header disabled for executable")
 		set_target_properties("${${PROJECT_NAME}_EXEC_NAME}" PROPERTIES COTIRE_ENABLE_PRECOMPILED_HEADER FALSE)
@@ -350,12 +350,12 @@ if(${PARAM_BUILD_EXEC})
 	target_include_directories("${${PROJECT_NAME}_EXEC_NAME}"
 		PUBLIC
 			# Used when building the executable
-			"$<BUILD_INTERFACE:${${PROJECT_NAME}_INCLUDE_PATH}>"
+			"$<BUILD_INTERFACE:${${PROJECT_NAME}_INCLUDE_DIR}>"
 			# Used when installing the executable
 			"$<INSTALL_INTERFACE:${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}>"
 		PRIVATE
 			# Used only when building the library
-			"${${PROJECT_NAME}_SRC_PATH}"
+			"${${PROJECT_NAME}_SRC_DIR}"
 	)
 	
 	# Add compile definitions to library
@@ -419,7 +419,7 @@ if(${PARAM_BUILD_DOXYGEN_DOCS})
 		@ONLY
 	)
 	if(EXISTS "${${PROJECT_NAME}_DOXYGEN_CONFIG_FILE}")
-		file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_PATH}" "${${PROJECT_NAME}_DOXYGEN_CONFIG_FILE}")
+		file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_DIR}" "${${PROJECT_NAME}_DOXYGEN_CONFIG_FILE}")
 		message(STATUS "Doxygen config file generated into \"${relative_path}\"")
 	else()
 		message(FATAL_ERROR "Doxygen config file can't be generate")
@@ -429,18 +429,18 @@ if(${PARAM_BUILD_DOXYGEN_DOCS})
 	add_custom_target(docs ALL
 		COMMAND ${DOXYGEN_EXECUTABLE} "${${PROJECT_NAME}_DOXYGEN_CONFIG_FILE}"
 		SOURCES "${${PROJECT_NAME}_DOXYGEN_CONFIG_FILE}"
-		WORKING_DIRECTORY "${${PROJECT_NAME}_DOC_PATH}"
+		WORKING_DIRECTORY "${${PROJECT_NAME}_DOC_DIR}"
 		COMMENT "Generating API documentation with Doxygen"
 		VERBATIM
 	)
 	
 	# Add the generated documentation files to `make clean` command
-	set_property(DIRECTORY "${${PROJECT_NAME}_PROJECT_PATH}"
+	set_property(DIRECTORY "${${PROJECT_NAME}_PROJECT_DIR}"
 		APPEND
 		PROPERTY ADDITIONAL_CLEAN_FILES
-		"${${PROJECT_NAME}_DOC_PATH}/html"
-		"${${PROJECT_NAME}_DOC_PATH}/latex"
-		"${${PROJECT_NAME}_DOC_PATH}/doxyfile"
+		"${${PROJECT_NAME}_DOC_DIR}/html"
+		"${${PROJECT_NAME}_DOC_DIR}/latex"
+		"${${PROJECT_NAME}_DOC_DIR}/doxyfile"
 	)
 endif()
 
@@ -451,8 +451,8 @@ if(${PARAM_BUILD_TESTS})
 	message("\n== Build tests ==")
 	include(CTest)
 	add_test(NAME "${${PROJECT_NAME}_TEST_NAME}"
-		WORKING_DIRECTORY "${${PROJECT_NAME}_TEST_PATH}"
-		COMMAND "${${PROJECT_NAME}_TEST_PATH}/${${PROJECT_NAME}_TEST_NAME}")
+		WORKING_DIRECTORY "${${PROJECT_NAME}_TEST_DIR}"
+		COMMAND "${${PROJECT_NAME}_TEST_DIR}/${${PROJECT_NAME}_TEST_NAME}")
 endif()
 
 #------------------------------------------------------------------------------
@@ -473,7 +473,7 @@ configure_package_config_file(
 unset(LOCAL_INSTALL_LIBRARY_DIR)
 unset(LOCAL_INSTALL_INCLUDE_DIR)
 if(EXISTS "${${PROJECT_NAME}_PACKAGE_CONFIG_FILE}")
-	file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_PATH}" "${${PROJECT_NAME}_PACKAGE_CONFIG_FILE}")
+	file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_DIR}" "${${PROJECT_NAME}_PACKAGE_CONFIG_FILE}")
 	message(STATUS "Package config-file generated into \"${relative_path}\"")
 else()
 	message(FATAL_ERROR "Package config-file can't be generate")
@@ -486,7 +486,7 @@ write_basic_package_version_file(
 	COMPATIBILITY AnyNewerVersion
 )
 if(EXISTS "${${PROJECT_NAME}_PACKAGE_VERSION_FILE}")
-	file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_PATH}" "${${PROJECT_NAME}_PACKAGE_VERSION_FILE}")
+	file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_DIR}" "${${PROJECT_NAME}_PACKAGE_VERSION_FILE}")
 	message(STATUS "Package version-file generated into \"${relative_path}\"")
 else()
 	message(FATAL_ERROR "Package version-file can't be generate")
@@ -498,7 +498,7 @@ export(TARGETS "${${PROJECT_NAME}_LIB_NAME}"
 	NAMESPACE ""
 )
 export(PACKAGE "${${PROJECT_NAME}_PACKAGE_NAME}")
-file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_PATH}" "${${PROJECT_NAME}_EXPORT_TARGET_FILE}")
+file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_DIR}" "${${PROJECT_NAME}_EXPORT_TARGET_FILE}")
 message(STATUS "Export target file for the project library generated into \"${relative_path}\"")
 
 #------------------------------------------------------------------------------
@@ -541,7 +541,7 @@ install(EXPORT "${${PROJECT_NAME}_EXPORT_NAME}"
 
 if(NOT TARGET uninstall)
 	# Add uninstall rules
-	set(LOCAL_BUILD_PATH "${${PROJECT_NAME}_BUILD_PATH}")
+	set(LOCAL_BUILD_DIR "${${PROJECT_NAME}_BUILD_DIR}")
 	set(LOCAL_INSTALL_INCLUDE_DIR "${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}")
 	set(LOCAL_INSTALL_LIBRARY_DIR "${${PROJECT_NAME}_INSTALL_LIBRARY_DIR}")
 	configure_file(
@@ -549,7 +549,7 @@ if(NOT TARGET uninstall)
 		"${${PROJECT_NAME}_UNINSTALL_CONFIG_FILE}"
 		@ONLY
 	)
-	unset(LOCAL_BUILD_PATH)
+	unset(LOCAL_BUILD_DIR)
 	unset(LOCAL_INSTALL_INCLUDE_DIR)
 	unset(LOCAL_INSTALL_LIBRARY_DIR)
 
@@ -570,7 +570,7 @@ message("\n== Generate binary and source package installers ==")
 include(CPackInstallerConfig)
 
 # Add the generated installers files to `make clean` command
-set_property(DIRECTORY "${${PROJECT_NAME}_PROJECT_PATH}"
+set_property(DIRECTORY "${${PROJECT_NAME}_PROJECT_DIR}"
 	APPEND
 	PROPERTY ADDITIONAL_CLEAN_FILES
 	"${CPACK_PACKAGE_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME}.zip"
@@ -592,13 +592,13 @@ set(CPACK_PROJECT_CONFIG_FILE "${${PROJECT_NAME}_CPACK_OPTIONS_FILE}")
 # Generate installers
 include(CPack)
 if(EXISTS "${${PROJECT_NAME}_CPACK_CONFIG_FILE}")
-	file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_PATH}" "${${PROJECT_NAME}_CPACK_CONFIG_FILE}")
+	file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_DIR}" "${${PROJECT_NAME}_CPACK_CONFIG_FILE}")
 	message(STATUS "Binary package installer config file generated into \"${relative_path}\"")
 else()
 	message(FATAL_ERROR "Binary package installer config file can't be generate")
 endif()
 if(EXISTS "${${PROJECT_NAME}_CPACK_SOURCE_CONFIG_FILE}")
-	file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_PATH}" "${${PROJECT_NAME}_CPACK_SOURCE_CONFIG_FILE}")
+	file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_DIR}" "${${PROJECT_NAME}_CPACK_SOURCE_CONFIG_FILE}")
 	message(STATUS "Source package installer config file generated into \"${relative_path}\"")
 else()
 	message(FATAL_ERROR "Source package installer config file can't be generate")

@@ -11,15 +11,15 @@ export PROJECT_VERSION_MAJOR="0"         # -DPROJECT_VERSION_MAJOR: project majo
 export PROJECT_VERSION_MINOR="0"         # -DPROJECT_VERSION_MINOR: project minor version
 export PROJECT_VERSION_PATCH="0"         # -DPROJECT_VERSION_PATCH: project patch version
 
-readonly WORKSPACE_PATH=$(pwd)
-declare -r BUILD_PATH="${WORKSPACE_PATH}/build"
-declare -r SOLUTION_PATH="${BUILD_PATH}/${PROJECT_NAME}-${PROJECT_VERSION_MAJOR}-${PROJECT_VERSION_MINOR}-${PROJECT_VERSION_PATCH}-linux"
+readonly WORKSPACE_DIR=$(pwd)
+declare -r BUILD_DIR="${WORKSPACE_DIR}/build"
+declare -r SOLUTION_DIR="${BUILD_DIR}/${PROJECT_NAME}-${PROJECT_VERSION_MAJOR}-${PROJECT_VERSION_MINOR}-${PROJECT_VERSION_PATCH}-linux"
 
-if [[ -d "${SOLUTION_PATH}" ]]; then
-	cmake --build "${SOLUTION_PATH}" --target clean
+if [[ -d "${SOLUTION_DIR}" ]]; then
+	cmake --build "${SOLUTION_DIR}" --target clean
 
 	# Remove solution in build directory
-	rm -rf "${SOLUTION_PATH}"
+	rm -rf "${SOLUTION_DIR}"
 fi
 
 if [[ "${?}" -eq 0 ]]; then

@@ -16,15 +16,15 @@ set "PROJECT_VERSION_PATCH=0"
 
 setlocal EnableDelayedExpansion
 
-set "WORKSPACE_PATH=%cd%"
-set "BUILD_PATH=%WORKSPACE_PATH%/build"
-set "SOLUTION_PATH=%BUILD_PATH%/%PROJECT_NAME%-%PROJECT_VERSION_MAJOR%-%PROJECT_VERSION_MINOR%-%PROJECT_VERSION_PATCH%-windows"
+set "WORKSPACE_DIR=%cd%"
+set "BUILD_DIR=%WORKSPACE_DIR%/build"
+set "SOLUTION_DIR=%BUILD_DIR%/%PROJECT_NAME%-%PROJECT_VERSION_MAJOR%-%PROJECT_VERSION_MINOR%-%PROJECT_VERSION_PATCH%-windows"
 
-if EXIST %SOLUTION_PATH% (
-	cmake --build %SOLUTION_PATH% --target clean
+if EXIST %SOLUTION_DIR% (
+	cmake --build %SOLUTION_DIR% --target clean
 
 	REM Remove solution in build directory
-	@RD /S /Q "%SOLUTION_PATH%"
+	@RD /S /Q "%SOLUTION_DIR%"
 )
 
 if %errorlevel%==0 (

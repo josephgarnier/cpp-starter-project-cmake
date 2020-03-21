@@ -41,12 +41,12 @@ CMAKE_FLAGS+=("-DPARAM_BUILD_EXEC=${BUILD_EXEC}")
 CMAKE_FLAGS+=("-DPARAM_BUILD_TESTS=${BUILD_TESTS}")
 CMAKE_FLAGS+=("-DPARAM_BUILD_DOXYGEN_DOCS=${BUILD_DOXYGEN_DOCS}")
 
-readonly WORKSPACE_PATH=$(pwd)
-declare -r BUILD_PATH="${WORKSPACE_PATH}/build"
-declare -r CMAKE_PATH="${WORKSPACE_PATH}/cmake"
-declare -r SOLUTION_PATH="${BUILD_PATH}/${PROJECT_NAME}-${PROJECT_VERSION_MAJOR}-${PROJECT_VERSION_MINOR}-${PROJECT_VERSION_PATCH}-linux"
+readonly WORKSPACE_DIR=$(pwd)
+declare -r BUILD_DIR="${WORKSPACE_DIR}/build"
+declare -r CMAKE_DIR="${WORKSPACE_DIR}/cmake"
+declare -r SOLUTION_DIR="${BUILD_DIR}/${PROJECT_NAME}-${PROJECT_VERSION_MAJOR}-${PROJECT_VERSION_MINOR}-${PROJECT_VERSION_PATCH}-linux"
 
-cmake -S "${WORKSPACE_PATH}" -B "${SOLUTION_PATH}" -G "${GENERATOR}" -DCMAKE_TOOLCHAIN_FILE="${CMAKE_PATH}/toolchains/Linux_clang.cmake" "${CMAKE_FLAGS[@]}"
+cmake -S "${WORKSPACE_DIR}" -B "${SOLUTION_DIR}" -G "${GENERATOR}" -DCMAKE_TOOLCHAIN_FILE="${CMAKE_DIR}/toolchains/Linux_clang.cmake" "${CMAKE_FLAGS[@]}"
 
 if [[ "${?}" -eq 0 ]]; then
 	echo -e "\nThe solution was successfully generated!"

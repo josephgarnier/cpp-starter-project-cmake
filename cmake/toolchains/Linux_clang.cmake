@@ -21,7 +21,7 @@ set(CMAKE_CXX_COMPILER clang++-9)
 set(CMAKE_CXX_COMPILER_TARGET ${triple})
 
 # where is the target environment
-list(APPEND CMAKE_FIND_ROOT_PATH "${${PROJECT_NAME}_PROJECT_PATH}")
+list(APPEND CMAKE_FIND_ROOT_PATH "${${PROJECT_NAME}_PROJECT_DIR}")
 
 # search for programs in the build host directories
 set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)

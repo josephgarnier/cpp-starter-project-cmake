@@ -19,7 +19,7 @@
 # General packaging setup
 #------------------------------------------------------------------------------
 set(CPACK_PACKAGE_DESCRIPTION           "${${PROJECT_NAME}_SUMMARY}")
-set(CPACK_PACKAGE_DESCRIPTION_FILE      "${${PROJECT_NAME}_PROJECT_PATH}/README.md")
+set(CPACK_PACKAGE_DESCRIPTION_FILE      "${${PROJECT_NAME}_PROJECT_DIR}/README.md")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY   "${${PROJECT_NAME}_SUMMARY}")
 
 set(CPACK_PACKAGE_HOMEPAGE_URL          "${${PROJECT_NAME}_VENDOR_CONTACT}")
@@ -35,8 +35,8 @@ set(CPACK_PACKAGE_VERSION_PATCH         "${${PROJECT_NAME}_VERSION_PATCH}")
 #------------------------------------------------------------------------------
 # Resource files
 #------------------------------------------------------------------------------
-set(CPACK_RESOURCE_FILE_LICENSE         "${${PROJECT_NAME}_PROJECT_PATH}/LICENSE.md")
-set(CPACK_RESOURCE_FILE_README          "${${PROJECT_NAME}_PROJECT_PATH}/README.md")
+set(CPACK_RESOURCE_FILE_LICENSE         "${${PROJECT_NAME}_PROJECT_DIR}/LICENSE.md")
+set(CPACK_RESOURCE_FILE_README          "${${PROJECT_NAME}_PROJECT_DIR}/README.md")
 
 #------------------------------------------------------------------------------
 # Source package settings
@@ -55,9 +55,9 @@ endif()
 # Binary package settings
 #------------------------------------------------------------------------------
 set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY    OFF)
-set(CPACK_PACKAGE_DIRECTORY             "${${PROJECT_NAME}_BIN_PATH}")
+set(CPACK_PACKAGE_DIRECTORY             "${${PROJECT_NAME}_BIN_DIR}")
 set(CPACK_PACKAGE_FILE_NAME             "${CPACK_PACKAGE_NAME}")
-set(CPACK_PACKAGE_INSTALL_DIRECTORY     "${${PROJECT_NAME}_BIN_PATH}")
+set(CPACK_PACKAGE_INSTALL_DIRECTORY     "${${PROJECT_NAME}_BIN_DIR}")
 set(CPACK_PACKAGE_RELOCATABLE           ON)
 set(CPACK_SYSTEM_NAME                   "${SYSTEM_NAME}")
 set(CPACK_TOPLEVEL_TAG                  "")

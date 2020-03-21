@@ -14,7 +14,7 @@
 # the end of file in remplacing `<library-name>` by the name of library:
 # 
 # set(<library-name>_include_header_files "")
-# directory(SCAN <library-name>_include_header_files ROOT_PATH "${${PROJECT_NAME}_INCLUDE_PATH}/${<library-name>}" INCLUDE_REGEX ".*[.]h$")
+# directory(SCAN <library-name>_include_header_files ROOT_DIR "${${PROJECT_NAME}_INCLUDE_DIR}/${<library-name>}" INCLUDE_REGEX ".*[.]h$")
 # set(${PROJECT_NAME}_PUBLIC_HEADER_FILES "${${PROJECT_NAME}_PUBLIC_HEADER_FILES}" "${<library-name>_include_header_files}")
 #
 # On the contrary, if you want to use an external library (e.g Qt) in using
@@ -32,7 +32,7 @@
 include(Directory)
 
 set(${PROJECT_NAME}_LIBRARIES_FILES "")
-directory(SCAN ${PROJECT_NAME}_LIBRARIES_FILES ROOT_PATH "${${PROJECT_NAME}_LIB_PATH}" INCLUDE_REGEX "(.*\\${CMAKE_SHARED_LIBRARY_SUFFIX}$)|(.*\\${CMAKE_STATIC_LIBRARY_SUFFIX}$)")
+directory(SCAN ${PROJECT_NAME}_LIBRARIES_FILES ROOT_DIR "${${PROJECT_NAME}_LIB_DIR}" INCLUDE_REGEX "(.*\\${CMAKE_SHARED_LIBRARY_SUFFIX}$)|(.*\\${CMAKE_STATIC_LIBRARY_SUFFIX}$)")
 
 # Add your special instructions here
 
@@ -53,8 +53,8 @@ directory(SCAN ${PROJECT_NAME}_LIBRARIES_FILES ROOT_PATH "${${PROJECT_NAME}_LIB_
 # 		message(FATAL_ERROR "Minimum supported Qt5 version is 5.12.6!")
 # endif()
 
-# set(QOBJECT_SOURCE_FILES "${${PROJECT_NAME}_SRC_PATH}/sub2/sub2.cpp")
-# set(QOBJECT_HEADER_FILES "${${PROJECT_NAME}_SRC_PATH}/sub2/sub2.h")
+# set(QOBJECT_SOURCE_FILES "${${PROJECT_NAME}_SRC_DIR}/sub2/sub2.cpp")
+# set(QOBJECT_HEADER_FILES "${${PROJECT_NAME}_SRC_DIR}/sub2/sub2.h")
 # set(UI_FILES "")
 # set(RESSOURCE_FILES "")
 
@@ -72,49 +72,49 @@ directory(SCAN ${PROJECT_NAME}_LIBRARIES_FILES ROOT_PATH "${${PROJECT_NAME}_LIB_
 
 # message(STATUS "QObject sources found:")
 # foreach(file IN ITEMS ${QOBJECT_SOURCE_FILES})
-# 	file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_PATH}" "${file}")
+# 	file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_DIR}" "${file}")
 # 	message("    ${relative_path}")
 # 	list(APPEND RELATIVE_QOBJECT_SOURCE_FILES ${relative_path})
 # endforeach()
 
 # message(STATUS "QObject headers found:")
 # foreach(file IN ITEMS ${QOBJECT_HEADER_FILES})
-# 	file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_PATH}" "${file}")
+# 	file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_DIR}" "${file}")
 # 	message("    ${relative_path}")
 # 	list(APPEND RELATIVE_QOBJECT_HEADER_FILES ${relative_path})
 # endforeach()
 
 # message(STATUS "QObject moc found:")
 # foreach(file IN ITEMS ${MOC_HEADER_FILES})
-# 	file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_PATH}" "${file}")
+# 	file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_DIR}" "${file}")
 # 	message("    ${relative_path}")
 # 	list(APPEND RELATIVE_MOC_HEADER_FILES ${relative_path})
 # endforeach()
 
 # message(STATUS "UI files found:")
 # foreach(file IN ITEMS ${UI_FILES})
-# 	file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_PATH}" "${file}")
+# 	file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_DIR}" "${file}")
 # 	message("    ${relative_path}")
 # 	list(APPEND RELATIVE_UI_FILES ${relative_path})
 # endforeach()
 
 # message(STATUS "UI sources found:")
 # foreach(file IN ITEMS ${UI_SOURCE_FILES})
-# 	file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_PATH}" "${file}")
+# 	file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_DIR}" "${file}")
 # 	message("    ${relative_path}")
 # 	list(APPEND RELATIVE_UI_SOURCE_FILES ${relative_path})
 # endforeach()
 
 # message(STATUS "Ressources files found:")
 # foreach(file IN ITEMS ${RESSOURCE_FILES})
-# 	file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_PATH}" "${file}")
+# 	file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_DIR}" "${file}")
 # 	message("    ${relative_path}")
 # 	list(APPEND RELATIVE_RESSOURCE_FILES ${relative_path})
 # endforeach()
 
 # message(STATUS "Ressources sources found:")
 # foreach(file IN ITEMS ${RESSOURCE_SRCS})
-# 	file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_PATH}" "${file}")
+# 	file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_DIR}" "${file}")
 # 	message("    ${relative_path}")
 # 	list(APPEND RELATIVE_RESSOURCE_SRCS ${relative_path})
 # endforeach()

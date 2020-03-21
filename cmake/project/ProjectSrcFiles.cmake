@@ -8,11 +8,11 @@
 # -------------
 # In this files, you will set the lists of all source files of your project.
 # First, you have to set the variable `${PROJECT_NAME}_SRC_ALL_FILES` with
-# source files (cpp and header) present in `${PROJECT_NAME}_SRC_PATH`
+# source files (cpp and header) present in `${PROJECT_NAME}_SRC_DIR`
 # (/src directory). Then, set the variable `${PROJECT_NAME}_SRC_HEADER_FILES`
-# with header files present in ${PROJECT_NAME}_SRC_PATH` (/src directory).
+# with header files present in ${PROJECT_NAME}_SRC_DIR` (/src directory).
 # Finally, set the variable `${PROJECT_NAME}_INCLUDE_HEADER_FILES` with public
-# header files present in `${PROJECT_NAME}_INCLUDE_PATH/${PROJECT_NAME}`
+# header files present in `${PROJECT_NAME}_INCLUDE_DIR/${PROJECT_NAME}`
 # (this directory is optional). In this variable, only set your own headers
 # files, not headers of dependancies that will add in a specific config file.
 # The last variable `${PROJECT_NAME}_PUBLIC_HEADER_FILES` is a list of public
@@ -25,34 +25,34 @@
 # done by the blob function `directory()`. But if after all you decide
 # to use you own instructions, then remove the calls to `directory()`
 # function, set the previously described variables, and don't forget to also set
-# `${PROJECT_NAME}_PRECOMPILED_HEADER_PATH` and
-# `${PROJECT_NAME}_PRECOMPILED_SOURCE_PATH`.
+# `${PROJECT_NAME}_PRECOMPILED_HEADER_FILE` and
+# `${PROJECT_NAME}_PRECOMPILED_SOURCE_FILE`.
 #
 # Warning: if you don'y use precompiled header features, set to empty string
-# the variables `${PROJECT_NAME}_PRECOMPILED_HEADER_PATH` and
-# `${PROJECT_NAME}_PRECOMPILED_SOURCE_PATH`.
+# the variables `${PROJECT_NAME}_PRECOMPILED_HEADER_FILE` and
+# `${PROJECT_NAME}_PRECOMPILED_SOURCE_FILE`.
 
 include(Directory)
 
-set(${PROJECT_NAME}_PRECOMPILED_HEADER_PATH "${${PROJECT_NAME}_SRC_PATH}/${PROJECT_NAME}_pch.h")
-set(${PROJECT_NAME}_PRECOMPILED_SOURCE_PATH "${${PROJECT_NAME}_SRC_PATH}/${PROJECT_NAME}_pch.cpp")
+set(${PROJECT_NAME}_PRECOMPILED_HEADER_FILE "${${PROJECT_NAME}_SRC_DIR}/${PROJECT_NAME}_pch.h")
+set(${PROJECT_NAME}_PRECOMPILED_SOURCE_FILE "${${PROJECT_NAME}_SRC_DIR}/${PROJECT_NAME}_pch.cpp")
 
 # All source files (.cpp and .h) of /src directory go here
 set(${PROJECT_NAME}_SRC_ALL_FILES "")
-directory(SCAN ${PROJECT_NAME}_SRC_ALL_FILES ROOT_PATH "${${PROJECT_NAME}_SRC_PATH}" INCLUDE_REGEX ".*[.]cpp$|.*[.]h$|.*[.]cc$")
+directory(SCAN ${PROJECT_NAME}_SRC_ALL_FILES ROOT_DIR "${${PROJECT_NAME}_SRC_DIR}" INCLUDE_REGEX ".*[.]cpp$|.*[.]h$|.*[.]cc$")
 
 # Only header files of /src directory go here
 set(${PROJECT_NAME}_SRC_HEADER_FILES "")
-directory(SCAN ${PROJECT_NAME}_SRC_HEADER_FILES ROOT_PATH "${${PROJECT_NAME}_SRC_PATH}" INCLUDE_REGEX ".*[.]h$")
+directory(SCAN ${PROJECT_NAME}_SRC_HEADER_FILES ROOT_DIR "${${PROJECT_NAME}_SRC_DIR}" INCLUDE_REGEX ".*[.]h$")
 
 # Only cpp files of /src directiry go here
 set(${PROJECT_NAME}_SRC_SOURCE_FILES "")
-directory(SCAN ${PROJECT_NAME}_SRC_SOURCE_FILES ROOT_PATH "${${PROJECT_NAME}_SRC_PATH}" INCLUDE_REGEX ".*[.]cpp$|.*[.]cc$")
+directory(SCAN ${PROJECT_NAME}_SRC_SOURCE_FILES ROOT_DIR "${${PROJECT_NAME}_SRC_DIR}" INCLUDE_REGEX ".*[.]cpp$|.*[.]cc$")
 
 # Only you own header files of /include/project-name directiry go here. The headers of your dependancies should not set here,
 # they will be add in a specific config file.
 set(${PROJECT_NAME}_INCLUDE_HEADER_FILES "")
-directory(SCAN ${PROJECT_NAME}_INCLUDE_HEADER_FILES ROOT_PATH "${${PROJECT_NAME}_INCLUDE_PATH}/${PROJECT_NAME}" INCLUDE_REGEX ".*[.]h$")
+directory(SCAN ${PROJECT_NAME}_INCLUDE_HEADER_FILES ROOT_DIR "${${PROJECT_NAME}_INCLUDE_DIR}/${PROJECT_NAME}" INCLUDE_REGEX ".*[.]h$")
 
 # By default, all header files (those of /src and /include/project-name) are publics and go here
 set(${PROJECT_NAME}_PUBLIC_HEADER_FILES "${${PROJECT_NAME}_SRC_HEADER_FILES}" "${${PROJECT_NAME}_INCLUDE_HEADER_FILES}")
