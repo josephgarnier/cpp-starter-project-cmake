@@ -40,9 +40,11 @@ directory(SCAN ${PROJECT_NAME}_LIBRARIES_FILES ROOT_DIR "${${PROJECT_NAME}_LIB_D
 
 # Exemple with Qt (delete it if you don't need it)
 # message("\n** Include Qt **")
-# set(Qt5_DIR "/opt/Qt/5.12.6/gcc_64/lib/cmake/Qt5")
-# find_package(Qt5CoreMacrosCustom REQUIRED)
-# find_package(Qt5WidgetsMacrosCustom REQUIRED)
+# if(DEFINED ENV{Qt5_DIR}) 
+# 	set(Qt5_DIR "$ENV{Qt5_DIR}")
+# else()
+# 	set(Qt5_DIR "/opt/Qt/5.12.6/gcc_64/lib/cmake/Qt5")
+# endif()
 # find_package(Qt5 COMPONENTS Widgets Gui Core Svg Concurrent REQUIRED)
 
 # if (Qt5Widgets_VERSION VERSION_LESS 5.12.6
@@ -59,8 +61,8 @@ directory(SCAN ${PROJECT_NAME}_LIBRARIES_FILES ROOT_DIR "${${PROJECT_NAME}_LIB_D
 # set(RESSOURCE_FILES "")
 
 # qt5_wrap_cpp(MOC_HEADER_FILES ${QOBJECT_HEADER_FILES})
-# qt5_wrap_ui_custom(UI_SOURCE_FILES ${UI_FILES})
-# qt5_add_resources_custom(RESSOURCE_SRCS ${RESSOURCE_FILES})
+# qt5_wrap_ui(UI_SOURCE_FILES ${UI_FILES})
+# qt5_add_resources(RESSOURCE_SRCS ${RESSOURCE_FILES})
 
 # set(RELATIVE_QOBJECT_SOURCE_FILES "")
 # set(RELATIVE_QOBJECT_HEADER_FILES "")
