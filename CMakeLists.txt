@@ -612,5 +612,5 @@ message("\n== Customize the solution explorer structure for IDE project generati
 set(${PROJECT_NAME}_PROJECT_ALL_FILES "")
 directory(SCAN ${PROJECT_NAME}_PROJECT_ALL_FILES ROOT_DIR "${${PROJECT_NAME}_PROJECT_DIR}" INCLUDE_REGEX ".*[.]*$")
 source_group(TREE "${${PROJECT_NAME}_PROJECT_DIR}" FILES "${${PROJECT_NAME}_PROJECT_ALL_FILES}")
-message("${${PROJECT_NAME}_PROJECT_ALL_FILES}")
+
 message("\n===== End project ${PROJECT_NAME} building =====\n")
