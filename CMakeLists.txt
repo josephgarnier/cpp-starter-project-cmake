@@ -558,7 +558,7 @@ if(NOT TARGET uninstall)
 		COMMAND ${CMAKE_COMMAND} -P "${${PROJECT_NAME}_UNINSTALL_CONFIG_FILE}"
 	)
 
-	# Add uninstall target in a folder
+	# Add uninstall target in a folder for IDE project generation
 	get_property(target_folder GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER)
 	set_target_properties(uninstall PROPERTIES FOLDER "${target_folder}")
 endif()
@@ -604,4 +604,13 @@ else()
 	message(FATAL_ERROR "Source package installer config file can't be generate")
 endif()
 
+#------------------------------------------------------------------------------
+# Customize the solution explorer structure for IDE project generation
+#------------------------------------------------------------------------------
+message("\n== Customize the solution explorer structure for IDE project generation ==")
+
+set(${PROJECT_NAME}_PROJECT_ALL_FILES "")
+directory(SCAN ${PROJECT_NAME}_PROJECT_ALL_FILES ROOT_DIR "${${PROJECT_NAME}_PROJECT_DIR}" INCLUDE_REGEX ".*[.]*$")
+source_group(TREE "${${PROJECT_NAME}_PROJECT_DIR}" FILES "${${PROJECT_NAME}_PROJECT_ALL_FILES}")
+message("${${PROJECT_NAME}_PROJECT_ALL_FILES}")
 message("\n===== End project ${PROJECT_NAME} building =====\n")
