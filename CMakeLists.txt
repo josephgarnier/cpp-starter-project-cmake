@@ -559,7 +559,7 @@ if(NOT TARGET uninstall)
 	)
 
 	# Add uninstall target in a folder for IDE project generation
-	get_property(target_folder GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER)
+	get_cmake_property(target_folder PREDEFINED_TARGETS_FOLDER)
 	set_target_properties(uninstall PROPERTIES FOLDER "${target_folder}")
 endif()
 
