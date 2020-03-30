@@ -20,7 +20,7 @@ set "PROJECT_VERSION_MINOR=0"
 REM -DPROJECT_VERSION_PATCH: project patch version
 set "PROJECT_VERSION_PATCH=0"
 REM -DGENERATOR: see https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html
-set "GENERATOR=Unix Makefiles"
+set "GENERATOR=Visual Studio 16 2019"
 REM -DCOMPILE_VERSION=[11|14|17 (default)|20]: see https://cmake.org/cmake/help/latest/variable/CMAKE_CXX_STANDARD.html
 set "COMPILE_VERSION=17"
 REM -DCOMPILE_DEFINITIONS: semicolon-separated list of preprocessor definitions (e.g -DFOO;-DBAR or FOO;BAR). Can be empty.
