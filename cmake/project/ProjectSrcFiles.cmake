@@ -39,20 +39,20 @@ set(${PROJECT_NAME}_PRECOMPILED_SOURCE_FILE "${${PROJECT_NAME}_SRC_DIR}/${PROJEC
 
 # All source files (.cpp and .h) of /src directory go here
 set(${PROJECT_NAME}_SRC_ALL_FILES "")
-directory(SCAN ${PROJECT_NAME}_SRC_ALL_FILES ROOT_DIR "${${PROJECT_NAME}_SRC_DIR}" INCLUDE_REGEX ".*[.]cpp$|.*[.]h$|.*[.]cc$")
+directory(SCAN ${PROJECT_NAME}_SRC_ALL_FILES LIST_DIRECTORIES off RELATIVE off ROOT_DIR "${${PROJECT_NAME}_SRC_DIR}" INCLUDE_REGEX ".*[.]cpp$|.*[.]h$|.*[.]cc$")
 
 # Only header files of /src directory go here
 set(${PROJECT_NAME}_SRC_HEADER_FILES "")
-directory(SCAN ${PROJECT_NAME}_SRC_HEADER_FILES ROOT_DIR "${${PROJECT_NAME}_SRC_DIR}" INCLUDE_REGEX ".*[.]h$")
+directory(SCAN ${PROJECT_NAME}_SRC_HEADER_FILES LIST_DIRECTORIES off RELATIVE off ROOT_DIR "${${PROJECT_NAME}_SRC_DIR}" INCLUDE_REGEX ".*[.]h$")
 
 # Only cpp files of /src directiry go here
 set(${PROJECT_NAME}_SRC_SOURCE_FILES "")
-directory(SCAN ${PROJECT_NAME}_SRC_SOURCE_FILES ROOT_DIR "${${PROJECT_NAME}_SRC_DIR}" INCLUDE_REGEX ".*[.]cpp$|.*[.]cc$")
+directory(SCAN ${PROJECT_NAME}_SRC_SOURCE_FILES LIST_DIRECTORIES off RELATIVE off ROOT_DIR "${${PROJECT_NAME}_SRC_DIR}" INCLUDE_REGEX ".*[.]cpp$|.*[.]cc$")
 
 # Only you own header files of /include/project-name directiry go here. The headers of your dependancies should not set here,
 # they will be add in a specific config file.
 set(${PROJECT_NAME}_INCLUDE_HEADER_FILES "")
-directory(SCAN ${PROJECT_NAME}_INCLUDE_HEADER_FILES ROOT_DIR "${${PROJECT_NAME}_INCLUDE_DIR}/${PROJECT_NAME}" INCLUDE_REGEX ".*[.]h$")
+directory(SCAN ${PROJECT_NAME}_INCLUDE_HEADER_FILES LIST_DIRECTORIES off RELATIVE off ROOT_DIR "${${PROJECT_NAME}_INCLUDE_DIR}/${PROJECT_NAME}" INCLUDE_REGEX ".*[.]h$")
 
 # By default, all header files (those of /src and /include/project-name) are publics and go here
 set(${PROJECT_NAME}_PUBLIC_HEADER_FILES "${${PROJECT_NAME}_SRC_HEADER_FILES}" "${${PROJECT_NAME}_INCLUDE_HEADER_FILES}")
