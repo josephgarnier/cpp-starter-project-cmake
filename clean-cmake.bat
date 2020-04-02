@@ -9,13 +9,13 @@ setlocal EnableDelayedExpansion
 
 set "WORKSPACE_DIR=%cd%"
 set "BUILD_DIR=%WORKSPACE_DIR%/build"
-set "SOLUTION_DIR=%BUILD_DIR%/project-name-0-0-0-windows"
+set "SOLUTION_DIR=%BUILD_DIR%"
 
 if EXIST %SOLUTION_DIR% (
 	cmake --build %SOLUTION_DIR% --target clean
 
 	REM Remove solution in build directory
-	@RD /S /Q "%SOLUTION_DIR%"
+	del /S "%SOLUTION_DIR%/*"
 )
 
 if %errorlevel%==0 (

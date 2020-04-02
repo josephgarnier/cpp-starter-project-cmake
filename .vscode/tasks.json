@@ -19,7 +19,7 @@
 			"label": "Build",
 			"type": "shell",
 			"options": {
-				"cwd": "${workspaceFolder}/build/project-name-0-0-0-linux"
+				"cwd": "${workspaceFolder}/build"
 			},
 			"command": "cmake --build . --clean-first",
 			"group": {
@@ -37,7 +37,7 @@
 			"label": "Install",
 			"type": "shell",
 			"options": {
-				"cwd": "${workspaceFolder}/build/project-name-0-0-0-linux"
+				"cwd": "${workspaceFolder}/build"
 			},
 			"command": "sudo cmake --build . --target install",
 			"presentation": {
@@ -51,7 +51,7 @@
 			"label": "Uninstall",
 			"type": "shell",
 			"options": {
-				"cwd": "${workspaceFolder}/build/project-name-0-0-0-linux"
+				"cwd": "${workspaceFolder}/build"
 			},
 			"command": "sudo cmake --build . --target uninstall",
 			"presentation": {
@@ -65,7 +65,7 @@
 			"label": "Documentation",
 			"type": "shell",
 			"options": {
-				"cwd": "${workspaceFolder}/build/project-name-0-0-0-linux"
+				"cwd": "${workspaceFolder}/build"
 			},
 			"command": "cmake --build . --target docs",
 			"presentation": {
@@ -79,9 +79,9 @@
 			"label": "CPack Binary",
 			"type": "shell",
 			"options": {
-				"cwd": "${workspaceFolder}/build/project-name-0-0-0-linux"
+				"cwd": "${workspaceFolder}/build"
 			},
-			"command": "cpack --config CPackConfig.cmake && sleep 3s && rm -rf ../../bin/_CPack_Packages",
+			"command": "cpack --config CPackConfig.cmake && sleep 3s && rm -rf ../bin/_CPack_Packages",
 			"group": {
 				"kind": "build",
 				"isDefault": true
@@ -97,9 +97,9 @@
 			"label": "CPack Sources",
 			"type": "shell",
 			"options": {
-				"cwd": "${workspaceFolder}/build/project-name-0-0-0-linux"
+				"cwd": "${workspaceFolder}/build"
 			},
-			"command": "cpack --config CPackSourceConfig.cmake && sleep 3s && rm -rf ../../bin/_CPack_Packages",
+			"command": "cpack --config CPackSourceConfig.cmake && sleep 3s && rm -rf ../bin/_CPack_Packages",
 			"group": {
 				"kind": "build",
 				"isDefault": true

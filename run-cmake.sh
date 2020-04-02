@@ -8,7 +8,7 @@
 readonly WORKSPACE_DIR=$(pwd)
 declare -r BUILD_DIR="${WORKSPACE_DIR}/build"
 declare -r CMAKE_DIR="${WORKSPACE_DIR}/cmake"
-declare -r SOLUTION_DIR="${BUILD_DIR}/project-name-0-0-0-linux"
+declare -r SOLUTION_DIR="${BUILD_DIR}"
 
 cmake -S "${WORKSPACE_DIR}" -B "${SOLUTION_DIR}" -C "${CMAKE_DIR}/project/CMakeOptions.txt"
 
