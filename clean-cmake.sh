@@ -5,15 +5,9 @@
 # LICENSE file in the root directory of this source tree.
 
 #!/bin/bash
-
-export PROJECT_NAME="project-name"       # -DPROJECT_NAME: specifies a name for project
-export PROJECT_VERSION_MAJOR="0"         # -DPROJECT_VERSION_MAJOR: project major version
-export PROJECT_VERSION_MINOR="0"         # -DPROJECT_VERSION_MINOR: project minor version
-export PROJECT_VERSION_PATCH="0"         # -DPROJECT_VERSION_PATCH: project patch version
-
 readonly WORKSPACE_DIR=$(pwd)
 declare -r BUILD_DIR="${WORKSPACE_DIR}/build"
-declare -r SOLUTION_DIR="${BUILD_DIR}/${PROJECT_NAME}-${PROJECT_VERSION_MAJOR}-${PROJECT_VERSION_MINOR}-${PROJECT_VERSION_PATCH}-linux"
+declare -r SOLUTION_DIR="${BUILD_DIR}/project-name-0-0-0-linux"
 
 if [[ -d "${SOLUTION_DIR}" ]]; then
 	cmake --build "${SOLUTION_DIR}" --target clean

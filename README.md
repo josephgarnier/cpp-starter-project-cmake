@@ -45,32 +45,33 @@ cd cmake-base-cpp
 
 ### 1. Global settings
 
-Instead of executing cmake command with its flags in a terminal, you can use the `run-cmake.sh` (linux) or `run-cmake.bat` (windows) script. Open the file depending on your OS with a text editor and edit *variables project* prefixed with "export" instruction (name, version, generator, etc).
+Instead of executing `cmake` command with its flags in a terminal, the two scripts `run-cmake.sh` (linux) and `run-cmake.bat` (windows) are proposed to execute them and load a CMakeCache file containing all settings described below. So, open the file `cmake/project/CMakeOptions.txt` with a text editor and edit the **variables project** listed in *customize section* (name, version, generator, etc).
 
 These variables correspond to the CMake options used when running `cmake` command. If you don't edit them, they will be set with a default value:
 
-- `DPARAM_PROJECT_NAME`: specifies a name for project
-- `DPARAM_PROJECT_SUMMARY`: short description of the project
-- `DPARAM_PROJECT_VENDOR_NAME`: project author
-- `DPARAM_PROJECT_VENDOR_CONTACT`: author contact
-- `DPARAM_PROJECT_VERSION_MAJOR`: project major version
-- `DPARAM_PROJECT_VERSION_MINOR`: project minor version
-- `DPARAM_PROJECT_VERSION_PATCH`: project patch version
-- `DPARAM_GENERATOR`: see [cmake-generators](https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html)
-- `DPARAM_COMPILE_VERSION=[11|14|17 (default)|20]`: see [CMAKE_CXX_STANDARD](https://cmake.org/cmake/help/latest/variable/CMAKE_CXX_STANDARD.html)
+- `PROJECT_NAME_VAL`: specifies a name for project
+- `PROJECT_SUMMARY_VAL`: short description of the project
+- `PROJECT_VENDOR_NAME_VAL`: project author
+- `PROJECT_VENDOR_CONTACT_VAL`: author contact
+- `PROJECT_VERSION_MAJOR_VAL`: project major version
+- `PROJECT_VERSION_MINOR_VAL`: project minor version
+- `PROJECT_VERSION_PATCH_VAL`: project patch version
+- `TOOLCHAIN_FILE_VAL`: specifies toolchain file, see [toolchains](https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html)
+- `GENERATOR_VAL`: specifies CMake generator, see [cmake-generators](https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html)
+- `COMPILE_VERSION=[11|14|17 (default)|20]`: see [CMAKE_CXX_STANDARD](https://cmake.org/cmake/help/latest/variable/CMAKE_CXX_STANDARD.html)
 - `COMPILE_DEFINITIONS`: semicolon-separated list of preprocessor definitions (e.g -DFOO;-DBAR or FOO;BAR). Can be empty.
-- `DPARAM_BUILD_TYPE=[(default) debug|release]`: set type of build
-- `DPARAM_ASSERT_ENABLE=[ON|OFF (default)]`: enable or disable assert (optionally used in `cmake/project/Dependencies.cmake`)
-- `DPARAM_BUILD_SHARED_LIBS=[(default) ON|OFF]`: build shared libraries instead of static
-- `DPARAM_BUILD_EXEC=[(default) ON|OFF]`: build an executable
-- `DPARAM_BUILD_TESTS=[ON|OFF (default)]`: build tests
-- `DPARAM_BUILD_DOXYGEN_DOCS=[ON|OFF (default)]`: build documentation
+- `BUILD_TYPE=[(default) debug|release]`: set type of build
+- `ASSERT_ENABLE=[ON|OFF (default)]`: enable or disable assert (optionally used in `cmake/project/Dependencies.cmake`)
+- `BUILD_SHARED_LIBS=[(default) ON|OFF]`: build shared libraries instead of static
+- `BUILD_EXEC=[(default) ON|OFF]`: build an executable
+- `BUILD_TESTS=[ON|OFF (default)]`: build tests
+- `BUILD_DOXYGEN_DOCS=[ON|OFF (default)]`: build documentation
 
-Now, do the same thing with `clean-cmake.sh` (linux) or `clean-cmake.bat` (windows) script in taking care to set variables with same values as previously. You can use these scripts to clean the project from its generated files like executable, library, documentation, etc. They call `cmake clean` command.
+In addition to the previous scripts, you can use the scripts `clean-cmake.sh` (linux) or `clean-cmake.bat` (windows) to clean the project from its generated files like executable, library, documentation, etc. They call the `cmake clean` command.
 
 ### 2. Setting up the toolchain and project files
 
-To compile your project, CMake will need a [toolchains](https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html) file. First, **create your own toolchains file** in `cmake/toolchains` or use one provided by default : there are one file for clang on linux and another one for visual studio on windows, feel free to clean them of their compile flags if you don't need them. Then, edit the run-cmake script and **set the path to your toolchain** file in `-DCMAKE_TOOLCHAIN_FILE` variable. We'll now configure all files in `cmake/project/`.
+To compile your project, CMake will need a [toolchains](https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html) file. First, **create your own toolchains file** in `cmake/toolchains` or use one provided by default : there are one file for clang on linux and another one for visual studio on windows, feel free to clean them of their compile flags if you don't need them. Then, edit the CMakeOptions cache file and **set the path to your toolchain** file in `TOOLCHAIN_FILE_VAL` variable. We'll now configure all files in `cmake/project/`.
 
 Add your **source files** (headers and cpp) in `src/` directory or only the private source files if you decide to separate public and private header. In this case, put the public headers in a specific directory (or not) in `include/`. Please note that there are already some files for testing, remember to erase them before putting yours. By default, the instructions in file `cmake/project/ProjectSrcFiles.cmake` will automatically scan these directories and set cmake variables accordingly. But if you don't want to use the automation script scanning, open this file and read the instructions given in comment to complete it.
 
@@ -144,6 +145,7 @@ This project has been set up with a specific file/folder structure in mind. The 
 | `build/` | contains all object files, and is removed on a `clean`. |
 | `cmake/helpers/Uninstall.cmake.in` | uninstall script, necessary for the `make uninstall` target. |
 | `cmake/modules/` | contains `CMake` modules. |
+| `cmake/project/CMakeOptions.txt` | settings file to populate the cache. |
 | `cmake/project/CPackInstallerConfig.cmake` | instructions to build package installer for binaries and sources. |
 | `cmake/project/CPackInstallerOptions.cmake.in` | configuration of each cpack generator. |
 | `cmake/project/Dependencies.cmake` | project external libs settings. |

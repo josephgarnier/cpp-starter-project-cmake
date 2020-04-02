@@ -11,54 +11,21 @@
 # -DPARAM_PROJECT_VERSION_MAJOR: project major version
 # -DPARAM_PROJECT_VERSION_MINOR: project minor version
 # -DPARAM_PROJECT_VERSION_PATCH: project patch version
-# -DPARAM_GENERATOR: see https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html
+# -DCMAKE_TOOLCHAIN_FILE: the toolchain file, see https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html
+# -DCMAKE_GENERATOR: specifies CMake Generator, see https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html
 # -DPARAM_COMPILE_VERSION=[11|14|17 (default)|20]: see https://cmake.org/cmake/help/v3.1/variable/CMAKE_CXX_STANDARD.html
+# -DPARAM_COMPILE_DEFINITIONS: semicolon-separated list of preprocessor definitions (e.g -DFOO;-DBAR or FOO;BAR). Can be empty.
 # -DPARAM_BUILD_TYPE=[(default) debug|release]: set type of build
 # -DPARAM_ASSERT_ENABLE=[ON|OFF (default)]: enable or disable assert
 # -DPARAM_BUILD_SHARED_LIBS=[(default) ON|OFF]: build shared libraries instead of static
 # -DPARAM_BUILD_EXEC=[(default) ON|OFF]: build an executable
 # -DPARAM_BUILD_TESTS=[ON|OFF (default)]: build tests
 # -DPARAM_BUILD_DOXYGEN_DOCS=[ON|OFF (default)]: build documentation
-
 cmake_minimum_required(VERSION 3.16)
 
 #------------------------------------------------------------------------------
 # Set parameters
 #------------------------------------------------------------------------------
-set(PROJECT_NAME_DESC             "Specifies a name for project")
-set(PROJECT_SUMMARY_DESC          "Short description of the project")
-set(PROJECT_VENDOR_NAME_DESC      "Project author")
-set(PROJECT_VENDOR_CONTACT_DESC   "Author contact")
-set(PROJECT_VERSION_MAJOR_DESC    "Project major version")
-set(PROJECT_VERSION_MINOR_DESC    "Project minor version")
-set(PROJECT_VERSION_PATCH_DESC    "Project patch version")
-set(GENERATOR_DESC                "Specifies CMake Generator, see https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html")
-set(COMPILE_VERSION_DESC          "Specifies compiler version \"11\" or \"14\" or \"17\" or \"20\"")
-set(COMPILE_DEFINITIONS_DESC      "Specifies a semicolon-separated list of preprocessor definitions (e.g -DFOO;-DBAR or FOO;BAR). Can be empty.")
-set(BUILD_TYPE_DESC               "Specifies type of build \"debug\" or \"release\"")
-set(ASSERT_ENABLE_DESC            "Specifies whether to use assert")
-set(BUILD_SHARED_LIBS_DESC        "Specifies whether build shared libraries instead of static")
-set(BUILD_EXEC_DESC               "Specifies whether build an executable")
-set(BUILD_TESTS_DESC              "Specifies whether build tests")
-set(BUILD_DOXYGEN_DOCS_DESC       "Specifies whether build documentation")
-
-set(PARAM_PROJECT_NAME            "project-name"      CACHE   STRING  "${PROJECT_NAME_DESC}")
-set(PARAM_PROJECT_SUMMARY         "description"       CACHE   STRING  "${PROJECT_SUMMARY_DESC}")
-set(PARAM_PROJECT_VENDOR_NAME     "your-name"         CACHE   STRING  "${PROJECT_VENDOR_NAME_DESC}")
-set(PARAM_PROJECT_VENDOR_CONTACT  "contact"           CACHE   STRING  "${PROJECT_VENDOR_CONTACT_DESC}")
-set(PARAM_PROJECT_VERSION_MAJOR   "0"                 CACHE   STRING  "${PROJECT_VERSION_MAJOR_DESC}")
-set(PARAM_PROJECT_VERSION_MINOR   "0"                 CACHE   STRING  "${PROJECT_VERSION_MINOR_DESC}")
-set(PARAM_PROJECT_VERSION_PATCH   "0"                 CACHE   STRING  "${PROJECT_VERSION_PATCH_DESC}")
-set(PARAM_GENERATOR               "Unix Makefiles"    CACHE   STRING  "${GENERATOR_DESC}")
-set(PARAM_COMPILE_VERSION         "17"                CACHE   STRING  "${COMPILE_VERSION_DESC}")
-set(PARAM_COMPILE_DEFINITIONS     ""                  CACHE   STRING  "${COMPILE_DEFINITIONS_DESC}")
-set(PARAM_BUILD_TYPE              "debug"             CACHE   STRING  "${BUILD_TYPE_DESC}")
-set(PARAM_ASSERT_ENABLE           OFF                 CACHE   BOOL    "${ASSERT_ENABLE_DESC}")
-set(PARAM_BUILD_SHARED_LIBS       OFF                 CACHE   BOOL    "${BUILD_SHARED_LIBS_DESC}")
-set(PARAM_BUILD_EXEC              ON                  CACHE   BOOL    "${BUILD_EXEC_DESC}")
-set(PARAM_BUILD_TESTS             OFF                 CACHE   BOOL    "${BUILD_TESTS_DESC}")
-set(PARAM_BUILD_DOXYGEN_DOCS      OFF                 CACHE   BOOL    "${BUILD_DOXYGEN_DOCS_DESC}")
-
 message("=============================================")
 message("      Build project ${PARAM_PROJECT_NAME}    ")
 message("=============================================")
@@ -71,7 +38,8 @@ message(" - Author contact: \"${PARAM_PROJECT_VENDOR_CONTACT}\"")
 message(" - Project major version: \"${PARAM_PROJECT_VERSION_MAJOR}\"")
 message(" - Project minor version: \"${PARAM_PROJECT_VERSION_MINOR}\"")
 message(" - Project patch version: \"${PARAM_PROJECT_VERSION_PATCH}\"")
-message(" - Generator: \"${PARAM_GENERATOR}\"")
+message(" - Toolchain file used: \"${CMAKE_TOOLCHAIN_FILE}\"")
+message(" - Generator: \"${CMAKE_GENERATOR}\"")
 message(" - Compile version: \"${PARAM_COMPILE_VERSION}\"")
 message(" - Compile definitions: \"${PARAM_COMPILE_DEFINITIONS}\"")
 message(" - Build type: \"${PARAM_BUILD_TYPE}\"")
