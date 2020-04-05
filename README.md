@@ -58,14 +58,14 @@ These variables correspond to the CMake options used when running `cmake` comman
 - `PROJECT_VERSION_PATCH_VAL`: project patch version
 - `TOOLCHAIN_FILE_VAL`: specifies toolchain file, see [toolchains](https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html)
 - `GENERATOR_VAL`: specifies CMake generator, see [cmake-generators](https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html)
-- `COMPILE_VERSION=[11|14|17 (default)|20]`: see [CMAKE_CXX_STANDARD](https://cmake.org/cmake/help/latest/variable/CMAKE_CXX_STANDARD.html)
-- `COMPILE_DEFINITIONS`: semicolon-separated list of preprocessor definitions (e.g -DFOO;-DBAR or FOO;BAR). Can be empty.
-- `BUILD_TYPE=[(default) debug|release]`: set type of build
-- `ASSERT_ENABLE=[ON|OFF (default)]`: enable or disable assert (optionally used in `cmake/project/Dependencies.cmake`)
-- `BUILD_SHARED_LIBS=[(default) ON|OFF]`: build shared libraries instead of static
-- `BUILD_EXEC=[(default) ON|OFF]`: build an executable
-- `BUILD_TESTS=[ON|OFF (default)]`: build tests
-- `BUILD_DOXYGEN_DOCS=[ON|OFF (default)]`: build documentation
+- `COMPILE_VERSION=[11|14|17 (default)|20]`: specifies compiler version "11" or "14" or "17" or "20", see [CMAKE_CXX_STANDARD](https://cmake.org/cmake/help/latest/variable/CMAKE_CXX_STANDARD.html)
+- `COMPILE_DEFINITIONS`: specifies a semicolon-separated list of preprocessor definitions (e.g -DFOO;-DBAR or FOO;BAR). Can be empty.
+- `BUILD_TYPE=[(default) debug|release]`: specifies type of build "debug" or "release"
+- `ASSERT_ENABLE=[ON|OFF (default)]`: specifies whether to use assert (optionally used in `cmake/project/Dependencies.cmake`)
+- `BUILD_SHARED_LIBS=[(default) ON|OFF]`: specifies whether build shared libraries instead of static
+- `BUILD_EXEC=[(default) ON|OFF]`: specifies whether build an executable
+- `BUILD_TESTS=[ON|OFF (default)]`: specifies whether build tests
+- `BUILD_DOXYGEN_DOCS=[ON|OFF (default)]`: specifies whether build documentation
 
 In addition to the previous scripts, you can use the scripts `clean-cmake.sh` (linux) or `clean-cmake.bat` (windows) to clean the project from its generated files like executable, library, documentation, etc. They call the `cmake clean` command.
 

@@ -11,16 +11,16 @@
 # -DPARAM_PROJECT_VERSION_MAJOR: project major version
 # -DPARAM_PROJECT_VERSION_MINOR: project minor version
 # -DPARAM_PROJECT_VERSION_PATCH: project patch version
-# -DCMAKE_TOOLCHAIN_FILE: the toolchain file, see https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html
+# -DCMAKE_TOOLCHAIN_FILE: specifies toolchain file, see https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html
 # -DCMAKE_GENERATOR: specifies CMake Generator, see https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html
-# -DPARAM_COMPILE_VERSION=[11|14|17 (default)|20]: see https://cmake.org/cmake/help/v3.1/variable/CMAKE_CXX_STANDARD.html
-# -DPARAM_COMPILE_DEFINITIONS: semicolon-separated list of preprocessor definitions (e.g -DFOO;-DBAR or FOO;BAR). Can be empty.
-# -DPARAM_BUILD_TYPE=[(default) debug|release]: set type of build
-# -DPARAM_ASSERT_ENABLE=[ON|OFF (default)]: enable or disable assert
-# -DPARAM_BUILD_SHARED_LIBS=[(default) ON|OFF]: build shared libraries instead of static
-# -DPARAM_BUILD_EXEC=[(default) ON|OFF]: build an executable
-# -DPARAM_BUILD_TESTS=[ON|OFF (default)]: build tests
-# -DPARAM_BUILD_DOXYGEN_DOCS=[ON|OFF (default)]: build documentation
+# -DPARAM_COMPILE_VERSION=[11|14|17 (default)|20]: specifies compiler version "11" or "14" or "17" or "20", see https://cmake.org/cmake/help/v3.1/variable/CMAKE_CXX_STANDARD.html
+# -DPARAM_COMPILE_DEFINITIONS: specifies a semicolon-separated list of preprocessor definitions (e.g -DFOO;-DBAR or FOO;BAR). Can be empty.
+# -DPARAM_BUILD_TYPE=[(default) debug|release]: specifies type of build "debug" or "release"
+# -DPARAM_ASSERT_ENABLE=[ON|OFF (default)]: specifies whether to use assert (optionally used in `cmake/project/Dependencies.cmake`)
+# -DPARAM_BUILD_SHARED_LIBS=[(default) ON|OFF]: specifies whether build shared libraries instead of static
+# -DPARAM_BUILD_EXEC=[(default) ON|OFF]: specifies whether build an executable
+# -DPARAM_BUILD_TESTS=[ON|OFF (default)]: specifies whether build tests
+# -DPARAM_BUILD_DOXYGEN_DOCS=[ON|OFF (default)]: specifies whether build documentation
 cmake_minimum_required(VERSION 3.16)
 
 #------------------------------------------------------------------------------

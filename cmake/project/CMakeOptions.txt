@@ -49,7 +49,7 @@ set(GENERATOR_DESC                "Specifies CMake generator, see https://cmake.
 set(COMPILE_VERSION_DESC          "Specifies compiler version \"11\" or \"14\" or \"17\" or \"20\"")
 set(COMPILE_DEFINITIONS_DESC      "Specifies a semicolon-separated list of preprocessor definitions (e.g -DFOO;-DBAR or FOO;BAR). Can be empty.")
 set(BUILD_TYPE_DESC               "Specifies type of build \"debug\" or \"release\"")
-set(ASSERT_ENABLE_DESC            "Specifies whether to use assert")
+set(ASSERT_ENABLE_DESC            "Specifies whether to use assert (optionally used in \"cmake/project/Dependencies.cmake\")")
 set(BUILD_SHARED_LIBS_DESC        "Specifies whether build shared libraries instead of static")
 set(BUILD_EXEC_DESC               "Specifies whether build an executable")
 set(BUILD_TESTS_DESC              "Specifies whether build tests")
