@@ -228,6 +228,7 @@ set(${PROJECT_NAME}_CPACK_OPTIONS_FILE              "${${PROJECT_NAME}_BUILD_DIR
 message("\n== Build project ==")
 include(Cotire)
 include(ProjectSrcFiles)
+include(FileManip)
 if(NOT DEFINED ${PROJECT_NAME}_PRECOMPILED_HEADER_FILE)
 	message(FATAL_ERROR "${PROJECT_NAME}_PRECOMPILED_HEADER_FILE must be specified!")
 endif()
@@ -250,15 +251,28 @@ if(NOT DEFINED ${PROJECT_NAME}_PUBLIC_HEADER_FILES)
 	message(FATAL_ERROR "${PROJECT_NAME}_PUBLIC_HEADER_FILES must be specified!")
 endif()
 
+set(${PROJECT_NAME}_RELATIVE_SRC_ALL_FILES "")
+file_manip(RELATIVE_PATH ${PROJECT_NAME}_SRC_ALL_FILES BASE_DIR "${${PROJECT_NAME}_PROJECT_DIR}" OUTPUT_VARIABLE ${PROJECT_NAME}_RELATIVE_SRC_ALL_FILES)
+
 # Build library
 if(${BUILD_SHARED_LIBS})
 	message("")
 	message(STATUS "Build as a shared library")
-	add_library("${${PROJECT_NAME}_LIB_NAME}" SHARED ${${PROJECT_NAME}_SRC_ALL_FILES})
+	add_library("${${PROJECT_NAME}_LIB_NAME}" SHARED)
+	target_sources("${${PROJECT_NAME}_LIB_NAME}"
+		PUBLIC
+			"$<BUILD_INTERFACE:${${PROJECT_NAME}_RELATIVE_SRC_ALL_FILES}>"
+			"$<INSTALL_INTERFACE:${${PROJECT_NAME}_RELATIVE_SRC_ALL_FILES}>"
+	)
 else()
 	message("")
 	message(STATUS "Build as a static library")
-	add_library("${${PROJECT_NAME}_LIB_NAME}" STATIC ${${PROJECT_NAME}_SRC_ALL_FILES})
+	add_library("${${PROJECT_NAME}_LIB_NAME}" STATIC)
+	target_sources("${${PROJECT_NAME}_LIB_NAME}"
+		PUBLIC
+			"$<BUILD_INTERFACE:${${PROJECT_NAME}_RELATIVE_SRC_ALL_FILES}>"
+			"$<INSTALL_INTERFACE:${${PROJECT_NAME}_RELATIVE_SRC_ALL_FILES}>"
+	)
 endif()
 
 # Add precompiled header to library
@@ -299,8 +313,13 @@ if(${PARAM_BUILD_EXEC})
 	# Build executable
 	message("")
 	message(STATUS "Build executable")
-	add_executable("${${PROJECT_NAME}_EXEC_NAME}" ${${PROJECT_NAME}_SRC_ALL_FILES})
-
+	add_executable("${${PROJECT_NAME}_EXEC_NAME}")
+	target_sources("${${PROJECT_NAME}_EXEC_NAME}"
+		PUBLIC
+			"$<BUILD_INTERFACE:${${PROJECT_NAME}_RELATIVE_SRC_ALL_FILES}>"
+			"$<INSTALL_INTERFACE:${${PROJECT_NAME}_RELATIVE_SRC_ALL_FILES}>"
+	)
+	
 	# Add precompiled header to executable
 	if(${PROJECT_NAME}_PRECOMPILED_HEADER_FILE)
 		message(STATUS "Add precompiled header to executable")
