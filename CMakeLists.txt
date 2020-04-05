@@ -597,20 +597,21 @@ endif()
 #------------------------------------------------------------------------------
 message("\n== Customize the solution explorer structure for IDE project generation ==")
 
-set(${PROJECT_NAME}_PROJECT_ALL_FILES "")
-directory(SCAN ${PROJECT_NAME}_PROJECT_ALL_FILES LIST_DIRECTORIES on RELATIVE on ROOT_DIR "${${PROJECT_NAME}_PROJECT_DIR}" EXCLUDE_REGEX ".git|.vscode")
-source_group(TREE "${${PROJECT_NAME}_PROJECT_DIR}" FILES "${${PROJECT_NAME}_PROJECT_ALL_FILES}")
+set(project_all_files "")
+directory(SCAN project_all_files LIST_DIRECTORIES on RELATIVE on ROOT_DIR "${${PROJECT_NAME}_PROJECT_DIR}" EXCLUDE_REGEX "build|.git|.vscode")
+source_group(TREE "${${PROJECT_NAME}_PROJECT_DIR}" FILES "${project_all_files}")
 
+list(REMOVE_ITEM project_all_files ${${PROJECT_NAME}_RELATIVE_SRC_ALL_FILES})
 target_sources("${${PROJECT_NAME}_LIB_NAME}"
 	PUBLIC
-		"$<BUILD_INTERFACE:${${PROJECT_NAME}_PROJECT_ALL_FILES}>"
-		"$<INSTALL_INTERFACE:${${PROJECT_NAME}_PROJECT_ALL_FILES}>"
+		"$<BUILD_INTERFACE:${project_all_files}>"
+		"$<INSTALL_INTERFACE:${project_all_files}>"
 )
 if(${PARAM_BUILD_EXEC})
 	target_sources("${${PROJECT_NAME}_EXEC_NAME}"
-	PUBLIC
-		"$<BUILD_INTERFACE:${${PROJECT_NAME}_PROJECT_ALL_FILES}>"
-		"$<INSTALL_INTERFACE:${${PROJECT_NAME}_PROJECT_ALL_FILES}>"
+		PUBLIC
+			"$<BUILD_INTERFACE:${$project_all_files}>"
+			"$<INSTALL_INTERFACE:${project_all_files}>"
 	)
 endif()
 
