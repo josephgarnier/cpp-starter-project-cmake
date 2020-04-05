@@ -67,7 +67,7 @@ endif()
 set(BUILD_SHARED_LIBS ${PARAM_BUILD_SHARED_LIBS})
 
 # Set CMake build-type. If it not supplied by the user, the default built type is "Release".
-if((NOT DEFINED PARAM_BUILD_TYPE) OR ("${PARAM_BUILD_TYPE}" STREQUAL "release"))
+if(("${PARAM_BUILD_TYPE}" STREQUAL "release"))
 	set(CMAKE_BUILD_TYPE Release)
 	message(STATUS "Building release version")
 elseif("${PARAM_BUILD_TYPE}" STREQUAL "debug")
@@ -78,15 +78,14 @@ else()
 endif()
 
 # Set compiler version flag
-if((NOT DEFINED PARAM_COMPILE_VERSION) OR
-	((NOT "${PARAM_COMPILE_VERSION}" STREQUAL "11")
-	AND (NOT "${PARAM_COMPILE_VERSION}" STREQUAL "14")
-	AND (NOT "${PARAM_COMPILE_VERSION}" STREQUAL "17")
-	AND (NOT "${PARAM_COMPILE_VERSION}" STREQUAL "20")))
-	message(FATAL_ERROR "Compile version must be 11 or 14 or 17 or 20")
-else()
+if(("${PARAM_COMPILE_VERSION}" STREQUAL "11")
+	OR ("${PARAM_COMPILE_VERSION}" STREQUAL "14")
+	OR ("${PARAM_COMPILE_VERSION}" STREQUAL "17")
+	OR ("${PARAM_COMPILE_VERSION}" STREQUAL "20"))
 	set(CMAKE_CXX_STANDARD "${PARAM_COMPILE_VERSION}")
 	message(STATUS "Compile version set to ${CMAKE_CXX_STANDARD}")
+else()
+	message(FATAL_ERROR "Compile version must be 11 or 14 or 17 or 20")
 endif()
 
 #------------------------------------------------------------------------------
