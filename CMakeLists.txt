@@ -325,9 +325,9 @@ target_compile_definitions("${${PROJECT_NAME}_TARGET_NAME}"
 )
 
 #------------------------------------------------------------------------------
-# Add project dependances
+# Add project dependencies
 #------------------------------------------------------------------------------
-message("\n== Add project dependancies ==")
+message("\n== Add project dependencies ==")
 include(Dependencies)
 if(NOT DEFINED ${PROJECT_NAME}_LIBRARIES_FILES)
 	message(FATAL_ERROR "${PROJECT_NAME}_LIBRARIES_FILES must be specified!")

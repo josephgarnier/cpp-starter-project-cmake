@@ -14,7 +14,7 @@
 # Finally, set the variable `${PROJECT_NAME}_INCLUDE_HEADER_FILES` with public
 # header files present in `${PROJECT_NAME}_INCLUDE_DIR/${PROJECT_NAME}`
 # (this directory is optional). In this variable, only set your own headers
-# files, not headers of dependancies that will add in a specific config file.
+# files, not headers of dependencies that will add in a specific config file.
 # The last variable `${PROJECT_NAME}_PUBLIC_HEADER_FILES` is a list of public
 # header files that will be copy in `/include` directory by `install()` command.
 # By default, this variable is set with all header files of your project ;
@@ -49,7 +49,7 @@ directory(SCAN ${PROJECT_NAME}_SRC_HEADER_FILES LIST_DIRECTORIES off RELATIVE of
 set(${PROJECT_NAME}_SRC_SOURCE_FILES "")
 directory(SCAN ${PROJECT_NAME}_SRC_SOURCE_FILES LIST_DIRECTORIES off RELATIVE off ROOT_DIR "${${PROJECT_NAME}_SRC_DIR}" INCLUDE_REGEX ".*[.]cpp$|.*[.]cc$")
 
-# Only you own header files of /include/project-name directiry go here. The headers of your dependancies should not set here,
+# Only you own header files of /include/project-name directiry go here. The headers of your dependencies should not set here,
 # they will be add in a specific config file.
 set(${PROJECT_NAME}_INCLUDE_HEADER_FILES "")
 directory(SCAN ${PROJECT_NAME}_INCLUDE_HEADER_FILES LIST_DIRECTORIES off RELATIVE off ROOT_DIR "${${PROJECT_NAME}_INCLUDE_DIR}/${PROJECT_NAME}" INCLUDE_REGEX ".*[.]h$")

@@ -6,7 +6,7 @@
 # =============================================================================
 # What Is This?
 # -------------
-# Put in this file all instructions to include and link your library dependancies
+# Put in this file all instructions to include and link your library dependencies
 # to your own library and own executable. All libraries (.dll or .so files) found by the
 # `directory()` function will be automatically link, but to include their header
 # file, you have to add this function. For each directory in `/include`,
@@ -14,7 +14,7 @@
 # the end of file in remplacing `<library-name>` by the name of library:
 # 
 # set(<library-name>_include_header_files "")
-# directory(SCAN <library-name>_include_header_files ROOT_DIR "${${PROJECT_NAME}_INCLUDE_DIR}/${<library-name>}" INCLUDE_REGEX ".*[.]h$")
+# directory(SCAN <library-name>_include_header_files LIST_DIRECTORIES off RELATIVE off ROOT_DIR "${${PROJECT_NAME}_INCLUDE_DIR}/${<library-name>}" INCLUDE_REGEX ".*[.]h$")
 # set(${PROJECT_NAME}_PUBLIC_HEADER_FILES "${${PROJECT_NAME}_PUBLIC_HEADER_FILES}" "${<library-name>_include_header_files}")
 #
 # On the contrary, if you want to use an external library (e.g Qt) in using
@@ -22,7 +22,7 @@
 # to add your special instructions like `find_package()`, `target_sources()`,
 # `target_include_directories()`, target_compile_definitions()` and
 # `target_link_libraries()` at the end of file. You have to add these properties on
-# each target : `${${PROJECT_NAME}_LIB_NAME}` and `${${PROJECT_NAME}_EXEC_NAME}`.
+# the target : `${${PROJECT_NAME}_TARGET_NAME}`.
 # To know how import a such library please read its documentation.
 # Last thing, this is in this file that you will use the parameter `DPARAM_ASSERT_ENABLE`
 # with a test like `if(${PARAM_ASSERT_ENABLE})`.
@@ -35,7 +35,6 @@ set(${PROJECT_NAME}_LIBRARIES_FILES "")
 directory(SCAN ${PROJECT_NAME}_LIBRARIES_FILES LIST_DIRECTORIES off RELATIVE off ROOT_DIR "${${PROJECT_NAME}_LIB_DIR}" INCLUDE_REGEX "(.*\\${CMAKE_SHARED_LIBRARY_SUFFIX}$)|(.*\\${CMAKE_STATIC_LIBRARY_SUFFIX}$)")
 
 # Add your special instructions here
-
 
 
 # Exemple with Qt (delete it if you don't need it)
@@ -122,106 +121,60 @@ directory(SCAN ${PROJECT_NAME}_LIBRARIES_FILES LIST_DIRECTORIES off RELATIVE off
 # endforeach()
 # message("")
 
-# # Add Qt sources to library
-# message(STATUS "Add Qt sources to library")
-# target_sources("${${PROJECT_NAME}_LIB_NAME}"
+# # Add Qt sources to target
+# message(STATUS "Add Qt sources to target")
+# target_sources("${${PROJECT_NAME}_TARGET_NAME}"
 # 	PUBLIC
 # 		"$<BUILD_INTERFACE:${RELATIVE_QOBJECT_SOURCE_FILES};${RELATIVE_MOC_HEADER_FILES};${RELATIVE_UI_SOURCE_FILES};${RELATIVE_RESSOURCE_SRCS}>"
 # 		"$<INSTALL_INTERFACE:${RELATIVE_QOBJECT_SOURCE_FILES};${RELATIVE_MOC_HEADER_FILES};${RELATIVE_UI_SOURCE_FILES};${RELATIVE_RESSOURCE_SRCS}>"
 # )
 
-# # Add Qt incude directories to library
-# message(STATUS "Add Qt include directories to library")
-# target_include_directories("${${PROJECT_NAME}_LIB_NAME}"
+# # Add Qt incude directories to target
+# message(STATUS "Add Qt include directories to target")
+# target_include_directories("${${PROJECT_NAME}_TARGET_NAME}"
 # 	PUBLIC
 # 		"$<BUILD_INTERFACE:${Qt5Widgets_INCLUDE_DIRS};${Qt5Gui_INCLUDE_DIRS};${Qt5Core_INCLUDE_DIRS};${Qt5Svg_INCLUDE_DIRS};${Qt5Concurrent_INCLUDE_DIRS}>"
 # 		"$<INSTALL_INTERFACE:${Qt5Widgets_INCLUDE_DIRS};${Qt5Gui_INCLUDE_DIRS};${Qt5Core_INCLUDE_DIRS};${Qt5Svg_INCLUDE_DIRS};${Qt5Concurrent_INCLUDE_DIRS}>"
 # )
 
-# # Add Qt definitions to library
-# message(STATUS "Add Qt definitions to library")
-# target_compile_definitions("${${PROJECT_NAME}_LIB_NAME}"
+# # Add Qt definitions to target
+# message(STATUS "Add Qt definitions to target")
+# target_compile_definitions("${${PROJECT_NAME}_TARGET_NAME}"
 # 	PUBLIC
 # 		"$<BUILD_INTERFACE:${Qt5Widgets_COMPILE_DEFINITIONS};${Qt5Gui_COMPILE_DEFINITIONS};${Qt5Core_COMPILE_DEFINITIONS};${Qt5Svg_COMPILE_DEFINITIONS};${Qt5Concurrent_COMPILE_DEFINITIONS};QT_USE_QSTRINGBUILDER;QT_SHAREDPOINTER_TRACK_POINTERS;QT_MESSAGELOGCONTEXT>"
 # 		"$<INSTALL_INTERFACE:${Qt5Widgets_COMPILE_DEFINITIONS};${Qt5Gui_COMPILE_DEFINITIONS};${Qt5Core_COMPILE_DEFINITIONS};${Qt5Svg_COMPILE_DEFINITIONS};${Qt5Concurrent_COMPILE_DEFINITIONS};QT_USE_QSTRINGBUILDER;QT_SHAREDPOINTER_TRACK_POINTERS;QT_MESSAGELOGCONTEXT>"
 # )
 
-# # Link Qt to library
-# message(STATUS "Link Qt to library\n")
+# # Link Qt to target
+# message(STATUS "Link Qt to target\n")
 # get_target_property(Qt5Widgets_location ${Qt5Widgets_LIBRARIES} LOCATION)
 # get_target_property(Qt5Gui_location ${Qt5Gui_LIBRARIES} LOCATION)
 # get_target_property(Qt5Core_location ${Qt5Core_LIBRARIES} LOCATION)
 # get_target_property(Qt5Svg_location ${Qt5Svg_LIBRARIES} LOCATION)
 # get_target_property(Qt5Concurrent_location ${Qt5Concurrent_LIBRARIES} LOCATION)
-# target_link_libraries("${${PROJECT_NAME}_LIB_NAME}"
+# target_link_libraries("${${PROJECT_NAME}_TARGET_NAME}"
 # 	PUBLIC
 # 		"$<BUILD_INTERFACE:Qt5::Widgets;Qt5::Gui;Qt5::Core;Qt5::Svg;Qt5::Concurrent>"
 # 		"$<INSTALL_INTERFACE:${Qt5Widgets_location};${Qt5Gui_location};${Qt5Core_location};${Qt5Svg_location};${Qt5Concurrent_location}>"
 # )
-
-# if(${PARAM_BUILD_EXEC})
-# 	# Add Qt sources to executable
-# 	message(STATUS "Add Qt sources to executable")
-# 	target_sources("${${PROJECT_NAME}_EXEC_NAME}"
-# 		PUBLIC
-# 			"$<BUILD_INTERFACE:${RELATIVE_QOBJECT_SOURCE_FILES};${RELATIVE_MOC_HEADER_FILES};${RELATIVE_UI_SOURCE_FILES};${RELATIVE_RESSOURCE_SRCS}>"
-# 			"$<INSTALL_INTERFACE:${RELATIVE_QOBJECT_SOURCE_FILES};${RELATIVE_MOC_HEADER_FILES};${RELATIVE_UI_SOURCE_FILES};${RELATIVE_RESSOURCE_SRCS}>"
-# 	)
-
-# 	# Add Qt incude directories to executable
-# 	message(STATUS "Add Qt include directories to executable")
-# 	target_include_directories("${${PROJECT_NAME}_EXEC_NAME}"
-# 		PUBLIC
-# 			"$<BUILD_INTERFACE:${Qt5Widgets_INCLUDE_DIRS};${Qt5Gui_INCLUDE_DIRS};${Qt5Core_INCLUDE_DIRS};${Qt5Svg_INCLUDE_DIRS};${Qt5Concurrent_INCLUDE_DIRS}>"
-# 			"$<INSTALL_INTERFACE:${Qt5Widgets_INCLUDE_DIRS};${Qt5Gui_INCLUDE_DIRS};${Qt5Core_INCLUDE_DIRS};${Qt5Svg_INCLUDE_DIRS};${Qt5Concurrent_INCLUDE_DIRS}>"
-# 	)
-	
-# 	# Add Qt definitions to executable
-# 	message(STATUS "Add Qt definitions to executable")
-# 	target_compile_definitions("${${PROJECT_NAME}_EXEC_NAME}"
-# 		PUBLIC
-# 			"$<BUILD_INTERFACE:${Qt5Widgets_COMPILE_DEFINITIONS};${Qt5Gui_COMPILE_DEFINITIONS};${Qt5Core_COMPILE_DEFINITIONS};${Qt5Svg_COMPILE_DEFINITIONS};${Qt5Concurrent_COMPILE_DEFINITIONS};QT_USE_QSTRINGBUILDER;QT_SHAREDPOINTER_TRACK_POINTERS;QT_MESSAGELOGCONTEXT>"
-# 			"$<INSTALL_INTERFACE:${Qt5Widgets_COMPILE_DEFINITIONS};${Qt5Gui_COMPILE_DEFINITIONS};${Qt5Core_COMPILE_DEFINITIONS};${Qt5Svg_COMPILE_DEFINITIONS};${Qt5Concurrent_COMPILE_DEFINITIONS};QT_USE_QSTRINGBUILDER;QT_SHAREDPOINTER_TRACK_POINTERS;QT_MESSAGELOGCONTEXT>"
-# 	)
-# 	target_compile_options("${${PROJECT_NAME}_EXEC_NAME}"
+# if("${PARAM_BUILD_TARGET}" STREQUAL "exec")
+# 	target_compile_options("${${PROJECT_NAME}_TARGET_NAME}"
 # 		PUBLIC
 # 			"$<BUILD_INTERFACE:-fPIC;-fPIE>"
 # 			"$<INSTALL_INTERFACE:-fPIC;-fPIE>"
 # 	)
-# 	set_target_properties("${${PROJECT_NAME}_EXEC_NAME}" PROPERTIES INTERFACE_POSITION_INDEPENDENT_CODE ON)
-	
-# 	# Link Qt to executable
-# 	message(STATUS "Link Qt to executable\n")
-# 	get_target_property(Qt5Widgets_location ${Qt5Widgets_LIBRARIES} LOCATION)
-# 	get_target_property(Qt5Gui_location ${Qt5Gui_LIBRARIES} LOCATION)
-# 	get_target_property(Qt5Core_location ${Qt5Core_LIBRARIES} LOCATION)
-# 	get_target_property(Qt5Svg_location ${Qt5Svg_LIBRARIES} LOCATION)
-# 	get_target_property(Qt5Concurrent_location ${Qt5Concurrent_LIBRARIES} LOCATION)
-# 	target_link_libraries("${${PROJECT_NAME}_EXEC_NAME}"
-# 		PUBLIC
-# 			"$<BUILD_INTERFACE:Qt5::Widgets;Qt5::Gui;Qt5::Core;Qt5::Svg;Qt5::Concurrent>"
-# 			"$<INSTALL_INTERFACE:${Qt5Widgets_location};${Qt5Gui_location};${Qt5Core_location};${Qt5Svg_location};${Qt5Concurrent_location}>"
-# 	)
+# 	set_target_properties("${${PROJECT_NAME}_TARGET_NAME}" PROPERTIES INTERFACE_POSITION_INDEPENDENT_CODE ON)
 # endif()
 
 # if(${PARAM_ASSERT_ENABLE})
 # 	message(STATUS "QtAssert enabled\n")
 # else()
-# 	# Add Qt assert definitions to library
-# 	message(STATUS "Add Qt assert definitions to library")
-# 	target_compile_definitions("${${PROJECT_NAME}_LIB_NAME}"
+# 	# Add Qt assert definitions to target
+# 	message(STATUS "Add Qt assert definitions to target")
+# 	target_compile_definitions("${${PROJECT_NAME}_TARGET_NAME}"
 # 		PUBLIC
 # 			"$<BUILD_INTERFACE:QT_NO_DEBUG>"
 # 			"$<INSTALL_INTERFACE:QT_NO_DEBUG>"
 # 	)
-# 	if(${PARAM_BUILD_EXEC})
-# 		# Add Qt assert definitions to executable
-# 		message(STATUS "Add Qt assert definitions to executable")
-# 		target_compile_definitions("${${PROJECT_NAME}_EXEC_NAME}"
-# 			PUBLIC
-# 				"$<BUILD_INTERFACE:QT_NO_DEBUG>"
-# 				"$<INSTALL_INTERFACE:QT_NO_DEBUG>"
-# 		)
-# 	endif()
 # 	message(STATUS "QtAssert disabled\n")
 # endif()
