@@ -62,8 +62,7 @@ These variables correspond to the CMake options used when running `cmake` comman
 - `COMPILE_DEFINITIONS`: specifies a semicolon-separated list of preprocessor definitions (e.g -DFOO;-DBAR or FOO;BAR). Can be empty.
 - `BUILD_TYPE=[(default) debug|release]`: specifies type of build "debug" or "release"
 - `ASSERT_ENABLE=[ON|OFF (default)]`: specifies whether to use assert (optionally used in `cmake/project/Dependencies.cmake`)
-- `BUILD_SHARED_LIBS=[(default) ON|OFF]`: specifies whether build shared libraries instead of static
-- `BUILD_EXEC=[(default) ON|OFF]`: specifies whether build an executable
+- `BUILD_TARGET=[static|shared|exec (default)]`: specified whether build static or shared library or as an exec
 - `BUILD_TESTS=[ON|OFF (default)]`: specifies whether build tests
 - `BUILD_DOXYGEN_DOCS=[ON|OFF (default)]`: specifies whether build documentation
 

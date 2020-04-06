@@ -16,9 +16,8 @@
 # -DPARAM_COMPILE_VERSION=[11|14|17 (default)|20]: specifies compiler version "11" or "14" or "17" or "20", see https://cmake.org/cmake/help/v3.1/variable/CMAKE_CXX_STANDARD.html
 # -DPARAM_COMPILE_DEFINITIONS: specifies a semicolon-separated list of preprocessor definitions (e.g -DFOO;-DBAR or FOO;BAR). Can be empty.
 # -DPARAM_BUILD_TYPE=[(default) debug|release]: specifies type of build "debug" or "release"
-# -DPARAM_ASSERT_ENABLE=[ON|OFF (default)]: specifies whether to use assert (optionally used in `cmake/project/Dependencies.cmake`)
-# -DPARAM_BUILD_SHARED_LIBS=[(default) ON|OFF]: specifies whether build shared libraries instead of static
-# -DPARAM_BUILD_EXEC=[(default) ON|OFF]: specifies whether build an executable
+# -DPARAM_ASSERT_ENABLE=[ON|OFF (default)]: specifies whether to use assert (optionally used in cmake/project/Dependencies.cmake)
+# -DPARAM_BUILD_TARGET=[static|shared|exec (default)]: specified whether build static or shared library or as an executable
 # -DPARAM_BUILD_TESTS=[ON|OFF (default)]: specifies whether build tests
 # -DPARAM_BUILD_DOXYGEN_DOCS=[ON|OFF (default)]: specifies whether build documentation
 cmake_minimum_required(VERSION 3.16)
@@ -44,8 +43,7 @@ message(" - Compile version: \"${PARAM_COMPILE_VERSION}\"")
 message(" - Compile definitions: \"${PARAM_COMPILE_DEFINITIONS}\"")
 message(" - Build type: \"${PARAM_BUILD_TYPE}\"")
 message(" - Assert is enable: \"${PARAM_ASSERT_ENABLE}\"")
-message(" - Build shared libs: \"${PARAM_BUILD_SHARED_LIBS}\"")
-message(" - Build executable: \"${PARAM_BUILD_EXEC}\"")
+message(" - Build target: \"${PARAM_BUILD_TARGET}\"")
 message(" - Build tests: \"${PARAM_BUILD_TESTS}\"")
 message(" - Build doxygen documentation: \"${PARAM_BUILD_DOXYGEN_DOCS}\"")
 message("")
@@ -63,10 +61,18 @@ if("${PARAM_PROJECT_NAME}" MATCHES " ")
 	message(FATAL_ERROR "Project name cannot contain spaces!")
 endif()
 
-# If present and true, this will cause all libraries to be built shared unless the library was explicitly added as a static library.
-set(BUILD_SHARED_LIBS ${PARAM_BUILD_SHARED_LIBS})
+# Check build target option
+if((NOT "${PARAM_BUILD_TARGET}" STREQUAL "static")
+	AND (NOT "${PARAM_BUILD_TARGET}" STREQUAL "shared")
+	AND (NOT "${PARAM_BUILD_TARGET}" STREQUAL "exec"))
+	message(FATAL_ERROR "Compile version must be \"static\" or \"shared\" or \"exec\"!")
+elseif("${PARAM_BUILD_TARGET}" STREQUAL "shared")
+	# All libraries will be built shared unless the library was explicitly added as a static library
+	set(BUILD_SHARED_LIBS on)
+	message(STAUTS "All libraries will be built as shared")
+endif()
 
-# Set CMake build-type. If it not supplied by the user, the default built type is "Release".
+# Set CMake build-type.
 if(("${PARAM_BUILD_TYPE}" STREQUAL "release"))
 	set(CMAKE_BUILD_TYPE Release)
 	message(STATUS "Building release version")
@@ -176,8 +182,13 @@ endif()
 # Set build directories and names
 set(SYSTEM_NAME "${CMAKE_SYSTEM_NAME}-${CMAKE_CXX_COMPILER_ID}-${CMAKE_SYSTEM_PROCESSOR}")
 string(TOLOWER ${SYSTEM_NAME} SYSTEM_NAME)
-set(${PROJECT_NAME}_LIB_NAME               "lib${PROJECT_NAME}")
-set(${PROJECT_NAME}_EXEC_NAME              "${PROJECT_NAME}")
+if(("${PARAM_BUILD_TARGET}" STREQUAL "static") OR ("${PARAM_BUILD_TARGET}" STREQUAL "shared"))
+	set(${PROJECT_NAME}_TARGET_NAME        "lib${PROJECT_NAME}")
+	message(STATUS "Target library will be named \"${${PROJECT_NAME}_TARGET_NAME}\"")
+else("${PARAM_BUILD_TARGET}" STREQUAL "exec")
+	set(${PROJECT_NAME}_TARGET_NAME        "${PROJECT_NAME}")
+	message(STATUS "Target executable will be named \"${${PROJECT_NAME}_TARGET_NAME}\"")
+endif()
 set(${PROJECT_NAME}_TEST_NAME              "${PROJECT_NAME}_test-${${PROJECT_NAME}_VERSION}-${CMAKE_SYSTEM_NAME}")
 string(TOLOWER "${${PROJECT_NAME}_TEST_NAME}" ${PROJECT_NAME}_TEST_NAME)
 
@@ -253,106 +264,65 @@ endif()
 set(${PROJECT_NAME}_RELATIVE_SRC_ALL_FILES "")
 file_manip(RELATIVE_PATH ${PROJECT_NAME}_SRC_ALL_FILES BASE_DIR "${${PROJECT_NAME}_PROJECT_DIR}" OUTPUT_VARIABLE ${PROJECT_NAME}_RELATIVE_SRC_ALL_FILES)
 
-# Build library
-if(${BUILD_SHARED_LIBS})
-	message("")
-	message(STATUS "Build as a shared library")
-	add_library("${${PROJECT_NAME}_LIB_NAME}" SHARED)
-	target_sources("${${PROJECT_NAME}_LIB_NAME}"
-		PUBLIC
-			"$<BUILD_INTERFACE:${${PROJECT_NAME}_RELATIVE_SRC_ALL_FILES}>"
-			"$<INSTALL_INTERFACE:${${PROJECT_NAME}_RELATIVE_SRC_ALL_FILES}>"
-	)
-else()
+# Build as library or as executable
+if("${PARAM_BUILD_TARGET}" STREQUAL "static")
+	# Build static library
 	message("")
 	message(STATUS "Build as a static library")
-	add_library("${${PROJECT_NAME}_LIB_NAME}" STATIC)
-	target_sources("${${PROJECT_NAME}_LIB_NAME}"
-		PUBLIC
-			"$<BUILD_INTERFACE:${${PROJECT_NAME}_RELATIVE_SRC_ALL_FILES}>"
-			"$<INSTALL_INTERFACE:${${PROJECT_NAME}_RELATIVE_SRC_ALL_FILES}>"
-	)
+	add_library("${${PROJECT_NAME}_TARGET_NAME}" STATIC)
+elseif("${PARAM_BUILD_TARGET}" STREQUAL "shared")
+	# Build shared library
+	message("")
+	message(STATUS "Build as a shared library")
+	add_library("${${PROJECT_NAME}_TARGET_NAME}" SHARED)
+elseif("${PARAM_BUILD_TARGET}" STREQUAL "exec")
+	# Build executable
+	message("")
+	message(STATUS "Build as an executable")
+	add_executable("${${PROJECT_NAME}_TARGET_NAME}")
 endif()
 
-# Add precompiled header to library
-if(${PROJECT_NAME}_PRECOMPILED_HEADER_FILE)
-	message(STATUS "Add precompiled header to library")
-	set_target_properties("${${PROJECT_NAME}_LIB_NAME}" PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "${${PROJECT_NAME}_PRECOMPILED_HEADER_FILE}")
-else()
-	message(STATUS "Precompiled header disabled for library")
-	set_target_properties("${${PROJECT_NAME}_LIB_NAME}" PROPERTIES COTIRE_ENABLE_PRECOMPILED_HEADER FALSE)
-endif()
-
-# Set compiler version to library
-message(STATUS "Set compiler version to library")
-target_compile_features("${${PROJECT_NAME}_LIB_NAME}" PUBLIC "cxx_std_${CMAKE_CXX_STANDARD}")
-
-# Add incude directories to library
-message(STATUS "Add include directories to library")
-target_include_directories("${${PROJECT_NAME}_LIB_NAME}"
+# Add sources to target
+message(STATUS "Add sources to target")
+target_sources("${${PROJECT_NAME}_TARGET_NAME}"
 	PUBLIC
-		# Used when building the library
+		"$<BUILD_INTERFACE:${${PROJECT_NAME}_RELATIVE_SRC_ALL_FILES}>"
+		"$<INSTALL_INTERFACE:${${PROJECT_NAME}_RELATIVE_SRC_ALL_FILES}>"
+)
+
+# Add precompiled header to target
+if(${PROJECT_NAME}_PRECOMPILED_HEADER_FILE)
+	message(STATUS "Add precompiled header to target")
+	set_target_properties("${${PROJECT_NAME}_TARGET_NAME}" PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "${${PROJECT_NAME}_PRECOMPILED_HEADER_FILE}")
+else()
+	message(STATUS "Precompiled header disabled for target")
+	set_target_properties("${${PROJECT_NAME}_TARGET_NAME}" PROPERTIES COTIRE_ENABLE_PRECOMPILED_HEADER FALSE)
+endif()
+
+# Set compiler version to target
+message(STATUS "Set compiler version to target")
+target_compile_features("${${PROJECT_NAME}_TARGET_NAME}" PUBLIC "cxx_std_${CMAKE_CXX_STANDARD}")
+
+# Add incude directories to target
+message(STATUS "Add include directories to target")
+target_include_directories("${${PROJECT_NAME}_TARGET_NAME}"
+	PUBLIC
+		# Used when building the target
 		"$<BUILD_INTERFACE:${${PROJECT_NAME}_INCLUDE_DIR}>"
-		# Used when installing the library
+		# Used when installing the target
 		"$<INSTALL_INTERFACE:${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}>"
 	PRIVATE
-		# Used only when building the library
+		# Used only when building the target
 		"${${PROJECT_NAME}_SRC_DIR}"
 )
 
-# Add compile definitions to library
-message(STATUS "Add compile definitions to library")
-target_compile_definitions("${${PROJECT_NAME}_LIB_NAME}"
+# Add compile definitions to target
+message(STATUS "Add compile definitions to target")
+target_compile_definitions("${${PROJECT_NAME}_TARGET_NAME}"
 	PUBLIC
 		"$<BUILD_INTERFACE:${${PROJECT_NAME}_COMPILE_DEFINITIONS}>"
 		"$<INSTALL_INTERFACE:${${PROJECT_NAME}_COMPILE_DEFINITIONS}>"
 )
-
-if(${PARAM_BUILD_EXEC})
-	# Build executable
-	message("")
-	message(STATUS "Build executable")
-	add_executable("${${PROJECT_NAME}_EXEC_NAME}")
-	target_sources("${${PROJECT_NAME}_EXEC_NAME}"
-		PUBLIC
-			"$<BUILD_INTERFACE:${${PROJECT_NAME}_RELATIVE_SRC_ALL_FILES}>"
-			"$<INSTALL_INTERFACE:${${PROJECT_NAME}_RELATIVE_SRC_ALL_FILES}>"
-	)
-	
-	# Add precompiled header to executable
-	if(${PROJECT_NAME}_PRECOMPILED_HEADER_FILE)
-		message(STATUS "Add precompiled header to executable")
-		set_target_properties("${${PROJECT_NAME}_EXEC_NAME}" PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "${${PROJECT_NAME}_PRECOMPILED_HEADER_FILE}")
-	else()
-		message(STATUS "Precompiled header disabled for executable")
-		set_target_properties("${${PROJECT_NAME}_EXEC_NAME}" PROPERTIES COTIRE_ENABLE_PRECOMPILED_HEADER FALSE)
-	endif()
-	
-	# Set compiler version to executable
-	message(STATUS "Set compiler version to executable")
-	target_compile_features("${${PROJECT_NAME}_EXEC_NAME}" PUBLIC "cxx_std_${CMAKE_CXX_STANDARD}")
-	
-	# Add incude directories to executable
-	message(STATUS "Add include directories to executable")
-	target_include_directories("${${PROJECT_NAME}_EXEC_NAME}"
-		PUBLIC
-			# Used when building the executable
-			"$<BUILD_INTERFACE:${${PROJECT_NAME}_INCLUDE_DIR}>"
-			# Used when installing the executable
-			"$<INSTALL_INTERFACE:${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}>"
-		PRIVATE
-			# Used only when building the library
-			"${${PROJECT_NAME}_SRC_DIR}"
-	)
-	
-	# Add compile definitions to library
-	message(STATUS "Add compile definitions to executable")
-	target_compile_definitions("${${PROJECT_NAME}_EXEC_NAME}"
-		PUBLIC
-			"$<BUILD_INTERFACE:${${PROJECT_NAME}_COMPILE_DEFINITIONS}>"
-			"$<INSTALL_INTERFACE:${${PROJECT_NAME}_COMPILE_DEFINITIONS}>"
-	)
-endif()
 
 #------------------------------------------------------------------------------
 # Add project dependances
@@ -363,32 +333,19 @@ if(NOT DEFINED ${PROJECT_NAME}_LIBRARIES_FILES)
 	message(FATAL_ERROR "${PROJECT_NAME}_LIBRARIES_FILES must be specified!")
 endif()
 
-# Link externals libraries to library
-message(STATUS "Link externals libraries to project library")
-target_link_libraries("${${PROJECT_NAME}_LIB_NAME}"
+# Link externals libraries to target
+message(STATUS "Link externals libraries to project target")
+target_link_libraries("${${PROJECT_NAME}_TARGET_NAME}"
 	PUBLIC
 		"$<BUILD_INTERFACE:${${PROJECT_NAME}_LIBRARIES_FILES}>"
 		"$<INSTALL_INTERFACE:${${PROJECT_NAME}_LIBRARIES_FILES}>"
 )
 
-# Link externals libraries to executable
-if(${PARAM_BUILD_EXEC})
-	message(STATUS "Link externals libraries to project executable")
-	target_link_libraries("${${PROJECT_NAME}_EXEC_NAME}"
-		PUBLIC
-			"$<BUILD_INTERFACE:${${PROJECT_NAME}_LIBRARIES_FILES}>"
-			"$<INSTALL_INTERFACE:${${PROJECT_NAME}_LIBRARIES_FILES}>"
-	)
-endif()
-
 #------------------------------------------------------------------------------
 # Speeds up the build process with Cotire
 #------------------------------------------------------------------------------
 message("\n== Speed up the build process with Cotire ==")
-cotire("${${PROJECT_NAME}_LIB_NAME}")
-if(${PARAM_BUILD_EXEC})
-	cotire("${${PROJECT_NAME}_EXEC_NAME}")
-endif()
+cotire("${${PROJECT_NAME}_TARGET_NAME}")
 
 #------------------------------------------------------------------------------
 # Build documentation
@@ -480,10 +437,13 @@ else()
 endif()
 
 # Generate the target file for exporting the library from the build tree (warning: it should never be installed).
-export(TARGETS "${${PROJECT_NAME}_LIB_NAME}"
-	FILE "${${PROJECT_NAME}_EXPORT_TARGET_FILE}"
-	NAMESPACE ""
-)
+if(("${PARAM_BUILD_TARGET}" STREQUAL "static")
+	OR ("${PARAM_BUILD_TARGET}" STREQUAL "shared"))
+	export(TARGETS "${${PROJECT_NAME}_TARGET_NAME}"
+		FILE "${${PROJECT_NAME}_EXPORT_TARGET_FILE}"
+		NAMESPACE ""
+	)
+endif()
 export(PACKAGE "${${PROJECT_NAME}_PACKAGE_NAME}")
 file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_DIR}" "${${PROJECT_NAME}_EXPORT_TARGET_FILE}")
 message(STATUS "Export target file for the project library generated into \"${relative_path}\"")
@@ -493,16 +453,17 @@ message(STATUS "Export target file for the project library generated into \"${re
 #------------------------------------------------------------------------------
 message("\n== Generates make install/uninstall rules ==")
 
-# Install the library and defined an export group
-install(TARGETS "${${PROJECT_NAME}_LIB_NAME}"
-	EXPORT "${${PROJECT_NAME}_EXPORT_NAME}"
-	LIBRARY DESTINATION "${${PROJECT_NAME}_INSTALL_LIBRARY_DIR}"
-	ARCHIVE DESTINATION "${${PROJECT_NAME}_INSTALL_ARCHIVE_DIR}"
-)
-
-if(${PARAM_BUILD_EXEC})
+if(("${PARAM_BUILD_TARGET}" STREQUAL "static")
+	OR ("${PARAM_BUILD_TARGET}" STREQUAL "shared"))
+	# Install the library and defined an export group
+	install(TARGETS "${${PROJECT_NAME}_TARGET_NAME}"
+		EXPORT "${${PROJECT_NAME}_EXPORT_NAME}"
+		LIBRARY DESTINATION "${${PROJECT_NAME}_INSTALL_LIBRARY_DIR}"
+		ARCHIVE DESTINATION "${${PROJECT_NAME}_INSTALL_ARCHIVE_DIR}"
+	)
+elseif("${PARAM_BUILD_TARGET}" STREQUAL "exec")
 	# Install the executable
-	install(TARGETS "${${PROJECT_NAME}_EXEC_NAME}"
+	install(TARGETS "${${PROJECT_NAME}_TARGET_NAME}"
 		RUNTIME DESTINATION "${${PROJECT_NAME}_INSTALL_RUNTIME_DIR}"
 	)
 endif()
@@ -519,12 +480,15 @@ install(FILES
 	DESTINATION "${${PROJECT_NAME}_INSTALL_CMAKE_DIR}"
 )
 
-# Generate a target file for exporting from the install tree and install it
-install(EXPORT "${${PROJECT_NAME}_EXPORT_NAME}"
-	NAMESPACE ""
-	DESTINATION "${${PROJECT_NAME}_INSTALL_CMAKE_DIR}"
-	FILE "${${PROJECT_NAME}_EXPORT_TARGET_FILE_NAME}"
-)
+if(("${PARAM_BUILD_TARGET}" STREQUAL "static")
+	OR ("${PARAM_BUILD_TARGET}" STREQUAL "shared"))
+	# Generate a target file for exporting from the install tree and install it
+	install(EXPORT "${${PROJECT_NAME}_EXPORT_NAME}"
+		NAMESPACE ""
+		DESTINATION "${${PROJECT_NAME}_INSTALL_CMAKE_DIR}"
+		FILE "${${PROJECT_NAME}_EXPORT_TARGET_FILE_NAME}"
+	)
+endif()
 
 if(NOT TARGET uninstall)
 	# Add uninstall rules
@@ -601,17 +565,10 @@ directory(SCAN project_all_files LIST_DIRECTORIES on RELATIVE on ROOT_DIR "${${P
 source_group(TREE "${${PROJECT_NAME}_PROJECT_DIR}" FILES "${project_all_files}")
 
 list(REMOVE_ITEM project_all_files ${${PROJECT_NAME}_RELATIVE_SRC_ALL_FILES})
-target_sources("${${PROJECT_NAME}_LIB_NAME}"
+target_sources("${${PROJECT_NAME}_TARGET_NAME}"
 	PUBLIC
 		"$<BUILD_INTERFACE:${project_all_files}>"
 		"$<INSTALL_INTERFACE:${project_all_files}>"
 )
-if(${PARAM_BUILD_EXEC})
-	target_sources("${${PROJECT_NAME}_EXEC_NAME}"
-		PUBLIC
-			"$<BUILD_INTERFACE:${$project_all_files}>"
-			"$<INSTALL_INTERFACE:${project_all_files}>"
-	)
-endif()
 
 message("\n===== End project ${PROJECT_NAME} building =====\n")
