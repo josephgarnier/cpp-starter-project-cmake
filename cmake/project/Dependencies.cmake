@@ -157,7 +157,7 @@ directory(SCAN ${PROJECT_NAME}_LIBRARIES_FILES LIST_DIRECTORIES off RELATIVE off
 # 		"$<BUILD_INTERFACE:Qt5::Widgets;Qt5::Gui;Qt5::Core;Qt5::Svg;Qt5::Concurrent>"
 # 		"$<INSTALL_INTERFACE:${Qt5Widgets_location};${Qt5Gui_location};${Qt5Core_location};${Qt5Svg_location};${Qt5Concurrent_location}>"
 # )
-# if(${PROJECT_NAME}_TARGET_IS_EXEC)
+# if(${${PROJECT_NAME}_TARGET_IS_EXEC})
 # 	target_compile_options("${${PROJECT_NAME}_TARGET_NAME}"
 # 		PUBLIC
 # 			"$<BUILD_INTERFACE:-fPIC;-fPIE>"

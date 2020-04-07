@@ -194,10 +194,10 @@ endif()
 # Set build directories and names
 set(SYSTEM_NAME "${CMAKE_SYSTEM_NAME}-${CMAKE_CXX_COMPILER_ID}-${CMAKE_SYSTEM_PROCESSOR}")
 string(TOLOWER ${SYSTEM_NAME} SYSTEM_NAME)
-if(${PROJECT_NAME}_TARGET_IS_STATIC OR ${PROJECT_NAME}_TARGET_IS_SHARED)
+if(${${PROJECT_NAME}_TARGET_IS_STATIC} OR ${${PROJECT_NAME}_TARGET_IS_SHARED})
 	set(${PROJECT_NAME}_TARGET_NAME        "lib${PROJECT_NAME}")
 	message(STATUS "Target library will be named \"${${PROJECT_NAME}_TARGET_NAME}\"")
-else(${PROJECT_NAME}_TARGET_IS_EXEC)
+else(${${PROJECT_NAME}_TARGET_IS_EXEC})
 	set(${PROJECT_NAME}_TARGET_NAME        "${PROJECT_NAME}")
 	message(STATUS "Target executable will be named \"${${PROJECT_NAME}_TARGET_NAME}\"")
 endif()
@@ -277,17 +277,17 @@ set(${PROJECT_NAME}_RELATIVE_SRC_ALL_FILES "")
 file_manip(RELATIVE_PATH ${PROJECT_NAME}_SRC_ALL_FILES BASE_DIR "${${PROJECT_NAME}_PROJECT_DIR}" OUTPUT_VARIABLE ${PROJECT_NAME}_RELATIVE_SRC_ALL_FILES)
 
 # Build as library or as executable
-if(${PROJECT_NAME}_TARGET_IS_STATIC)
+if(${${PROJECT_NAME}_TARGET_IS_STATIC})
 	# Build static library
 	message("")
 	message(STATUS "Build as a static library")
 	add_library("${${PROJECT_NAME}_TARGET_NAME}" STATIC)
-elseif(${PROJECT_NAME}_TARGET_IS_SHARED)
+elseif(${${PROJECT_NAME}_TARGET_IS_SHARED})
 	# Build shared library
 	message("")
 	message(STATUS "Build as a shared library")
 	add_library("${${PROJECT_NAME}_TARGET_NAME}" SHARED)
-elseif(${PROJECT_NAME}_TARGET_IS_EXEC)
+elseif(${${PROJECT_NAME}_TARGET_IS_EXEC})
 	# Build executable
 	message("")
 	message(STATUS "Build as an executable")
@@ -449,7 +449,7 @@ else()
 endif()
 
 # Generate the target file for exporting the library from the build tree (warning: it should never be installed).
-if(${PROJECT_NAME}_TARGET_IS_STATIC	OR ${PROJECT_NAME}_TARGET_IS_SHARED)
+if(${${PROJECT_NAME}_TARGET_IS_STATIC} OR ${${PROJECT_NAME}_TARGET_IS_SHARED})
 	export(TARGETS "${${PROJECT_NAME}_TARGET_NAME}"
 		FILE "${${PROJECT_NAME}_EXPORT_TARGET_FILE}"
 		NAMESPACE ""
@@ -464,14 +464,14 @@ message(STATUS "Export target file for the project library generated into \"${re
 #------------------------------------------------------------------------------
 message("\n== Generates make install/uninstall rules ==")
 
-if(${PROJECT_NAME}_TARGET_IS_STATIC	OR ${PROJECT_NAME}_TARGET_IS_SHARED)
+if(${${PROJECT_NAME}_TARGET_IS_STATIC} OR ${${PROJECT_NAME}_TARGET_IS_SHARED})
 	# Install the library and defined an export group
 	install(TARGETS "${${PROJECT_NAME}_TARGET_NAME}"
 		EXPORT "${${PROJECT_NAME}_EXPORT_NAME}"
 		LIBRARY DESTINATION "${${PROJECT_NAME}_INSTALL_LIBRARY_DIR}"
 		ARCHIVE DESTINATION "${${PROJECT_NAME}_INSTALL_ARCHIVE_DIR}"
 	)
-elseif(${PROJECT_NAME}_TARGET_IS_EXEC)
+elseif(${${PROJECT_NAME}_TARGET_IS_EXEC})
 	# Install the executable
 	install(TARGETS "${${PROJECT_NAME}_TARGET_NAME}"
 		RUNTIME DESTINATION "${${PROJECT_NAME}_INSTALL_RUNTIME_DIR}"
@@ -490,7 +490,7 @@ install(FILES
 	DESTINATION "${${PROJECT_NAME}_INSTALL_CMAKE_DIR}"
 )
 
-if(${PROJECT_NAME}_TARGET_IS_STATIC	OR ${PROJECT_NAME}_TARGET_IS_SHARED)
+if(${${PROJECT_NAME}_TARGET_IS_STATIC} OR ${${PROJECT_NAME}_TARGET_IS_SHARED})
 	# Generate a target file for exporting from the install tree and install it
 	install(EXPORT "${${PROJECT_NAME}_EXPORT_NAME}"
 		NAMESPACE ""

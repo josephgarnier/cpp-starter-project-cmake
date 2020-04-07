@@ -35,7 +35,8 @@ function(directory)
 	set(one_value_args SCAN LIST_DIRECTORIES RELATIVE ROOT_DIR INCLUDE_REGEX EXCLUDE_REGEX)
 	set(multi_value_args "")
 	cmake_parse_arguments(DIR "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
-	if(DIR_UNPARSED_ARGUMENTS)
+	
+	if(DEFINED DIR_UNPARSED_ARGUMENTS)
 		message(FATAL_ERROR "Unrecognized arguments: \"${DIR_UNPARSED_ARGUMENTS}\"")
 	endif()
 
@@ -54,7 +55,7 @@ macro(directory_scan)
 	set(multi_value_args "")
 	cmake_parse_arguments(DIRSCAN "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
 	
-	if(DIRSCAN_UNPARSED_ARGUMENTS)
+	if(DEFINED DIRSCAN_UNPARSED_ARGUMENTS)
 		message(FATAL_ERROR "Unrecognized arguments: \"${DIRSCAN_UNPARSED_ARGUMENTS}\"")
 	endif()
 	if(NOT DEFINED DIRSCAN_SCAN)

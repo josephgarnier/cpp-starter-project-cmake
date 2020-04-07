@@ -20,7 +20,7 @@ foreach(file IN ITEMS ${files})
 			OUTPUT_VARIABLE rm_out
 			RESULT_VARIABLE rm_retval
 		)
-		if(NOT "${rm_retval}" STREQUAL 0)
+		if(NOT ${rm_retval} EQUAL 0)
 			message(FATAL_ERROR "Problem when removing \"${file}\": ${rm_out}")
 		endif()
 	else()
@@ -39,7 +39,7 @@ foreach(file IN ITEMS ${files})
 				OUTPUT_VARIABLE rm_out
 				RESULT_VARIABLE rm_retval
 			)
-			if("${rm_retval}" STREQUAL 0)
+			if(${rm_retval} EQUAL 0)
 				get_filename_component(path "${path}" DIRECTORY)
 				file(GLOB contents RELATIVE "${path}" "${path}/*" )
 			else()
