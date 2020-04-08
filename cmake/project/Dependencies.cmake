@@ -30,6 +30,7 @@
 # end of the file.
 
 include(Directory)
+include(FileManip)
 
 set(${PROJECT_NAME}_LIBRARIES_FILES "")
 directory(SCAN ${PROJECT_NAME}_LIBRARIES_FILES LIST_DIRECTORIES off RELATIVE off ROOT_DIR "${${PROJECT_NAME}_LIB_DIR}" INCLUDE_REGEX "(.*\\${CMAKE_SHARED_LIBRARY_SUFFIX}$)|(.*\\${CMAKE_STATIC_LIBRARY_SUFFIX}$)")
@@ -45,12 +46,14 @@ directory(SCAN ${PROJECT_NAME}_LIBRARIES_FILES LIST_DIRECTORIES off RELATIVE off
 # 	set(Qt5_DIR "/opt/Qt/5.12.6/gcc_64/lib/cmake/Qt5")
 # endif()
 # find_package(Qt5 COMPONENTS Widgets Gui Core Svg Concurrent REQUIRED)
+# find_package(Qt5CoreMacrosCustom REQUIRED)
+# find_package(Qt5WidgetsMacrosCustom REQUIRED)
 
-# if (Qt5Widgets_VERSION VERSION_LESS 5.12.6
-# 	OR Qt5Gui_VERSION VERSION_LESS 5.12.6
-# 	OR Qt5Core_VERSION VERSION_LESS 5.12.6
-# 	OR Qt5Svg_VERSION VERSION_LESS 5.12.6
-# 	OR Qt5Concurrent_VERSION VERSION_LESS 5.12.6)
+# if (${Qt5Widgets_VERSION} VERSION_LESS 5.12.6
+# 	OR ${Qt5Gui_VERSION} VERSION_LESS 5.12.6
+# 	OR ${Qt5Core_VERSION} VERSION_LESS 5.12.6
+# 	OR ${Qt5Svg_VERSION} VERSION_LESS 5.12.6
+# 	OR ${Qt5Concurrent_VERSION} VERSION_LESS 5.12.6)
 # 		message(FATAL_ERROR "Minimum supported Qt5 version is 5.12.6!")
 # endif()
 
@@ -60,64 +63,57 @@ directory(SCAN ${PROJECT_NAME}_LIBRARIES_FILES LIST_DIRECTORIES off RELATIVE off
 # set(RESSOURCE_FILES "")
 
 # qt5_wrap_cpp(MOC_HEADER_FILES ${QOBJECT_HEADER_FILES})
-# qt5_wrap_ui(UI_SOURCE_FILES ${UI_FILES})
-# qt5_add_resources(RESSOURCE_SRCS ${RESSOURCE_FILES})
+# qt5_wrap_ui_custom(UI_SOURCE_FILES ${UI_FILES})
+# qt5_add_resources_custom(RESSOURCE_SRCS ${RESSOURCE_FILES})
 
 # set(RELATIVE_QOBJECT_SOURCE_FILES "")
+# file_manip(RELATIVE_PATH QOBJECT_SOURCE_FILES BASE_DIR "${${PROJECT_NAME}_PROJECT_DIR}" OUTPUT_VARIABLE RELATIVE_QOBJECT_SOURCE_FILES)
 # set(RELATIVE_QOBJECT_HEADER_FILES "")
+# file_manip(RELATIVE_PATH QOBJECT_HEADER_FILES BASE_DIR "${${PROJECT_NAME}_PROJECT_DIR}" OUTPUT_VARIABLE RELATIVE_QOBJECT_HEADER_FILES)
 # set(RELATIVE_MOC_HEADER_FILES "")
+# file_manip(RELATIVE_PATH MOC_HEADER_FILES BASE_DIR "${${PROJECT_NAME}_PROJECT_DIR}" OUTPUT_VARIABLE RELATIVE_MOC_HEADER_FILES)
 # set(RELATIVE_UI_FILES "")
+# file_manip(RELATIVE_PATH UI_FILES BASE_DIR "${${PROJECT_NAME}_PROJECT_DIR}" OUTPUT_VARIABLE RELATIVE_UI_FILES)
 # set(RELATIVE_UI_SOURCE_FILES "")
+# file_manip(RELATIVE_PATH UI_SOURCE_FILES BASE_DIR "${${PROJECT_NAME}_PROJECT_DIR}" OUTPUT_VARIABLE RELATIVE_UI_SOURCE_FILES)
 # set(RELATIVE_RESSOURCE_FILES "")
+# file_manip(RELATIVE_PATH RESSOURCE_FILES BASE_DIR "${${PROJECT_NAME}_PROJECT_DIR}" OUTPUT_VARIABLE RELATIVE_RESSOURCE_FILES)
 # set(RELATIVE_RESSOURCE_SRCS "")
+# file_manip(RELATIVE_PATH RESSOURCE_SRCS BASE_DIR "${${PROJECT_NAME}_PROJECT_DIR}" OUTPUT_VARIABLE RELATIVE_RESSOURCE_SRCS)
 
 # message(STATUS "QObject sources found:")
-# foreach(file IN ITEMS ${QOBJECT_SOURCE_FILES})
-# 	file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_DIR}" "${file}")
-# 	message("    ${relative_path}")
-# 	list(APPEND RELATIVE_QOBJECT_SOURCE_FILES ${relative_path})
+# foreach(file IN ITEMS ${RELATIVE_QOBJECT_SOURCE_FILES})
+# 	message("    ${file}")
 # endforeach()
 
 # message(STATUS "QObject headers found:")
-# foreach(file IN ITEMS ${QOBJECT_HEADER_FILES})
-# 	file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_DIR}" "${file}")
-# 	message("    ${relative_path}")
-# 	list(APPEND RELATIVE_QOBJECT_HEADER_FILES ${relative_path})
+# foreach(file IN ITEMS ${RELATIVE_QOBJECT_HEADER_FILES})
+# 	message("    ${file}")
 # endforeach()
 
 # message(STATUS "QObject moc found:")
-# foreach(file IN ITEMS ${MOC_HEADER_FILES})
-# 	file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_DIR}" "${file}")
-# 	message("    ${relative_path}")
-# 	list(APPEND RELATIVE_MOC_HEADER_FILES ${relative_path})
+# foreach(file IN ITEMS ${RELATIVE_MOC_HEADER_FILES})
+# 	message("    ${file}")
 # endforeach()
 
 # message(STATUS "UI files found:")
-# foreach(file IN ITEMS ${UI_FILES})
-# 	file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_DIR}" "${file}")
-# 	message("    ${relative_path}")
-# 	list(APPEND RELATIVE_UI_FILES ${relative_path})
+# foreach(file IN ITEMS ${RELATIVE_UI_FILES})
+# 	message("    ${file}")
 # endforeach()
 
 # message(STATUS "UI sources found:")
-# foreach(file IN ITEMS ${UI_SOURCE_FILES})
-# 	file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_DIR}" "${file}")
-# 	message("    ${relative_path}")
-# 	list(APPEND RELATIVE_UI_SOURCE_FILES ${relative_path})
+# foreach(file IN ITEMS ${RELATIVE_UI_SOURCE_FILES})
+# 	message("    ${file}")
 # endforeach()
 
 # message(STATUS "Ressources files found:")
-# foreach(file IN ITEMS ${RESSOURCE_FILES})
-# 	file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_DIR}" "${file}")
-# 	message("    ${relative_path}")
-# 	list(APPEND RELATIVE_RESSOURCE_FILES ${relative_path})
+# foreach(file IN ITEMS ${RELATIVE_RESSOURCE_FILES})
+# 	message("    ${file}")
 # endforeach()
 
 # message(STATUS "Ressources sources found:")
-# foreach(file IN ITEMS ${RESSOURCE_SRCS})
-# 	file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_DIR}" "${file}")
-# 	message("    ${relative_path}")
-# 	list(APPEND RELATIVE_RESSOURCE_SRCS ${relative_path})
+# foreach(file IN ITEMS ${RELATIVE_RESSOURCE_SRCS})
+# 	message("    ${file}")
 # endforeach()
 # message("")
 
