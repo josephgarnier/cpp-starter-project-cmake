@@ -13,7 +13,8 @@
 				"panel": "dedicated",
 				"focus": true,
 				"clear": true
-			}
+			},
+			"problemMatcher": []
 		},
 		{
 			"label": "Build",
@@ -31,7 +32,8 @@
 				"panel": "dedicated",
 				"focus": true,
 				"clear": true
-			}
+			},
+			"problemMatcher": []
 		},
 		{
 			"label": "Install",
@@ -45,7 +47,8 @@
 				"panel": "dedicated",
 				"focus": true,
 				"clear": true
-			}
+			},
+			"problemMatcher": []
 		},
 		{
 			"label": "Uninstall",
@@ -59,7 +62,8 @@
 				"panel": "dedicated",
 				"focus": true,
 				"clear": true
-			}
+			},
+			"problemMatcher": []
 		},
 		{
 			"label": "Documentation",
@@ -73,7 +77,8 @@
 				"panel": "dedicated",
 				"focus": true,
 				"clear": true
-			}
+			},
+			"problemMatcher": []
 		},
 		{
 			"label": "CPack Binary",
@@ -91,7 +96,8 @@
 				"panel": "dedicated",
 				"focus": true,
 				"clear": true
-			}
+			},
+			"problemMatcher": []
 		},
 		{
 			"label": "CPack Sources",
@@ -109,7 +115,8 @@
 				"panel": "dedicated",
 				"focus": true,
 				"clear": true
-			}
+			},
+			"problemMatcher": []
 		}
 	]
 }
