@@ -1,9 +1,9 @@
 @echo off
-REM Copyright 2019-present, Joseph Garnier
-REM All rights reserved.
-REM
-REM This source code is licensed under the license found in the
-REM LICENSE file in the root directory of this source tree.
+rem Copyright 2019-present, Joseph Garnier
+rem All rights reserved.
+rem
+rem This source code is licensed under the license found in the
+rem LICENSE file in the root directory of this source tree.
 
 setlocal EnableDelayedExpansion
 
@@ -17,4 +17,5 @@ if %errorlevel%==0 (
 	echo.The solution was successfully generated!
 )
 
+pause
 exit %errorlevel%
