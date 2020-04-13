@@ -573,7 +573,7 @@ message("\n== Customize the solution explorer structure for IDE project generati
 get_target_property(sources_target_property "${${PROJECT_NAME}_TARGET_NAME}" SOURCES)
 string(REGEX MATCHALL "\\$<BUILD_INTERFACE\\:[^\\>]*" build_sources_target_property "${sources_target_property}")
 string(REPLACE "$<BUILD_INTERFACE:" "" build_sources_target_property "${build_sources_target_property}")
-source_group(TREE "${${PROJECT_NAME}_PROJECT_DIR}" FILES "${build_sources_target_property}")
+source_group(TREE "${${PROJECT_NAME}_PROJECT_DIR}" FILES ${build_sources_target_property})
 
 set(project_all_files "")
 directory(SCAN project_all_files LIST_DIRECTORIES off RELATIVE on ROOT_DIR "${${PROJECT_NAME}_PROJECT_DIR}" EXCLUDE_REGEX "build|.git|.vscode")
@@ -583,6 +583,6 @@ target_sources("${${PROJECT_NAME}_TARGET_NAME}"
 		"$<BUILD_INTERFACE:${project_all_files}>"
 		"$<INSTALL_INTERFACE:${project_all_files}>"
 )
-source_group(TREE "${${PROJECT_NAME}_PROJECT_DIR}" FILES "${project_all_files}")
+source_group(TREE "${${PROJECT_NAME}_PROJECT_DIR}" FILES ${project_all_files})
 
 message("\n===== End project ${PROJECT_NAME} building =====\n")
