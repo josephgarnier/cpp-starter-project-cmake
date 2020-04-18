@@ -125,7 +125,7 @@ directory(SCAN ${PROJECT_NAME}_LIBRARIES_FILES LIST_DIRECTORIES off RELATIVE off
 # 		"$<INSTALL_INTERFACE:${RELATIVE_QOBJECT_SOURCE_FILES};${RELATIVE_MOC_HEADER_FILES};${RELATIVE_UI_SOURCE_FILES};${RELATIVE_RESSOURCE_SRCS}>"
 # )
 
-# # Add Qt incude directories to target
+# # Add Qt include directories to target
 # message(STATUS "Add Qt include directories to target")
 # target_include_directories("${${PROJECT_NAME}_TARGET_NAME}"
 # 	PUBLIC

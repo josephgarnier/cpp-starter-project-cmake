@@ -28,7 +28,7 @@
 # `${PROJECT_NAME}_PRECOMPILED_HEADER_FILE` and
 # `${PROJECT_NAME}_PRECOMPILED_SOURCE_FILE`.
 #
-# Warning: if you don'y use precompiled header features, set to empty string
+# Warning: if you don't use precompiled header features, set to empty string
 # the variables `${PROJECT_NAME}_PRECOMPILED_HEADER_FILE` and
 # `${PROJECT_NAME}_PRECOMPILED_SOURCE_FILE`.
 

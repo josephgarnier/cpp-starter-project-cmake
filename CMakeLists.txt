@@ -449,6 +449,7 @@ else()
 endif()
 
 # Generate the target file for exporting the library from the build tree (warning: it should never be installed).
+# See: https://gitlab.kitware.com/cmake/community/-/wikis/doc/tutorials/Exporting-and-Importing-Targets
 if(${${PROJECT_NAME}_TARGET_IS_STATIC} OR ${${PROJECT_NAME}_TARGET_IS_SHARED})
 	export(TARGETS "${${PROJECT_NAME}_TARGET_NAME}"
 		FILE "${${PROJECT_NAME}_EXPORT_TARGET_FILE}"
