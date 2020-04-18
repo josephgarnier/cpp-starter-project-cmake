@@ -69,7 +69,7 @@ if((NOT "${PARAM_BUILD_TARGET}" STREQUAL "static")
 elseif("${PARAM_BUILD_TARGET}" STREQUAL "shared")
 	# All libraries will be built shared unless the library was explicitly added as a static library
 	set(BUILD_SHARED_LIBS on)
-	message(STAUTS "All libraries will be built as shared")
+	message(STATUS "All libraries will be built as shared")
 endif()
 
 # Set CMake build-type.
