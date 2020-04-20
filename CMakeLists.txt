@@ -20,6 +20,8 @@
 # -DPARAM_BUILD_TARGET=[static|shared|exec (default)]: specified whether build static or shared library or as an executable
 # -DPARAM_BUILD_TESTS=[ON|OFF (default)]: specifies whether build tests
 # -DPARAM_BUILD_DOXYGEN_DOCS=[ON|OFF (default)]: specifies whether build documentation
+# -DPARAM_EXPORT_NAMESPACE: name to prepend to the target name when it is written to the import file, see https://cmake.org/cmake/help/latest/command/install.html#export
+
 cmake_minimum_required(VERSION 3.16)
 
 #------------------------------------------------------------------------------
@@ -46,6 +48,7 @@ message(" - Assert is enable: \"${PARAM_ASSERT_ENABLE}\"")
 message(" - Build target: \"${PARAM_BUILD_TARGET}\"")
 message(" - Build tests: \"${PARAM_BUILD_TESTS}\"")
 message(" - Build doxygen documentation: \"${PARAM_BUILD_DOXYGEN_DOCS}\"")
+message(" - Export namespace: \"${PARAM_EXPORT_NAMESPACE}\"")
 message("")
 
 #------------------------------------------------------------------------------
@@ -191,7 +194,7 @@ elseif("${PARAM_BUILD_TARGET}" STREQUAL "exec")
 	set(${PROJECT_NAME}_TARGET_IS_EXEC   on)
 endif()
 
-# Set build directories and names
+# Set directories and names for build
 set(SYSTEM_NAME "${CMAKE_SYSTEM_NAME}-${CMAKE_CXX_COMPILER_ID}-${CMAKE_SYSTEM_PROCESSOR}")
 string(TOLOWER ${SYSTEM_NAME} SYSTEM_NAME)
 if(${${PROJECT_NAME}_TARGET_IS_STATIC} OR ${${PROJECT_NAME}_TARGET_IS_SHARED})
@@ -223,8 +226,9 @@ set(${PROJECT_NAME}_PACKAGE_TEMPLATE_CONFIG_FILE    "${${PROJECT_NAME}_CMAKE_PRO
 set(${PROJECT_NAME}_PACKAGE_CONFIG_FILE             "${${PROJECT_NAME}_BUILD_DIR}/${${PROJECT_NAME}_PACKAGE_NAME}Config.cmake")
 set(${PROJECT_NAME}_PACKAGE_VERSION_FILE            "${${PROJECT_NAME}_BUILD_DIR}/${${PROJECT_NAME}_PACKAGE_NAME}ConfigVersion.cmake")
 
-set(${PROJECT_NAME}_EXPORT_NAME                     "${${PROJECT_NAME}_PACKAGE_NAME}Targets")
-set(${PROJECT_NAME}_EXPORT_TARGET_FILE_NAME         "${${PROJECT_NAME}_EXPORT_NAME}.cmake")
+set(${PROJECT_NAME}_EXPORT_NAME                     "${${PROJECT_NAME}_PACKAGE_NAME}")
+set(${PROJECT_NAME}_EXPORT_NAMESPACE                "${PARAM_EXPORT_NAMESPACE}")
+set(${PROJECT_NAME}_EXPORT_TARGET_FILE_NAME         "${${PROJECT_NAME}_EXPORT_NAME}Targets.cmake")
 set(${PROJECT_NAME}_EXPORT_TARGET_FILE              "${${PROJECT_NAME}_BUILD_DIR}/${${PROJECT_NAME}_EXPORT_TARGET_FILE_NAME}")
 
 # Set directories and names for install/uninstall commands
@@ -476,7 +480,7 @@ endif()
 if(${${PROJECT_NAME}_TARGET_IS_STATIC} OR ${${PROJECT_NAME}_TARGET_IS_SHARED})
 	export(TARGETS "${${PROJECT_NAME}_TARGET_NAME}"
 		FILE "${${PROJECT_NAME}_EXPORT_TARGET_FILE}"
-		NAMESPACE ""
+		NAMESPACE "${${PROJECT_NAME}_EXPORT_NAMESPACE}::"
 	)
 endif()
 export(PACKAGE "${${PROJECT_NAME}_PACKAGE_NAME}")
@@ -487,6 +491,9 @@ message(STATUS "Export target file for the project library generated into \"${re
 # Make install/uninstall rules and exporting
 #------------------------------------------------------------------------------
 message("\n== Generates make install/uninstall rules ==")
+
+# Rename export name of target
+set_target_properties ("${${PROJECT_NAME}_TARGET_NAME}" PROPERTIES EXPORT_NAME "${${PROJECT_NAME}_EXPORT_NAME}")
 
 if(${${PROJECT_NAME}_TARGET_IS_STATIC} OR ${${PROJECT_NAME}_TARGET_IS_SHARED})
 	# Install the library and defined an export group
@@ -517,7 +524,7 @@ install(FILES
 if(${${PROJECT_NAME}_TARGET_IS_STATIC} OR ${${PROJECT_NAME}_TARGET_IS_SHARED})
 	# Generate a target file for exporting from the install tree and install it
 	install(EXPORT "${${PROJECT_NAME}_EXPORT_NAME}"
-		NAMESPACE ""
+		NAMESPACE "${${PROJECT_NAME}_EXPORT_NAMESPACE}::"
 		DESTINATION "${${PROJECT_NAME}_INSTALL_CMAKE_DIR}"
 		FILE "${${PROJECT_NAME}_EXPORT_TARGET_FILE_NAME}"
 	)

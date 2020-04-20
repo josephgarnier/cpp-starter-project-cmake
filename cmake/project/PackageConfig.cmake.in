@@ -11,7 +11,7 @@
 # file, please see cmake documentation of `find_package()`
 # (https://cmake.org/cmake/help/latest/command/find_package.html),
 # cmake-packages (https://cmake.org/cmake/help/latest/manual/cmake-packages.7.html)
-# and cmake-buildsystem (https://cmake.org/cmake/help/latest/manual/cmake-developer.7.html).
+# and cmake-buildsystem (https://cmake.org/cmake/help/latest/manual/cmake-developer.7.html). But the file is already filled with a default content to be exported then imported in an other project with `target_link_libraries()`. If you are not familiar with these concepts of modern cmake, watch this tutorial: https://gitlab.kitware.com/cmake/community/-/wikis/doc/tutorials/Exporting-and-Importing-Targets.
 
 include(CMakeFindDependencyMacro)
 

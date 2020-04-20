@@ -32,6 +32,7 @@ set(ASSERT_ENABLE_VAL           off)
 set(BUILD_TARGET_VAL            "exec")
 set(BUILD_TESTS_VAL             off)
 set(BUILD_DOXYGEN_DOCS_VAL      off)
+set(EXPORT_NAMESPACE_VAL        "MyProject")
 #------------------------------------------------------------------------------
 # End of customize section
 #------------------------------------------------------------------------------
@@ -52,6 +53,7 @@ set(ASSERT_ENABLE_DESC            "Specifies whether to use assert (optionally u
 set(BUILD_TARGET_DESC             "Specified whether build \"static\" or \"shared\" library or as an \"exec\"")
 set(BUILD_TESTS_DESC              "Specifies whether build tests")
 set(BUILD_DOXYGEN_DOCS_DESC       "Specifies whether build documentation")
+set(EXPORT_NAMESPACE_DESC         "Name to prepend to the target name when it is written to the import file, see https://cmake.org/cmake/help/latest/command/install.html#export")
 
 set(PARAM_PROJECT_NAME            "${PROJECT_NAME_VAL}"            CACHE   STRING    "${PROJECT_NAME_DESC}")
 set(PARAM_PROJECT_SUMMARY         "${PROJECT_SUMMARY_VAL}"         CACHE   STRING    "${PROJECT_SUMMARY_DESC}")
@@ -69,3 +71,4 @@ set(PARAM_ASSERT_ENABLE           ${ASSERT_ENABLE_VAL}             CACHE   BOOL 
 set(PARAM_BUILD_TARGET            "${BUILD_TARGET_VAL}"            CACHE   STRING    "${BUILD_TARGET_DESC}")
 set(PARAM_BUILD_TESTS             ${BUILD_TESTS_VAL}               CACHE   BOOL      "${BUILD_TESTS_DESC}")
 set(PARAM_BUILD_DOXYGEN_DOCS      ${BUILD_DOXYGEN_DOCS_VAL}        CACHE   BOOL      "${BUILD_DOXYGEN_DOCS_DESC}")
+set(PARAM_EXPORT_NAMESPACE        "${EXPORT_NAMESPACE_VAL}"        CACHE   STRING    "${EXPORT_NAMESPACE_DESC}")
