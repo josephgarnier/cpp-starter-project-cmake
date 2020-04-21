@@ -43,12 +43,13 @@ message(" - Toolchain file used: \"${CMAKE_TOOLCHAIN_FILE}\"")
 message(" - Generator: \"${CMAKE_GENERATOR}\"")
 message(" - Compile version: \"${PARAM_COMPILE_VERSION}\"")
 message(" - Compile definitions: \"${PARAM_COMPILE_DEFINITIONS}\"")
-message(" - Build type: \"${PARAM_BUILD_TYPE}\"")
 message(" - Assert is enable: \"${PARAM_ASSERT_ENABLE}\"")
+message(" - Build type: \"${PARAM_BUILD_TYPE}\"")
 message(" - Build target: \"${PARAM_BUILD_TARGET}\"")
 message(" - Build tests: \"${PARAM_BUILD_TESTS}\"")
 message(" - Build doxygen documentation: \"${PARAM_BUILD_DOXYGEN_DOCS}\"")
 message(" - Export namespace: \"${PARAM_EXPORT_NAMESPACE}\"")
+message(" - Install directory: \"${PARAM_INSTALL_DIRECTORY}\"")
 message("")
 
 #------------------------------------------------------------------------------
@@ -232,6 +233,10 @@ set(${PROJECT_NAME}_EXPORT_TARGET_FILE_NAME         "${${PROJECT_NAME}_EXPORT_NA
 set(${PROJECT_NAME}_EXPORT_TARGET_FILE              "${${PROJECT_NAME}_BUILD_DIR}/${${PROJECT_NAME}_EXPORT_TARGET_FILE_NAME}")
 
 # Set directories and names for install/uninstall commands
+if(DEFINED PARAM_INSTALL_DIRECTORY AND IS_DIRECTORY "${PARAM_INSTALL_DIRECTORY}")
+	set(CMAKE_INSTALL_PREFIX "${PARAM_INSTALL_DIRECTORY}")
+	message(STATUS "Set the install directory to \"${CMAKE_INSTALL_PREFIX}\"")
+endif()
 include(GNUInstallDirs)
 set(${PROJECT_NAME}_INSTALL_RUNTIME_DIR             "${CMAKE_INSTALL_FULL_BINDIR}")
 set(${PROJECT_NAME}_INSTALL_LIBRARY_DIR             "${CMAKE_INSTALL_FULL_LIBDIR}/${PROJECT_NAME}")

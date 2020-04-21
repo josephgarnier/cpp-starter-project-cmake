@@ -49,23 +49,24 @@ Instead of executing `cmake` command with its flags in a terminal, the two scrip
 
 These variables correspond to the CMake options used when running `cmake` command. If you don't edit them, they will be set with a default value:
 
-- `PROJECT_NAME_VAL`: specifies a name for project
-- `PROJECT_SUMMARY_VAL`: short description of the project
-- `PROJECT_VENDOR_NAME_VAL`: project author
-- `PROJECT_VENDOR_CONTACT_VAL`: author contact
-- `PROJECT_VERSION_MAJOR_VAL`: project major version
-- `PROJECT_VERSION_MINOR_VAL`: project minor version
-- `PROJECT_VERSION_PATCH_VAL`: project patch version
-- `TOOLCHAIN_FILE_VAL`: specifies toolchain file, see [toolchains](https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html)
-- `GENERATOR_VAL`: specifies CMake generator, see [cmake-generators](https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html)
+- `PROJECT_NAME`: specifies a name for project
+- `PROJECT_SUMMARY`: short description of the project
+- `PROJECT_VENDOR_NAME`: project author
+- `PROJECT_VENDOR_CONTACT`: author contact
+- `PROJECT_VERSION_MAJOR`: project major version
+- `PROJECT_VERSION_MINOR`: project minor version
+- `PROJECT_VERSION_PATCH`: project patch version
+- `TOOLCHAIN_FILE`: specifies toolchain file, see [toolchains](https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html)
+- `GENERATOR`: specifies CMake generator, see [cmake-generators](https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html)
 - `COMPILE_VERSION=[11|14|17 (default)|20]`: specifies compiler version "11" or "14" or "17" or "20", see [CMAKE_CXX_STANDARD](https://cmake.org/cmake/help/latest/variable/CMAKE_CXX_STANDARD.html)
 - `COMPILE_DEFINITIONS`: specifies a semicolon-separated list of preprocessor definitions (e.g -DFOO;-DBAR or FOO;BAR). Can be empty.
-- `BUILD_TYPE=[(default) debug|release]`: specifies type of build "debug" or "release"
 - `ASSERT_ENABLE=[ON|OFF (default)]`: specifies whether to use assert (optionally used in `cmake/project/Dependencies.cmake`)
+- `BUILD_TYPE=[(default) debug|release]`: specifies type of build "debug" or "release"
 - `BUILD_TARGET=[static|shared|exec (default)]`: specified whether build static or shared library or as an exec
 - `BUILD_TESTS=[ON|OFF (default)]`: specifies whether build tests
 - `BUILD_DOXYGEN_DOCS=[ON|OFF (default)]`: specifies whether build documentation
 - `EXPORT_NAMESPACE`: name to prepend to the target name when it is written to the import file, see [install](https://cmake.org/cmake/help/latest/command/install.html#export)
+- `INSTALL_DIRECTORY`: directory used by install command, let empty to use the default value, see [CMAKE_INSTALL_PREFIX](https://cmake.org/cmake/help/latest/variable/CMAKE_INSTALL_PREFIX.html)
 
 In addition to the previous scripts, you can use the scripts `clean-cmake.sh` (linux) or `clean-cmake.bat` (windows) to clean the project from its generated files like executable, library, documentation, etc. They call the `cmake clean` command.
 
