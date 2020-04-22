@@ -506,19 +506,13 @@ message("\n== Generates make install/uninstall rules ==")
 # Rename export name of target
 set_target_properties ("${${PROJECT_NAME}_TARGET_NAME}" PROPERTIES EXPORT_NAME "${${PROJECT_NAME}_EXPORT_NAME}")
 
-if(${${PROJECT_NAME}_TARGET_IS_STATIC} OR ${${PROJECT_NAME}_TARGET_IS_SHARED})
-	# Install the library and defined an export group
-	install(TARGETS "${${PROJECT_NAME}_TARGET_NAME}"
-		EXPORT "${${PROJECT_NAME}_EXPORT_NAME}"
-		LIBRARY DESTINATION "${${PROJECT_NAME}_INSTALL_LIBRARY_DIR}"
-		ARCHIVE DESTINATION "${${PROJECT_NAME}_INSTALL_ARCHIVE_DIR}"
-	)
-elseif(${${PROJECT_NAME}_TARGET_IS_EXEC})
-	# Install the executable
-	install(TARGETS "${${PROJECT_NAME}_TARGET_NAME}"
-		RUNTIME DESTINATION "${${PROJECT_NAME}_INSTALL_RUNTIME_DIR}"
-	)
-endif()
+# Install the target and defined an export group
+install(TARGETS "${${PROJECT_NAME}_TARGET_NAME}"
+	EXPORT "${${PROJECT_NAME}_EXPORT_NAME}"
+	ARCHIVE DESTINATION "${${PROJECT_NAME}_INSTALL_ARCHIVE_DIR}"
+	LIBRARY DESTINATION "${${PROJECT_NAME}_INSTALL_LIBRARY_DIR}"
+	RUNTIME DESTINATION "${${PROJECT_NAME}_INSTALL_RUNTIME_DIR}"
+)
 
 # Install public header files in include directory
 install(FILES ${${PROJECT_NAME}_PUBLIC_HEADER_FILES}
