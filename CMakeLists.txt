@@ -312,9 +312,8 @@ endif()
 # Add sources to target
 message(STATUS "Add sources to target")
 target_sources("${${PROJECT_NAME}_TARGET_NAME}"
-	PUBLIC
-		"$<BUILD_INTERFACE:${${PROJECT_NAME}_RELATIVE_SRC_ALL_FILES}>"
-		"$<INSTALL_INTERFACE:${${PROJECT_NAME}_RELATIVE_SRC_ALL_FILES}>"
+	PRIVATE
+		"${${PROJECT_NAME}_RELATIVE_SRC_ALL_FILES}"
 )
 
 # Add precompiled header to target
@@ -328,15 +327,24 @@ endif()
 
 # Set compiler version to target
 message(STATUS "Set compiler version to target")
-target_compile_features("${${PROJECT_NAME}_TARGET_NAME}" PUBLIC "cxx_std_${CMAKE_CXX_STANDARD}")
+target_compile_features("${${PROJECT_NAME}_TARGET_NAME}"
+	PUBLIC
+		"$<BUILD_INTERFACE:cxx_std_${CMAKE_CXX_STANDARD}>"
+		"$<INSTALL_INTERFACE:cxx_std_${CMAKE_CXX_STANDARD}>"
+	PRIVATE
+		"cxx_std_${CMAKE_CXX_STANDARD}"
+)
 
 # Add incude directories to target
 message(STATUS "Add include directories to target")
 target_include_directories("${${PROJECT_NAME}_TARGET_NAME}"
+	# see https://cmake.org/cmake/help/v3.0/manual/cmake-buildsystem.7.html#build-specification-and-usage-requirements
+	# and https://stackoverflow.com/questions/26243169/cmake-target-include-directories-meaning-of-scope
+	# and https://cmake.org/pipermail/cmake/2017-October/066457.html
 	PUBLIC
-		# Used when building the target
+		# Used when the property is exported using export(), or when the target is used by another target in the same buildsystem
 		"$<BUILD_INTERFACE:${${PROJECT_NAME}_INCLUDE_DIR}>"
-		# Used when installing the target
+		# Used when installing using install(EXPORT)
 		"$<INSTALL_INTERFACE:${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}>"
 	PRIVATE
 		# Used only when building the target
@@ -349,6 +357,8 @@ target_compile_definitions("${${PROJECT_NAME}_TARGET_NAME}"
 	PUBLIC
 		"$<BUILD_INTERFACE:${${PROJECT_NAME}_COMPILE_DEFINITIONS}>"
 		"$<INSTALL_INTERFACE:${${PROJECT_NAME}_COMPILE_DEFINITIONS}>"
+	PRIVATE
+		"${${PROJECT_NAME}_COMPILE_DEFINITIONS}"
 )
 
 #------------------------------------------------------------------------------
@@ -360,12 +370,23 @@ if(NOT DEFINED ${PROJECT_NAME}_LIBRARIES_FILES)
 	message(FATAL_ERROR "${PROJECT_NAME}_LIBRARIES_FILES must be specified!")
 endif()
 
+set(${PROJECT_NAME}_INSTALL_LIBRARIES_FILES "")
+file_manip(GET_COMPONENT "${${PROJECT_NAME}_LIBRARIES_FILES}"
+	MODE NAME
+	OUTPUT_VARIABLE ${PROJECT_NAME}_INSTALL_LIBRARIES_FILES
+)
+file_manip(ABSOLUTE_PATH ${PROJECT_NAME}_INSTALL_LIBRARIES_FILES
+	BASE_DIR "${${PROJECT_NAME}_INSTALL_LIBRARY_DIR}"
+)
+
 # Link externals libraries to target
 message(STATUS "Link externals libraries to project target")
 target_link_libraries("${${PROJECT_NAME}_TARGET_NAME}"
 	PUBLIC
 		"$<BUILD_INTERFACE:${${PROJECT_NAME}_LIBRARIES_FILES}>"
-		"$<INSTALL_INTERFACE:${${PROJECT_NAME}_LIBRARIES_FILES}>"
+		"$<INSTALL_INTERFACE:${${PROJECT_NAME}_INSTALL_LIBRARIES_FILES}>"
+	PRIVATE
+		"${${PROJECT_NAME}_LIBRARIES_FILES}"
 )
 
 #------------------------------------------------------------------------------
