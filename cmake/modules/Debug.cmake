@@ -31,14 +31,14 @@ Disaply all CMake variables except those that match with the optional
 .. _DUMP_PROPERTIES:
 .. code-block:: cmake
 
-  debug(`DUMP_PROPERTIES`_)
+  debug(DUMP_PROPERTIES)
 
 Disaply all CMake properties.
 
 .. _DUMP_TARGET_PROPERTIES:
 .. code-block:: cmake
 
-  debug(`DUMP_TARGET_PROPERTIES`_ <target-name>)
+  debug(DUMP_TARGET_PROPERTIES <target-name>)
 
 Display all CMake properties of target ``<target-name>`` parameter.
 
