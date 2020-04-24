@@ -28,6 +28,9 @@
 # with a test like `if(${PARAM_ASSERT_ENABLE})`.
 # An illustrated example for Qt, which you will have to delete, is proposed at the
 # end of the file.
+#
+# Warning: if you use `find_package()` function, the don't forget to add
+# your dependancies in the file cmake/project/PackageConfig.cmake.
 
 include(Directory)
 include(FileManip)

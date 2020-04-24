@@ -12,19 +12,31 @@
 # (https://cmake.org/cmake/help/latest/command/find_package.html),
 # cmake-packages (https://cmake.org/cmake/help/latest/manual/cmake-packages.7.html)
 # and cmake-buildsystem (https://cmake.org/cmake/help/latest/manual/cmake-developer.7.html). But the file is already filled with a default content to be exported then imported in an other project with `target_link_libraries()`. If you are not familiar with these concepts of modern cmake, watch this tutorial: https://gitlab.kitware.com/cmake/community/-/wikis/doc/tutorials/Exporting-and-Importing-Targets.
+#
+# You just need to fill the commented section in the same way as the example.
 
 include(CMakeFindDependencyMacro)
 
 @PACKAGE_INIT@
 
-# A list of libraries for use with the target_link_libraries() command.
+# A list of libraries for use with the target_link_libraries() command
 set_and_check(@LOCAL_PACKAGE_NAME@_LIBRARIES "@PACKAGE_LOCAL_INSTALL_LIBRARIES@")
-# A list of directories for use with the target_include_directories() command.
+# A list of directories for use with the target_include_directories() command
 set_and_check(@LOCAL_PACKAGE_NAME@_INCLUDE_DIRS "@PACKAGE_LOCAL_INSTALL_INCLUDE_DIRS@")
-# A list of definitions for use with the target_compile_definitions() command.
+# A list of definitions for use with the target_compile_definitions() command
 set(@LOCAL_PACKAGE_NAME@_COMPILE_DEFINITIONS "@LOCAL_INSTALL_COMPILE_DEFINITIONS@")
 
 check_required_components(@PROJECT_NAME@)
+
+# Declare here the packages in order to communicate the requirements upstream.
+# Copy-paste the content of `find-package()` function of cmake/project/Dependencies.cmake.
+# if(DEFINED ENV{Qt5_DIR}) 
+# 	set(Qt5_DIR "$ENV{Qt5_DIR}")
+# else()
+# 	set(Qt5_DIR "/opt/Qt/5.12.6/gcc_64/lib/cmake/Qt5")
+# endif()
+# find_dependency(Qt5 COMPONENTS Widgets Gui Core Svg Concurrent REQUIRED)
+# End of declaration section
 
 if(NOT TARGET @PACKAGE_LOCAL_TARGET_NAME@)
 	include("@PACKAGE_LOCAL_EXPORT_TARGET_FILE@")
