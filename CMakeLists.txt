@@ -371,13 +371,16 @@ if(NOT DEFINED ${PROJECT_NAME}_LIBRARIES_FILES)
 endif()
 
 set(${PROJECT_NAME}_INSTALL_LIBRARIES_FILES "")
-file_manip(GET_COMPONENT "${${PROJECT_NAME}_LIBRARIES_FILES}"
-	MODE NAME
-	OUTPUT_VARIABLE ${PROJECT_NAME}_INSTALL_LIBRARIES_FILES
-)
-file_manip(ABSOLUTE_PATH ${PROJECT_NAME}_INSTALL_LIBRARIES_FILES
-	BASE_DIR "${${PROJECT_NAME}_INSTALL_LIBRARY_DIR}"
-)
+list(LENGTH ${PROJECT_NAME}_LIBRARIES_FILES nb_files)
+if(NOT nb_files EQUAL 0)
+	file_manip(GET_COMPONENT ${${PROJECT_NAME}_LIBRARIES_FILES}
+		MODE NAME
+		OUTPUT_VARIABLE ${PROJECT_NAME}_INSTALL_LIBRARIES_FILES
+	)
+	file_manip(ABSOLUTE_PATH ${PROJECT_NAME}_INSTALL_LIBRARIES_FILES
+		BASE_DIR "${${PROJECT_NAME}_INSTALL_LIBRARY_DIR}"
+	)
+endif()
 
 # Link externals libraries to target
 message(STATUS "Link externals libraries to project target")
@@ -540,6 +543,11 @@ install(FILES ${${PROJECT_NAME}_PUBLIC_HEADER_FILES}
 	DESTINATION "${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}"
 )
 
+# Install externals libraries in lib directory
+install(FILES ${${PROJECT_NAME}_LIBRARIES_FILES}
+	DESTINATION "${${PROJECT_NAME}_INSTALL_LIBRARY_DIR}"
+)
+
 # Install the config-file and the config-version-file in cmake directory
 install(FILES
 	"${${PROJECT_NAME}_PACKAGE_CONFIG_FILE}"
@@ -547,14 +555,12 @@ install(FILES
 	DESTINATION "${${PROJECT_NAME}_INSTALL_CMAKE_DIR}"
 )
 
-if(${${PROJECT_NAME}_TARGET_IS_STATIC} OR ${${PROJECT_NAME}_TARGET_IS_SHARED})
-	# Generate a target file for exporting from the install tree and install it
-	install(EXPORT "${${PROJECT_NAME}_EXPORT_NAME}"
-		NAMESPACE "${${PROJECT_NAME}_EXPORT_NAMESPACE}::"
-		DESTINATION "${${PROJECT_NAME}_INSTALL_CMAKE_DIR}"
-		FILE "${${PROJECT_NAME}_EXPORT_TARGET_FILE_NAME}"
-	)
-endif()
+# Generate a target file for exporting from the install tree and install it
+install(EXPORT "${${PROJECT_NAME}_EXPORT_NAME}"
+	NAMESPACE "${${PROJECT_NAME}_EXPORT_NAMESPACE}::"
+	DESTINATION "${${PROJECT_NAME}_INSTALL_CMAKE_DIR}"
+	FILE "${${PROJECT_NAME}_EXPORT_TARGET_FILE_NAME}"
+)
 
 if(NOT TARGET uninstall)
 	# Add uninstall rules
@@ -626,19 +632,39 @@ endif()
 #------------------------------------------------------------------------------
 message("\n== Customize the solution explorer structure for IDE project generation ==")
 
-# Get content of BUILD_INTERFACE generator expression of SOURCES property
+# Get content of of SOURCES property
 get_target_property(sources_target_property "${${PROJECT_NAME}_TARGET_NAME}" SOURCES)
-string(REGEX MATCHALL "\\$<BUILD_INTERFACE\\:[^\\>]*" build_sources_target_property "${sources_target_property}")
-string(REPLACE "$<BUILD_INTERFACE:" "" build_sources_target_property "${build_sources_target_property}")
-source_group(TREE "${${PROJECT_NAME}_PROJECT_DIR}" FILES ${build_sources_target_property})
 
+# Get content of BUILD_INTERFACE generator expression of SOURCES property
+string(REGEX MATCHALL "\\$<BUILD_INTERFACE\\:[^\\>]*" build_interface_sources_target_property "${sources_target_property}")
+string(REPLACE "$<BUILD_INTERFACE:" "" build_interface_sources_target_property "${build_interface_sources_target_property}")
+
+# Get content of INSTALL_INTERFACE generator expression of SOURCES property
+string(REGEX MATCHALL "\\$<INSTALL_INTERFACE\\:[^\\>]*" install_interface_sources_target_property "${sources_target_property}")
+string(REPLACE "$<INSTALL_INTERFACE:" "" install_interface_sources_target_property "${install_interface_sources_target_property}")
+
+# Get content of private SOURCE property
+string(REGEX MATCH "^[^\\$]*" private_sources_target_property "${sources_target_property}")
+
+# Concatenate previous lists, remove duplicated items and group them
+set(sources_target_property "${private_sources_target_property}")
+list(APPEND sources_target_property ${build_interface_sources_target_property})
+list(APPEND sources_target_property ${install_interface_sources_target_property})
+list(REMOVE_DUPLICATES sources_target_property)
+source_group(TREE "${${PROJECT_NAME}_PROJECT_DIR}" FILES ${sources_target_property})
+
+# Group other source files
 set(project_all_files "")
-directory(SCAN project_all_files LIST_DIRECTORIES off RELATIVE on ROOT_DIR "${${PROJECT_NAME}_PROJECT_DIR}" EXCLUDE_REGEX "build|.git|.vscode")
-list(REMOVE_ITEM project_all_files ${build_sources_target_property})
+directory(SCAN project_all_files
+	LIST_DIRECTORIES off
+	RELATIVE on
+	ROOT_DIR "${${PROJECT_NAME}_PROJECT_DIR}"
+	EXCLUDE_REGEX "build|.git|.vscode"
+)
+list(REMOVE_ITEM project_all_files ${sources_target_property})
 target_sources("${${PROJECT_NAME}_TARGET_NAME}"
-	PUBLIC
-		"$<BUILD_INTERFACE:${project_all_files}>"
-		"$<INSTALL_INTERFACE:${project_all_files}>"
+	PRIVATE
+		"${project_all_files}"
 )
 source_group(TREE "${${PROJECT_NAME}_PROJECT_DIR}" FILES ${project_all_files})
 
