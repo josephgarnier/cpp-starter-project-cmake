@@ -17,10 +17,12 @@
 # and you will find all variables according to you generator here:
 # https://cmake.org/cmake/help/latest/manual/cpack-generators.7.html
 
-if(CPACK_GENERATOR MATCHES "NSIS")
+# see https://cmake.org/cmake/help/latest/cpack_gen/wix.html#cpack_gen:CPack%20WIX%20Generator
+if("${CPACK_GENERATOR}" STREQUAL "WIX")
 
 endif()
 
-if(CPACK_GENERATOR MATCHES "ZIP")
+# see https://cmake.org/cmake/help/latest/cpack_gen/archive.html
+if("${CPACK_GENERATOR}" STREQUAL "ZIP")
 
 endif()
