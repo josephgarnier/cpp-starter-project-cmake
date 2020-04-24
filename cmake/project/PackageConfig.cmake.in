@@ -19,13 +19,6 @@ include(CMakeFindDependencyMacro)
 
 @PACKAGE_INIT@
 
-# A list of libraries for use with the target_link_libraries() command
-set_and_check(@LOCAL_PACKAGE_NAME@_LIBRARIES "@PACKAGE_LOCAL_INSTALL_LIBRARIES@")
-# A list of directories for use with the target_include_directories() command
-set_and_check(@LOCAL_PACKAGE_NAME@_INCLUDE_DIRS "@PACKAGE_LOCAL_INSTALL_INCLUDE_DIRS@")
-# A list of definitions for use with the target_compile_definitions() command
-set(@LOCAL_PACKAGE_NAME@_COMPILE_DEFINITIONS "@LOCAL_INSTALL_COMPILE_DEFINITIONS@")
-
 check_required_components(@PROJECT_NAME@)
 
 # Declare here the packages in order to communicate the requirements upstream.
