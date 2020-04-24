@@ -14,16 +14,16 @@ Synopsis
 ^^^^^^^^
 .. parsed-literal::
 
-    directory(`SCAN`_ <output-var> [LIST_DIRECTORIES on|off] RELATIVE <on|off> ROOT_DIR <path> <INCLUDE_REGEX|EXCLUDE_REGEX> <regular-expression>)
+    directory(`SCAN`_ <output_var> [LIST_DIRECTORIES on|off] RELATIVE <on|off> ROOT_DIR <path> <INCLUDE_REGEX|EXCLUDE_REGEX> <regular_expression>)
 
 Usage
 ^^^^^
 .. _SCAN:
 .. code-block:: cmake
 
-  directory(SCAN <output-var> [LIST_DIRECTORIES on|off] RELATIVE <on|off> ROOT_DIR <path> <INCLUDE_REGEX|EXCLUDE_REGEX> <regular-expression>)
+  directory(SCAN <output_var> [LIST_DIRECTORIES on|off] RELATIVE <on|off> ROOT_DIR <path> <INCLUDE_REGEX|EXCLUDE_REGEX> <regular_expression>)
 
-Generate a list of files that match the ``<regular-expressions>`` and store it into the ``<output-var>``. The results will be returned as absolute paths to the given path ``<path>`` if RELATIVE flag is set to off, else as relative path to ROOT_DIR. By default the function list directories from result list. Setting LIST_DIRECTORIES to off removes directories to result list.
+Generate a list of files that match the ``<regular_expressions>`` and store it into the ``<output_var>``. The results will be returned as absolute paths to the given path ``<path>`` if RELATIVE flag is set to off, else as relative path to ROOT_DIR. By default the function list directories from result list. Setting LIST_DIRECTORIES to off removes directories to result list.
 
 #]=======================================================================]
 cmake_minimum_required (VERSION 3.16)

@@ -14,9 +14,9 @@ Synopsis
 ^^^^^^^^
 .. parsed-literal::
 
-    string_manip(`SPLIT`_ <string> <output-var>)
-    string_manip(`TRANSFORM`_ <input-list-var> START_CASE [OUTPUT_VARIABLE <output-var>])
-    string_manip(`TRANSFORM`_ <input-var> START_CASE [OUTPUT_VARIABLE <output-var>])
+    string_manip(`SPLIT`_ <string> <output_var>)
+    string_manip(`TRANSFORM`_ <input_list_var> START_CASE [OUTPUT_VARIABLE <output_var>])
+    string_manip(`TRANSFORM`_ <input_var> START_CASE [OUTPUT_VARIABLE <output_var>])
 
 Usage
 ^^^^^
@@ -24,27 +24,27 @@ Usage
 .. _SPLIT:
 .. code-block:: cmake
 
-  string_manip(SPLIT <string> <output-var>)
+  string_manip(SPLIT <string> <output_var>)
 
 Split the string ``<string>`` into a list of strings wherever special char
 occurs or a uppercase char follow a lowercase char. This list is returned in 
-``<output-var>``. In case where no special char is found, the input string is
+``<output_var>``. In case where no special char is found, the input string is
 returned.
 
 .. _TRANSFORM:
 .. code-block:: cmake
 
-  string_manip(TRANSFORM <input-list-var> START_CASE [OUTPUT_VARIABLE <output-var>])
+  string_manip(TRANSFORM <input_list_var> START_CASE [OUTPUT_VARIABLE <output_var>])
 
-Transform each element of the list of strings ``<input-list-var>`` into start
-case, storing the result in-place or in the specified ``<output-var>``.
+Transform each element of the list of strings ``<input_list_var>`` into start
+case, storing the result in-place or in the specified ``<output_var>``.
 
 .. code-block:: cmake
 
-  string_manip(TRANSFORM <input-var> START_CASE [OUTPUT_VARIABLE <output-var>])
+  string_manip(TRANSFORM <input_var> START_CASE [OUTPUT_VARIABLE <output_var>])
 
-Transform the string ``<input-var>`` into start case then store de result in
-place or in the specified ``<output-var>``.
+Transform the string ``<input_var>`` into start case then store de result in
+place or in the specified ``<output_var>``.
 
 #]=======================================================================]
 cmake_minimum_required (VERSION 3.16)

@@ -14,19 +14,19 @@ Synopsis
 ^^^^^^^^
 .. parsed-literal::
 
-    debug(`DUMP_VARIABLES`_ [EXCLUDE_REGEX <regular-expression>])
+    debug(`DUMP_VARIABLES`_ [EXCLUDE_REGEX <regular_expression>])
     debug(`DUMP_PROPERTIES`_)
-    debug(`DUMP_TARGET_PROPERTIES`_ <target-name>)
+    debug(`DUMP_TARGET_PROPERTIES`_ <target_name>)
 
 Usage
 ^^^^^
 .. _DUMP_VARIABLES:
 .. code-block:: cmake
 
-  debug(DUMP_VARIABLES [EXCLUDE_REGEX <regular-expression>])
+  debug(DUMP_VARIABLES [EXCLUDE_REGEX <regular_expression>])
 
 Disaply all CMake variables except those that match with the optional 
-``<regular-expression>`` parameter.
+``<regular_expression>`` parameter.
 
 .. _DUMP_PROPERTIES:
 .. code-block:: cmake
@@ -38,9 +38,9 @@ Disaply all CMake properties.
 .. _DUMP_TARGET_PROPERTIES:
 .. code-block:: cmake
 
-  debug(DUMP_TARGET_PROPERTIES <target-name>)
+  debug(DUMP_TARGET_PROPERTIES <target_name>)
 
-Display all CMake properties of target ``<target-name>`` parameter.
+Display all CMake properties of target ``<target_name>`` parameter.
 
 #]=======================================================================]
 cmake_minimum_required (VERSION 3.16)
