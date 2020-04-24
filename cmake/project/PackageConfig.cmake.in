@@ -31,6 +31,6 @@ check_required_components(@PROJECT_NAME@)
 # find_dependency(Qt5 COMPONENTS Widgets Gui Core Svg Concurrent REQUIRED)
 # End of declaration section
 
-if(NOT TARGET @PACKAGE_LOCAL_TARGET_NAME@)
-	include("${CMAKE_CURRENT_LIST_FILE}/@PACKAGE_LOCAL_EXPORT_TARGET_FILE_NAME@")
+if(NOT TARGET @LOCAL_TARGET_NAME@)
+	include("${CMAKE_CURRENT_LIST_FILE}/@LOCAL_EXPORT_TARGET_FILE_NAME@")
 endif()
