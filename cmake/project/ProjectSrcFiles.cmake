@@ -9,14 +9,14 @@
 # In this files, you will set the lists of all source files of your project.
 # First, you have to set the variable `${PROJECT_NAME}_SRC_ALL_FILES` with
 # source files (cpp and header) present in `${PROJECT_NAME}_SRC_DIR`
-# (/src directory). Then, set the variable `${PROJECT_NAME}_SRC_HEADER_FILES`
-# with header files present in ${PROJECT_NAME}_SRC_DIR` (/src directory).
+# (src/ directory). Then, set the variable `${PROJECT_NAME}_SRC_HEADER_FILES`
+# with header files present in ${PROJECT_NAME}_SRC_DIR` (src/ directory).
 # Finally, set the variable `${PROJECT_NAME}_INCLUDE_HEADER_FILES` with public
-# header files present in `${PROJECT_NAME}_INCLUDE_DIR/${PROJECT_NAME}`
+# header files present in `${PROJECT_NAME}_INCLUDE_DIR/${PROJECT_NAME}/`
 # (this directory is optional). In this variable, only set your own headers
 # files, not headers of dependencies that will add in a specific config file.
-# The last variable `${PROJECT_NAME}_PUBLIC_HEADER_FILES` is a list of public
-# header files that will be copy in `/include` directory by `install()` command.
+# The last variable `${PROJECT_NAME}_PUBLIC_HEADER_DIRS` is a list of public
+# header directories that will be copy in `include/` directory by `install()` command.
 # By default, this variable is set with all header files of your project ;
 # that's mean all header files are public. Feel free to replace this policy
 # by yours.
@@ -34,25 +34,26 @@
 
 include(Directory)
 
+# The precompiled files are set here. If you don't need them, set the variables to empty string
 set(${PROJECT_NAME}_PRECOMPILED_HEADER_FILE "${${PROJECT_NAME}_SRC_DIR}/${PROJECT_NAME}_pch.h")
 set(${PROJECT_NAME}_PRECOMPILED_SOURCE_FILE "${${PROJECT_NAME}_SRC_DIR}/${PROJECT_NAME}_pch.cpp")
 
-# All source files (.cpp and .h) of /src directory go here
+# All source files (.cpp and .h) of src/ directory go here
 set(${PROJECT_NAME}_SRC_ALL_FILES "")
 directory(SCAN ${PROJECT_NAME}_SRC_ALL_FILES LIST_DIRECTORIES off RELATIVE off ROOT_DIR "${${PROJECT_NAME}_SRC_DIR}" INCLUDE_REGEX ".*[.]cpp$|.*[.]h$|.*[.]cc$")
 
-# Only header files of /src directory go here
+# Only header files of src/ directory go here
 set(${PROJECT_NAME}_SRC_HEADER_FILES "")
 directory(SCAN ${PROJECT_NAME}_SRC_HEADER_FILES LIST_DIRECTORIES off RELATIVE off ROOT_DIR "${${PROJECT_NAME}_SRC_DIR}" INCLUDE_REGEX ".*[.]h$")
 
-# Only cpp files of /src directiry go here
+# Only cpp files of src/ directiry go here
 set(${PROJECT_NAME}_SRC_SOURCE_FILES "")
 directory(SCAN ${PROJECT_NAME}_SRC_SOURCE_FILES LIST_DIRECTORIES off RELATIVE off ROOT_DIR "${${PROJECT_NAME}_SRC_DIR}" INCLUDE_REGEX ".*[.]cpp$|.*[.]cc$")
 
-# Only you own header files of /include/project-name directiry go here. The headers of your dependencies should not set here,
-# they will be add in a specific config file.
+# Only you own header files of include/project-name/ directory go here. The headers of your dependencies should not set here,
+# they will be add in a specific config file
 set(${PROJECT_NAME}_INCLUDE_HEADER_FILES "")
 directory(SCAN ${PROJECT_NAME}_INCLUDE_HEADER_FILES LIST_DIRECTORIES off RELATIVE off ROOT_DIR "${${PROJECT_NAME}_INCLUDE_DIR}/${PROJECT_NAME}" INCLUDE_REGEX ".*[.]h$")
 
-# By default, all header files (those of /src and /include/project-name) are publics and go here
-set(${PROJECT_NAME}_PUBLIC_HEADER_FILES "${${PROJECT_NAME}_SRC_HEADER_FILES}" "${${PROJECT_NAME}_INCLUDE_HEADER_FILES}")
+# By default, all header files of src/ and include/project-name/ are publics and go here
+set(${PROJECT_NAME}_PUBLIC_HEADER_DIRS "${${PROJECT_NAME}_SRC_DIR}" "${${PROJECT_NAME}_INCLUDE_DIR}/${PROJECT_NAME}")

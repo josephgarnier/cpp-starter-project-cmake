@@ -284,8 +284,8 @@ endif()
 if(NOT DEFINED ${PROJECT_NAME}_INCLUDE_HEADER_FILES)
 	message(FATAL_ERROR "${PROJECT_NAME}_INCLUDE_HEADER_FILES must be specified!")
 endif()
-if(NOT DEFINED ${PROJECT_NAME}_PUBLIC_HEADER_FILES)
-	message(FATAL_ERROR "${PROJECT_NAME}_PUBLIC_HEADER_FILES must be specified!")
+if(NOT DEFINED ${PROJECT_NAME}_PUBLIC_HEADER_DIRS)
+	message(FATAL_ERROR "${PROJECT_NAME}_PUBLIC_HEADER_DIRS must be specified!")
 endif()
 
 set(${PROJECT_NAME}_RELATIVE_SRC_ALL_FILES "")
@@ -516,9 +516,12 @@ install(TARGETS "${${PROJECT_NAME}_TARGET_NAME}"
 )
 
 # Install public header files in include directory
-install(FILES ${${PROJECT_NAME}_PUBLIC_HEADER_FILES}
-	DESTINATION "${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}"
-)
+foreach(directory IN ITEMS ${${PROJECT_NAME}_PUBLIC_HEADER_DIRS})
+	install(DIRECTORY "${directory}/"
+		DESTINATION "${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}"
+		FILES_MATCHING REGEX ".*[.]h$"
+	)
+endforeach()
 
 # Install externals libraries in lib directory
 install(FILES ${${PROJECT_NAME}_LIBRARIES_FILES}

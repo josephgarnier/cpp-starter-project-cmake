@@ -9,13 +9,12 @@
 # Put in this file all instructions to include and link your library dependencies
 # to your own library and own executable. All libraries (.dll or .so files) found by the
 # `directory()` function will be automatically link, but to include their header
-# file, you have to add this function. For each directory in `/include`,
+# file, you have to add this function. For each directory in `include/`,
 # except for this containing your own headers, write the following instructions at
-# the end of file in remplacing `<library-name>` by the name of library:
+# the end of file in remplacing `<library-name-directory>` by the name of dirictory
+# where your library is:
 # 
-# set(<library-name>_include_header_files "")
-# directory(SCAN <library-name>_include_header_files LIST_DIRECTORIES off RELATIVE off ROOT_DIR "${${PROJECT_NAME}_INCLUDE_DIR}/${<library-name>}" INCLUDE_REGEX ".*[.]h$")
-# set(${PROJECT_NAME}_PUBLIC_HEADER_FILES "${${PROJECT_NAME}_PUBLIC_HEADER_FILES}" "${<library-name>_include_header_files}")
+# list(APPEND ${PROJECT_NAME}_PUBLIC_HEADER_DIRS "${${PROJECT_NAME}_INCLUDE_DIR}/<library-name-directory>")
 #
 # On the contrary, if you want to use an external library (e.g Qt) in using
 # `find_package()` function, you don't need the previous code, but rather have
@@ -37,6 +36,11 @@ include(FileManip)
 
 set(${PROJECT_NAME}_LIBRARIES_FILES "")
 directory(SCAN ${PROJECT_NAME}_LIBRARIES_FILES LIST_DIRECTORIES off RELATIVE off ROOT_DIR "${${PROJECT_NAME}_LIB_DIR}" INCLUDE_REGEX "(.*\\${CMAKE_SHARED_LIBRARY_SUFFIX}$)|(.*\\${CMAKE_STATIC_LIBRARY_SUFFIX}$)")
+
+# Append each include directories of your libraries in this list:
+#list(APPEND ${PROJECT_NAME}_PUBLIC_HEADER_DIRS "${${PROJECT_NAME}_INCLUDE_DIR}/<library-name-directory>")
+
+
 
 # Add your special instructions here
 
