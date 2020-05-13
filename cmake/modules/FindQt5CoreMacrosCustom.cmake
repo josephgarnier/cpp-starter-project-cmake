@@ -59,7 +59,9 @@ function(QT5_ADD_RESOURCES_CUSTOM outfiles )
 		get_filename_component(outfilename ${it} NAME_WE)
 		get_filename_component(infile ${it} ABSOLUTE)
 		set(outfile ${CMAKE_CURRENT_BINARY_DIR}/src/qrc_${outfilename}.cpp)
-
+		get_filename_component(outdirectory ${outfile} DIRECTORY)
+		file(MAKE_DIRECTORY ${outdirectory})
+		
 		_QT5_PARSE_QRC_FILE(${infile} _out_depends _rc_depends)
 		set_source_files_properties(${infile} PROPERTIES SKIP_AUTORCC ON)
 
