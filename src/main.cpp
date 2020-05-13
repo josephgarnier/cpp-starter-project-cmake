@@ -10,6 +10,11 @@
 #include "project-name_pch.h"
 
 int main() {
-  std::cout << "Hello, World!" << std::endl;
+  std::cout << "Main: Hello, World!" << std::endl;
+	Include1 include1;
+	Include2 include2;
+	Source1 source1;
+	Sub1 sub1;
+	Sub2 sub2;
   return 0;
 }

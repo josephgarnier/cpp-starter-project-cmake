@@ -6,15 +6,11 @@
 * LICENSE file in the root directory of this source tree.
 ******************************************************************************/
 
-#include "sub2.h"
-#include "project-name_pch.h"
+#include "source4.h"
 
-Sub2::Sub2() noexcept
+class Source3
 {
-	std::cout << "Sub2: default constructor" << std::endl;
-}
-
-Sub2::~Sub2() noexcept
-{
-	std::cout << "Sub2: destructor" << std::endl;
-}
+public:
+	Source3() noexcept; // Default constructor
+	virtual ~Source3() noexcept; // Destructor
+};
