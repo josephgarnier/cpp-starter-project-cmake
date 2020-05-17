@@ -15,8 +15,8 @@ Synopsis
 .. parsed-literal::
 
     string_manip(`SPLIT`_ <string> <output_var>)
-    string_manip(`TRANSFORM`_ <input_list_var> START_CASE [OUTPUT_VARIABLE <output_var>])
-    string_manip(`TRANSFORM`_ <input_var> START_CASE [OUTPUT_VARIABLE <output_var>])
+    string_manip(`TRANSFORM`_ <string_list_var> START_CASE [OUTPUT_VARIABLE <output_var>])
+    string_manip(`TRANSFORM`_ <string_var> START_CASE [OUTPUT_VARIABLE <output_var>])
 
 Usage
 ^^^^^
@@ -34,16 +34,16 @@ returned.
 .. _TRANSFORM:
 .. code-block:: cmake
 
-  string_manip(TRANSFORM <input_list_var> START_CASE [OUTPUT_VARIABLE <output_var>])
+  string_manip(TRANSFORM <string_list_var> START_CASE [OUTPUT_VARIABLE <output_var>])
 
-Transform each element of the list of strings ``<input_list_var>`` into start
+Transform each element of the list of strings ``<string_list_var>`` into start
 case, storing the result in-place or in the specified ``<output_var>``.
 
 .. code-block:: cmake
 
-  string_manip(TRANSFORM <input_var> START_CASE [OUTPUT_VARIABLE <output_var>])
+  string_manip(TRANSFORM <string_var> START_CASE [OUTPUT_VARIABLE <output_var>])
 
-Transform the string ``<input_var>`` into start case then store de result in
+Transform the string ``<string_var>`` into start case then store de result in
 place or in the specified ``<output_var>``.
 
 #]=======================================================================]
