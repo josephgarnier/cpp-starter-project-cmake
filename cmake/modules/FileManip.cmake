@@ -16,6 +16,7 @@ Synopsis
 
     file_manip(`RELATIVE_PATH`_ <input_list_var> BASE_DIR <path> [OUTPUT_VARIABLE <output_var>])
     file_manip(`ABSOLUTE_PATH`_ <input_list_var> BASE_DIR <path> [OUTPUT_VARIABLE <output_var>])
+    file_manip(`STRIP_PATH`_ <input_list_var> BASE_DIR <path> [OUTPUT_VARIABLE <output_var>])
     file_manip(`GET_COMPONENT`_ <input_list>... MODE <mode> OUTPUT_VARIABLE <output_var>)
 
 Usage
@@ -25,14 +26,21 @@ Usage
 
   file_manip(RELATIVE_PATH <input_list_var> BASE_DIR <directory_path> [OUTPUT_VARIABLE <output_var>])
 
-Compute the relative path from a ``<directory_path>`` to a the list of input path ``<input_list_var>`` and store the result in-place or in the specified ``<output_var>``.
+Compute the relative path from a ``<directory_path>`` for each files in the list of input path ``<input_list_var>`` and store the result in-place or in the specified ``<output_var>``.
 
 .. _ABSOLUTE_PATH:
 .. code-block:: cmake
 
   file_manip(ABSOLUTE_PATH <input_list_var> BASE_DIR <directory_path> [OUTPUT_VARIABLE <output_var>])
 
-Compute the absolute path from a ``<directory_path>`` to a the list of input path ``<input_list_var>`` and store the result in-place or in the specified ``<output_var>``.
+Compute the absolute path from a ``<directory_path>`` for each files in the list of input path ``<input_list_var>`` and store the result in-place or in the specified ``<output_var>``.
+
+.. _GET_COMPONENT:
+.. code-block:: cmake
+
+  file_manip(STRIP_PATH <input_list_var> BASE_DIR <directory_path> [OUTPUT_VARIABLE <output_var>])
+
+Strip the <directory_path>`` prefix of each file in ``<input_list_var>`` and store the result in-place or in the specified ``<output_var>``.
 
 .. _GET_COMPONENT:
 .. code-block:: cmake
@@ -53,7 +61,7 @@ cmake_minimum_required (VERSION 3.16)
 # Public function of this module.
 function(file_manip)
 	set(options "")
-	set(one_value_args RELATIVE_PATH ABSOLUTE_PATH BASE_DIR MODE OUTPUT_VARIABLE)
+	set(one_value_args RELATIVE_PATH ABSOLUTE_PATH STRIP_PATH BASE_DIR MODE OUTPUT_VARIABLE)
 	set(multi_value_args GET_COMPONENT)
 	cmake_parse_arguments(FM "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
 	
@@ -65,7 +73,10 @@ function(file_manip)
 		file_manip_relative_path(RELATIVE_PATH ${FM_RELATIVE_PATH} BASE_DIR ${FM_BASE_DIR} OUTPUT_VARIABLE ${FM_OUTPUT_VARIABLE})
 	elseif(DEFINED FM_ABSOLUTE_PATH)
 		file_manip_absolute_path(ABSOLUTE_PATH ${FM_ABSOLUTE_PATH} BASE_DIR ${FM_BASE_DIR} OUTPUT_VARIABLE ${FM_OUTPUT_VARIABLE})
-	elseif(DEFINED FM_GET_COMPONENT)
+	elseif(DEFINED FM_STRIP_PATH)
+		file_manip_strip_path(STRIP_PATH ${FM_STRIP_PATH} BASE_DIR "${FM_BASE_DIR}" OUTPUT_VARIABLE ${FM_OUTPUT_VARIABLE})
+	elseif((DEFINED FM_GET_COMPONENT)
+		OR ("GET_COMPONENT" IN_LIST FM_KEYWORDS_MISSING_VALUES))
 		if("${FM_MODE}" STREQUAL DIRECTORY)
 			file_manip_get_component_directory(GET_COMPONENT "${FM_GET_COMPONENT}" MODE "${FM_MODE}" OUTPUT_VARIABLE ${FM_OUTPUT_VARIABLE})
 		elseif("${FM_MODE}" STREQUAL NAME)
@@ -137,6 +148,40 @@ macro(file_manip_absolute_path)
 		set(${FMAP_ABSOLUTE_PATH} "${absolute_path_list}" PARENT_SCOPE)
 	else()
 		set(${FMAP_OUTPUT_VARIABLE} "${absolute_path_list}" PARENT_SCOPE)
+	endif()
+endmacro()
+
+#------------------------------------------------------------------------------
+# Internal usage.
+macro(file_manip_strip_path)
+	set(options "")
+	set(one_value_args STRIP_PATH BASE_DIR OUTPUT_VARIABLE)
+	set(multi_value_args "")
+	cmake_parse_arguments(FMSP "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
+
+	if(DEFINED FMSP_UNPARSED_ARGUMENTS)
+		message(FATAL_ERROR "Unrecognized arguments: \"${SMTSL_UNPARSED_ARGUMENTS}\"")
+	endif()
+	if(NOT DEFINED FMSP_STRIP_PATH)
+		message(FATAL_ERROR "STRIP_PATH arguments is missing")
+	endif()
+	if(NOT DEFINED FMSP_BASE_DIR)
+		message(FATAL_ERROR "BASE_DIR arguments is missing")
+	endif()
+	
+	set(stripped_path_list "")
+	foreach(file IN ITEMS ${${FMSP_STRIP_PATH}})
+	message("")
+	message("file BEFORE => ${file}")
+		string(REPLACE "${FMSP_BASE_DIR}/" "" stripped_path ${file})
+	message("file AFTER => ${stripped_path}")
+		list(APPEND stripped_path_list ${stripped_path})
+	endforeach()
+	
+	if(NOT DEFINED FMSP_OUTPUT_VARIABLE)
+		set(${FMSP_STRIP_PATH} "${stripped_path_list}" PARENT_SCOPE)
+	else()
+		set(${FMSP_OUTPUT_VARIABLE} "${stripped_path_list}" PARENT_SCOPE)
 	endif()
 endmacro()
 
