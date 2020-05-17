@@ -22,7 +22,7 @@
 			"options": {
 				"cwd": "${workspaceFolder}/build"
 			},
-			"command": "cmake --build . --clean-first",
+			"command": "cmake --build . --clean-first --verbose",
 			"group": {
 				"kind": "build",
 				"isDefault": true
