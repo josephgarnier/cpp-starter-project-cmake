@@ -248,6 +248,7 @@ set(${PROJECT_NAME}_INSTALL_RUNTIME_DIR             "${CMAKE_INSTALL_FULL_BINDIR
 set(${PROJECT_NAME}_INSTALL_LIBRARY_DIR             "${CMAKE_INSTALL_FULL_LIBDIR}/${PROJECT_NAME}")
 set(${PROJECT_NAME}_INSTALL_ARCHIVE_DIR             "${CMAKE_INSTALL_FULL_LIBDIR}/${PROJECT_NAME}")
 set(${PROJECT_NAME}_INSTALL_INCLUDE_DIR             "${CMAKE_INSTALL_FULL_INCLUDEDIR}/${PROJECT_NAME}")
+set(${PROJECT_NAME}_INSTALL_RELATIVE_INCLUDE_DIR    "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}")
 set(${PROJECT_NAME}_INSTALL_CMAKE_DIR               "${CMAKE_INSTALL_FULL_LIBDIR}/${PROJECT_NAME}/cmake")
 
 set(${PROJECT_NAME}_UNINSTALL_TEMPLATE_CONFIG_FILE  "${${PROJECT_NAME}_CMAKE_HELPERS_DIR}/Uninstall.cmake.in")
@@ -272,24 +273,53 @@ endif()
 if(NOT DEFINED ${PROJECT_NAME}_PRECOMPILED_SOURCE_FILE)
 	message(FATAL_ERROR "${PROJECT_NAME}_PRECOMPILED_SOURCE_FILE must be specified!")
 endif()
-if(NOT DEFINED ${PROJECT_NAME}_SRC_ALL_FILES)
-	message(FATAL_ERROR "${PROJECT_NAME}_SRC_ALL_FILES must be specified!")
+if(NOT DEFINED ${PROJECT_NAME}_SOURCE_PRIVATE_FILES)
+	message(FATAL_ERROR "${PROJECT_NAME}_SOURCE_PRIVATE_FILES must be specified!")
 endif()
-if(NOT DEFINED ${PROJECT_NAME}_SRC_HEADER_FILES)
-	message(FATAL_ERROR "${PROJECT_NAME}_SRC_HEADER_FILES must be specified!")
+if(NOT DEFINED ${PROJECT_NAME}_HEADER_PUBLIC_DIRS)
+	message(FATAL_ERROR "${PROJECT_NAME}_HEADER_PUBLIC_DIRS must be specified!")
 endif()
-if(NOT DEFINED ${PROJECT_NAME}_SRC_SOURCE_FILES)
-	message(FATAL_ERROR "${PROJECT_NAME}_SRC_SOURCE_FILES must be specified!")
+if(NOT DEFINED ${PROJECT_NAME}_HEADER_PUBLIC_FILES)
+	message(FATAL_ERROR "${PROJECT_NAME}_HEADER_PUBLIC_FILES must be specified!")
 endif()
-if(NOT DEFINED ${PROJECT_NAME}_INCLUDE_HEADER_FILES)
-	message(FATAL_ERROR "${PROJECT_NAME}_INCLUDE_HEADER_FILES must be specified!")
+if(NOT DEFINED ${PROJECT_NAME}_HEADER_PRIVATE_DIRS)
+	message(FATAL_ERROR "${PROJECT_NAME}_HEADER_PRIVATE_DIRS must be specified!")
 endif()
-if(NOT DEFINED ${PROJECT_NAME}_PUBLIC_HEADER_DIRS)
-	message(FATAL_ERROR "${PROJECT_NAME}_PUBLIC_HEADER_DIRS must be specified!")
+if(NOT DEFINED ${PROJECT_NAME}_HEADER_PRIVATE_FILES)
+	message(FATAL_ERROR "${PROJECT_NAME}_HEADER_PRIVATE_FILES must be specified!")
 endif()
 
-set(${PROJECT_NAME}_RELATIVE_SRC_ALL_FILES "")
-file_manip(RELATIVE_PATH ${PROJECT_NAME}_SRC_ALL_FILES BASE_DIR "${${PROJECT_NAME}_PROJECT_DIR}" OUTPUT_VARIABLE ${PROJECT_NAME}_RELATIVE_SRC_ALL_FILES)
+# Create a list of private relative source files for PRIVATE of `target_sources()` command.
+set(${PROJECT_NAME}_SOURCE_PRIVATE_RELATIVE_FILES "")
+file_manip(RELATIVE_PATH ${PROJECT_NAME}_SOURCE_PRIVATE_FILES
+	BASE_DIR "${${PROJECT_NAME}_PROJECT_DIR}"
+	OUTPUT_VARIABLE ${PROJECT_NAME}_SOURCE_PRIVATE_RELATIVE_FILES
+)
+
+# Create a list of public relative header files for BUILD_INTERFACE of `target_sources()` command.
+set(${PROJECT_NAME}_HEADER_PUBLIC_RELATIVE_FILES "")
+file_manip(RELATIVE_PATH ${PROJECT_NAME}_HEADER_PUBLIC_FILES
+	BASE_DIR "${${PROJECT_NAME}_PROJECT_DIR}"
+	OUTPUT_VARIABLE ${PROJECT_NAME}_HEADER_PUBLIC_RELATIVE_FILES
+)
+
+# Create a list of private relative header files for PRIVATE of `target_sources()` command.
+set(${PROJECT_NAME}_HEADER_PRIVATE_RELATIVE_FILES "")
+file_manip(RELATIVE_PATH ${PROJECT_NAME}_HEADER_PRIVATE_FILES
+	BASE_DIR "${${PROJECT_NAME}_PROJECT_DIR}"
+	OUTPUT_VARIABLE ${PROJECT_NAME}_HEADER_PRIVATE_RELATIVE_FILES
+)
+
+# Create a list of header files for INSTALL_INTERFACE of `target_sources()` command.
+set(${PROJECT_NAME}_INSTALL_HEADER_FILES ${${PROJECT_NAME}_HEADER_PUBLIC_FILES})
+foreach(header_directory IN ITEMS ${${PROJECT_NAME}_HEADER_PUBLIC_DIRS})
+	file_manip(STRIP_PATH ${PROJECT_NAME}_INSTALL_HEADER_FILES
+		BASE_DIR "${header_directory}"
+	)
+endforeach()
+file_manip(ABSOLUTE_PATH ${PROJECT_NAME}_INSTALL_HEADER_FILES
+	BASE_DIR "${${PROJECT_NAME}_INSTALL_RELATIVE_INCLUDE_DIR}"
+)
 
 # Build as library or as executable
 if(${${PROJECT_NAME}_TARGET_IS_STATIC})
@@ -310,10 +340,14 @@ elseif(${${PROJECT_NAME}_TARGET_IS_EXEC})
 endif()
 
 # Add sources to target
-message(STATUS "Add sources to target")
+message(STATUS "Add private and public sources files to target")
 target_sources("${${PROJECT_NAME}_TARGET_NAME}"
+	PUBLIC
+		"$<BUILD_INTERFACE:${${PROJECT_NAME}_HEADER_PUBLIC_RELATIVE_FILES}>"
+		"$<INSTALL_INTERFACE:${${PROJECT_NAME}_INSTALL_HEADER_FILES}>"
 	PRIVATE
-		"${${PROJECT_NAME}_RELATIVE_SRC_ALL_FILES}"
+		"${${PROJECT_NAME}_SOURCE_PRIVATE_RELATIVE_FILES}"
+		"${${PROJECT_NAME}_HEADER_PRIVATE_RELATIVE_FILES}"
 )
 
 # Add precompiled header to target
@@ -336,19 +370,24 @@ target_compile_features("${${PROJECT_NAME}_TARGET_NAME}"
 )
 
 # Add incude directories to target
-message(STATUS "Add include directories to target")
+message(STATUS "Add private and public header directories to include directories of target")
 target_include_directories("${${PROJECT_NAME}_TARGET_NAME}"
 	# see https://cmake.org/cmake/help/v3.0/manual/cmake-buildsystem.7.html#build-specification-and-usage-requirements
 	# and https://stackoverflow.com/questions/26243169/cmake-target-include-directories-meaning-of-scope
 	# and https://cmake.org/pipermail/cmake/2017-October/066457.html
+	# If PRIVATE is specified for a certain option/property, then that option/property will only impact
+	# the current target. If PUBLIC is specified, then the option/property impacts both the current
+	# target and any others that link to it. If INTERFACE is specified, then the option/property does
+	# not impact the current target but will propagate to other targets that link to it.
 	PUBLIC
-		# Used when the property is exported using export(), or when the target is used by another target in the same buildsystem
-		"$<BUILD_INTERFACE:${${PROJECT_NAME}_INCLUDE_DIR}>"
-		# Used when installing using install(EXPORT)
+		# Used when the property is exported using export(), or when building the target,
+		# or when it is used by another target in the same buildsystem.
+		"$<BUILD_INTERFACE:${${PROJECT_NAME}_HEADER_PUBLIC_DIRS}>"
+		# Used when installing use install(EXPORT)
 		"$<INSTALL_INTERFACE:${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}>"
 	PRIVATE
 		# Used only when building the target
-		"${${PROJECT_NAME}_SRC_DIR}"
+		"${${PROJECT_NAME}_HEADER_PRIVATE_DIRS}"
 )
 
 # Add compile definitions to target
@@ -516,7 +555,7 @@ install(TARGETS "${${PROJECT_NAME}_TARGET_NAME}"
 )
 
 # Install public header files in include directory
-foreach(directory IN ITEMS ${${PROJECT_NAME}_PUBLIC_HEADER_DIRS})
+foreach(directory IN ITEMS ${${PROJECT_NAME}_HEADER_PUBLIC_DIRS})
 	install(DIRECTORY "${directory}/"
 		DESTINATION "${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}"
 		FILES_MATCHING REGEX ".*[.]h$"
@@ -624,7 +663,7 @@ string(REGEX MATCHALL "\\$<INSTALL_INTERFACE\\:[^\\>]*" install_interface_source
 string(REPLACE "$<INSTALL_INTERFACE:" "" install_interface_sources_target_property "${install_interface_sources_target_property}")
 
 # Get content of private SOURCE property
-string(REGEX MATCH "^[^\\$]*" private_sources_target_property "${sources_target_property}")
+string(GENEX_STRIP "${sources_target_property}" private_sources_target_property)
 
 # Concatenate previous lists, remove duplicated items and group them
 set(sources_target_property "${private_sources_target_property}")
