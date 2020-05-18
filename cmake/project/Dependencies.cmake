@@ -11,10 +11,10 @@
 # `directory()` function will be automatically link, but to include their header
 # file, you have to add this function. For each directory in `include/`,
 # except for this containing your own headers, write the following instructions at
-# the end of file in remplacing `<library-name-directory>` by the name of dirictory
-# where your library is:
+# the end of this file in remplacing `<library-name-directory>` by the name of
+# directory where your library is:
 # 
-# list(APPEND ${PROJECT_NAME}_PUBLIC_HEADER_DIRS "${${PROJECT_NAME}_INCLUDE_DIR}/<library-name-directory>")
+# set(${PROJECT_NAME}_LIBRARY_HEADER_DIRS "${${PROJECT_NAME}_INCLUDE_DIR}/<library-name-directory>")
 #
 # On the contrary, if you want to use an external library (e.g Qt) in using
 # `find_package()` function, you don't need the previous code, but rather have
@@ -34,11 +34,19 @@
 include(Directory)
 include(FileManip)
 
-set(${PROJECT_NAME}_LIBRARIES_FILES "")
-directory(SCAN ${PROJECT_NAME}_LIBRARIES_FILES LIST_DIRECTORIES off RELATIVE off ROOT_DIR "${${PROJECT_NAME}_LIB_DIR}" INCLUDE_REGEX "(.*\\${CMAKE_SHARED_LIBRARY_SUFFIX}$)|(.*\\${CMAKE_STATIC_LIBRARY_SUFFIX}$)")
+set(${PROJECT_NAME}_LIBRARY_FILES "")
+directory(SCAN ${PROJECT_NAME}_LIBRARY_FILES
+	LIST_DIRECTORIES off
+	RELATIVE off
+	ROOT_DIR "${${PROJECT_NAME}_LIB_DIR}"
+	INCLUDE_REGEX "(.*\\${CMAKE_SHARED_LIBRARY_SUFFIX}$)|(.*\\${CMAKE_STATIC_LIBRARY_SUFFIX}$)"
+)
 
-# Append each include directories of your libraries in this list:
-#list(APPEND ${PROJECT_NAME}_PUBLIC_HEADER_DIRS "${${PROJECT_NAME}_INCLUDE_DIR}/<library-name-directory>")
+# Append each include directories of your libraries in this list. They will
+# be added to include directories of target and copied by `install()` command.
+#  ||
+#  V
+# set(${PROJECT_NAME}_LIBRARY_HEADER_DIRS "${${PROJECT_NAME}_INCLUDE_DIR}/<library-name-directory>")
 
 
 

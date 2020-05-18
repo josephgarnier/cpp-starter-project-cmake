@@ -369,7 +369,7 @@ target_compile_features("${${PROJECT_NAME}_TARGET_NAME}"
 		"cxx_std_${CMAKE_CXX_STANDARD}"
 )
 
-# Add incude directories to target
+# Add header directories to incude directories to target
 message(STATUS "Add private and public header directories to include directories of target")
 target_include_directories("${${PROJECT_NAME}_TARGET_NAME}"
 	# see https://cmake.org/cmake/help/v3.0/manual/cmake-buildsystem.7.html#build-specification-and-usage-requirements
@@ -387,7 +387,7 @@ target_include_directories("${${PROJECT_NAME}_TARGET_NAME}"
 		"$<INSTALL_INTERFACE:${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}>"
 	PRIVATE
 		# Used only when building the target
-		"${${PROJECT_NAME}_HEADER_PRIVATE_DIRS}"
+		"$<$<BOOL:${${PROJECT_NAME}_HEADER_PRIVATE_DIRS}>:${${PROJECT_NAME}_HEADER_PRIVATE_DIRS}>"
 )
 
 # Add compile definitions to target
@@ -405,30 +405,38 @@ target_compile_definitions("${${PROJECT_NAME}_TARGET_NAME}"
 #------------------------------------------------------------------------------
 message("\n== Add project dependencies ==")
 include(Dependencies)
-if(NOT DEFINED ${PROJECT_NAME}_LIBRARIES_FILES)
-	message(FATAL_ERROR "${PROJECT_NAME}_LIBRARIES_FILES must be specified!")
+if(NOT DEFINED ${PROJECT_NAME}_LIBRARY_FILES)
+	message(FATAL_ERROR "${PROJECT_NAME}_LIBRARY_FILES must be specified!")
+endif()
+if(NOT DEFINED ${PROJECT_NAME}_LIBRARY_HEADER_DIRS)
+	message(FATAL_ERROR "${PROJECT_NAME}_LIBRARY_HEADER_DIRS must be specified!")
 endif()
 
-set(${PROJECT_NAME}_INSTALL_LIBRARIES_FILES "")
-list(LENGTH ${PROJECT_NAME}_LIBRARIES_FILES nb_files)
-if(NOT nb_files EQUAL 0)
-	file_manip(GET_COMPONENT ${${PROJECT_NAME}_LIBRARIES_FILES}
-		MODE NAME
-		OUTPUT_VARIABLE ${PROJECT_NAME}_INSTALL_LIBRARIES_FILES
-	)
-	file_manip(ABSOLUTE_PATH ${PROJECT_NAME}_INSTALL_LIBRARIES_FILES
-		BASE_DIR "${${PROJECT_NAME}_INSTALL_LIBRARY_DIR}"
-	)
-endif()
+# Get the name of each library file and append them to install library directory path.
+set(${PROJECT_NAME}_INSTALL_LIBRARY_FILES "")
+file_manip(GET_COMPONENT ${${PROJECT_NAME}_LIBRARY_FILES}
+	MODE NAME
+	OUTPUT_VARIABLE ${PROJECT_NAME}_INSTALL_LIBRARY_FILES
+)
+file_manip(ABSOLUTE_PATH ${PROJECT_NAME}_INSTALL_LIBRARY_FILES
+	BASE_DIR "${${PROJECT_NAME}_INSTALL_LIBRARY_DIR}"
+)
 
-# Link externals libraries to target
-message(STATUS "Link externals libraries to project target")
+# Link external libraries to target
+message(STATUS "Link external libraries of \"lib/\" directory to project target")
 target_link_libraries("${${PROJECT_NAME}_TARGET_NAME}"
 	PUBLIC
-		"$<BUILD_INTERFACE:${${PROJECT_NAME}_LIBRARIES_FILES}>"
-		"$<INSTALL_INTERFACE:${${PROJECT_NAME}_INSTALL_LIBRARIES_FILES}>"
+		"$<BUILD_INTERFACE:${${PROJECT_NAME}_LIBRARY_FILES}>"
+		"$<INSTALL_INTERFACE:${${PROJECT_NAME}_INSTALL_LIBRARY_FILES}>"
 	PRIVATE
-		"${${PROJECT_NAME}_LIBRARIES_FILES}"
+		"${${PROJECT_NAME}_LIBRARY_FILES}"
+)
+
+# Add external header directories to incude directories to target
+message(STATUS "Add \"include/\" directory (containing external header directories) to include directories of target")
+target_include_directories("${${PROJECT_NAME}_TARGET_NAME}"
+	PUBLIC
+		"$<BUILD_INTERFACE:${${PROJECT_NAME}_INCLUDE_DIR}>"
 )
 
 #------------------------------------------------------------------------------
@@ -562,8 +570,16 @@ foreach(directory IN ITEMS ${${PROJECT_NAME}_HEADER_PUBLIC_DIRS})
 	)
 endforeach()
 
+# Install library public header files in include directory
+foreach(directory IN ITEMS ${${PROJECT_NAME}_LIBRARY_HEADER_DIRS})
+	install(DIRECTORY "${directory}"
+		DESTINATION "${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}"
+		FILES_MATCHING REGEX ".*[.]h$"
+	)
+endforeach()
+
 # Install externals libraries in lib directory
-install(FILES ${${PROJECT_NAME}_LIBRARIES_FILES}
+install(FILES ${${PROJECT_NAME}_LIBRARY_FILES}
 	DESTINATION "${${PROJECT_NAME}_INSTALL_LIBRARY_DIR}"
 )
 
@@ -681,6 +697,7 @@ directory(SCAN project_all_files
 	EXCLUDE_REGEX "build|.git|.vscode"
 )
 list(REMOVE_ITEM project_all_files ${sources_target_property})
+list(REMOVE_DUPLICATES project_all_files)
 target_sources("${${PROJECT_NAME}_TARGET_NAME}"
 	PRIVATE
 		"${project_all_files}"

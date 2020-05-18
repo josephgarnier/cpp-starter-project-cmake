@@ -6,8 +6,8 @@
 * LICENSE file in the root directory of this source tree.
 ******************************************************************************/
 
-#include "project-name/include1.h"
-#include "project-name/include2.h"
+#include "include1.h"
+#include "include2.h"
 #include "source1.h"
 #include "sub1/sub1.h"
 #include "sub2/sub2.h"
