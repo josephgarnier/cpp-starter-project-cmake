@@ -87,10 +87,6 @@
 				"cwd": "${workspaceFolder}/build"
 			},
 			"command": "cpack --config CPackConfig.cmake && sleep 3s && rm -rf ../bin/_CPack_Packages",
-			"group": {
-				"kind": "build",
-				"isDefault": true
-			},
 			"presentation": {
 				"reveal": "always",
 				"panel": "dedicated",
@@ -106,10 +102,6 @@
 				"cwd": "${workspaceFolder}/build"
 			},
 			"command": "cpack --config CPackSourceConfig.cmake && sleep 3s && rm -rf ../bin/_CPack_Packages",
-			"group": {
-				"kind": "build",
-				"isDefault": true
-			},
 			"presentation": {
 				"reveal": "always",
 				"panel": "dedicated",
