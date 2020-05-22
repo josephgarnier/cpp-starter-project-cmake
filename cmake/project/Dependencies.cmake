@@ -39,14 +39,16 @@ directory(SCAN ${PROJECT_NAME}_LIBRARY_FILES
 	LIST_DIRECTORIES off
 	RELATIVE off
 	ROOT_DIR "${${PROJECT_NAME}_LIB_DIR}"
-	INCLUDE_REGEX "(.*\\${CMAKE_SHARED_LIBRARY_SUFFIX}$)|(.*\\${CMAKE_STATIC_LIBRARY_SUFFIX}$)"
+	INCLUDE_REGEX ".*\\${CMAKE_SHARED_LIBRARY_SUFFIX}.*|.*\\${CMAKE_STATIC_LIBRARY_SUFFIX}.*"
 )
 
-# Append each include directories of your libraries in this list. They will
-# be added to include directories of target and copied by `install()` command.
+# Append each include directories of your libraries in this list
+# (in this way `${${PROJECT_NAME}_INCLUDE_DIR}/<library-name-directory>`) or
+# let it empty. They will be added to include directories of target and copied
+# by `install()` command.
 #  ||
 #  V
-# set(${PROJECT_NAME}_LIBRARY_HEADER_DIRS "${${PROJECT_NAME}_INCLUDE_DIR}/<library-name-directory>")
+set(${PROJECT_NAME}_LIBRARY_HEADER_DIRS "")
 
 
 
