@@ -79,6 +79,8 @@ set(${PROJECT_NAME}_LIBRARY_HEADER_DIRS "")
 # set(UI_FILES "")
 # set(RESSOURCE_FILES "")
 
+# The directory where the files will be generated should be added to the
+# variable `${PROJECT_NAME}_HEADER_PUBLIC_DIRS` in `ProjectSrcFiles.cmake`.
 # qt5_wrap_cpp(MOC_HEADER_FILES ${QOBJECT_HEADER_FILES})
 # qt5_wrap_ui_custom(UI_SOURCE_FILES ${UI_FILES})
 # qt5_add_resources_custom(RESSOURCE_SRCS ${RESSOURCE_FILES})
