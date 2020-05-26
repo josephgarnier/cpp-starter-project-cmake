@@ -22,11 +22,56 @@
 			"options": {
 				"cwd": "${workspaceFolder}/build"
 			},
-			"command": "cmake --build . --clean-first --verbose",
+			"command": "cmake --build .",
 			"group": {
 				"kind": "build",
 				"isDefault": true
 			},
+			"presentation": {
+				"reveal": "always",
+				"panel": "dedicated",
+				"focus": true,
+				"clear": true
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Build with Clean",
+			"type": "shell",
+			"options": {
+				"cwd": "${workspaceFolder}/build"
+			},
+			"command": "cmake --build . --clean-first",
+			"presentation": {
+				"reveal": "always",
+				"panel": "dedicated",
+				"focus": true,
+				"clear": true
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Build with Clean and Verbose",
+			"type": "shell",
+			"options": {
+				"cwd": "${workspaceFolder}/build"
+			},
+			"command": "cmake --build . --clean-first --verbose",
+			"presentation": {
+				"reveal": "always",
+				"panel": "dedicated",
+				"focus": true,
+				"clear": true
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Execute",
+			"type": "shell",
+			"options": {
+				"cwd": "${workspaceFolder}/bin"
+			},
+			"command": "./project-name",
 			"presentation": {
 				"reveal": "always",
 				"panel": "dedicated",
