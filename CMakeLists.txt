@@ -433,6 +433,8 @@ target_link_libraries("${${PROJECT_NAME}_TARGET_NAME}"
 )
 
 # Add external header directories to incude directories to target
+# (INSTALL_INTERFACE and PRIVATE doesn't need to be defined here, because they are
+# already defined in the previous call to `target_include_directories()`)
 message(STATUS "Add \"include/\" directory (containing external header directories) to include directories of target")
 target_include_directories("${${PROJECT_NAME}_TARGET_NAME}"
 	PUBLIC
