@@ -16,6 +16,9 @@
 # 
 # set(${PROJECT_NAME}_LIBRARY_HEADER_DIRS "${${PROJECT_NAME}_INCLUDE_DIR}/<library-name-directory>")
 #
+# Warning: according to the soname policy on Linux (https://en.wikipedia.org/wiki/Soname),
+# don't forget to create a link for each library in `lib\`.
+#
 # On the contrary, if you want to use an external library (e.g Qt) in using
 # `find_package()` function, you don't need the previous code, but rather have
 # to add your special instructions like `find_package()`, `target_sources()`,
@@ -171,19 +174,31 @@ set(${PROJECT_NAME}_LIBRARY_HEADER_DIRS "")
 # 		"$<BUILD_INTERFACE:Qt5::Widgets;Qt5::Gui;Qt5::Core;Qt5::Svg;Qt5::Concurrent>"
 # 		"$<INSTALL_INTERFACE:${Qt5Widgets_location};${Qt5Gui_location};${Qt5Core_location};${Qt5Svg_location};${Qt5Concurrent_location}>"
 # )
+#
+# # Set Qt as a position-independent target
+# set_target_properties("${${PROJECT_NAME}_TARGET_NAME}" PROPERTIES INTERFACE_POSITION_INDEPENDENT_CODE ON)
 # if(${${PROJECT_NAME}_TARGET_IS_EXEC})
 # 	target_compile_options("${${PROJECT_NAME}_TARGET_NAME}"
 # 		PUBLIC
-# 			"$<BUILD_INTERFACE:-fPIC;-fPIE>"
-# 			"$<INSTALL_INTERFACE:-fPIC;-fPIE>"
+# 			"$<BUILD_INTERFACE:-fPIE>"
+# 			"$<INSTALL_INTERFACE:-fPIE>"
+# 		PRIVATE
+# 			"-fPIE"
 # 	)
-# 	set_target_properties("${${PROJECT_NAME}_TARGET_NAME}" PROPERTIES INTERFACE_POSITION_INDEPENDENT_CODE ON)
+# elseif(${${PROJECT_NAME}_TARGET_IS_STATIC} OR ${${PROJECT_NAME}_TARGET_IS_SHARED})
+# 	target_compile_options("${${PROJECT_NAME}_TARGET_NAME}"
+# 	PUBLIC
+# 		"$<BUILD_INTERFACE:-fPIC>"
+# 		"$<INSTALL_INTERFACE:-fPIC>"
+# 	PRIVATE
+# 		"-fPIC"
+# 	)
 # endif()
-
+#
+# # Add Qt assert definitions to target if needed
 # if(${PARAM_ASSERT_ENABLE})
 # 	message(STATUS "QtAssert enabled\n")
 # else()
-# 	# Add Qt assert definitions to target
 # 	message(STATUS "Add Qt assert definitions to target")
 # 	target_compile_definitions("${${PROJECT_NAME}_TARGET_NAME}"
 # 		PUBLIC
