@@ -264,7 +264,6 @@ set(${PROJECT_NAME}_CPACK_OPTIONS_FILE              "${${PROJECT_NAME}_BUILD_DIR
 # Build project
 #------------------------------------------------------------------------------
 message("\n== Build project ==")
-include(Cotire)
 include(ProjectSrcFiles)
 include(FileManip)
 if(NOT DEFINED ${PROJECT_NAME}_PRECOMPILED_HEADER_FILE)
@@ -288,6 +287,13 @@ endif()
 if(NOT DEFINED ${PROJECT_NAME}_HEADER_PRIVATE_FILES)
 	message(FATAL_ERROR "${PROJECT_NAME}_HEADER_PRIVATE_FILES must be specified!")
 endif()
+
+# Create a relative precompiled header file for `target_precompile_headers()` command.
+set(${PROJECT_NAME}_PRECOMPILED_HEADER_RELATIVE_FILE "")
+file_manip(RELATIVE_PATH ${PROJECT_NAME}_PRECOMPILED_HEADER_FILE
+	BASE_DIR "${${PROJECT_NAME}_PROJECT_DIR}"
+	OUTPUT_VARIABLE ${PROJECT_NAME}_PRECOMPILED_HEADER_RELATIVE_FILE
+)
 
 # Create a list of private relative source files for PRIVATE of `target_sources()` command.
 set(${PROJECT_NAME}_SOURCE_PRIVATE_RELATIVE_FILES "")
@@ -353,10 +359,12 @@ target_sources("${${PROJECT_NAME}_TARGET_NAME}"
 # Add precompiled header to target
 if(${PROJECT_NAME}_PRECOMPILED_HEADER_FILE)
 	message(STATUS "Add precompiled header to target")
-	set_target_properties("${${PROJECT_NAME}_TARGET_NAME}" PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "${${PROJECT_NAME}_PRECOMPILED_HEADER_FILE}")
+	target_precompile_headers("${${PROJECT_NAME}_TARGET_NAME}"
+		PUBLIC
+			"${${PROJECT_NAME}_PRECOMPILED_HEADER_RELATIVE_FILE}"
+	)
 else()
 	message(STATUS "Precompiled header disabled for target")
-	set_target_properties("${${PROJECT_NAME}_TARGET_NAME}" PROPERTIES COTIRE_ENABLE_PRECOMPILED_HEADER FALSE)
 endif()
 
 # Set compiler version to target
@@ -440,12 +448,6 @@ target_include_directories("${${PROJECT_NAME}_TARGET_NAME}"
 	PUBLIC
 		"$<BUILD_INTERFACE:${${PROJECT_NAME}_INCLUDE_DIR}>"
 )
-
-#------------------------------------------------------------------------------
-# Speeds up the build process with Cotire
-#------------------------------------------------------------------------------
-message("\n== Speed up the build process with Cotire ==")
-cotire("${${PROJECT_NAME}_TARGET_NAME}")
 
 #------------------------------------------------------------------------------
 # Build documentation
