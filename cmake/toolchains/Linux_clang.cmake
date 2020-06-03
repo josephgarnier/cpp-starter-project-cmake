@@ -11,7 +11,7 @@ set(CMAKE_SYSTEM_VERSION 4.4.0-21-generic)
 # CMAKE_SYSTEM - see https://cmake.org/cmake/help/latest/variable/CMAKE_SYSTEM.html
 set(CMAKE_SYSTEM "${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_VERSION}")
 
-#clang++-6.0 --version on unix
+#clang++-9 --version on unix
 set(triple x86_64-pc-linux-gnu)
 
 # specify the cross compiler
@@ -28,10 +28,13 @@ set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 # for libraries and headers in the target directories
 set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
-set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE BOTH)
+set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
 
 # compile flags
 add_compile_options("$<$<STREQUAL:${PARAM_BUILD_TYPE},debug>:-g>")
 add_compile_options("$<$<STREQUAL:${PARAM_BUILD_TYPE},debug>:-ggdb3>")
-add_compile_options("$<$<STREQUAL:${PARAM_BUILD_TYPE},debug>:-gfull>")
 add_compile_options("$<$<STREQUAL:${PARAM_BUILD_TYPE},debug>:-fdebug-macro>")
+add_compile_options("$<$<STREQUAL:${PARAM_BUILD_TYPE},debug>:-Wall>")
+add_compile_options("$<$<STREQUAL:${PARAM_BUILD_TYPE},debug>:-Wextra>")
+add_compile_options("$<$<STREQUAL:${PARAM_BUILD_TYPE},debug>:-fstandalone-debug>")
+add_compile_options("$<$<STREQUAL:${PARAM_BUILD_TYPE},debug>:-stdlib=libc++>")
