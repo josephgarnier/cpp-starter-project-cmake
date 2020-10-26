@@ -11,56 +11,61 @@ set(CMAKE_SYSTEM_VERSION 10.0)
 # CMAKE_SYSTEM - see https://cmake.org/cmake/help/latest/variable/CMAKE_SYSTEM.html
 set(CMAKE_SYSTEM "${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_VERSION}")
 
-#cl command on windows
+# Write cl command on a windows terminal
 set(triple 19)
 
-# specify the cross compiler
+# Specify the cross compiler
 set(CMAKE_C_COMPILER cl)
 set(CMAKE_C_COMPILER_TARGET ${triple})
 set(CMAKE_CXX_COMPILER cl)
 set(CMAKE_CXX_COMPILER_TARGET ${triple})
 
-# where is the target environment
+# Where is the target environment
 list(APPEND CMAKE_FIND_ROOT_PATH "${${PROJECT_NAME}_PROJECT_DIR}")
 
-# search for programs in the build host directories
+# Search for programs in the build host directories
 set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM BOTH)
-# for libraries and headers in the target directories
+# For libraries and headers in the target directories
 set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE BOTH)
 set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE BOTH)
 
-# settings of directories organisation
+# Settings of directories organisation
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "CMakeTargets")
 set(CMAKE_FOLDER "")
 
-# compile flags: general
-add_compile_options("/Zm200")
-add_compile_options("$<$<CONFIG:DEBUG>:/Zi>")
-add_compile_options("$<$<CONFIG:DEBUG>:/MP>")
+#------------------------------------------------------------------------------
+# Compile flags. See https://docs.microsoft.com/en-us/cpp/build/reference/compiler-options-listed-by-category?view=vs-2019 and https://docs.microsoft.com/en-us/cpp/build/reference/linker-options?view=vs-2019
+#------------------------------------------------------------------------------
+# General section.
+add_compile_options("/Zm200") # Specifies the precompiled header memory allocation limit
+add_compile_options("$<$<CONFIG:DEBUG>:/Zi>") # Generates complete debugging information
+add_compile_options("$<$<CONFIG:DEBUG>:/MP>") # Builds multiple source files concurrently
 
-# compile flags: code generation
-add_compile_options("$<$<CONFIG:DEBUG>:/EHsc>")
-add_compile_options("$<$<CONFIG:DEBUG>:/MDd>")
-add_compile_options("$<$<CONFIG:DEBUG>:/Gy>")
-add_compile_options("$<$<CONFIG:DEBUG>:/Qpar>")
-add_compile_options("$<$<CONFIG:DEBUG>:/fp:fast>")
+# Code generation section. See https://docs.microsoft.com/en-us/cpp/build/reference/compiler-options-listed-by-category?view=vs-2019#code-generation
+add_compile_options("$<$<CONFIG:DEBUG>:/EHsc>") # Specifies the model of exception handling
+add_compile_options("$<$<CONFIG:DEBUG>:/MDd>") # Compiles to create a debug multithreaded DLL
+add_compile_options("$<$<CONFIG:DEBUG>:/Gy>") # Enables function-level linking
+add_compile_options("$<$<CONFIG:DEBUG>:/Qpar>") # Enables automatic parallelization of loops
+add_compile_options("$<$<CONFIG:DEBUG>:/fp:fast>") # Specifies floating-point behavior
 STRING(REGEX REPLACE "/RTC(su|[1su])" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
 
-# compile flags: disable optimizations. Comment "enable optimizations" flags to use it
-add_compile_options("$<$<CONFIG:DEBUG>:/Od>")
+# Optimizations section: disable optimizations. Comment all "enable optimizations" section flags to use it. See https://docs.microsoft.com/en-us/cpp/build/reference/compiler-options-listed-by-category?view=vs-2019#optimization
+add_compile_options("$<$<CONFIG:DEBUG>:/Od>") # Disables optimization
 
-# compile flags: enable optimizations. Comment "disable optimizations" flags to use it
-add_compile_options("$<$<CONFIG:DEBUG>:/O2>")
-add_compile_options("$<$<CONFIG:DEBUG>:/Ob2>")
-add_compile_options("$<$<CONFIG:DEBUG>:/Oi>")
-add_compile_options("$<$<CONFIG:DEBUG>:/Oy>")
-#add_compile_options("$<$<CONFIG:DEBUG>:/GL>") # disable /ZI to use it
+# Optimizations section: enable optimizations. Comment all "disable optimizations" section flags to use it. See https://docs.microsoft.com/en-us/cpp/build/reference/compiler-options-listed-by-category?view=vs-2019#optimization
+add_compile_options("$<$<CONFIG:DEBUG>:/O2>") # Creates fast code
+add_compile_options("$<$<CONFIG:DEBUG>:/Ob2>") # Controls inline expansion
+add_compile_options("$<$<CONFIG:DEBUG>:/Oi>") # Generates intrinsic functions
+add_compile_options("$<$<CONFIG:DEBUG>:/Oy>") # Omits frame pointer (x86 only)
+#add_compile_options("$<$<CONFIG:DEBUG>:/GL>") # Enables whole program optimization (disable /ZI to use it)
 
-# compile flags: linker
-add_link_options("$<$<CONFIG:DEBUG>:/INCREMENTAL>")
-add_link_options("$<$<CONFIG:DEBUG>:/DEBUG>")
-#add_link_options("$<$<CONFIG:DEBUG>:/OPT:REF>") # disable /ZI to use it
-#add_link_options("$<$<CONFIG:DEBUG>:/OPT:NOICF>") # disable /ZI to use it
-#add_link_options("$<$<CONFIG:DEBUG>:/LTCG:incremental>") # disable /ZI to use it
+# Linker section. See https://docs.microsoft.com/en-us/cpp/build/reference/linker-options?view=vs-2019
+add_link_options("$<$<CONFIG:DEBUG>:/INCREMENTAL>") # Enables incremental linking
+add_link_options("$<$<CONFIG:DEBUG>:/DEBUG>") # Generate program database file
+#add_link_options("$<$<CONFIG:DEBUG>:/OPT:REF>") # Eliminates functions and/or data that's never referenced (disable /ZI to use it)
+#add_link_options("$<$<CONFIG:DEBUG>:/OPT:NOICF>") # Perform identical COMDAT folding (disable /ZI to use it)
+#add_link_options("$<$<CONFIG:DEBUG>:/LTCG:incremental>") # Specifies link-time code generation (disable /ZI to use it)
+add_link_options("$<$<CONFIG:DEBUG>:/MANIFESTUAC:level=requireAdministrator>") #  Specifies the requested execution level for the application
+add_link_options("$<$<CONFIG:DEBUG>:/MANIFESTUAC:uiAccess=false") # Specifies whether or not to bypass user interface protection levels for other windows on the desktop
