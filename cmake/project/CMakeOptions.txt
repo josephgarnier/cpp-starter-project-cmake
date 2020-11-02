@@ -6,7 +6,7 @@
 # LICENSE file in the root directory of this source tree.
 
 #------------------------------------------------------------------------------
-# Customize with you own parameter values here (see below for the documentation)
+# Customize with you own parameter values here (see below for the documentation).
 #------------------------------------------------------------------------------
 set(PROJECT_NAME_VAL            "project-name")
 set(PROJECT_SUMMARY_VAL         "description")
@@ -15,16 +15,16 @@ set(PROJECT_VENDOR_CONTACT_VAL  "contact")
 set(PROJECT_VERSION_MAJOR_VAL   "0")
 set(PROJECT_VERSION_MINOR_VAL   "0")
 set(PROJECT_VERSION_PATCH_VAL   "0")
-if("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Linux") # Set for Linux
+if("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Linux") # Set for Linux.
 	set(TOOLCHAIN_FILE_VAL      "${CMAKE_SOURCE_DIR}/cmake/toolchains/Linux_gcc.cmake")
 	set(GENERATOR_VAL           "Unix Makefiles")
-elseif("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Windows") # Set for Windows
+elseif("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Windows") # Set for Windows.
 	set(TOOLCHAIN_FILE_VAL      "${CMAKE_SOURCE_DIR}/cmake/toolchains/Windows_vs.cmake")
 	set(GENERATOR_VAL           "Visual Studio 16 2019")
-elseif("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Darwin") # Set for Mac
+elseif("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Darwin") # Set for Mac.
 	set(TOOLCHAIN_FILE_VAL      "${CMAKE_SOURCE_DIR}/cmake/toolchains/Linux_clang.cmake")
 	set(GENERATOR_VAL           "Unix Makefiles")
-else() # Set for strange systems
+else() # Set for strange systems.
 	message(FATAL_ERROR "Unsupported host system: ${CMAKE_HOST_SYSTEM_NAME}")
 endif()
 set(COMPILE_VERSION_VAL         "17")
@@ -37,7 +37,7 @@ set(BUILD_DOXYGEN_DOCS_VAL      off)
 set(EXPORT_NAMESPACE_VAL        "MyProject")
 set(INSTALL_DIRECTORY_VAL       "")
 #------------------------------------------------------------------------------
-# End of customize section
+# End of customize section.
 #------------------------------------------------------------------------------
 
 set(PROJECT_NAME_DESC             "Specifies a name for project")
