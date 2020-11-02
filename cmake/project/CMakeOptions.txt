@@ -17,14 +17,16 @@ set(PROJECT_VERSION_MINOR_VAL   "0")
 set(PROJECT_VERSION_PATCH_VAL   "0")
 if("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Linux") # Set for Linux
 	set(TOOLCHAIN_FILE_VAL      "${CMAKE_SOURCE_DIR}/cmake/toolchains/Linux_gcc.cmake")
+	set(GENERATOR_VAL           "Unix Makefiles")
 elseif("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Windows") # Set for Windows
 	set(TOOLCHAIN_FILE_VAL      "${CMAKE_SOURCE_DIR}/cmake/toolchains/Windows_vs.cmake")
+	set(GENERATOR_VAL           "Visual Studio 16 2019")
 elseif("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Darwin") # Set for Mac
 	set(TOOLCHAIN_FILE_VAL      "${CMAKE_SOURCE_DIR}/cmake/toolchains/Linux_clang.cmake")
+	set(GENERATOR_VAL           "Unix Makefiles")
 else() # Set for strange systems
 	message(FATAL_ERROR "Unsupported host system: ${CMAKE_HOST_SYSTEM_NAME}")
 endif()
-set(GENERATOR_VAL               "Unix Makefiles")
 set(COMPILE_VERSION_VAL         "17")
 set(COMPILE_DEFINITIONS_VAL     "")
 set(ASSERT_ENABLE_VAL           off)
