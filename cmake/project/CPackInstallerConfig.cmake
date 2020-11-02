@@ -16,7 +16,7 @@
 # to keep default values or you will get an error.
 
 #------------------------------------------------------------------------------
-# General packaging setup
+# General packaging setup.
 #------------------------------------------------------------------------------
 set(CPACK_PACKAGE_DESCRIPTION           "${${PROJECT_NAME}_SUMMARY}")
 set(CPACK_PACKAGE_DESCRIPTION_FILE      "${${PROJECT_NAME}_PROJECT_DIR}/README.md")
@@ -33,13 +33,13 @@ set(CPACK_PACKAGE_VERSION_MINOR         "${${PROJECT_NAME}_VERSION_MINOR}")
 set(CPACK_PACKAGE_VERSION_PATCH         "${${PROJECT_NAME}_VERSION_PATCH}")
 
 #------------------------------------------------------------------------------
-# Resource files
+# Resource files.
 #------------------------------------------------------------------------------
 set(CPACK_RESOURCE_FILE_LICENSE         "${${PROJECT_NAME}_PROJECT_DIR}/LICENSE.md")
 set(CPACK_RESOURCE_FILE_README          "${${PROJECT_NAME}_PROJECT_DIR}/README.md")
 
 #------------------------------------------------------------------------------
-# Source package settings
+# Source package settings.
 #------------------------------------------------------------------------------
 set(CPACK_SOURCE_IGNORE_FILES           "")
 set(CPACK_SOURCE_PACKAGE_FILE_NAME      "${CPACK_PACKAGE_NAME}-source")
@@ -52,7 +52,7 @@ elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin")
 endif()
 
 #------------------------------------------------------------------------------
-# Binary package settings
+# Binary package settings.
 #------------------------------------------------------------------------------
 set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY    OFF)
 set(CPACK_PACKAGE_DIRECTORY             "${${PROJECT_NAME}_BIN_DIR}")

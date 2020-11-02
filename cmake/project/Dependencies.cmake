@@ -55,7 +55,7 @@ set(${PROJECT_NAME}_LIBRARY_HEADER_DIRS "")
 
 
 
-# Add your special instructions here
+# Add your special instructions here.
 
 
 # Exemple with Qt (delete it if you don't need it)
