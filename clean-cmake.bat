@@ -8,15 +8,23 @@ rem LICENSE file in the root directory of this source tree.
 setlocal EnableDelayedExpansion
 
 set "WORKSPACE_DIR=%cd%"
-set "BUILD_DIR=%WORKSPACE_DIR%/build"
+set "BUILD_DIR=%WORKSPACE_DIR%\build"
 set "SOLUTION_DIR=%BUILD_DIR%"
 
 if EXIST %SOLUTION_DIR% (
 	cmake --build %SOLUTION_DIR% --target clean
 
-	rem Remove solution in build directory
-	del /a /f /s /q "%SOLUTION_DIR%"
-	for /d %%p IN ("%SOLUTION_DIR%\*") DO rmdir "%%p" /s /q
+	rem Remove solution in build directory.
+	for /d %%p in ("%SOLUTION_DIR%\*") do (
+		rmdir "%%p" /s /q
+		echo."File deleted - %%~p"
+	)
+	for %%f in ("%SOLUTION_DIR%\*") do (
+		if not "%%~f" == "%SOLUTION_DIR%\.gitignore" (
+			del /a /f /q "%%~f"
+			echo."File deleted - %%~f"
+		)
+	)
 )
 
 if %errorlevel%==0 (
