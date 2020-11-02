@@ -22,7 +22,7 @@ elseif("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Windows") # Set for Windows
 elseif("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Darwin") # Set for Mac
 	set(TOOLCHAIN_FILE_VAL      "${CMAKE_SOURCE_DIR}/cmake/toolchains/Linux_clang.cmake")
 else() # Set for strange systems
-	set(TOOLCHAIN_FILE_VAL      "${CMAKE_SOURCE_DIR}/cmake/toolchains/Linux_clang.cmake")
+	message(FATAL_ERROR "Unsupported host system: ${CMAKE_HOST_SYSTEM_NAME}")
 endif()
 set(GENERATOR_VAL               "Unix Makefiles")
 set(COMPILE_VERSION_VAL         "17")
