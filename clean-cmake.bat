@@ -15,8 +15,8 @@ if EXIST %SOLUTION_DIR% (
 	cmake --build %SOLUTION_DIR% --target clean
 
 	rem Remove solution in build directory
-	del /A /F /S /Q "%SOLUTION_DIR%"
-	for /D %%p IN ("%SOLUTION_DIR%\*") DO rmdir "%%p" /s /q
+	del /a /f /s /q "%SOLUTION_DIR%"
+	for /d %%p IN ("%SOLUTION_DIR%\*") DO rmdir "%%p" /s /q
 )
 
 if %errorlevel%==0 (
