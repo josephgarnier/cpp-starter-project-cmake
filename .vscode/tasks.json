@@ -7,7 +7,12 @@
 			"options": {
 				"cwd": "${workspaceFolder}"
 			},
-			"command": "./clean-cmake.sh && sleep 3s && ./run-cmake.sh",
+			"linux": {
+				"command": "./clean-cmake.sh && sleep 3s && ./run-cmake.sh"
+			},
+			"windows": {
+				"command": ".\\clean-cmake.bat && timeout /t 3 > NUL && .\\run-cmake.bat"
+			},
 			"presentation": {
 				"reveal": "always",
 				"panel": "dedicated",
@@ -71,7 +76,12 @@
 			"options": {
 				"cwd": "${workspaceFolder}/bin"
 			},
-			"command": "./project-name",
+			"linux": {
+				"command": "./project-name"
+			},
+			"windows": {
+				"command": ".\\project-name"
+			},
 			"presentation": {
 				"reveal": "always",
 				"panel": "dedicated",
@@ -131,7 +141,12 @@
 			"options": {
 				"cwd": "${workspaceFolder}/build"
 			},
-			"command": "cpack --config CPackConfig.cmake && sleep 3s && rm -rf ../bin/_CPack_Packages",
+			"linux": {
+				"command": "cpack --config CPackConfig.cmake && sleep 3s && rm -rf ../bin/_CPack_Packages"
+			},
+			"windows": {
+				"command": "cpack --config CPackConfig.cmake && timeout /t 3 > NUL && del /a /f /s /q ../bin/_CPack_Packages"
+			},
 			"presentation": {
 				"reveal": "always",
 				"panel": "dedicated",
@@ -146,7 +161,12 @@
 			"options": {
 				"cwd": "${workspaceFolder}/build"
 			},
-			"command": "cpack --config CPackSourceConfig.cmake && sleep 3s && rm -rf ../bin/_CPack_Packages",
+			"linux": {
+				"command": "cpack --config CPackSourceConfig.cmake && sleep 3s && rm -rf ../bin/_CPack_Packages"
+			},
+			"windows": {
+				"command": "cpack --config CPackSourceConfig.cmake && timeout /t 3 > NUL && del /a /f /s /q ../bin/_CPack_Packages"
+			},
 			"presentation": {
 				"reveal": "always",
 				"panel": "dedicated",
