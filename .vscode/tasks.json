@@ -11,7 +11,7 @@
 				"command": "./clean-cmake.sh && sleep 3s && ./run-cmake.sh"
 			},
 			"windows": {
-				"command": ".\\clean-cmake.bat && timeout /t 3 > NUL && .\\run-cmake.bat"
+				"command": "clean-cmake.bat && timeout /t 3 > NUL && run-cmake.bat"
 			},
 			"presentation": {
 				"reveal": "always",
@@ -80,7 +80,7 @@
 				"command": "./project-name"
 			},
 			"windows": {
-				"command": ".\\project-name"
+				"command": "project-name"
 			},
 			"presentation": {
 				"reveal": "always",
