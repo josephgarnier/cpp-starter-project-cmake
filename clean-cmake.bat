@@ -15,14 +15,13 @@ if EXIST %SOLUTION_DIR% (
 	cmake --build %SOLUTION_DIR% --target clean
 
 	rem Remove solution in build directory.
-	for /d %%p in ("%SOLUTION_DIR%\*") do (
-		rmdir "%%p" /s /q
-		echo."File deleted - %%~p"
-	)
-	for %%f in ("%SOLUTION_DIR%\*") do (
-		if not "%%~f" == "%SOLUTION_DIR%\.gitignore" (
-			del /a /f /q "%%~f"
-			echo."File deleted - %%~f"
+	for /f "usebackq tokens=*" %%f in (`dir "%SOLUTION_DIR%\*" /a /b`) do (
+		if exist "%SOLUTION_DIR%\%%f\" (
+			rmdir "%SOLUTION_DIR%\%%f" /s /q
+			echo Directory deleted - %SOLUTION_DIR%\%%~f
+		) else if not "%%f" == ".gitignore" (
+			del "%SOLUTION_DIR%\%%~f" /a /f /q
+			echo File deleted - %SOLUTION_DIR%\%%~f
 		)
 	)
 )
