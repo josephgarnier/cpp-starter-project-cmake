@@ -17,6 +17,7 @@ Synopsis
     debug(`DUMP_VARIABLES`_ [EXCLUDE_REGEX <regular_expression>])
     debug(`DUMP_PROPERTIES`_)
     debug(`DUMP_TARGET_PROPERTIES`_ <target_name>)
+    debug(`DUMP_PROJECT_VARIABLES`_)
 
 Usage
 ^^^^^
@@ -42,6 +43,15 @@ Disaply all CMake properties.
 
 Display all CMake properties of target ``<target_name>`` parameter.
 
+.. _DUMP_PROJECT_VARIABLES:
+.. code-block:: cmake
+
+  debug(DUMP_PROJECT_VARIABLES)
+
+Display all global variables of the project. The trick is to exploit the
+naming convention which stipulates that each variable is prefixed
+by ${PROJECT_NAME}.
+
 #]=======================================================================]
 cmake_minimum_required (VERSION 3.16)
 include(CMakePrintHelpers)
@@ -49,7 +59,7 @@ include(CMakePrintHelpers)
 #------------------------------------------------------------------------------
 # Public function of this module.
 function(debug)
-	set(options DUMP_VARIABLES DUMP_PROPERTIES)
+	set(options DUMP_VARIABLES DUMP_PROPERTIES DUMP_PROJECT_VARIABLES)
 	set(one_value_args EXCLUDE_REGEX DUMP_TARGET_PROPERTIES)
 	set(multi_value_args "")
 	cmake_parse_arguments(DB "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
@@ -64,6 +74,8 @@ function(debug)
 		debug_dump_properties()
 	elseif(DEFINED DB_DUMP_TARGET_PROPERTIES)
 		debug_dump_target_properties()
+	elseif(${DB_DUMP_PROJECT_VARIABLES})
+		debug_dump_project_variables()
 	else()
 		message(FATAL_ERROR "Operation argument is missing")
 	endif()
@@ -143,6 +155,25 @@ macro(debug_dump_target_properties)
 				get_target_property(propertie_value "${DB_DUMP_TARGET_PROPERTIES}" "${propertie_name}")
 				message(STATUS "${DB_DUMP_TARGET_PROPERTIES}: ${propertie_name}= ${propertie_value}")
 			endif()
+		endif()
+	endforeach()
+endmacro()
+
+#------------------------------------------------------------------------------
+# Internal usage.
+macro(debug_dump_project_variables)
+	if(DEFINED DB_UNPARSED_ARGUMENTS)
+		message(FATAL_ERROR "Unrecognized arguments: \"${DB_UNPARSED_ARGUMENTS}\"")
+	endif()
+	if(NOT ${DB_DUMP_PROJECT_VARIABLES})
+		message(FATAL_ERROR "DUMP_PROJECT_VARIABLES arguments is missing")
+	endif()
+
+	get_cmake_property(variable_names VARIABLES)
+	list(SORT variable_names)
+	foreach (variable_name IN ITEMS ${variable_names})
+		if("${variable_name}" MATCHES "${PROJECT_NAME}_")
+			message(STATUS "${variable_name}= ${${variable_name}}")
 		endif()
 	endforeach()
 endmacro()
