@@ -507,7 +507,7 @@ endif()
 message("\n== Generates files for packaging and exporting ==")
 include(CMakePackageConfigHelpers)
 
-# Generate a package config-file).
+# Generate a package config-file.
 set(LOCAL_TARGET_NAME                  "${${PROJECT_NAME}_TARGET_NAME}")
 set(LOCAL_EXPORT_TARGET_FILE_NAME      "${${PROJECT_NAME}_EXPORT_TARGET_FILE_NAME}")
 set(LOCAL_PACKAGE_NAME                 "${${PROJECT_NAME}_PACKAGE_NAME}")

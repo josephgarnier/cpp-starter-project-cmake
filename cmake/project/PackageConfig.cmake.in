@@ -21,14 +21,17 @@ include(CMakeFindDependencyMacro)
 
 check_required_components(@PROJECT_NAME@)
 
-# Declare here the packages in order to communicate the requirements upstream.
-# Copy-paste the content of `find-package()` function of cmake/project/Dependencies.cmake.
+# Declare here all requirements upstream dependencies. They must be the same as
+# those declared in cmake/project/Dependencies.cmake.
+
+# An example with Qt (delete it if you don't need it)
 # if(DEFINED ENV{Qt5_DIR}) 
 # 	set(Qt5_DIR "$ENV{Qt5_DIR}")
 # else()
 # 	set(Qt5_DIR "/opt/Qt/5.12.6/gcc_64/lib/cmake/Qt5")
 # endif()
 # find_dependency(Qt5 COMPONENTS Widgets Gui Core Svg Concurrent REQUIRED)
+
 # End of declaration section
 
 if(NOT TARGET @LOCAL_TARGET_NAME@)

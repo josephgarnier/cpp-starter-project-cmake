@@ -58,7 +58,21 @@ set(${PROJECT_NAME}_LIBRARY_HEADER_DIRS "")
 # Add your special instructions here.
 
 
-# Exemple with Qt (delete it if you don't need it)
+
+# Example with the minimal instructions (delete it if you don't need it)
+# if(DEFINED ENV{OtherProjectName_DIR}) 
+# 	set(OtherProjectName_DIR "$ENV{OtherProjectName_DIR}")
+# else()
+# 	set(OtherProjectName_DIR "/usr/local/lib/other-project-name/cmake")
+# endif()
+# find_package(OtherProjectName REQUIRED)
+# target_link_libraries("${${PROJECT_NAME}_TARGET_NAME}"
+# 	PUBLIC
+# 		"$<BUILD_INTERFACE:MyOtherProject::OtherProjectName>"
+# 		"$<INSTALL_INTERFACE:MyOtherProject::OtherProjectName>"
+# )
+
+# Example with Qt (delete it if you don't need it)
 # message("\n** Include Qt **")
 # if(DEFINED ENV{Qt5_DIR}) 
 # 	set(Qt5_DIR "$ENV{Qt5_DIR}")
