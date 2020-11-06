@@ -63,7 +63,7 @@ set(${PROJECT_NAME}_LIBRARY_HEADER_DIRS "")
 # if(DEFINED ENV{OtherProjectName_DIR}) 
 # 	set(OtherProjectName_DIR "$ENV{OtherProjectName_DIR}")
 # else()
-# 	set(OtherProjectName_DIR "/usr/local/lib/other-project-name/cmake")
+# 	set(OtherProjectName_DIR "/usr/local/lib/other-project-name/cmake") # Path can be the build tree or the install tree
 # endif()
 # find_package(OtherProjectName REQUIRED)
 # target_link_libraries("${${PROJECT_NAME}_TARGET_NAME}"
