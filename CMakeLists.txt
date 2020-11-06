@@ -288,11 +288,24 @@ if(NOT DEFINED ${PROJECT_NAME}_HEADER_PRIVATE_FILES)
 	message(FATAL_ERROR "${PROJECT_NAME}_HEADER_PRIVATE_FILES must be specified!")
 endif()
 
-# Create a relative precompiled header file for `target_precompile_headers()` command.
+# Create a relative precompiled header file for PRIVATE of `target_precompile_headers()` command.
 set(${PROJECT_NAME}_PRECOMPILED_HEADER_RELATIVE_FILE "")
 file_manip(RELATIVE_PATH ${PROJECT_NAME}_PRECOMPILED_HEADER_FILE
 	BASE_DIR "${${PROJECT_NAME}_PROJECT_DIR}"
 	OUTPUT_VARIABLE ${PROJECT_NAME}_PRECOMPILED_HEADER_RELATIVE_FILE
+)
+
+# Create an absolute precompiled header file for INSTALL_INTERFACE of `target_precompile_headers()`
+# command (for some unknown reason the command `install(EXPORT...)` does not add a
+# suffix to the relative path).
+set(${PROJECT_NAME}_INSTALL_PRECOMPILED_HEADER_FILE ${${PROJECT_NAME}_PRECOMPILED_HEADER_FILE})
+foreach(header_directory IN ITEMS ${${PROJECT_NAME}_HEADER_PUBLIC_DIRS})
+	file_manip(STRIP_PATH ${PROJECT_NAME}_INSTALL_PRECOMPILED_HEADER_FILE
+		BASE_DIR "${header_directory}"
+	)
+endforeach()
+file_manip(ABSOLUTE_PATH ${PROJECT_NAME}_INSTALL_PRECOMPILED_HEADER_FILE
+	BASE_DIR "${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}"
 )
 
 # Create a list of private relative source files for PRIVATE of `target_sources()` command.
@@ -302,7 +315,7 @@ file_manip(RELATIVE_PATH ${PROJECT_NAME}_SOURCE_PRIVATE_FILES
 	OUTPUT_VARIABLE ${PROJECT_NAME}_SOURCE_PRIVATE_RELATIVE_FILES
 )
 
-# Create a list of public relative header files for BUILD_INTERFACE of `target_sources()` command.
+# Create a list of public relative header files for PRIVATE of `target_sources()` command.
 set(${PROJECT_NAME}_HEADER_PUBLIC_RELATIVE_FILES "")
 file_manip(RELATIVE_PATH ${PROJECT_NAME}_HEADER_PUBLIC_FILES
 	BASE_DIR "${${PROJECT_NAME}_PROJECT_DIR}"
@@ -354,6 +367,7 @@ target_sources("${${PROJECT_NAME}_TARGET_NAME}"
 	PRIVATE
 		"${${PROJECT_NAME}_SOURCE_PRIVATE_RELATIVE_FILES}"
 		"${${PROJECT_NAME}_HEADER_PRIVATE_RELATIVE_FILES}"
+		"${${PROJECT_NAME}_HEADER_PUBLIC_RELATIVE_FILES}"
 )
 
 # Add precompiled header to target.
@@ -361,6 +375,9 @@ if(${PROJECT_NAME}_PRECOMPILED_HEADER_FILE)
 	message(STATUS "Add precompiled header to target")
 	target_precompile_headers("${${PROJECT_NAME}_TARGET_NAME}"
 		PUBLIC
+			"$<BUILD_INTERFACE:${${PROJECT_NAME}_PRECOMPILED_HEADER_FILE}>"
+			"$<INSTALL_INTERFACE:${${PROJECT_NAME}_INSTALL_PRECOMPILED_HEADER_FILE}>"
+		PRIVATE
 			"${${PROJECT_NAME}_PRECOMPILED_HEADER_RELATIVE_FILE}"
 	)
 else()
@@ -594,7 +611,8 @@ install(FILES
 	DESTINATION "${${PROJECT_NAME}_INSTALL_CMAKE_DIR}"
 )
 
-# Generate a target file for exporting from the install tree and install it.
+# Generate and install a target file for exporting that will be use in the
+# install tree.
 install(EXPORT "${${PROJECT_NAME}_EXPORT_NAME}"
 	NAMESPACE "${${PROJECT_NAME}_EXPORT_NAMESPACE}::"
 	DESTINATION "${${PROJECT_NAME}_INSTALL_CMAKE_DIR}"
@@ -682,7 +700,7 @@ string(REPLACE "$<BUILD_INTERFACE:" "" build_interface_sources_target_property "
 string(REGEX MATCHALL "\\$<INSTALL_INTERFACE\\:[^\\>]*" install_interface_sources_target_property "${sources_target_property}")
 string(REPLACE "$<INSTALL_INTERFACE:" "" install_interface_sources_target_property "${install_interface_sources_target_property}")
 
-# Get content of private SOURCE property.
+# Get content of PRIVATE of SOURCE property.
 string(GENEX_STRIP "${sources_target_property}" private_sources_target_property)
 
 # Concatenate previous lists, remove duplicated items and group them.
