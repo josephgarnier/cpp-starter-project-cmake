@@ -77,18 +77,18 @@ set(${PROJECT_NAME}_LIBRARY_HEADER_DIRS "")
 # if(DEFINED ENV{Qt5_DIR}) 
 # 	set(Qt5_DIR "$ENV{Qt5_DIR}")
 # else()
-# 	set(Qt5_DIR "/opt/Qt/5.12.6/gcc_64/lib/cmake/Qt5")
+# 	set(Qt5_DIR "/opt/Qt/5.15.1/gcc_64/lib/cmake/Qt5")
 # endif()
 # find_package(Qt5 COMPONENTS Widgets Gui Core Svg Concurrent REQUIRED)
 # find_package(Qt5CoreMacrosCustom REQUIRED)
 # find_package(Qt5WidgetsMacrosCustom REQUIRED)
 
-# if (${Qt5Widgets_VERSION} VERSION_LESS 5.12.6
-# 	OR ${Qt5Gui_VERSION} VERSION_LESS 5.12.6
-# 	OR ${Qt5Core_VERSION} VERSION_LESS 5.12.6
-# 	OR ${Qt5Svg_VERSION} VERSION_LESS 5.12.6
-# 	OR ${Qt5Concurrent_VERSION} VERSION_LESS 5.12.6)
-# 		message(FATAL_ERROR "Minimum supported Qt5 version is 5.12.6!")
+# if (${Qt5Widgets_VERSION} VERSION_LESS 5.15.1
+# 	OR ${Qt5Gui_VERSION} VERSION_LESS 5.15.1
+# 	OR ${Qt5Core_VERSION} VERSION_LESS 5.15.1
+# 	OR ${Qt5Svg_VERSION} VERSION_LESS 5.15.1
+# 	OR ${Qt5Concurrent_VERSION} VERSION_LESS 5.15.1)
+# 		message(FATAL_ERROR "Minimum supported Qt5 version is 5.15.1!")
 # endif()
 
 # set(QOBJECT_SOURCE_FILES "${${PROJECT_NAME}_SRC_DIR}/sub2/sub2.cpp")
@@ -96,8 +96,8 @@ set(${PROJECT_NAME}_LIBRARY_HEADER_DIRS "")
 # set(UI_FILES "")
 # set(RESSOURCE_FILES "")
 
-# The directory where the files will be generated should be added to the
-# variable `${PROJECT_NAME}_HEADER_PUBLIC_DIRS` in `ProjectSrcFiles.cmake`.
+# # The directory where the files will be generated should be added to the
+# # variable `${PROJECT_NAME}_HEADER_PUBLIC_DIRS` in `ProjectSrcFiles.cmake`.
 # qt5_wrap_cpp(MOC_HEADER_FILES ${QOBJECT_HEADER_FILES})
 # qt5_wrap_ui_custom(UI_SOURCE_FILES ${UI_FILES})
 # qt5_add_resources_custom(RESSOURCE_SRCS ${RESSOURCE_FILES})
@@ -160,20 +160,12 @@ set(${PROJECT_NAME}_LIBRARY_HEADER_DIRS "")
 # 		"${RELATIVE_QOBJECT_SOURCE_FILES};${RELATIVE_MOC_HEADER_FILES};${RELATIVE_UI_SOURCE_FILES};${RELATIVE_RESSOURCE_SRCS}"
 # )
 
-# # Add Qt include directories to target
-# message(STATUS "Add Qt include directories to target")
-# target_include_directories("${${PROJECT_NAME}_TARGET_NAME}"
-# 	PUBLIC
-# 		"$<BUILD_INTERFACE:${Qt5Widgets_INCLUDE_DIRS};${Qt5Gui_INCLUDE_DIRS};${Qt5Core_INCLUDE_DIRS};${Qt5Svg_INCLUDE_DIRS};${Qt5Concurrent_INCLUDE_DIRS}>"
-# 		"$<INSTALL_INTERFACE:${Qt5Widgets_INCLUDE_DIRS};${Qt5Gui_INCLUDE_DIRS};${Qt5Core_INCLUDE_DIRS};${Qt5Svg_INCLUDE_DIRS};${Qt5Concurrent_INCLUDE_DIRS}>"
-# )
-
 # # Add Qt definitions to target
 # message(STATUS "Add Qt definitions to target")
 # target_compile_definitions("${${PROJECT_NAME}_TARGET_NAME}"
 # 	PUBLIC
-# 		"$<BUILD_INTERFACE:${Qt5Widgets_COMPILE_DEFINITIONS};${Qt5Gui_COMPILE_DEFINITIONS};${Qt5Core_COMPILE_DEFINITIONS};${Qt5Svg_COMPILE_DEFINITIONS};${Qt5Concurrent_COMPILE_DEFINITIONS};QT_USE_QSTRINGBUILDER;QT_SHAREDPOINTER_TRACK_POINTERS;QT_MESSAGELOGCONTEXT>"
-# 		"$<INSTALL_INTERFACE:${Qt5Widgets_COMPILE_DEFINITIONS};${Qt5Gui_COMPILE_DEFINITIONS};${Qt5Core_COMPILE_DEFINITIONS};${Qt5Svg_COMPILE_DEFINITIONS};${Qt5Concurrent_COMPILE_DEFINITIONS};QT_USE_QSTRINGBUILDER;QT_SHAREDPOINTER_TRACK_POINTERS;QT_MESSAGELOGCONTEXT>"
+# 		"$<BUILD_INTERFACE:QT_USE_QSTRINGBUILDER;QT_SHAREDPOINTER_TRACK_POINTERS;QT_MESSAGELOGCONTEXT>"
+# 		"$<INSTALL_INTERFACE:QT_USE_QSTRINGBUILDER;QT_SHAREDPOINTER_TRACK_POINTERS;QT_MESSAGELOGCONTEXT>"
 # )
 
 # # Link Qt to target
@@ -188,7 +180,7 @@ set(${PROJECT_NAME}_LIBRARY_HEADER_DIRS "")
 # 		"$<BUILD_INTERFACE:Qt5::Widgets;Qt5::Gui;Qt5::Core;Qt5::Svg;Qt5::Concurrent>"
 # 		"$<INSTALL_INTERFACE:${Qt5Widgets_location};${Qt5Gui_location};${Qt5Core_location};${Qt5Svg_location};${Qt5Concurrent_location}>"
 # )
-#
+
 # # Set Qt as a position-independent target
 # set_target_properties("${${PROJECT_NAME}_TARGET_NAME}" PROPERTIES INTERFACE_POSITION_INDEPENDENT_CODE ON)
 # if(${${PROJECT_NAME}_TARGET_IS_EXEC})
@@ -208,7 +200,7 @@ set(${PROJECT_NAME}_LIBRARY_HEADER_DIRS "")
 # 		"-fPIC"
 # 	)
 # endif()
-#
+
 # # Add Qt assert definitions to target if needed
 # if(${PARAM_ASSERT_ENABLE})
 # 	message(STATUS "QtAssert enabled\n")
