@@ -4,9 +4,9 @@
 # This source code is licensed under the license found in the
 # LICENSE file in the root directory of this source tree.
 
-# CMAKE_SYSTEM_NAME - on unix use command "uname -s", for windows write "Windows" OR use command "cmake --system-information".
+# CMAKE_SYSTEM_NAME - on unix use command `uname -s`, for windows write `Windows` OR use command `cmake --system-information`.
 set(CMAKE_SYSTEM_NAME "Windows")
-# CMAKE_SYSTEM_VERSION - on unix use command "uname -r", for windows use command "cmake --system-information".
+# CMAKE_SYSTEM_VERSION - on unix use command `uname -r`, for windows use command `cmake --system-information`.
 set(CMAKE_SYSTEM_VERSION "10.0")
 # CMAKE_SYSTEM - see https://cmake.org/cmake/help/latest/variable/CMAKE_SYSTEM.html.
 set(CMAKE_SYSTEM "${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_VERSION}")
@@ -69,5 +69,3 @@ add_link_options("$<$<CONFIG:DEBUG>:/DEBUG>") # Generate program database file.
 #add_link_options("$<$<CONFIG:DEBUG>:/OPT:REF>") # Eliminates functions and/or data that's never referenced (disable /ZI to use it).
 #add_link_options("$<$<CONFIG:DEBUG>:/OPT:NOICF>") # Perform identical COMDAT folding (disable /ZI to use it).
 #add_link_options("$<$<CONFIG:DEBUG>:/LTCG:incremental>") # Specifies link-time code generation (disable /ZI to use it).
-add_link_options("$<$<CONFIG:DEBUG>:/MANIFESTUAC:level=requireAdministrator>") #  Specifies the requested execution level for the application.
-add_link_options("$<$<CONFIG:DEBUG>:/MANIFESTUAC:uiAccess=false") # Specifies whether or not to bypass user interface protection levels for other windows on the desktop.

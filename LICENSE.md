@@ -138,7 +138,7 @@ Section 1 -- Definitions.
 Section 2 -- Scope.
 
  a. License grant.
- 
+
      1. Subject to the terms and conditions of this Public License, the
         Licensor hereby grants You a worldwide, royalty-free, non-sublicensable,
         non-exclusive, irrevocable license to exercise the Licensed Rights in
@@ -250,7 +250,7 @@ following conditions.
         required by Section 3(a)(1)(A) to the extent reasonably practicable.
 
  b. ShareAlike.
- 
+
         In addition to the conditions in Section 3(a), if You Share Adapted
         Material You produce, the following conditions also apply.
 
@@ -276,7 +276,7 @@ to Your use of the Licensed Material:
  a. for the avoidance of doubt, Section 2(a)(1) grants You the right to
     extract, reuse, reproduce, and Share all or a substantial portion of the
     contents of the database for NonCommercial purposes only;
-    
+
  b. if You include all or a substantial portion of the database contents
     in a database in which You have Sui Generis Database Rights, then the
     database in which You have Sui Generis Database Rights (but not its
@@ -302,7 +302,7 @@ Section 5 -- Disclaimer of Warranties and Limitation of Liability.
     of errors, whether or not known or discoverable. Where disclaimers of
     warranties are not allowed in full or in part, this disclaimer may not
     apply to You.
-    
+
  b. To the extent possible, in no event will the Licensor be liable to
     You on any legal theory (including, without limitation, negligence) or
     otherwise for any direct, special, indirect, incidental, consequential,
@@ -311,7 +311,7 @@ Section 5 -- Disclaimer of Warranties and Limitation of Liability.
     if the Licensor has been advised of the possibility of such losses,
     costs, expenses, or damages. Where a limitation of liability is not
     allowed in full or in part, this limitation may not apply to You.
-    
+
  c. The disclaimer of warranties and limitation of liability provided
     above shall be interpreted in a manner that, to the extent possible,
     most closely approximates an absolute disclaimer and waiver of all
@@ -348,7 +348,7 @@ Section 7 -- Other Terms and Conditions.
 
  a. The Licensor shall not be bound by any additional or different terms
     or conditions communicated by You unless expressly agreed.
-    
+
  b. Any arrangements, understandings, or agreements regarding the
     Licensed Material not stated herein are separate from and independent of
     the terms and conditions of this Public License.

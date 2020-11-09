@@ -74,17 +74,198 @@ In addition to the previous scripts, you can use the scripts `clean-cmake.sh` (l
 
 To compile your project, CMake will need a [toolchains](https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html) file. First, **create your own toolchains file** in `cmake/toolchains` or use one provided by default : there are one file for clang on linux and another one for visual studio on windows, feel free to clean them of their compile flags if you don't need them. Then, edit the CMakeOptions cache file and **set the path to your toolchain** file in `TOOLCHAIN_FILE_VAL` variable. We'll now configure all files in `cmake/project/`.
 
-Add your **source files** (headers and cpp) in `src/` directory or only the private source files if you decide to separate public and private header. In this case, put the public headers in a specific directory (or not) in `include/`. Please note that there are already some files for testing, remember to erase them before putting yours. By default, the instructions in file `cmake/project/ProjectSrcFiles.cmake` will automatically scan these directories and set cmake variables accordingly. But if you don't want to use the automation script scanning, open this file and read the instructions given in comment to complete it.
+Add your **source files** (headers and cpp) in `src/` directory or only the private source files if you decide to separate public and private headers. In this case, put the public headers in a specific directory (or not) in `include/`. Please note that there are already some files for testing, remember to erase them before putting yours. All customizable settings for the interal source files are located in the file `cmake/project/ProjectSrcFiles.cmake`. By default, the instructions in file will automatically scan the two directories listed and set cmake variables accordingly. But if you don't want to use the automation script scanning, open this file and read the instructions given in comment to complete it.
 
 In some cases, it's necessary to use a [precompiled header](https://en.wikipedia.org/wiki/Precompiled_header) file. If this concern you, rename your **precompiled header** file according to pattern `<project-name>_pch.h` or edit the two related variables in `ProjectSrcFiles.cmake` file.
 
-Now, if you use **external libraries** (.dll or .so files), either you add them in `lib/` directory and their header files each in a specific directory in `include/` directory, or you complete the `cmake/project/Dependencies.cmake` and `cmake/project/PackageConfig.cmake.in` files by relying on the commented instructions to import them with specifics commands as `find_package()`, `target_link_libraries()`, etc.
+Now, if you use **external libraries** (.dll or .so files), either you add them in `lib/` directory and their header files each in a specific directory in `include/` directory, or you have to complete the `cmake/project/Dependencies.cmake` and `cmake/project/PackageConfig.cmake.in` files by relying on the commented instructions to import them with specifics commands as `find_package()`, `target_link_libraries()`, etc. Sometimes, some libraries (like Qt with the mocks) will generate source files in the `build/` folder that will need to be made exportable. In this case, these files will be considered internal to the project and the folder containing them will have to be be specified in the `cmake/project/ProjectSrcFiles.cmake`.
+
+Here is an example of minimal instructions to write in the file `cmake/project/Dependencies.cmake` to link a library (only this file need to be modified). For a more consequent example, with Qt, see [here](#example-with-qt-of-a-link-with-an-external-library).
+
+```bash
+# First use case: you want to use the internal and automatic mechanism of library integration.
+# You only need to set the variable `${PROJECT_NAME}_LIBRARY_HEADER_DIRS` with the folders containing the include headers.
+set(${PROJECT_NAME}_LIBRARY_HEADER_DIRS "${${PROJECT_NAME}_INCLUDE_DIR}/myFirstLib" "${${PROJECT_NAME}_INCLUDE_DIR}//myFirstLib")
+
+# Second use case : you want to link a library installed in another folder than the one of your project.
+# You have to write these instructions after the comment "Add your special instructions here."
+if(DEFINED ENV{OtherProjectName_DIR})
+  set(OtherProjectName_DIR "$ENV{OtherProjectName_DIR}")
+else()
+  set(OtherProjectName_DIR "/usr/local/lib/other-project-name/cmake") # Path can be the build tree or the install tree
+endif()
+find_package(OtherProjectName REQUIRED)
+target_link_libraries("${${PROJECT_NAME}_TARGET_NAME}"
+  PUBLIC
+    "$<BUILD_INTERFACE:MyOtherProject::OtherProjectName>"
+    "$<INSTALL_INTERFACE:MyOtherProject::OtherProjectName>"
+)
+```
 
 The next file to configure is for **packaging and exporting** your application to be installed or included in another project. This **step is optional** if you plan to export your project only as executable. It's not an obligation either if you export as library, but strongly recommanded. For that, you have to edit `cmake/project/PackageConfig.cmake.in` and fill it from documentation of [`find_package()`](https://cmake.org/cmake/help/latest/command/find_package.html), [cmake-packages](https://cmake.org/cmake/help/latest/manual/cmake-packages.7.html) and [cmake-buildsystem](https://cmake.org/cmake/help/latest/manual/cmake-developer.7.html). But the file is already filled with a default content to be exported then imported in an other project with `target_link_libraries()`. If you are not familiar with these concepts of modern cmake, watch this [tutorial](https://gitlab.kitware.com/cmake/community/-/wikis/doc/tutorials/Exporting-and-Importing-Targets).
 
 The two next files to configure are to generate **binary and source package installers**. This **step is optional** if you don't plan to create an installer. By default, the project is provided with a basic configuration to generate an archive installer on Linux and an NSIS installer on Windows. If despite everything you want to customize the many options, edit the files `cmake/project/CPackInstallerConfig.cmake` and `cmake/project/CPackInstallerOptions.cmake.in` in following the documentation of [CPack](https://cmake.org/cmake/help/latest/module/CPack.html).
 
 Finally, this project allow you to generate an [Doxygen](http://www.doxygen.nl/) **documentation** and provide a default configuration in file `doc/doxyfile.in`. This **step is optional** if you set off documentation generation, else, read the manual of Doxygen to know how configure it.
+
+### 3. Example with Qt of a link with an external library
+
+Add the instructions below in the file `cmake/project/Dependencies.cmake`.
+
+```bash
+# Second use case : you want to link a library installed in another folder than the one of your project.
+# Add your special instructions here.
+#  ||
+#  V
+message("\n** Include Qt **")
+if(DEFINED ENV{Qt5_DIR})
+  set(Qt5_DIR "$ENV{Qt5_DIR}")
+else()
+  set(Qt5_DIR "/opt/Qt/5.15.1/gcc_64/lib/cmake/Qt5")
+endif()
+find_package(Qt5 COMPONENTS Widgets Gui Core Svg Concurrent REQUIRED)
+find_package(Qt5CoreMacrosCustom REQUIRED)
+find_package(Qt5WidgetsMacrosCustom REQUIRED)
+
+if (${Qt5Widgets_VERSION} VERSION_LESS 5.15.1
+  OR ${Qt5Gui_VERSION} VERSION_LESS 5.15.1
+  OR ${Qt5Core_VERSION} VERSION_LESS 5.15.1
+  OR ${Qt5Svg_VERSION} VERSION_LESS 5.15.1
+  OR ${Qt5Concurrent_VERSION} VERSION_LESS 5.15.1)
+    message(FATAL_ERROR "Minimum supported Qt5 version is 5.15.1!")
+endif()
+
+set(QOBJECT_SOURCE_FILES "${${PROJECT_NAME}_SRC_DIR}/myQObject.cpp")
+set(QOBJECT_HEADER_FILES "${${PROJECT_NAME}_SRC_DIR}/myQObject.h")
+set(UI_FILES "")
+set(RESSOURCE_FILES "")
+
+# The directory where the files will be generated should be added to the
+# variable `${PROJECT_NAME}_HEADER_PUBLIC_DIRS` in `ProjectSrcFiles.cmake`.
+qt5_wrap_cpp(MOC_HEADER_FILES ${QOBJECT_HEADER_FILES})
+qt5_wrap_ui_custom(UI_SOURCE_FILES ${UI_FILES})
+qt5_add_resources_custom(RESSOURCE_SRCS ${RESSOURCE_FILES})
+
+set(RELATIVE_QOBJECT_SOURCE_FILES "")
+file_manip(RELATIVE_PATH QOBJECT_SOURCE_FILES BASE_DIR "${${PROJECT_NAME}_PROJECT_DIR}" OUTPUT_VARIABLE RELATIVE_QOBJECT_SOURCE_FILES)
+set(RELATIVE_QOBJECT_HEADER_FILES "")
+file_manip(RELATIVE_PATH QOBJECT_HEADER_FILES BASE_DIR "${${PROJECT_NAME}_PROJECT_DIR}" OUTPUT_VARIABLE RELATIVE_QOBJECT_HEADER_FILES)
+set(RELATIVE_MOC_HEADER_FILES "")
+file_manip(RELATIVE_PATH MOC_HEADER_FILES BASE_DIR "${${PROJECT_NAME}_PROJECT_DIR}" OUTPUT_VARIABLE RELATIVE_MOC_HEADER_FILES)
+set(RELATIVE_UI_FILES "")
+file_manip(RELATIVE_PATH UI_FILES BASE_DIR "${${PROJECT_NAME}_PROJECT_DIR}" OUTPUT_VARIABLE RELATIVE_UI_FILES)
+set(RELATIVE_UI_SOURCE_FILES "")
+file_manip(RELATIVE_PATH UI_SOURCE_FILES BASE_DIR "${${PROJECT_NAME}_PROJECT_DIR}" OUTPUT_VARIABLE RELATIVE_UI_SOURCE_FILES)
+set(RELATIVE_RESSOURCE_FILES "")
+file_manip(RELATIVE_PATH RESSOURCE_FILES BASE_DIR "${${PROJECT_NAME}_PROJECT_DIR}" OUTPUT_VARIABLE RELATIVE_RESSOURCE_FILES)
+set(RELATIVE_RESSOURCE_SRCS "")
+file_manip(RELATIVE_PATH RESSOURCE_SRCS BASE_DIR "${${PROJECT_NAME}_PROJECT_DIR}" OUTPUT_VARIABLE RELATIVE_RESSOURCE_SRCS)
+
+message(STATUS "QObject sources found:")
+foreach(file IN ITEMS ${RELATIVE_QOBJECT_SOURCE_FILES})
+  message("    ${file}")
+endforeach()
+
+message(STATUS "QObject headers found:")
+foreach(file IN ITEMS ${RELATIVE_QOBJECT_HEADER_FILES})
+  message("    ${file}")
+endforeach()
+
+message(STATUS "QObject moc found:")
+foreach(file IN ITEMS ${RELATIVE_MOC_HEADER_FILES})
+  message("    ${file}")
+endforeach()
+
+message(STATUS "UI files found:")
+foreach(file IN ITEMS ${RELATIVE_UI_FILES})
+  message("    ${file}")
+endforeach()
+
+message(STATUS "UI sources found:")
+foreach(file IN ITEMS ${RELATIVE_UI_SOURCE_FILES})
+  message("    ${file}")
+endforeach()
+
+message(STATUS "Ressources files found:")
+foreach(file IN ITEMS ${RELATIVE_RESSOURCE_FILES})
+  message("    ${file}")
+endforeach()
+
+message(STATUS "Ressources sources found:")
+foreach(file IN ITEMS ${RELATIVE_RESSOURCE_SRCS})
+  message("    ${file}")
+endforeach()
+message("")
+
+# Add Qt sources to target
+message(STATUS "Add Qt sources to target")
+target_sources("${${PROJECT_NAME}_TARGET_NAME}"
+  PRIVATE
+    "${RELATIVE_QOBJECT_SOURCE_FILES};${RELATIVE_MOC_HEADER_FILES};${RELATIVE_UI_SOURCE_FILES};${RELATIVE_RESSOURCE_SRCS}"
+)
+
+# Add Qt definitions to target
+message(STATUS "Add Qt definitions to target")
+target_compile_definitions("${${PROJECT_NAME}_TARGET_NAME}"
+  PUBLIC
+    "$<BUILD_INTERFACE:QT_USE_QSTRINGBUILDER;QT_SHAREDPOINTER_TRACK_POINTERS;QT_MESSAGELOGCONTEXT>"
+    "$<INSTALL_INTERFACE:QT_USE_QSTRINGBUILDER;QT_SHAREDPOINTER_TRACK_POINTERS;QT_MESSAGELOGCONTEXT>"
+)
+
+# Link Qt to target
+message(STATUS "Link Qt to target\n")
+get_target_property(Qt5Widgets_location ${Qt5Widgets_LIBRARIES} LOCATION)
+get_target_property(Qt5Gui_location ${Qt5Gui_LIBRARIES} LOCATION)
+get_target_property(Qt5Core_location ${Qt5Core_LIBRARIES} LOCATION)
+get_target_property(Qt5Svg_location ${Qt5Svg_LIBRARIES} LOCATION)
+get_target_property(Qt5Concurrent_location ${Qt5Concurrent_LIBRARIES} LOCATION)
+target_link_libraries("${${PROJECT_NAME}_TARGET_NAME}"
+  PUBLIC
+    "$<BUILD_INTERFACE:Qt5::Widgets;Qt5::Gui;Qt5::Core;Qt5::Svg;Qt5::Concurrent>"
+    "$<INSTALL_INTERFACE:${Qt5Widgets_location};${Qt5Gui_location};${Qt5Core_location};${Qt5Svg_location};${Qt5Concurrent_location}>"
+)
+
+# Set Qt as a position-independent target
+set_target_properties("${${PROJECT_NAME}_TARGET_NAME}" PROPERTIES INTERFACE_POSITION_INDEPENDENT_CODE ON)
+if(${${PROJECT_NAME}_TARGET_IS_EXEC})
+  target_compile_options("${${PROJECT_NAME}_TARGET_NAME}"
+    PUBLIC
+      "$<BUILD_INTERFACE:-fPIE>"
+      "$<INSTALL_INTERFACE:-fPIE>"
+    PRIVATE
+      "-fPIE"
+  )
+elseif(${${PROJECT_NAME}_TARGET_IS_STATIC} OR ${${PROJECT_NAME}_TARGET_IS_SHARED})
+  target_compile_options("${${PROJECT_NAME}_TARGET_NAME}"
+  PUBLIC
+    "$<BUILD_INTERFACE:-fPIC>"
+    "$<INSTALL_INTERFACE:-fPIC>"
+  PRIVATE
+    "-fPIC"
+  )
+endif()
+
+# Add Qt assert definitions to target if needed (these instructions are optional,
+# they are only a way to easily enable or disable asserts from the file `cmake/project/CMakeOptions.txt`.
+if(${PARAM_ASSERT_ENABLE})
+  message(STATUS "QtAssert enabled\n")
+else()
+  message(STATUS "Add Qt assert definitions to target")
+  target_compile_definitions("${${PROJECT_NAME}_TARGET_NAME}"
+    PUBLIC
+      "$<BUILD_INTERFACE:QT_NO_DEBUG>"
+      "$<INSTALL_INTERFACE:QT_NO_DEBUG>"
+  )
+  message(STATUS "QtAssert disabled\n")
+endif()
+```
+
+Add the instructions below in the file `cmake/project/ProjectSrcFiles.cmake`.
+
+```bash
+# The last directory specified is the one in which the mocks are generated. Here it is `/build/src`
+set(${PROJECT_NAME}_HEADER_PUBLIC_DIRS "${${PROJECT_NAME}_SRC_DIR}" "${${PROJECT_NAME}_INCLUDE_DIR}/${PROJECT_NAME}" "${${PROJECT_NAME}_BUILD_DIR}/src")
+```
 
 ## Compilation and Usage
 

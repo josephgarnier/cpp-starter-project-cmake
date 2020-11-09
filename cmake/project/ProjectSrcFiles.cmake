@@ -32,12 +32,12 @@ directory(SCAN ${PROJECT_NAME}_SOURCE_PRIVATE_FILES
 
 # By default, all header files of `src/` and `include/project-name/` (this
 # last directory is optional) are publics, then these directories are set here.
-# They will be added to the public include_directories property of target.
-# You can remove `src/` from this variable to make it private, but `include/`
-# will always be public.
+# They will be added to the public `include_directories` property of target and be
+# exported in install tree. You can remove `src/` from this variable to make it
+# private, but `include/` will always be public.
 #
 # Warning: the header directories of your dependencies should not be set here,
-# but in a specific config file.
+# but in `Dependencies.cmake`.
 set(${PROJECT_NAME}_HEADER_PUBLIC_DIRS "${${PROJECT_NAME}_SRC_DIR}" "${${PROJECT_NAME}_INCLUDE_DIR}/${PROJECT_NAME}")
 
 # Set here all header files (.h) present in `${PROJECT_NAME}_HEADER_PUBLIC_DIRS` directories.
