@@ -214,15 +214,10 @@ target_compile_definitions("${${PROJECT_NAME}_TARGET_NAME}"
 
 # Link Qt to target
 message(STATUS "Link Qt to target\n")
-get_target_property(Qt5Widgets_location ${Qt5Widgets_LIBRARIES} LOCATION)
-get_target_property(Qt5Gui_location ${Qt5Gui_LIBRARIES} LOCATION)
-get_target_property(Qt5Core_location ${Qt5Core_LIBRARIES} LOCATION)
-get_target_property(Qt5Svg_location ${Qt5Svg_LIBRARIES} LOCATION)
-get_target_property(Qt5Concurrent_location ${Qt5Concurrent_LIBRARIES} LOCATION)
 target_link_libraries("${${PROJECT_NAME}_TARGET_NAME}"
   PUBLIC
     "$<BUILD_INTERFACE:Qt5::Widgets;Qt5::Gui;Qt5::Core;Qt5::Svg;Qt5::Concurrent>"
-    "$<INSTALL_INTERFACE:${Qt5Widgets_location};${Qt5Gui_location};${Qt5Core_location};${Qt5Svg_location};${Qt5Concurrent_location}>"
+    "$<INSTALL_INTERFACE:Qt5::Widgets;Qt5::Gui;Qt5::Core;Qt5::Svg;Qt5::Concurrent>"
 )
 
 # Set Qt as a position-independent target
