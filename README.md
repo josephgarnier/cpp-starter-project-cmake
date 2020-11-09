@@ -80,7 +80,7 @@ In some cases, it's necessary to use a [precompiled header](https://en.wikipedia
 
 Now, if you use **external libraries** (.dll or .so files), either you add them in `lib/` directory and their header files each in a specific directory in `include/` directory, or you have to complete the `cmake/project/Dependencies.cmake` and `cmake/project/PackageConfig.cmake.in` files by relying on the commented instructions to import them with specifics commands as `find_package()`, `target_link_libraries()`, etc. Sometimes, some libraries (like Qt with the mocks) will generate source files in the `build/` folder that will need to be made exportable. In this case, these files will be considered internal to the project and the folder containing them will have to be be specified in the `cmake/project/ProjectSrcFiles.cmake`.
 
-Here is an example of minimal instructions to write in the file `cmake/project/Dependencies.cmake` to link a library (only this file need to be modified). For a more consequent example, with Qt, see [here](#example-with-qt-of-a-link-with-an-external-library).
+Here is an example of minimal instructions to write in the file `cmake/project/Dependencies.cmake` to link a library (only this file need to be modified). For a more consequent example, with Qt, see [here](#3-example-with-qt-of-a-link-with-an-external-library).
 
 ```bash
 # First use case: you want to use the internal and automatic mechanism of library integration.
