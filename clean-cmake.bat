@@ -29,3 +29,5 @@ if EXIST %SOLUTION_DIR% (
 if %errorlevel%==0 (
 	echo.The solution was successfully cleaned!
 )
+
+pause

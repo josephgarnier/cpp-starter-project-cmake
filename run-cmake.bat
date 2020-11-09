@@ -16,3 +16,5 @@ cmake -S "%WORKSPACE_DIR%" -B "%SOLUTION_DIR%" -C "%CMAKE_DIR%\project\CMakeOpti
 if %errorlevel%==0 (
 	echo.The solution was successfully generated!
 )
+
+pause
