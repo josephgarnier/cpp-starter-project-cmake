@@ -242,6 +242,8 @@ set(${PROJECT_NAME}_EXPORT_TARGET_FILE              "${${PROJECT_NAME}_BUILD_DIR
 if(DEFINED PARAM_INSTALL_DIRECTORY AND IS_DIRECTORY "${PARAM_INSTALL_DIRECTORY}")
 	set(CMAKE_INSTALL_PREFIX "${PARAM_INSTALL_DIRECTORY}")
 	message(STATUS "Set the install directory to \"${CMAKE_INSTALL_PREFIX}\"")
+else
+	message(FATAL_ERROR "The install directory \"${CMAKE_INSTALL_PREFIX}\" is not a directory or doesn't exists!")
 endif()
 include(GNUInstallDirs)
 set(${PROJECT_NAME}_INSTALL_RUNTIME_DIR             "${CMAKE_INSTALL_FULL_BINDIR}")
