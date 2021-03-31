@@ -397,4 +397,4 @@ This work is licensed under the terms of a <a href="http://creativecommons.org/l
 
 ## 🍻 Acknowledgments
 
-This project was inspired from [cppbase](https://github.com/kartikkumar/cppbase) and from advices of [Hilton Lipschitz](https://hiltmon.com/blog/2013/07/03/a-simple-c-plus-plus-project-structure/).
+This project was inspired by [cppbase](https://github.com/kartikkumar/cppbase) and by advices of [Hilton Lipschitz](https://hiltmon.com/blog/2013/07/03/a-simple-c-plus-plus-project-structure/).
