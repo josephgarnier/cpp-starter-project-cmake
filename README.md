@@ -7,7 +7,7 @@
 
 </div>
 <p align="center">
-<strong>A customizable kit to quickly start your C++ projects.</strong>
+<strong>A customizable kit to quickly start your C++ projects with CMake.</strong>
 </p>
 
 <p align="center">
