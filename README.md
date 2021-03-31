@@ -1,8 +1,32 @@
-# CMakeBaseCpp
+<figure>
+  <img src="https://i.imgur.com/5H55F9n.png" alt="C++ and CMake" width="50%"/>
+</figure>
+
+# C++ Starter Project with CMake
+
+**A customizable kit to quickly start your C++ projects**.
 
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="CrCC BY-NC-SA 4.0" src="https://img.shields.io/badge/license-CC%20BY--NC--SA%204.0-brightgreen.svg"/></a> <img alt="plateform-windows-linux-mac" src="https://img.shields.io/badge/platform-windows%20%7C%20linux%20%7C%20mac-lightgrey.svg"/> <img alt="languages-cmake-c++" src="https://img.shields.io/badge/languages-CMake%20%7C%20C%2B%2B-blue.svg"/> <img alt="goal-progress-80" src="https://img.shields.io/badge/goal%20progress-80%25-orange.svg"/>
 
-CMakeBaseCpp is a template for a structured modern CMake-based C++ project that can be used as the basis for new projects on windows and linux. It includes:
+This starter ships with all you might need to get up and running blazing fast with a modern C++ project using CMake. It can be used as the basis for new projects on windows and linux.
+
+## 💠 Table of Contents <!-- omit in toc -->
+
+- [✨ Features](#-features)
+- [✔️ Requirements](#️-requirements)
+- [🚀 Getting started](#-getting-started)
+- [📄 Configuration](#-configuration)
+  - [1. Global settings](#1-global-settings)
+  - [2. Setting up the toolchain and project files](#2-setting-up-the-toolchain-and-project-files)
+  - [3. Example with Qt of a link with an external library](#3-example-with-qt-of-a-link-with-an-external-library)
+- [⚙️ Compilation and Usage](#️-compilation-and-usage)
+- [📂 Folder structure overview](#-folder-structure-overview)
+- [🤝 Contributing](#-contributing)
+- [👥 Credits](#-credits)
+- [📜 License](#-license)
+- [🍻 Acknowledgments](#-acknowledgments)
+
+## ✨ Features
 
 - a general directory structure common to C++ projects (see [Project structure](https://github.com/josephgarnier/cmake-base-cpp#project-structure));
 - a modern CMake project using the last features;
@@ -14,11 +38,11 @@ CMakeBaseCpp is a template for a structured modern CMake-based C++ project that 
 - use [Cotire](https://github.com/sakra/cotire) to build as executable or library with precompiled headers file (pch);
 - automatic API documentation with [Doxygen](http://www.doxygen.nl/) and a special command (`make docs`);
 - a unit testing framework with [GTest](https://github.com/google/googletest) => **in progress**;
-- separate file to manualy include external libraries (in `Dependencies.cmake` module) or recursivly and automaticaly scan `lib/` directory;
-- separate file to manualy specify source project files (in `ProjectSrcFiles.cmake` module) or recursivly and automaticaly scan source file in `src/` and `include/` directories;
+- separate file to manually include external libraries (in `Dependencies.cmake` module) or recursively and automatically scan `lib/` directory;
+- separate file to manually specify source project files (in `ProjectSrcFiles.cmake` module) or recursively and automatically scan source file in `src/` and `include/` directories;
 - a list of commands for Visual Studio Code (`tasks.json`).
 
-## Requirements
+## ✔️ Requirements
 
 Before using this project, please ensure that you have installed the following (install guides are provided on the respective websites):
 
@@ -30,18 +54,20 @@ The following dependencies are optional (see [Build options](https://github.com/
 - [Doxygen](http://www.doxygen.nl/) (necessary when `DBUILD_DOXYGEN_DOCS` build option is set to `on`);
 - [GTest](https://github.com/google/googletest) (necessary when `DBUILD_TESTS` build option is set to `on`).
 
-## Installation
+## 🚀 Getting started
 
-1. Clone the repo.
+1. **Clone the repo.**
 
-```bash
-git clone https://github.com/josephgarnier/cmake-base-cpp.git --recursive
-cd cmake-base-cpp
-```
+    ```bash
+    git clone https://github.com/josephgarnier/cmake-base-cpp.git --recursive
+    cd cmake-base-cpp
+    ```
 
-2. Clean the project. CMakeBaseCpp is delivered with demo files to allow you to test different settings, therefore, before using your own source files you have to clean several directories. If you want to keep demos files for testing, go to the next section, else, remove files inside `src/` and `include/` directories.
+2. **Clean the project.**
 
-## Configuration
+    This starter ships is delivered with demo files to allow you to test different settings, therefore, before using your own source files you have to clean several directories. If you want to keep demos files for testing, go to the next section, else, remove files inside `src/` and `include/` directories.
+
+## 📄 Configuration
 
 ### 1. Global settings
 
@@ -74,7 +100,7 @@ In addition to the previous scripts, you can use the scripts `clean-cmake.sh` (l
 
 To compile your project, CMake will need a [toolchains](https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html) file. First, **create your own toolchains file** in `cmake/toolchains` or use one provided by default : there are one file for clang on linux and another one for visual studio on windows, feel free to clean them of their compile flags if you don't need them. Then, edit the CMakeOptions cache file and **set the path to your toolchain** file in `TOOLCHAIN_FILE_VAL` variable. We'll now configure all files in `cmake/project/`.
 
-Add your **source files** (headers and cpp) in `src/` directory or only the private source files if you decide to separate public and private headers. In this case, put the public headers in a specific directory (or not) in `include/`. Please note that there are already some files for testing, remember to erase them before putting yours. All customizable settings for the interal source files are located in the file `cmake/project/ProjectSrcFiles.cmake`. By default, the instructions in file will automatically scan the two directories listed and set cmake variables accordingly. But if you don't want to use the automation script scanning, open this file and read the instructions given in comment to complete it.
+Add your **source files** (headers and cpp) in `src/` directory or only the private source files if you decide to separate public and private headers. In this case, put the public headers in a specific directory (or not) in `include/`. Please note that there are already some files for testing, remember to erase them before putting yours. All customizable settings for the integral source files are located in the file `cmake/project/ProjectSrcFiles.cmake`. By default, the instructions in file will automatically scan the two directories listed and set cmake variables accordingly. But if you don't want to use the automation script scanning, open this file and read the instructions given in comment to complete it.
 
 In some cases, it's necessary to use a [precompiled header](https://en.wikipedia.org/wiki/Precompiled_header) file. If this concern you, rename your **precompiled header** file according to pattern `<project-name>_pch.h` or edit the two related variables in `ProjectSrcFiles.cmake` file.
 
@@ -102,7 +128,7 @@ target_link_libraries("${${PROJECT_NAME}_TARGET_NAME}"
 )
 ```
 
-The next file to configure is for **packaging and exporting** your application to be installed or included in another project. This **step is optional** if you plan to export your project only as executable. It's not an obligation either if you export as library, but strongly recommanded. For that, you have to edit `cmake/project/PackageConfig.cmake.in` and fill it from documentation of [`find_package()`](https://cmake.org/cmake/help/latest/command/find_package.html), [cmake-packages](https://cmake.org/cmake/help/latest/manual/cmake-packages.7.html) and [cmake-buildsystem](https://cmake.org/cmake/help/latest/manual/cmake-developer.7.html). But the file is already filled with a default content to be exported then imported in an other project with `target_link_libraries()`. If you are not familiar with these concepts of modern cmake, watch this [tutorial](https://gitlab.kitware.com/cmake/community/-/wikis/doc/tutorials/Exporting-and-Importing-Targets).
+The next file to configure is for **packaging and exporting** your application to be installed or included in another project. This **step is optional** if you plan to export your project only as executable. It's not an obligation either if you export as library, but strongly recommended. For that, you have to edit `cmake/project/PackageConfig.cmake.in` and fill it from documentation of [`find_package()`](https://cmake.org/cmake/help/latest/command/find_package.html), [cmake-packages](https://cmake.org/cmake/help/latest/manual/cmake-packages.7.html) and [cmake-buildsystem](https://cmake.org/cmake/help/latest/manual/cmake-developer.7.html). But the file is already filled with a default content to be exported then imported in an other project with `target_link_libraries()`. If you are not familiar with these concepts of modern cmake, watch this [tutorial](https://gitlab.kitware.com/cmake/community/-/wikis/doc/tutorials/Exporting-and-Importing-Targets).
 
 The two next files to configure are to generate **binary and source package installers**. This **step is optional** if you don't plan to create an installer. By default, the project is provided with a basic configuration to generate an archive installer on Linux and an NSIS installer on Windows. If despite everything you want to customize the many options, edit the files `cmake/project/CPackInstallerConfig.cmake` and `cmake/project/CPackInstallerOptions.cmake.in` in following the documentation of [CPack](https://cmake.org/cmake/help/latest/module/CPack.html).
 
@@ -262,7 +288,7 @@ Add the instructions below in the file `cmake/project/ProjectSrcFiles.cmake`.
 set(${PROJECT_NAME}_HEADER_PUBLIC_DIRS "${${PROJECT_NAME}_SRC_DIR}" "${${PROJECT_NAME}_INCLUDE_DIR}/${PROJECT_NAME}" "${${PROJECT_NAME}_BUILD_DIR}/src")
 ```
 
-## Compilation and Usage
+## ⚙️ Compilation and Usage
 
 CMakeBaseCpp provide several scripts and commands to compile, build, install, etc your project. These ones can be executed in a terminal or in a task (see `.vscode/tasks.json` file) if you use Visual Studio Code. Here is a review.
 
@@ -286,7 +312,7 @@ That's all ! In addition to executable and library in `bin/` directory, you will
 (cd ./build && cmake --build . --target docs)
 ```
 
-Optionnaly, you might want to [**install**](https://cmake.org/cmake/help/latest/command/install.html#command:install) your project in directory [defined by cmake](https://cmake.org/cmake/help/latest/variable/CMAKE_INSTALL_PREFIX.html), or conversely you may want to **uninstall** it. In a terminal, write these commands:
+Optionally, you might want to [**install**](https://cmake.org/cmake/help/latest/command/install.html#command:install) your project in directory [defined by cmake](https://cmake.org/cmake/help/latest/variable/CMAKE_INSTALL_PREFIX.html), or conversely you may want to **uninstall** it. In a terminal, write these commands:
 
 ```bash
 (cd ./build && sudo cmake --build . --target install)
@@ -310,7 +336,7 @@ Not that at any time you can clean the `build/`, `bin/` and `doc/` directories w
 start clean-cmake.bat
 ```
 
-## Folder structure overview
+## 📂 Folder structure overview
 
 This project has been set up with a specific file/folder structure in mind. The following describes some important features of this setup:
 
@@ -334,7 +360,7 @@ This project has been set up with a specific file/folder structure in mind. The 
 | `doc/doxyfile.in` | [Doxygen](http://www.doxygen.org "Doxygen homepage") configuration file, adapted for generic use within project build (should not need to be modified). |
 | `include/` | all necessary third-party header files (.h) that do not exist on your system are also placed here. |
 | `lib/` | third party or any needed in your project. |
-| `resources/` | contains images, musics, maps and all resources needed if for your project. |
+| `resources/` | contains images, musics, maps and all resources needed for your project. |
 | `src/` | project source files (*.cpp) and project header files (.h) for project build, which contains example main-function (`main.cpp`) and example precompiled files (`*_pch.h`). |
 | `tests/` | project test source files (*.cpp) and project test header files (.h) that are provided to the selecting unit testing framework. |
 | `clean-cmake.bat` | utility script for Windows to remove the directory generated with `run-cmake.bat` in `build/`, `bin/` and `doc/` directories. |
@@ -345,24 +371,23 @@ This project has been set up with a specific file/folder structure in mind. The 
 | `run-cmake.bat` | utility script for Windows to execute `cmake` command. |
 | `run-cmake.sh` | utility script for Linux to execute `cmake` command. |
 
-## Contributing
+## 🤝 Contributing
 
 1. Fork the repo and create your feature branch from master.
-
 2. Create a topic branch - `git checkout -b my_branch`.
-
 3. Push to your branch - `git push origin my_branch`.
-
 4. Create a Pull Request from your branch.
 
-## Credits
+## 👥 Credits
 
-This project is maintained and developed by [Joseph Garnier](garnjose@gmail.com).
+This project is maintained and developed by [Joseph Garnier](https://www.joseph-garnier.com/).
 
-## License
+## 📜 License
 
-<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.  See the [LICENSE.md](LICENSE.md) file for details.
+<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Licence Creative Commons" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a>
 
-## Acknowledgments
+This work is licensed under the terms of a <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer" style="display:inline-block;">CC BY-NC-SA 4.0</a>.  See the [LICENSE.md](LICENSE.md) file for details.
+
+## 🍻 Acknowledgments
 
 This project was inspired from [cppbase](https://github.com/kartikkumar/cppbase) and from advices of [Hilton Lipschitz](https://hiltmon.com/blog/2013/07/03/a-simple-c-plus-plus-project-structure/).
