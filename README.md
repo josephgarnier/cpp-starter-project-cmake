@@ -1,8 +1,11 @@
+<div align="center">
 <figure>
   <img src="https://i.imgur.com/5H55F9n.png" alt="C++ and CMake" width="50%"/>
 </figure>
 
 # C++ Starter Project with CMake
+
+</div>
 
 **A customizable kit to quickly start your C++ projects**.
 
