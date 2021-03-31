@@ -1,4 +1,4 @@
-<div style="text-align: center;">
+<div align="center">
 <figure>
   <img src="https://i.imgur.com/7moLJxE.png" alt="C++ and CMake" width="50%"/>
 </figure>
@@ -6,10 +6,9 @@
 # C++ Starter Project with CMake
 
 </div>
-
-<p style="text-align: center;font-weight: bold;">
-A customizable kit to quickly start your C++ projects.
-</p>
+<div align="center">
+<strong>A customizable kit to quickly start your C++ projects.</strong>
+</div>
 
 <p style="text-align: center;">
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="CrCC BY-NC-SA 4.0" src="https://img.shields.io/badge/license-CC%20BY--NC--SA%204.0-brightgreen.svg"/></a> <img alt="plateform-windows-linux-mac" src="https://img.shields.io/badge/platform-windows%20%7C%20linux%20%7C%20mac-lightgrey.svg"/> <img alt="languages-cmake-c++" src="https://img.shields.io/badge/languages-CMake%20%7C%20C%2B%2B-blue.svg"/> <img alt="goal-progress-80" src="https://img.shields.io/badge/goal%20progress-80%25-orange.svg"/>
