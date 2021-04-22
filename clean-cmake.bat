@@ -4,6 +4,10 @@ rem All rights reserved.
 rem
 rem This source code is licensed under the license found in the
 rem LICENSE file in the root directory of this source tree.
+rem =============================================================================
+rem What Is This?
+rem -------------
+rem See README file in the root directory of this source tree.
 
 setlocal EnableDelayedExpansion
 
@@ -12,7 +16,7 @@ set "BUILD_DIR=%WORKSPACE_DIR%\build"
 set "SOLUTION_DIR=%BUILD_DIR%"
 
 if EXIST %SOLUTION_DIR% (
-	cmake --build %SOLUTION_DIR% --target clean
+	cmake --build %SOLUTION_DIR% --target clean --verbose
 
 	rem Remove solution in build directory.
 	for /f "usebackq tokens=*" %%f in (`dir "%SOLUTION_DIR%\*" /a /b`) do (

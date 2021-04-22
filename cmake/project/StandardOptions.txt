@@ -1,0 +1,151 @@
+# Copyright 2019-present, Joseph Garnier
+# All rights reserved.
+#
+# This source code is licensed under the license found in the
+# LICENSE file in the root directory of this source tree.
+# =============================================================================
+# What Is This?
+# -------------
+# See README file in the root directory of this source tree.
+
+
+#------------------------------------------------------------------------------
+# Customize with you own parameter values here (see below for the documentation).
+#------------------------------------------------------------------------------
+
+#---- Global options ----
+set(PROJECT_NAME_VAL                  "project-name")
+set(PROJECT_SUMMARY_VAL               "description")
+set(PROJECT_VENDOR_NAME_VAL           "your-name")
+set(PROJECT_VENDOR_CONTACT_VAL        "contact")
+set(PROJECT_VERSION_MAJOR_VAL         "0")
+set(PROJECT_VERSION_MINOR_VAL         "0")
+set(PROJECT_VERSION_PATCH_VAL         "0")
+if("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Linux")
+	set(LIFECYCLE_GENERATOR_VAL       "Unix Makefiles")
+elseif("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Windows")
+	set(LIFECYCLE_GENERATOR_VAL       "Visual Studio 16 2019")
+elseif("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Darwin")
+	set(LIFECYCLE_GENERATOR_VAL       "Unix Makefiles")
+else()
+	message(FATAL_ERROR "Unsupported host system: ${CMAKE_HOST_SYSTEM_NAME}")
+endif()
+
+#---- "Build" generator module options ----
+set(BUILD_STANDARD_VERSION_VAL        "17")
+set(BUILD_TYPE_VAL                    "debug")
+set(BUILD_TARGET_TYPE_VAL             "exec")
+set(COMPILE_DEFINITIONS_VAL           "")
+set(PUBLIC_HEADERS_SEPARATED_VAL      on)
+if("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Linux")
+	set(COMPILE_TOOLCHAIN_FILE_VAL    "${CMAKE_SOURCE_DIR}/cmake/toolchains/Linux_gcc.cmake")
+elseif("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Windows")
+	set(COMPILE_TOOLCHAIN_FILE_VAL    "${CMAKE_SOURCE_DIR}/cmake/toolchains/Windows_vs.cmake")
+elseif("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Darwin")
+	set(COMPILE_TOOLCHAIN_FILE_VAL    "${CMAKE_SOURCE_DIR}/cmake/toolchains/Linux_clang.cmake")
+else()
+	message(FATAL_ERROR "Unsupported host system: ${CMAKE_HOST_SYSTEM_NAME}")
+endif()
+
+#---- "Test" generator module option ----
+set(ENABLE_TEST_MODULE_VAL            off)
+
+#---- "Code Analysis" generator module option ----
+set(ENABLE_CODE_ANALYSIS_MODULE_VAL   off)
+
+#---- "Doc" generator module options ----
+set(ENABLE_DOC_MODULE_VAL             off)
+
+#---- "Export" generator module options ----
+set(ENABLE_EXPORT_MODULE_VAL          on)
+set(EXPORT_NAMESPACE_VAL              "MyProject")
+if("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Linux")
+	set(INSTALL_DIRECTORY_VAL         "/home/joseph/Desktop/TEST_INSTALL")
+elseif("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Windows")
+	set(INSTALL_DIRECTORY_VAL         "")
+elseif("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Darwin")
+	set(INSTALL_DIRECTORY_VAL         "")
+else()
+	message(FATAL_ERROR "Unsupported host system: ${CMAKE_HOST_SYSTEM_NAME}")
+endif()
+
+#---- "Package" generator module options ----
+set(ENABLE_PACKAGE_MODULE_VAL         off)
+
+#---- "Uninstall" generator module options ----
+set(ENABLE_UNINSTALL_MODULE_VAL       off)
+
+#------------------------------------------------------------------------------
+# End of customize section.
+#------------------------------------------------------------------------------
+
+
+#------------------------------------------------------------------------------
+# You don't need to edit this section.
+#------------------------------------------------------------------------------
+
+#---- Global options ----
+set(PROJECT_NAME_DESC                  "Specifies a name for project")
+set(PROJECT_SUMMARY_DESC               "Short description of the project")
+set(PROJECT_VENDOR_NAME_DESC           "Project author")
+set(PROJECT_VENDOR_CONTACT_DESC        "Author contact")
+set(PROJECT_VERSION_MAJOR_DESC         "Project major version")
+set(PROJECT_VERSION_MINOR_DESC         "Project minor version")
+set(PROJECT_VERSION_PATCH_DESC         "Project patch version")
+set(LIFECYCLE_GENERATOR_DESC           "Specifies with which generator the build cyclelife will be generated, see https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html")
+
+#---- "Build" generator module options ----
+set(BUILD_STANDARD_VERSION_DESC        "Specifies build standard version \"11\" or \"14\" or \"17\" or \"20\" or \"23\", see https://cmake.org/cmake/help/latest/prop_tgt/CXX_STANDARD.html")
+set(BUILD_TYPE_DESC                    "Specifies type of build \"debug\" or \"release\", see https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html")
+set(BUILD_TARGET_TYPE_DESC             "Specified whether build \"static\" or \"shared\" or \"header\" (for header-only library) or as an \"exec\", see https://cmake.org/cmake/help/latest/prop_tgt/TYPE.html")
+set(COMPILE_DEFINITIONS_DESC           "Specifies a semicolon-separated list of preprocessor definitions (e.g -DFOO;-DBAR or FOO;BAR). Can be empty.")
+set(PUBLIC_HEADERS_SEPARATED_DESC      "Specifies whether public header files are separated from private header files.")
+set(COMPILE_TOOLCHAIN_FILE_DESC        "Specifies a path to a toolchain file, see https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html")
+
+#---- "Test" generator module option ----
+set(ENABLE_TEST_MODULE_DESC            "Specifies whether enable the test generator module")
+
+#---- "Code Analysis" generator module option ----
+set(ENABLE_CODE_ANALYSIS_MODULE_DESC   "Specifies whether enable the code analysis generator module")
+
+#---- "Doc" generator module options ----
+set(ENABLE_DOC_MODULE_DESC             "Specifies whether enable the doc generator module")
+
+#---- "Export" generator module options ----
+set(ENABLE_EXPORT_MODULE_DESC          "Specifies whether enable the export generator module")
+set(EXPORT_NAMESPACE_DESC              "Name to prepend to the target name when it is written to the import file, see https://cmake.org/cmake/help/latest/command/install.html#export")
+set(INSTALL_DIRECTORY_DESC             "Directory used by install command, let empty to use the default value, see https://cmake.org/cmake/help/latest/variable/CMAKE_INSTALL_PREFIX.html")
+
+#---- "Package" generator module options ----
+set(ENABLE_PACKAGE_MODULE_DESC         "Specifies whether enable the package generator module")
+
+#---- "Uninstall" generator module options ----
+set(ENABLE_UNINSTALL_MODULE_DESC       "Specifies whether enable the uninstall generator module")
+
+
+set(PARAM_PROJECT_NAME                  "${PROJECT_NAME_VAL}"                CACHE   STRING     "${PROJECT_NAME_DESC}")
+set(PARAM_PROJECT_SUMMARY               "${PROJECT_SUMMARY_VAL}"             CACHE   STRING     "${PROJECT_SUMMARY_DESC}")
+set(PARAM_PROJECT_VENDOR_NAME           "${PROJECT_VENDOR_NAME_VAL}"         CACHE   STRING     "${PROJECT_VENDOR_NAME_DESC}")
+set(PARAM_PROJECT_VENDOR_CONTACT        "${PROJECT_VENDOR_CONTACT_VAL}"      CACHE   STRING     "${PROJECT_VENDOR_CONTACT_DESC}")
+set(PARAM_PROJECT_VERSION_MAJOR         "${PROJECT_VERSION_MAJOR_VAL}"       CACHE   STRING     "${PROJECT_VERSION_MAJOR_DESC}")
+set(PARAM_PROJECT_VERSION_MINOR         "${PROJECT_VERSION_MINOR_VAL}"       CACHE   STRING     "${PROJECT_VERSION_MINOR_DESC}")
+set(PARAM_PROJECT_VERSION_PATCH         "${PROJECT_VERSION_PATCH_VAL}"       CACHE   STRING     "${PROJECT_VERSION_PATCH_DESC}")
+set(CMAKE_GENERATOR                     "${LIFECYCLE_GENERATOR_VAL}"         CACHE   INTERNAL   "${LIFECYCLE_GENERATOR_DESC}" FORCE)
+set(PARAM_BUILD_STANDARD_VERSION        "${BUILD_STANDARD_VERSION_VAL}"      CACHE   STRING     "${BUILD_STANDARD_VERSION_DESC}")
+set(PARAM_BUILD_TYPE                    "${BUILD_TYPE_VAL}"                  CACHE   STRING     "${BUILD_TYPE_DESC}")
+set(PARAM_BUILD_TARGET_TYPE             "${BUILD_TARGET_TYPE_VAL}"           CACHE   STRING     "${BUILD_TARGET_TYPE_DESC}")
+set(PARAM_COMPILE_DEFINITIONS           "${COMPILE_DEFINITIONS_VAL}"         CACHE   STRING     "${COMPILE_DEFINITIONS_DESC}")
+set(PARAM_PUBLIC_HEADERS_SEPARATED      "${PUBLIC_HEADERS_SEPARATED_VAL}"    CACHE   BOOL       "${PUBLIC_HEADERS_SEPARATED_DESC}")
+set(CMAKE_TOOLCHAIN_FILE                "${COMPILE_TOOLCHAIN_FILE_VAL}"      CACHE   FILEPATH   "${COMPILE_TOOLCHAIN_FILE_DESC}")
+set(PARAM_ENABLE_TEST_MODULE            ${ENABLE_TEST_MODULE_VAL}            CACHE   BOOL       "${ENABLE_TEST_MODULE_DESC}")
+set(PARAM_ENABLE_CODE_ANALYSIS_MODULE   ${ENABLE_CODE_ANALYSIS_MODULE_VAL}   CACHE   BOOL       "${ENABLE_CODE_ANALYSIS_MODULE_DESC}")
+set(PARAM_ENABLE_DOC_MODULE             ${ENABLE_DOC_MODULE_VAL}             CACHE   BOOL       "${ENABLE_DOC_MODULE_DESC}")
+set(PARAM_ENABLE_EXPORT_MODULE          ${ENABLE_EXPORT_MODULE_VAL}          CACHE   BOOL       "${ENABLE_EXPORT_MODULE_DESC}")
+set(PARAM_EXPORT_NAMESPACE              "${EXPORT_NAMESPACE_VAL}"            CACHE   STRING     "${EXPORT_NAMESPACE_DESC}")
+set(PARAM_INSTALL_DIRECTORY             "${INSTALL_DIRECTORY_VAL}"           CACHE   FILEPATH   "${INSTALL_DIRECTORY_DESC}")
+set(PARAM_ENABLE_PACKAGE_MODULE         ${ENABLE_PACKAGE_MODULE_VAL}         CACHE   BOOL       "${ENABLE_PACKAGE_MODULE_DESC}")
+set(PARAM_ENABLE_UNINSTALL_MODULE       ${ENABLE_UNINSTALL_MODULE_VAL}       CACHE   BOOL       "${ENABLE_UNINSTALL_MODULE_DESC}")
+
+#------------------------------------------------------------------------------
+# You don't need to edit this previous section.
+#------------------------------------------------------------------------------

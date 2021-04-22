@@ -3,35 +3,19 @@
 #
 # This source code is licensed under the license found in the
 # LICENSE file in the root directory of this source tree.
+# =============================================================================
+# What Is This?
+# -------------
+# See README file in the root directory of this source tree.
 
-# -DPARAM_PROJECT_NAME: specifies a name for project
-# -DPARAM_PROJECT_SUMMARY: short description of the project
-# -DPARAM_PROJECT_VENDOR_NAME: project author
-# -DPARAM_PROJECT_VENDOR_CONTACT: author contact
-# -DPARAM_PROJECT_VERSION_MAJOR: project major version
-# -DPARAM_PROJECT_VERSION_MINOR: project minor version
-# -DPARAM_PROJECT_VERSION_PATCH: project patch version
-# -DCMAKE_TOOLCHAIN_FILE: specifies toolchain file, see https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html
-# -DCMAKE_GENERATOR: specifies CMake Generator, see https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html
-# -DPARAM_COMPILE_VERSION=[11|14|17 (default)|20]: specifies compiler version "11" or "14" or "17" or "20", see https://cmake.org/cmake/help/v3.1/variable/CMAKE_CXX_STANDARD.html
-# -DPARAM_COMPILE_DEFINITIONS: specifies a semicolon-separated list of preprocessor definitions (e.g -DFOO;-DBAR or FOO;BAR). Can be empty.
-# -DPARAM_BUILD_TYPE=[(default) debug|release]: specifies type of build "debug" or "release"
-# -DPARAM_ASSERT_ENABLE=[ON|OFF (default)]: specifies whether to use assert (optionally used in cmake/project/Dependencies.cmake)
-# -DPARAM_BUILD_TARGET=[static|shared|exec (default)]: specified whether build static or shared library or as an executable
-# -DPARAM_BUILD_TESTS=[ON|OFF (default)]: specifies whether build tests
-# -DPARAM_BUILD_DOXYGEN_DOCS=[ON|OFF (default)]: specifies whether build documentation
-# -DPARAM_EXPORT_NAMESPACE: name to prepend to the target name when it is written to the import file, see https://cmake.org/cmake/help/latest/command/install.html#export
+# See /cmake/project/StandardOptions.txt for a list of options.
 
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.16 FATAL_ERROR)
 
-#------------------------------------------------------------------------------
-# Set parameters.
-#------------------------------------------------------------------------------
-message("=============================================")
-message("      Build project ${PARAM_PROJECT_NAME}    ")
-message("=============================================")
-
-message("Summary of your options:")
+message("===============================================================")
+message("    Build lifecycle generator for \"${PARAM_PROJECT_NAME}\"    ")
+message("===============================================================")
+message("Summary of your global options:")
 message(" - Project name: \"${PARAM_PROJECT_NAME}\"")
 message(" - Project description: \"${PARAM_PROJECT_SUMMARY}\"")
 message(" - Project author: \"${PARAM_PROJECT_VENDOR_NAME}\"")
@@ -39,69 +23,48 @@ message(" - Author contact: \"${PARAM_PROJECT_VENDOR_CONTACT}\"")
 message(" - Project major version: \"${PARAM_PROJECT_VERSION_MAJOR}\"")
 message(" - Project minor version: \"${PARAM_PROJECT_VERSION_MINOR}\"")
 message(" - Project patch version: \"${PARAM_PROJECT_VERSION_PATCH}\"")
-message(" - Toolchain file used: \"${CMAKE_TOOLCHAIN_FILE}\"")
-message(" - Generator: \"${CMAKE_GENERATOR}\"")
-message(" - Compile version: \"${PARAM_COMPILE_VERSION}\"")
-message(" - Compile definitions: \"${PARAM_COMPILE_DEFINITIONS}\"")
-message(" - Assert is enable: \"${PARAM_ASSERT_ENABLE}\"")
+message(" - Build lifecycle generator: \"${CMAKE_GENERATOR}\"")
+message("Summary of your \"build\" module options:")
+message(" - Build standard version: \"${PARAM_BUILD_STANDARD_VERSION}\"")
 message(" - Build type: \"${PARAM_BUILD_TYPE}\"")
-message(" - Build target: \"${PARAM_BUILD_TARGET}\"")
-message(" - Build tests: \"${PARAM_BUILD_TESTS}\"")
-message(" - Build doxygen documentation: \"${PARAM_BUILD_DOXYGEN_DOCS}\"")
+message(" - Build target type: \"${PARAM_BUILD_TARGET_TYPE}\"")
+message(" - Compile definitions: \"${PARAM_COMPILE_DEFINITIONS}\"")
+message(" - Public headers separated: \"${PARAM_PUBLIC_HEADERS_SEPARATED}\"")
+message(" - Toolchain file used: \"${CMAKE_TOOLCHAIN_FILE}\"")
+message("Summary of your \"test\" module options:")
+message(" - Enable \"test\" generator module: \"${PARAM_ENABLE_TEST_MODULE}\"")
+message("Summary of your \"code analysis\" module options:")
+message(" - Enable \"code analysis\" generator module: \"${PARAM_ENABLE_CODE_ANALYSIS_MODULE}\"")
+message("Summary of your \"doc\" module options:")
+message(" - Enable \"doc\" generator module: \"${PARAM_ENABLE_DOC_MODULE}\"")
+message("Summary of your \"export\" module options:")
+message(" - Enable \"export\" generator module: \"${PARAM_ENABLE_EXPORT_MODULE}\"")
 message(" - Export namespace: \"${PARAM_EXPORT_NAMESPACE}\"")
 message(" - Install directory: \"${PARAM_INSTALL_DIRECTORY}\"")
+message("Summary of your \"package\" module options:")
+message(" - Enable \"package\" generator module: \"${PARAM_ENABLE_PACKAGE_MODULE}\"")
+message("Summary of your \"uninstall\" module options:")
+message(" - Enable \"uninstall\" generator module: \"${PARAM_ENABLE_UNINSTALL_MODULE}\"")
+
+
+
+#------------------------------------------------------------------------------
+# 1. Initialization of the generation of the project build tree.
+#------------------------------------------------------------------------------
 message("")
+message("")
+message("== 1. Initialization of the generation of the project build tree  ==")
 
-#------------------------------------------------------------------------------
-# Check options.
-#------------------------------------------------------------------------------
-message("== Check options ==")
 
-# Check if project name has been specified correctly.
+#---- Project declaration. ----
+message(STATUS "Check the project name")
 if(NOT DEFINED PARAM_PROJECT_NAME)
-	message(FATAL_ERROR "Project name must be specified!")
+	message(FATAL_ERROR "PARAM_PROJECT_NAME must be specified!")
 endif()
 if("${PARAM_PROJECT_NAME}" MATCHES " ")
-	message(FATAL_ERROR "Project name cannot contain spaces!")
+	message(FATAL_ERROR "PARAM_PROJECT_NAME cannot contain spaces!")
 endif()
 
-# Check build target option
-if((NOT "${PARAM_BUILD_TARGET}" STREQUAL "static")
-	AND (NOT "${PARAM_BUILD_TARGET}" STREQUAL "shared")
-	AND (NOT "${PARAM_BUILD_TARGET}" STREQUAL "exec"))
-	message(FATAL_ERROR "Compile version must be \"static\" or \"shared\" or \"exec\"!")
-elseif("${PARAM_BUILD_TARGET}" STREQUAL "shared")
-	# All libraries will be built shared unless the library was explicitly added as a static library.
-	set(BUILD_SHARED_LIBS on)
-	message(STATUS "All libraries will be built as shared")
-endif()
-
-# Set CMake build-type.
-if(("${PARAM_BUILD_TYPE}" STREQUAL "release"))
-	set(CMAKE_BUILD_TYPE Release)
-	message(STATUS "Building release version")
-elseif("${PARAM_BUILD_TYPE}" STREQUAL "debug")
-	set(CMAKE_BUILD_TYPE Debug)
-	message(STATUS "Building debug version")
-else()
-	message(FATAL_ERROR "Build type should be \"debug\" or \"release\"!")
-endif()
-
-# Set compiler version flag.
-if(("${PARAM_COMPILE_VERSION}" STREQUAL "11")
-	OR ("${PARAM_COMPILE_VERSION}" STREQUAL "14")
-	OR ("${PARAM_COMPILE_VERSION}" STREQUAL "17")
-	OR ("${PARAM_COMPILE_VERSION}" STREQUAL "20"))
-	set(CMAKE_CXX_STANDARD "${PARAM_COMPILE_VERSION}")
-	message(STATUS "Compile version set to ${CMAKE_CXX_STANDARD}")
-else()
-	message(FATAL_ERROR "Compile version must be 11 or 14 or 17 or 20")
-endif()
-
-#------------------------------------------------------------------------------
-# Project settings.
-#------------------------------------------------------------------------------
-message("\n== Project settings ==")
 set(PROJECT_NAME                    "${PARAM_PROJECT_NAME}")
 set(${PROJECT_NAME}_SUMMARY         "${PARAM_PROJECT_SUMMARY}")
 set(${PROJECT_NAME}_VENDOR_NAME     "${PARAM_PROJECT_VENDOR_NAME}")
@@ -116,12 +79,11 @@ project("${PARAM_PROJECT_NAME}"
 	HOMEPAGE_URL "${${PROJECT_NAME}_VENDOR_CONTACT}"
 	LANGUAGES CXX)
 
-message(STATUS "Set projet version with ${${PROJECT_NAME}_VERSION}")
+message(STATUS "Project declared with the name \"${PROJECT_NAME}\" and in the version ${${PROJECT_NAME}_VERSION}")
 
-#------------------------------------------------------------------------------
-# Check project structure.
-#------------------------------------------------------------------------------
-message("\n== Check project structure ==")
+
+#---- Check project structure. ----
+message(STATUS "Checking project structure")
 set(${PROJECT_NAME}_PROJECT_DIR                 "${CMAKE_SOURCE_DIR}")
 set(${PROJECT_NAME}_ASSETS_DIR                  "${${PROJECT_NAME}_PROJECT_DIR}/assets")
 set(${PROJECT_NAME}_BIN_DIR                     "${${PROJECT_NAME}_PROJECT_DIR}/bin")
@@ -163,7 +125,7 @@ list(APPEND ${PROJECT_NAME}_PROJECT_DIRS
 
 foreach(folder IN ITEMS ${${PROJECT_NAME}_PROJECT_DIRS})
 	if((NOT EXISTS "${folder}") OR (NOT IS_DIRECTORY "${folder}"))
-		message(FATAL_ERROR "missing directory: \"${folder}\"")
+		message(FATAL_ERROR "Missing directory: \"${folder}\"!")
 	endif()
 endforeach()
 
@@ -171,561 +133,274 @@ endforeach()
 get_filename_component(build_directory "${${PROJECT_NAME}_BUILD_DIR}" DIRECTORY)
 if((NOT "${${PROJECT_NAME}_BUILD_DIR}" STREQUAL "${${PROJECT_NAME}_PROJECT_DIR}/build")
 	AND (NOT "${build_directory}" STREQUAL "${${PROJECT_NAME}_PROJECT_DIR}/build"))
-	message(FATAL_ERROR "\"${${PROJECT_NAME}_BUILD_DIR}\" is not under build directory")
+	message(FATAL_ERROR "\"${${PROJECT_NAME}_BUILD_DIR}\" is not under the \"build\" directory!")
 endif()
 
+message(STATUS "Checking project structure - done")
+
+
+
 #------------------------------------------------------------------------------
-# Set output names, output directories and global variables.
+# 2. Generate the `build` and `clean` phases
 #------------------------------------------------------------------------------
-message("\n== Set output names and output directories ==")
-include(StringManip)
+message("")
+message("")
+message("== 2. Execution of the \"Build\" generator module ==")
+
 if(NOT CMAKE_SYSTEM_PROCESSOR)
 	set(CMAKE_SYSTEM_PROCESSOR ${CMAKE_HOST_SYSTEM_PROCESSOR})
+	message(STATUS "Processor architecture is ${CMAKE_SYSTEM_PROCESSOR}")
 endif()
 
-# Set utility variables.
-set(${PROJECT_NAME}_TARGET_IS_STATIC off)
-set(${PROJECT_NAME}_TARGET_IS_SHARED off)
-set(${PROJECT_NAME}_TARGET_IS_EXEC   off)
-if("${PARAM_BUILD_TARGET}" STREQUAL "static")
-	set(${PROJECT_NAME}_TARGET_IS_STATIC on)
-elseif("${PARAM_BUILD_TARGET}" STREQUAL "shared")
-	set(${PROJECT_NAME}_TARGET_IS_SHARED on)
-elseif("${PARAM_BUILD_TARGET}" STREQUAL "exec")
-	set(${PROJECT_NAME}_TARGET_IS_EXEC   on)
-endif()
+# Set output directories.
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY           "${${PROJECT_NAME}_BIN_DIR}")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG     "${${PROJECT_NAME}_BIN_DIR}")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE   "${${PROJECT_NAME}_BIN_DIR}")
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY           "${${PROJECT_NAME}_BIN_DIR}")
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG     "${${PROJECT_NAME}_BIN_DIR}")
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE   "${${PROJECT_NAME}_BIN_DIR}")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY           "${${PROJECT_NAME}_BIN_DIR}")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG     "${${PROJECT_NAME}_BIN_DIR}")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE   "${${PROJECT_NAME}_BIN_DIR}")
+set(CMAKE_STATIC_LIBRARY_PREFIX              "")
+set(CMAKE_SHARED_LIBRARY_PREFIX              "")
+message(STATUS "Binary will be built in: ${${PROJECT_NAME}_BIN_DIR}")
 
-# Set directories and names for build.
+# Set the name of the system.
 set(SYSTEM_NAME "${CMAKE_SYSTEM_NAME}-${CMAKE_CXX_COMPILER_ID}-${CMAKE_SYSTEM_PROCESSOR}")
 string(TOLOWER ${SYSTEM_NAME} SYSTEM_NAME)
-if(${${PROJECT_NAME}_TARGET_IS_STATIC} OR ${${PROJECT_NAME}_TARGET_IS_SHARED})
-	set(${PROJECT_NAME}_TARGET_NAME        "lib${PROJECT_NAME}")
-	message(STATUS "Target library will be named \"${${PROJECT_NAME}_TARGET_NAME}\"")
-else(${${PROJECT_NAME}_TARGET_IS_EXEC})
-	set(${PROJECT_NAME}_TARGET_NAME        "${PROJECT_NAME}")
-	message(STATUS "Target executable will be named \"${${PROJECT_NAME}_TARGET_NAME}\"")
-endif()
-set(${PROJECT_NAME}_TEST_NAME              "${PROJECT_NAME}_test-${${PROJECT_NAME}_VERSION}-${CMAKE_SYSTEM_NAME}")
-string(TOLOWER "${${PROJECT_NAME}_TEST_NAME}" ${PROJECT_NAME}_TEST_NAME)
+message(STATUS "System name set to \"${SYSTEM_NAME}\"")
 
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY         "${${PROJECT_NAME}_BIN_DIR}")
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG   "${${PROJECT_NAME}_BIN_DIR}")
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE "${${PROJECT_NAME}_BIN_DIR}")
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY         "${${PROJECT_NAME}_BIN_DIR}")
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG   "${${PROJECT_NAME}_BIN_DIR}")
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${${PROJECT_NAME}_BIN_DIR}")
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY         "${${PROJECT_NAME}_BIN_DIR}")
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG   "${${PROJECT_NAME}_BIN_DIR}")
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE "${${PROJECT_NAME}_BIN_DIR}")
-set(CMAKE_STATIC_LIBRARY_PREFIX            "")
-set(CMAKE_SHARED_LIBRARY_PREFIX            "")
-
-set(${PROJECT_NAME}_COMPILE_DEFINITIONS    "${PARAM_COMPILE_DEFINITIONS}")
-
-# Set directories and names for documentation.
-set(${PROJECT_NAME}_DOXYGEN_TEMPLATE_CONFIG_FILE    "${${PROJECT_NAME}_DOC_DIR}/doxyfile.in")
-set(${PROJECT_NAME}_DOXYGEN_CONFIG_FILE             "${${PROJECT_NAME}_DOC_DIR}/doxyfile")
-
-# Set directories and names for packaging and exporting commands.
-set(${PROJECT_NAME}_PACKAGE_NAME                    "${PROJECT_NAME}")
-string_manip(TRANSFORM ${PROJECT_NAME}_PACKAGE_NAME START_CASE)
-set(${PROJECT_NAME}_PACKAGE_TEMPLATE_CONFIG_FILE    "${${PROJECT_NAME}_CMAKE_PROJECT_DIR}/PackageConfig.cmake.in")
-set(${PROJECT_NAME}_PACKAGE_CONFIG_FILE             "${${PROJECT_NAME}_BUILD_DIR}/${${PROJECT_NAME}_PACKAGE_NAME}Config.cmake")
-set(${PROJECT_NAME}_PACKAGE_VERSION_FILE            "${${PROJECT_NAME}_BUILD_DIR}/${${PROJECT_NAME}_PACKAGE_NAME}ConfigVersion.cmake")
-
-set(${PROJECT_NAME}_EXPORT_NAME                     "${${PROJECT_NAME}_PACKAGE_NAME}")
-set(${PROJECT_NAME}_EXPORT_NAMESPACE                "${PARAM_EXPORT_NAMESPACE}")
-set(${PROJECT_NAME}_EXPORT_TARGET_FILE_NAME         "${${PROJECT_NAME}_EXPORT_NAME}Targets.cmake")
-set(${PROJECT_NAME}_EXPORT_TARGET_FILE              "${${PROJECT_NAME}_BUILD_DIR}/${${PROJECT_NAME}_EXPORT_TARGET_FILE_NAME}")
-
-# Set directories and names for install/uninstall commands.
-if(DEFINED PARAM_INSTALL_DIRECTORY AND IS_DIRECTORY "${PARAM_INSTALL_DIRECTORY}")
-	set(CMAKE_INSTALL_PREFIX "${PARAM_INSTALL_DIRECTORY}")
-	message(STATUS "Set the install directory to \"${CMAKE_INSTALL_PREFIX}\"")
-else
-	message(FATAL_ERROR "The install directory \"${CMAKE_INSTALL_PREFIX}\" is not a directory or doesn't exists!")
-endif()
-include(GNUInstallDirs)
-set(${PROJECT_NAME}_INSTALL_RUNTIME_DIR             "${CMAKE_INSTALL_FULL_BINDIR}")
-set(${PROJECT_NAME}_INSTALL_LIBRARY_DIR             "${CMAKE_INSTALL_FULL_LIBDIR}/${PROJECT_NAME}")
-set(${PROJECT_NAME}_INSTALL_ARCHIVE_DIR             "${CMAKE_INSTALL_FULL_LIBDIR}/${PROJECT_NAME}")
-set(${PROJECT_NAME}_INSTALL_INCLUDE_DIR             "${CMAKE_INSTALL_FULL_INCLUDEDIR}/${PROJECT_NAME}")
-set(${PROJECT_NAME}_INSTALL_RELATIVE_INCLUDE_DIR    "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}")
-set(${PROJECT_NAME}_INSTALL_CMAKE_DIR               "${CMAKE_INSTALL_FULL_LIBDIR}/${PROJECT_NAME}/cmake")
-
-set(${PROJECT_NAME}_UNINSTALL_TEMPLATE_CONFIG_FILE  "${${PROJECT_NAME}_CMAKE_HELPERS_DIR}/Uninstall.cmake.in")
-set(${PROJECT_NAME}_UNINSTALL_CONFIG_FILE           "${${PROJECT_NAME}_BUILD_DIR}/Uninstall.cmake")
-
-# Set directories and names for package installers.
-set(${PROJECT_NAME}_CPACK_CONFIG_FILE               "${${PROJECT_NAME}_BUILD_DIR}/CPackConfig.cmake")
-set(${PROJECT_NAME}_CPACK_SOURCE_CONFIG_FILE        "${${PROJECT_NAME}_BUILD_DIR}/CPackSourceConfig.cmake")
-set(${PROJECT_NAME}_CPACK_TEMPLATE_OPTIONS_FILE     "${${PROJECT_NAME}_CMAKE_PROJECT_DIR}/CPackInstallerOptions.cmake.in")
-set(${PROJECT_NAME}_CPACK_OPTIONS_FILE              "${${PROJECT_NAME}_BUILD_DIR}/CMakeCPackOptions.cmake")
-
-#------------------------------------------------------------------------------
-# Build project.
-#------------------------------------------------------------------------------
-message("\n== Build project ==")
-include(ProjectSrcFiles)
-include(FileManip)
-if(NOT DEFINED ${PROJECT_NAME}_PRECOMPILED_HEADER_FILE)
-	message(FATAL_ERROR "${PROJECT_NAME}_PRECOMPILED_HEADER_FILE must be specified!")
-endif()
-if(NOT DEFINED ${PROJECT_NAME}_PRECOMPILED_SOURCE_FILE)
-	message(FATAL_ERROR "${PROJECT_NAME}_PRECOMPILED_SOURCE_FILE must be specified!")
-endif()
-if(NOT DEFINED ${PROJECT_NAME}_SOURCE_PRIVATE_FILES)
-	message(FATAL_ERROR "${PROJECT_NAME}_SOURCE_PRIVATE_FILES must be specified!")
-endif()
-if(NOT DEFINED ${PROJECT_NAME}_HEADER_PUBLIC_DIRS)
-	message(FATAL_ERROR "${PROJECT_NAME}_HEADER_PUBLIC_DIRS must be specified!")
-endif()
-if(NOT DEFINED ${PROJECT_NAME}_HEADER_PUBLIC_FILES)
-	message(FATAL_ERROR "${PROJECT_NAME}_HEADER_PUBLIC_FILES must be specified!")
-endif()
-if(NOT DEFINED ${PROJECT_NAME}_HEADER_PRIVATE_DIRS)
-	message(FATAL_ERROR "${PROJECT_NAME}_HEADER_PRIVATE_DIRS must be specified!")
-endif()
-if(NOT DEFINED ${PROJECT_NAME}_HEADER_PRIVATE_FILES)
-	message(FATAL_ERROR "${PROJECT_NAME}_HEADER_PRIVATE_FILES must be specified!")
-endif()
-
-# Create a relative precompiled header file for PRIVATE of `target_precompile_headers()` command.
-set(${PROJECT_NAME}_PRECOMPILED_HEADER_RELATIVE_FILE "")
-file_manip(RELATIVE_PATH ${PROJECT_NAME}_PRECOMPILED_HEADER_FILE
-	BASE_DIR "${${PROJECT_NAME}_PROJECT_DIR}"
-	OUTPUT_VARIABLE ${PROJECT_NAME}_PRECOMPILED_HEADER_RELATIVE_FILE
-)
-
-# Create an absolute precompiled header file for INSTALL_INTERFACE of `target_precompile_headers()`
-# command (for some unknown reason the command `install(EXPORT...)` does not add a
-# suffix to the relative path).
-set(${PROJECT_NAME}_INSTALL_PRECOMPILED_HEADER_FILE ${${PROJECT_NAME}_PRECOMPILED_HEADER_FILE})
-foreach(header_directory IN ITEMS ${${PROJECT_NAME}_HEADER_PUBLIC_DIRS})
-	file_manip(STRIP_PATH ${PROJECT_NAME}_INSTALL_PRECOMPILED_HEADER_FILE
-		BASE_DIR "${header_directory}"
-	)
-endforeach()
-file_manip(ABSOLUTE_PATH ${PROJECT_NAME}_INSTALL_PRECOMPILED_HEADER_FILE
-	BASE_DIR "${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}"
-)
-
-# Create a list of private relative source files for PRIVATE of `target_sources()` command.
-set(${PROJECT_NAME}_SOURCE_PRIVATE_RELATIVE_FILES "")
-file_manip(RELATIVE_PATH ${PROJECT_NAME}_SOURCE_PRIVATE_FILES
-	BASE_DIR "${${PROJECT_NAME}_PROJECT_DIR}"
-	OUTPUT_VARIABLE ${PROJECT_NAME}_SOURCE_PRIVATE_RELATIVE_FILES
-)
-
-# Create a list of public relative header files for PRIVATE of `target_sources()` command.
-set(${PROJECT_NAME}_HEADER_PUBLIC_RELATIVE_FILES "")
-file_manip(RELATIVE_PATH ${PROJECT_NAME}_HEADER_PUBLIC_FILES
-	BASE_DIR "${${PROJECT_NAME}_PROJECT_DIR}"
-	OUTPUT_VARIABLE ${PROJECT_NAME}_HEADER_PUBLIC_RELATIVE_FILES
-)
-
-# Create a list of private relative header files for PRIVATE of `target_sources()` command.
-set(${PROJECT_NAME}_HEADER_PRIVATE_RELATIVE_FILES "")
-file_manip(RELATIVE_PATH ${PROJECT_NAME}_HEADER_PRIVATE_FILES
-	BASE_DIR "${${PROJECT_NAME}_PROJECT_DIR}"
-	OUTPUT_VARIABLE ${PROJECT_NAME}_HEADER_PRIVATE_RELATIVE_FILES
-)
-
-# Create a list of relative header files for INSTALL_INTERFACE of `target_sources()` command.
-set(${PROJECT_NAME}_INSTALL_HEADER_RELATIVE_FILES ${${PROJECT_NAME}_HEADER_PUBLIC_FILES})
-foreach(header_directory IN ITEMS ${${PROJECT_NAME}_HEADER_PUBLIC_DIRS})
-	file_manip(STRIP_PATH ${PROJECT_NAME}_INSTALL_HEADER_RELATIVE_FILES
-		BASE_DIR "${header_directory}"
-	)
-endforeach()
-file_manip(ABSOLUTE_PATH ${PROJECT_NAME}_INSTALL_HEADER_RELATIVE_FILES
-	BASE_DIR "${${PROJECT_NAME}_INSTALL_RELATIVE_INCLUDE_DIR}"
-)
-
-# Build as library or as executable.
-if(${${PROJECT_NAME}_TARGET_IS_STATIC})
-	# Build static library.
-	message("")
-	message(STATUS "Build as a static library")
-	add_library("${${PROJECT_NAME}_TARGET_NAME}" STATIC)
-elseif(${${PROJECT_NAME}_TARGET_IS_SHARED})
-	# Build shared library.
-	message("")
-	message(STATUS "Build as a shared library")
-	add_library("${${PROJECT_NAME}_TARGET_NAME}" SHARED)
-elseif(${${PROJECT_NAME}_TARGET_IS_EXEC})
-	# Build executable.
-	message("")
-	message(STATUS "Build as an executable")
-	add_executable("${${PROJECT_NAME}_TARGET_NAME}")
-endif()
-
-# Add sources to target.
-message(STATUS "Add private and public sources files to target")
-target_sources("${${PROJECT_NAME}_TARGET_NAME}"
-	PUBLIC
-		"$<BUILD_INTERFACE:${${PROJECT_NAME}_HEADER_PUBLIC_FILES}>"
-		"$<INSTALL_INTERFACE:${${PROJECT_NAME}_INSTALL_HEADER_RELATIVE_FILES}>"
-	PRIVATE
-		"${${PROJECT_NAME}_SOURCE_PRIVATE_RELATIVE_FILES}"
-		"${${PROJECT_NAME}_HEADER_PRIVATE_RELATIVE_FILES}"
-		"${${PROJECT_NAME}_HEADER_PUBLIC_RELATIVE_FILES}"
-)
-
-# Add precompiled header to target.
-if(${PROJECT_NAME}_PRECOMPILED_HEADER_FILE)
-	message(STATUS "Add precompiled header to target")
-	target_precompile_headers("${${PROJECT_NAME}_TARGET_NAME}"
-		PUBLIC
-			"$<BUILD_INTERFACE:${${PROJECT_NAME}_PRECOMPILED_HEADER_FILE}>"
-			"$<INSTALL_INTERFACE:${${PROJECT_NAME}_INSTALL_PRECOMPILED_HEADER_FILE}>"
-		PRIVATE
-			"${${PROJECT_NAME}_PRECOMPILED_HEADER_RELATIVE_FILE}"
-	)
+# Set build standard version for all targets.
+if(("${PARAM_BUILD_STANDARD_VERSION}" STREQUAL "11")
+	OR ("${PARAM_BUILD_STANDARD_VERSION}" STREQUAL "14")
+	OR ("${PARAM_BUILD_STANDARD_VERSION}" STREQUAL "17")
+	OR ("${PARAM_BUILD_STANDARD_VERSION}" STREQUAL "20")
+	OR ("${PARAM_BUILD_STANDARD_VERSION}" STREQUAL "23"))
+	set(CMAKE_CXX_STANDARD "${PARAM_BUILD_STANDARD_VERSION}")
 else()
-	message(STATUS "Precompiled header disabled for target")
+	message(FATAL_ERROR "PARAM_BUILD_STANDARD_VERSION must be 11 or 14 or 17 or 20 or 23!")
 endif()
+message(STATUS "Standard version set to \"${CMAKE_CXX_STANDARD}\" for all targets")
 
-# Set compiler version to target.
-message(STATUS "Set compiler version to target")
-target_compile_features("${${PROJECT_NAME}_TARGET_NAME}"
-	PUBLIC
-		"$<BUILD_INTERFACE:cxx_std_${CMAKE_CXX_STANDARD}>"
-		"$<INSTALL_INTERFACE:cxx_std_${CMAKE_CXX_STANDARD}>"
+# Set build type.
+if(("${PARAM_BUILD_TYPE}" STREQUAL "release"))
+	set(CMAKE_BUILD_TYPE "Release")
+elseif("${PARAM_BUILD_TYPE}" STREQUAL "debug")
+	set(CMAKE_BUILD_TYPE "Debug")
+else()
+	message(FATAL_ERROR "PARAM_BUILD_TYPE should be \"debug\" or \"release\"!")
+endif()
+message(STATUS "Targets will be build in \"${CMAKE_BUILD_TYPE}\" if a single-configuration generator is used")
+
+
+#---- Add the build targets. ----
+message("")
+set(${PROJECT_NAME}_BUILD_TARGET_IS_STATIC   off)
+set(${PROJECT_NAME}_BUILD_TARGET_IS_SHARED   off)
+set(${PROJECT_NAME}_BUILD_TARGET_IS_HEADER   off)
+set(${PROJECT_NAME}_BUILD_TARGET_IS_EXEC     off)
+if("${PARAM_BUILD_TARGET_TYPE}" STREQUAL "static")
+	set(${PROJECT_NAME}_BUILD_TARGET_IS_STATIC   on)
+	set(${PROJECT_NAME}_BUILD_TARGET_NAME        "lib${PROJECT_NAME}")
+	message(STATUS "Add the static library target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\"")
+	add_library("${${PROJECT_NAME}_BUILD_TARGET_NAME}" STATIC)
+	add_library("${${PROJECT_NAME}_BUILD_TARGET_NAME}::${${PROJECT_NAME}_BUILD_TARGET_NAME}" ALIAS "${${PROJECT_NAME}_BUILD_TARGET_NAME}")
+elseif("${PARAM_BUILD_TARGET_TYPE}" STREQUAL "shared")
+	set(${PROJECT_NAME}_BUILD_TARGET_IS_SHARED   on)
+	set(${PROJECT_NAME}_BUILD_TARGET_NAME        "lib${PROJECT_NAME}")
+	# All libraries will be built shared unless the library was explicitly added as a static library.
+	set(BUILD_SHARED_LIBS on)
+	message(STATUS "Add the shared library target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\"")
+	add_library("${${PROJECT_NAME}_BUILD_TARGET_NAME}" SHARED)
+	add_library("${${PROJECT_NAME}_BUILD_TARGET_NAME}::${${PROJECT_NAME}_BUILD_TARGET_NAME}" ALIAS "${${PROJECT_NAME}_BUILD_TARGET_NAME}")
+elseif("${PARAM_BUILD_TARGET_TYPE}" STREQUAL "header")
+	set(${PROJECT_NAME}_BUILD_TARGET_IS_HEADER   on)
+	set(${PROJECT_NAME}_BUILD_TARGET_NAME        "${PROJECT_NAME}")
+	message(STATUS "Add the header-only library target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\"")
+	add_library("${${PROJECT_NAME}_BUILD_TARGET_NAME}" INTERFACE)
+	add_library("${${PROJECT_NAME}_BUILD_TARGET_NAME}::${${PROJECT_NAME}_BUILD_TARGET_NAME}" ALIAS "${${PROJECT_NAME}_BUILD_TARGET_NAME}")
+elseif("${PARAM_BUILD_TARGET_TYPE}" STREQUAL "exec")
+	set(${PROJECT_NAME}_BUILD_TARGET_IS_EXEC     on)
+	set(${PROJECT_NAME}_BUILD_TARGET_NAME        "${PROJECT_NAME}")
+	message(STATUS "Add the executable target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\"")
+	add_executable("${${PROJECT_NAME}_BUILD_TARGET_NAME}")
+	add_executable("${${PROJECT_NAME}_BUILD_TARGET_NAME}::${${PROJECT_NAME}_BUILD_TARGET_NAME}" ALIAS "${${PROJECT_NAME}_BUILD_TARGET_NAME}")
+else()
+	message(FATAL_ERROR "Build target type must be \"static\" or \"shared\" or \"header\" or \"exec\"!")
+endif()
+message(STATUS "The build target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\" is now aliased as \"${${PROJECT_NAME}_BUILD_TARGET_NAME}::${${PROJECT_NAME}_BUILD_TARGET_NAME}\"")
+
+
+#---- Add the compiler features, compile definitions and compile options to the build target. ----
+
+# Add compiler features to the build target.
+message(STATUS "Add compile features to the target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\"")
+target_compile_features("${${PROJECT_NAME}_BUILD_TARGET_NAME}"
 	PRIVATE
 		"cxx_std_${CMAKE_CXX_STANDARD}"
 )
 
-# Add header directories to incude directories to target.
-message(STATUS "Add private and public header directories to include directories of target")
-target_include_directories("${${PROJECT_NAME}_TARGET_NAME}"
-	# see https://cmake.org/cmake/help/v3.0/manual/cmake-buildsystem.7.html#build-specification-and-usage-requirements
+# Add compile definitions to the build target.
+set(${PROJECT_NAME}_COMPILE_DEFINITIONS "${PARAM_COMPILE_DEFINITIONS}")
+message(STATUS "Add compile definitions to the target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\"")
+target_compile_definitions("${${PROJECT_NAME}_BUILD_TARGET_NAME}"
+	PRIVATE
+		"${${PROJECT_NAME}_COMPILE_DEFINITIONS}"
+)
+
+# Add compile options to the build target.
+message(STATUS "Add compile options to the target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\"")
+target_compile_options("${${PROJECT_NAME}_BUILD_TARGET_NAME}"
+	PRIVATE
+		""
+)
+
+
+#---- Add source and header files to the build target. ----
+message(STATUS "Check source and header files")
+
+include(FileManip)
+include(HeadersAndSourcesOptions)
+
+# Check source files.
+if(NOT DEFINED ${PROJECT_NAME}_SOURCE_SRC_FILES)
+	message(FATAL_ERROR "${PROJECT_NAME}_SOURCE_SRC_FILES must be specified!")
+endif()
+# if(NOT DEFINED ${PROJECT_NAME}_MAIN_SOURCE_FILE)
+# 	message(FATAL_ERROR "${PROJECT_NAME}_MAIN_SOURCE_FILE must be specified!")
+# endif()
+
+# Create a list of relative source files for PRIVATE of `target_sources()` command.
+set(${PROJECT_NAME}_SOURCE_RELATIVE_FILES "${${PROJECT_NAME}_SOURCE_SRC_FILES}")
+# file_manip(RELATIVE_PATH ${PROJECT_NAME}_SOURCE_RELATIVE_FILES
+# 	BASE_DIR "${${PROJECT_NAME}_PROJECT_DIR}"
+# )
+message(STATUS "Found the following source files:")
+message(STATUS "    ${${PROJECT_NAME}_SOURCE_RELATIVE_FILES}")
+
+# Check header files.
+if(NOT DEFINED ${PROJECT_NAME}_HEADER_SRC_FILES)
+	message(FATAL_ERROR "${PROJECT_NAME}_HEADER_SRC_FILES must be specified!")
+endif()
+if(NOT DEFINED ${PROJECT_NAME}_HEADER_INCLUDE_FILES)
+	message(FATAL_ERROR "${PROJECT_NAME}_HEADER_INCLUDE_FILES must be specified!")
+endif()
+
+# Check if `include/<project-name>` directory exists, then set public and private header variables.
+if(${PARAM_PUBLIC_HEADERS_SEPARATED} AND (NOT IS_DIRECTORY "${${PROJECT_NAME}_INCLUDE_DIR}/${PROJECT_NAME}"))
+	message(FATAL_ERROR "\"include/<project-name>\" directory is missing! Needed when \"PARAM_PUBLIC_HEADERS_SEPARATED\" is set with on")
+elseif(${PARAM_PUBLIC_HEADERS_SEPARATED})
+	set(${PROJECT_NAME}_HEADER_PUBLIC_DIR      "${${PROJECT_NAME}_INCLUDE_DIR}/${PROJECT_NAME}")
+	set(${PROJECT_NAME}_HEADER_PUBLIC_FILES    "${${PROJECT_NAME}_HEADER_INCLUDE_FILES}")
+	set(${PROJECT_NAME}_HEADER_PRIVATE_DIR     "${${PROJECT_NAME}_SRC_DIR}")
+	set(${PROJECT_NAME}_HEADER_PRIVATE_FILES   "${${PROJECT_NAME}_HEADER_SRC_FILES}")
+	message(STATUS "Mark the headers in \"src/\" as privates and those in \"include/\" as publics.")
+else()
+	set(${PROJECT_NAME}_HEADER_PUBLIC_DIR      "${${PROJECT_NAME}_SRC_DIR}")
+	set(${PROJECT_NAME}_HEADER_PUBLIC_FILES    "${${PROJECT_NAME}_HEADER_SRC_FILES}")
+	set(${PROJECT_NAME}_HEADER_PRIVATE_DIR     "")
+	set(${PROJECT_NAME}_HEADER_PRIVATE_FILES   "")
+	message(STATUS "Mark the headers in \"src/\" as public and ignore those in \"include/\".")
+endif()
+
+# Create a list of relative header files for PRIVATE of `target_sources()` command.
+set(${PROJECT_NAME}_HEADER_RELATIVE_FILES "${${PROJECT_NAME}_HEADER_PRIVATE_FILES}" "${${PROJECT_NAME}_HEADER_PUBLIC_FILES}")
+# file_manip(RELATIVE_PATH ${PROJECT_NAME}_HEADER_RELATIVE_FILES
+# 	BASE_DIR "${${PROJECT_NAME}_PROJECT_DIR}"
+# )
+message(STATUS "Found the following header files:")
+message(STATUS "    ${${PROJECT_NAME}_HEADER_RELATIVE_FILES}")
+
+# Add source and header files to the build target.
+message(STATUS "Add the found source and header files to the target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\"")
+target_sources("${${PROJECT_NAME}_BUILD_TARGET_NAME}"
+	PRIVATE
+		"${${PROJECT_NAME}_SOURCE_RELATIVE_FILES}"
+		"${${PROJECT_NAME}_HEADER_RELATIVE_FILES}"
+)
+
+
+#---- Add the precompiled header file to the build target. ----
+
+# Check precompiled header file.
+if(NOT DEFINED ${PROJECT_NAME}_PRECOMPILED_HEADER_FILE)
+	message(FATAL_ERROR "${PROJECT_NAME}_PRECOMPILED_HEADER_FILE must be specified!")
+endif()
+
+# Create a relative precompiled header file for PRIVATE of `target_precompile_headers()` command.
+set(${PROJECT_NAME}_PRECOMPILED_HEADER_RELATIVE_FILE "${${PROJECT_NAME}_PRECOMPILED_HEADER_FILE}")
+# file_manip(RELATIVE_PATH ${PROJECT_NAME}_PRECOMPILED_HEADER_RELATIVE_FILE
+# 	BASE_DIR "${${PROJECT_NAME}_PROJECT_DIR}"
+# )
+
+# Add the precompiled header file to the build target.
+message(STATUS "Check precompiled header file")
+if((NOT ${PROJECT_NAME}_PRECOMPILED_HEADER_FILE) AND (NOT EXISTS "${${PROJECT_NAME}_PRECOMPILED_HEADER_FILE}"))
+	message(FATAL_ERROR "Precompiled header file \"${${PROJECT_NAME}_PRECOMPILED_HEADER_FILE}\" doesn't exists!")
+elseif(${PROJECT_NAME}_PRECOMPILED_HEADER_FILE)
+	message(STATUS "Add the following precompiled header to the target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\":")
+	target_precompile_headers("${${PROJECT_NAME}_BUILD_TARGET_NAME}"
+		PRIVATE
+			"${${PROJECT_NAME}_PRECOMPILED_HEADER_RELATIVE_FILE}"
+	)
+	message(STATUS "    ${${PROJECT_NAME}_PRECOMPILED_HEADER_RELATIVE_FILE}")
+else()
+	set(CMAKE_DISABLE_PRECOMPILE_HEADERS off)
+	message(STATUS "No precompiled header set")
+endif()
+
+
+#---- Add the include directories to the build target. ----
+
+# Add header directories to incude directories of the build target.
+message(STATUS "Add the following directories to include directories of the target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\":")
+target_include_directories("${${PROJECT_NAME}_BUILD_TARGET_NAME}"
+	# see https://cmake.org/cmake/help/latest/manual/cmake-buildsystem.7.html#build-specification-and-usage-requirements
 	# and https://stackoverflow.com/questions/26243169/cmake-target-include-directories-meaning-of-scope
 	# and https://cmake.org/pipermail/cmake/2017-October/066457.html.
 	# If PRIVATE is specified for a certain option/property, then that option/property will only impact
 	# the current target. If PUBLIC is specified, then the option/property impacts both the current
 	# target and any others that link to it. If INTERFACE is specified, then the option/property does
 	# not impact the current target but will propagate to other targets that link to it.
-	PUBLIC
-		# Used when the property is exported using export(), or when building the target,
-		# or when it is used by another target in the same buildsystem.
-		"$<BUILD_INTERFACE:${${PROJECT_NAME}_HEADER_PUBLIC_DIRS}>"
-		# Used when installing use install(EXPORT).
-		"$<INSTALL_INTERFACE:${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}>"
 	PRIVATE
 		# Used only when building the target.
-		"$<$<BOOL:${${PROJECT_NAME}_HEADER_PRIVATE_DIRS}>:${${PROJECT_NAME}_HEADER_PRIVATE_DIRS}>"
+		"$<$<BOOL:${${PROJECT_NAME}_HEADER_PRIVATE_DIR}>:${${PROJECT_NAME}_HEADER_PRIVATE_DIR}>"
+		"${${PROJECT_NAME}_HEADER_PUBLIC_DIR}"
 )
+message(STATUS "    ${${PROJECT_NAME}_HEADER_PUBLIC_DIR};${${PROJECT_NAME}_HEADER_PRIVATE_DIR}")
 
-# Add compile definitions to target.
-message(STATUS "Add compile definitions to target")
-target_compile_definitions("${${PROJECT_NAME}_TARGET_NAME}"
-	PUBLIC
-		"$<BUILD_INTERFACE:${${PROJECT_NAME}_COMPILE_DEFINITIONS}>"
-		"$<INSTALL_INTERFACE:${${PROJECT_NAME}_COMPILE_DEFINITIONS}>"
-	PRIVATE
-		"${${PROJECT_NAME}_COMPILE_DEFINITIONS}"
-)
 
-#------------------------------------------------------------------------------
-# Add project dependencies.
-#------------------------------------------------------------------------------
-message("\n== Add project dependencies ==")
-include(Dependencies)
+#---- Add dependencies to the build target. ----
+message("")
+message(STATUS "Check dependencies")
+
+include(DependenciesOptions)
+
+# Check library files and header library files.
 if(NOT DEFINED ${PROJECT_NAME}_LIBRARY_FILES)
 	message(FATAL_ERROR "${PROJECT_NAME}_LIBRARY_FILES must be specified!")
 endif()
 if(NOT DEFINED ${PROJECT_NAME}_LIBRARY_HEADER_DIRS)
 	message(FATAL_ERROR "${PROJECT_NAME}_LIBRARY_HEADER_DIRS must be specified!")
 endif()
+message(STATUS "Found the following library files in \"lib/\" directory:")
+message(STATUS "    ${${PROJECT_NAME}_LIBRARY_FILES}")
+message(STATUS "Found the following library header directories in \"include/\" directory:")
+message(STATUS "    ${${PROJECT_NAME}_LIBRARY_HEADER_DIRS}")
 
-# Get the name of each library file and append them to install library directory path.
-set(${PROJECT_NAME}_INSTALL_LIBRARY_FILES "")
-file_manip(GET_COMPONENT ${${PROJECT_NAME}_LIBRARY_FILES}
-	MODE NAME
-	OUTPUT_VARIABLE ${PROJECT_NAME}_INSTALL_LIBRARY_FILES
-)
-file_manip(ABSOLUTE_PATH ${PROJECT_NAME}_INSTALL_LIBRARY_FILES
-	BASE_DIR "${${PROJECT_NAME}_INSTALL_LIBRARY_DIR}"
-)
-
-# Link external libraries to target.
-message(STATUS "Link external libraries of \"lib/\" directory to project target")
-target_link_libraries("${${PROJECT_NAME}_TARGET_NAME}"
-	PUBLIC
-		"$<BUILD_INTERFACE:${${PROJECT_NAME}_LIBRARY_FILES}>"
-		"$<INSTALL_INTERFACE:${${PROJECT_NAME}_INSTALL_LIBRARY_FILES}>"
+# Link libraries to the build target.
+message(STATUS "Link libraries found to the build target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\"")
+target_link_libraries("${${PROJECT_NAME}_BUILD_TARGET_NAME}"
 	PRIVATE
 		"${${PROJECT_NAME}_LIBRARY_FILES}"
 )
 
-# Add external header directories to incude directories of target
-# (INSTALL_INTERFACE and PRIVATE doesn't need to be defined here, because they are
-# already defined in the previous call to `target_include_directories()`).
-message(STATUS "Add \"include/\" directory (containing external header directories) to include directories of target")
-target_include_directories("${${PROJECT_NAME}_TARGET_NAME}"
-	PUBLIC
-		"$<BUILD_INTERFACE:${${PROJECT_NAME}_INCLUDE_DIR}>"
-)
-
-#------------------------------------------------------------------------------
-# Build documentation.
-#------------------------------------------------------------------------------
-if(${PARAM_BUILD_DOXYGEN_DOCS})
-	message("\n== Build documentation ==")
-	find_package(Doxygen REQUIRED)
-	if(NOT DOXYGEN_FOUND)
-		message(FATAL_ERROR "Doxygen is needed to build the documentation. Please make sure it is installed.")
-	endif()
-
-	configure_file(
-		"${${PROJECT_NAME}_DOXYGEN_TEMPLATE_CONFIG_FILE}"
-		"${${PROJECT_NAME}_DOXYGEN_CONFIG_FILE}"
-		@ONLY
-	)
-	if(EXISTS "${${PROJECT_NAME}_DOXYGEN_CONFIG_FILE}")
-		file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_DIR}" "${${PROJECT_NAME}_DOXYGEN_CONFIG_FILE}")
-		message(STATUS "Doxygen config file generated into \"${relative_path}\"")
-	else()
-		message(FATAL_ERROR "Doxygen config file can't be generate")
-	endif()
-
-	# Add `make docs` command.
-	add_custom_target(docs ALL
-		COMMAND ${DOXYGEN_EXECUTABLE} "${${PROJECT_NAME}_DOXYGEN_CONFIG_FILE}"
-		SOURCES "${${PROJECT_NAME}_DOXYGEN_CONFIG_FILE}"
-		WORKING_DIRECTORY "${${PROJECT_NAME}_DOC_DIR}"
-		COMMENT "Generating API documentation with Doxygen"
-		VERBATIM
-	)
-	
-	# Add the generated documentation files to `make clean` command.
-	set_property(DIRECTORY "${${PROJECT_NAME}_PROJECT_DIR}"
-		APPEND
-		PROPERTY ADDITIONAL_CLEAN_FILES
-		"${${PROJECT_NAME}_DOC_DIR}/html"
-		"${${PROJECT_NAME}_DOC_DIR}/latex"
-		"${${PROJECT_NAME}_DOC_DIR}/doxyfile"
-	)
-endif()
-
-#------------------------------------------------------------------------------
-# Build tests.
-#------------------------------------------------------------------------------
-if(${PARAM_BUILD_TESTS})
-	message("\n== Build tests ==")
-	include(CTest)
-	add_test(NAME "${${PROJECT_NAME}_TEST_NAME}"
-		WORKING_DIRECTORY "${${PROJECT_NAME}_TEST_DIR}"
-		COMMAND "${${PROJECT_NAME}_TEST_DIR}/${${PROJECT_NAME}_TEST_NAME}")
-endif()
-
-#------------------------------------------------------------------------------
-# Generate files for packaging and exporting.
-#------------------------------------------------------------------------------
-message("\n== Generates files for packaging and exporting ==")
-include(CMakePackageConfigHelpers)
-
-# Generate a package config-file.
-set(LOCAL_TARGET_NAME                  "${${PROJECT_NAME}_TARGET_NAME}")
-set(LOCAL_EXPORT_TARGET_FILE_NAME      "${${PROJECT_NAME}_EXPORT_TARGET_FILE_NAME}")
-set(LOCAL_PACKAGE_NAME                 "${${PROJECT_NAME}_PACKAGE_NAME}")
-configure_package_config_file(
-	"${${PROJECT_NAME}_PACKAGE_TEMPLATE_CONFIG_FILE}"
-	"${${PROJECT_NAME}_PACKAGE_CONFIG_FILE}"
-	INSTALL_DESTINATION "${${PROJECT_NAME}_INSTALL_CMAKE_DIR}"
-	INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}"
-)
-unset(LOCAL_TARGET_NAME)
-unset(LOCAL_EXPORT_TARGET_FILE_NAME)
-unset(LOCAL_PACKAGE_NAME)
-if(EXISTS "${${PROJECT_NAME}_PACKAGE_CONFIG_FILE}")
-	file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_DIR}" "${${PROJECT_NAME}_PACKAGE_CONFIG_FILE}")
-	message(STATUS "Package config-file generated into \"${relative_path}\"")
-else()
-	message(FATAL_ERROR "Package config-file can't be generate")
-endif()
-
-# Generate a package version-file.
-write_basic_package_version_file(
-	"${${PROJECT_NAME}_PACKAGE_VERSION_FILE}"
-	VERSION "${${PROJECT_NAME}_VERSION}"
-	COMPATIBILITY AnyNewerVersion
-)
-if(EXISTS "${${PROJECT_NAME}_PACKAGE_VERSION_FILE}")
-	file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_DIR}" "${${PROJECT_NAME}_PACKAGE_VERSION_FILE}")
-	message(STATUS "Package version-file generated into \"${relative_path}\"")
-else()
-	message(FATAL_ERROR "Package version-file can't be generate")
-endif()
-
-# Generate the target file for exporting the library from the build tree (warning: it should never be installed).
-# See: https://gitlab.kitware.com/cmake/community/-/wikis/doc/tutorials/Exporting-and-Importing-Targets.
-export(TARGETS "${${PROJECT_NAME}_TARGET_NAME}"
-	FILE "${${PROJECT_NAME}_EXPORT_TARGET_FILE}"
-	NAMESPACE "${${PROJECT_NAME}_EXPORT_NAMESPACE}::"
-)
-export(PACKAGE "${${PROJECT_NAME}_PACKAGE_NAME}")
-file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_DIR}" "${${PROJECT_NAME}_EXPORT_TARGET_FILE}")
-message(STATUS "Export target file for the project library generated into \"${relative_path}\"")
-
-#------------------------------------------------------------------------------
-# Make install/uninstall rules and exporting.
-#------------------------------------------------------------------------------
-message("\n== Generates make install/uninstall rules ==")
-
-# Rename export name of target.
-set_target_properties ("${${PROJECT_NAME}_TARGET_NAME}" PROPERTIES EXPORT_NAME "${${PROJECT_NAME}_EXPORT_NAME}")
-
-# Install the target and defined an export group.
-install(TARGETS "${${PROJECT_NAME}_TARGET_NAME}"
-	EXPORT "${${PROJECT_NAME}_EXPORT_NAME}"
-	ARCHIVE DESTINATION "${${PROJECT_NAME}_INSTALL_ARCHIVE_DIR}"
-	LIBRARY DESTINATION "${${PROJECT_NAME}_INSTALL_LIBRARY_DIR}"
-	RUNTIME DESTINATION "${${PROJECT_NAME}_INSTALL_RUNTIME_DIR}"
-)
-
-# Install public header files in include directory.
-foreach(directory IN ITEMS ${${PROJECT_NAME}_HEADER_PUBLIC_DIRS})
-	install(DIRECTORY "${directory}/"
-		DESTINATION "${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}"
-		FILES_MATCHING REGEX ".*[.]h$"
-	)
-endforeach()
-
-# Install library public header files in include directory.
-foreach(directory IN ITEMS ${${PROJECT_NAME}_LIBRARY_HEADER_DIRS})
-	install(DIRECTORY "${directory}"
-		DESTINATION "${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}"
-		FILES_MATCHING REGEX ".*[.]h$"
-	)
-endforeach()
-
-# Install externals libraries in lib directory.
-install(FILES ${${PROJECT_NAME}_LIBRARY_FILES}
-	DESTINATION "${${PROJECT_NAME}_INSTALL_LIBRARY_DIR}"
-)
-
-# Install the config-file and the config-version-file in cmake directory.
-install(FILES
-	"${${PROJECT_NAME}_PACKAGE_CONFIG_FILE}"
-	"${${PROJECT_NAME}_PACKAGE_VERSION_FILE}"
-	DESTINATION "${${PROJECT_NAME}_INSTALL_CMAKE_DIR}"
-)
-
-# Generate and install a target file for exporting that will be use in the
-# install tree.
-install(EXPORT "${${PROJECT_NAME}_EXPORT_NAME}"
-	NAMESPACE "${${PROJECT_NAME}_EXPORT_NAMESPACE}::"
-	DESTINATION "${${PROJECT_NAME}_INSTALL_CMAKE_DIR}"
-	FILE "${${PROJECT_NAME}_EXPORT_TARGET_FILE_NAME}"
-)
-
-if(NOT TARGET uninstall)
-	# Add uninstall rules.
-	set(LOCAL_BUILD_DIR "${${PROJECT_NAME}_BUILD_DIR}")
-	set(LOCAL_INSTALL_INCLUDE_DIR "${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}")
-	set(LOCAL_INSTALL_LIBRARY_DIR "${${PROJECT_NAME}_INSTALL_LIBRARY_DIR}")
-	configure_file(
-		"${${PROJECT_NAME}_UNINSTALL_TEMPLATE_CONFIG_FILE}"
-		"${${PROJECT_NAME}_UNINSTALL_CONFIG_FILE}"
-		@ONLY
-	)
-	unset(LOCAL_BUILD_DIR)
-	unset(LOCAL_INSTALL_INCLUDE_DIR)
-	unset(LOCAL_INSTALL_LIBRARY_DIR)
-
-	# Add `make uninstall` command.
-	add_custom_target(uninstall
-		COMMAND ${CMAKE_COMMAND} -P "${${PROJECT_NAME}_UNINSTALL_CONFIG_FILE}"
-	)
-
-	# Add uninstall target in a folder for IDE project generation.
-	get_cmake_property(target_folder PREDEFINED_TARGETS_FOLDER)
-	set_target_properties(uninstall PROPERTIES FOLDER "${target_folder}")
-endif()
-
-#------------------------------------------------------------------------------
-# Generate binary and source package installers.
-#------------------------------------------------------------------------------
-message("\n== Generate binary and source package installers ==")
-include(CPackInstallerConfig)
-
-# Add the generated installers files to `make clean` command.
-set_property(DIRECTORY "${${PROJECT_NAME}_PROJECT_DIR}"
-	APPEND
-	PROPERTY ADDITIONAL_CLEAN_FILES
-	"${CPACK_PACKAGE_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME}.zip"
-	"${CPACK_PACKAGE_DIRECTORY}/${CPACK_SOURCE_PACKAGE_FILE_NAME}.zip"
-	"${CPACK_PACKAGE_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME}.exe"
-	"${CPACK_PACKAGE_DIRECTORY}/${CPACK_SOURCE_PACKAGE_FILE_NAME}.exe"
-	"${CPACK_PACKAGE_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME}.nsi"
-	"${CPACK_PACKAGE_DIRECTORY}/${CPACK_SOURCE_PACKAGE_FILE_NAME}.nsi"
-)
-
-# Fill the generator config file loaded at the beginning of cpack time.
-configure_file(
-	"${${PROJECT_NAME}_CPACK_TEMPLATE_OPTIONS_FILE}"
-	"${${PROJECT_NAME}_CPACK_OPTIONS_FILE}"
-	@ONLY
-)
-set(CPACK_PROJECT_CONFIG_FILE "${${PROJECT_NAME}_CPACK_OPTIONS_FILE}")
-
-# Generate installers.
-include(CPack)
-if(EXISTS "${${PROJECT_NAME}_CPACK_CONFIG_FILE}")
-	file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_DIR}" "${${PROJECT_NAME}_CPACK_CONFIG_FILE}")
-	message(STATUS "Binary package installer config file generated into \"${relative_path}\"")
-else()
-	message(FATAL_ERROR "Binary package installer config file can't be generate")
-endif()
-if(EXISTS "${${PROJECT_NAME}_CPACK_SOURCE_CONFIG_FILE}")
-	file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_DIR}" "${${PROJECT_NAME}_CPACK_SOURCE_CONFIG_FILE}")
-	message(STATUS "Source package installer config file generated into \"${relative_path}\"")
-else()
-	message(FATAL_ERROR "Source package installer config file can't be generate")
-endif()
-
-#------------------------------------------------------------------------------
-# Customize the solution explorer structure for IDE project generation.
-#------------------------------------------------------------------------------
-message("\n== Customize the solution explorer structure for IDE project generation ==")
-
-# Get content of of SOURCES property.
-get_target_property(sources_target_property "${${PROJECT_NAME}_TARGET_NAME}" SOURCES)
-
-# Get content of BUILD_INTERFACE generator expression of SOURCES property.
-string(REGEX MATCHALL "\\$<BUILD_INTERFACE\\:[^\\>]*" build_interface_sources_target_property "${sources_target_property}")
-string(REPLACE "$<BUILD_INTERFACE:" "" build_interface_sources_target_property "${build_interface_sources_target_property}")
-
-# Get content of INSTALL_INTERFACE generator expression of SOURCES property.
-string(REGEX MATCHALL "\\$<INSTALL_INTERFACE\\:[^\\>]*" install_interface_sources_target_property "${sources_target_property}")
-string(REPLACE "$<INSTALL_INTERFACE:" "" install_interface_sources_target_property "${install_interface_sources_target_property}")
-
-# Get content of PRIVATE of SOURCE property.
-string(GENEX_STRIP "${sources_target_property}" private_sources_target_property)
-
-# Concatenate previous lists, remove duplicated items and group them.
-set(sources_target_property "${private_sources_target_property}")
-list(APPEND sources_target_property ${build_interface_sources_target_property})
-list(APPEND sources_target_property ${install_interface_sources_target_property})
-list(REMOVE_DUPLICATES sources_target_property)
-source_group(TREE "${${PROJECT_NAME}_PROJECT_DIR}" FILES ${sources_target_property})
-
-# Group other source files.
-set(project_all_files "")
-directory(SCAN project_all_files
-	LIST_DIRECTORIES off
-	RELATIVE on
-	ROOT_DIR "${${PROJECT_NAME}_PROJECT_DIR}"
-	EXCLUDE_REGEX "build|.git|.vscode"
-)
-list(REMOVE_ITEM project_all_files ${sources_target_property})
-list(REMOVE_DUPLICATES project_all_files)
-target_sources("${${PROJECT_NAME}_TARGET_NAME}"
+# Add `include/` directory to incude directories of the build target.
+message(STATUS "Add \"include/\" directory to include-directories of the target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\"")
+target_include_directories("${${PROJECT_NAME}_BUILD_TARGET_NAME}"
 	PRIVATE
-		"${project_all_files}"
+		"${${PROJECT_NAME}_INCLUDE_DIR}"
 )
-source_group(TREE "${${PROJECT_NAME}_PROJECT_DIR}" FILES ${project_all_files})
 
 message("\n===== End project ${PROJECT_NAME} building =====\n")
