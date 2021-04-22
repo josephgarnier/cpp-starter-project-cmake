@@ -93,6 +93,7 @@ macro(debug_dump_variables)
 
 	get_cmake_property(variable_names VARIABLES)
 	list(SORT variable_names)
+	list(REMOVE_DUPLICATES variable_names)
 	foreach (variable_name IN ITEMS ${variable_names})
 		if((NOT DEFINED DB_EXCLUDE_REGEX) OR (NOT "${variable_name}" MATCHES "${DB_EXCLUDE_REGEX}"))
 			message(STATUS "${variable_name}= ${${variable_name}}")
@@ -114,7 +115,7 @@ macro(debug_dump_properties)
 		${CMAKE_COMMAND} --help-property-list
 		OUTPUT_VARIABLE properties_names
 	)
-	# Convert command output into a CMake list
+	# Convert command output into a CMake list.
 	string(REGEX REPLACE ";" "\\\\;" properties_names "${properties_names}")
 	string(REGEX REPLACE "\n" ";" properties_names "${properties_names}")
 	list(SORT properties_names)
@@ -140,10 +141,11 @@ macro(debug_dump_target_properties)
 		${CMAKE_COMMAND} --help-property-list
 		OUTPUT_VARIABLE properties_names
 	)
-	# Convert command output into a CMake list
+	# Convert command output into a CMake list.
 	string(REGEX REPLACE ";" "\\\\;" properties_names "${properties_names}")
 	string(REGEX REPLACE "\n" ";" properties_names "${properties_names}")
 	list(SORT properties_names)
+	list(REMOVE_DUPLICATES properties_names)
 	foreach (propertie_name IN ITEMS ${properties_names})
 		string(REPLACE "<CONFIG>" "${CMAKE_BUILD_TYPE}" propertie_name ${propertie_name})
 		# Fix https://stackoverflow.com/questions/32197663/how-can-i-remove-the-the-location-property-may-not-be-read-from-target-error-i
