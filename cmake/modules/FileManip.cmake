@@ -39,7 +39,7 @@ Compute the absolute path from a ``<directory_path>`` for each files in the
 list of input path ``<file_list_var>`` and store the result in-place or in
 the specified ``<output_var>``.
 
-.. _GET_COMPONENT:
+.. _STRIP_PATH:
 .. code-block:: cmake
 
   file_manip(STRIP_PATH <file_list_var> BASE_DIR <directory_path> [OUTPUT_VARIABLE <output_var>])
