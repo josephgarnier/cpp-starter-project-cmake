@@ -403,4 +403,16 @@ target_include_directories("${${PROJECT_NAME}_BUILD_TARGET_NAME}"
 		"${${PROJECT_NAME}_INCLUDE_DIR}"
 )
 
+
+
+#------------------------------------------------------------------------------
+# 6. Generate the `install` phase
+#------------------------------------------------------------------------------
+if(${PARAM_ENABLE_EXPORT_MODULE})
+	message("")
+	message("")
+	message("== 6. Execution of the \"Export\" generator module ==")
+	include(ExportGenModule)
+endif()
+
 message("\n===== End project ${PROJECT_NAME} building =====\n")
