@@ -73,7 +73,7 @@ endif()
 set(ENABLE_PACKAGE_MODULE_VAL         off)
 
 #---- "Uninstall" generator module options ----
-set(ENABLE_UNINSTALL_MODULE_VAL       off)
+set(ENABLE_UNINSTALL_MODULE_VAL       on)
 
 #------------------------------------------------------------------------------
 # End of customize section.

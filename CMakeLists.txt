@@ -399,4 +399,13 @@ if(${PARAM_ENABLE_EXPORT_MODULE})
 	include(ExportGenModule)
 endif()
 
+#------------------------------------------------------------------------------
+# 8. Generate the `uninstall` phases
+#------------------------------------------------------------------------------
+if(${PARAM_ENABLE_UNINSTALL_MODULE})
+	message("")
+	message("")
+	message("== 8. Execution of the \"Uninstall\" generator module ==")
+	include(UninstallGenModule)
+endif()
 message("\n===== End project ${PROJECT_NAME} building =====\n")

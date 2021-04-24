@@ -3,6 +3,10 @@
 #
 # This source code is licensed under the license found in the
 # LICENSE file in the root directory of this source tree.
+# =============================================================================
+# What Is This?
+# -------------
+# See README file in the root directory of this source tree.
 
 # Inspired from: https://gitlab.kitware.com/cmake/community/wikis/FAQ#can-i-do-make-uninstall-with-cmake
 
@@ -13,7 +17,7 @@ endif()
 file(READ "@LOCAL_BUILD_DIR@/install_manifest.txt" files)
 string(REGEX REPLACE "\n" ";" files "${files}")
 foreach(file IN ITEMS ${files})
-	message(STATUS "Uninstalling \"${file}\"")
+	message(STATUS "Uninstall \"${file}\"")
 	if(EXISTS "${file}")
 		execute_process(COMMAND
 			"@CMAKE_COMMAND@" -E remove "${file}"
@@ -47,3 +51,5 @@ foreach(file IN ITEMS ${files})
 			endif()
 	endwhile()
 endforeach()
+
+message(STATUS "Project uninstalled")
