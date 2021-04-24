@@ -191,13 +191,13 @@ install(DIRECTORY "${${PROJECT_NAME}_DOC_DIR}/"
 # Rule for public header files in `include/<project-name>` or `src/`.
 install(DIRECTORY "${${PROJECT_NAME}_HEADER_PUBLIC_DIR}/"
 	DESTINATION "${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}/${PROJECT_NAME}"
-	FILES_MATCHING REGEX ".*[.]h$|.*[.]hpp$"
+	FILES_MATCHING REGEX ".*[.]h$|.*[.]hpp$|.*[.]hxx$|.*[.]inl$"
 )
 # Rule for library header files in `include/<...>`
 foreach(directory IN ITEMS ${${PROJECT_NAME}_LIBRARY_HEADER_DIRS})
 	install(DIRECTORY "${directory}"
 		DESTINATION "${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}"
-		FILES_MATCHING REGEX ".*[.]h$|.*[.]hpp$"
+		FILES_MATCHING REGEX ".*[.]h$|.*[.]hpp$|.*[.]hxx$|.*[.]inl$"
 	)
 endforeach()
 # Rule for externals libraries in `lib/`.

@@ -18,7 +18,7 @@ directory(SCAN ${PROJECT_NAME}_SOURCE_SRC_FILES
 	LIST_DIRECTORIES off
 	RELATIVE off
 	ROOT_DIR "${${PROJECT_NAME}_SRC_DIR}"
-	INCLUDE_REGEX ".*[.]cpp$|.*[.]cc$"
+	INCLUDE_REGEX ".*[.]cpp$|.*[.]cc|.*[.]cxx$"
 )
 
 
@@ -29,7 +29,7 @@ directory(SCAN ${PROJECT_NAME}_HEADER_SRC_FILES
 	LIST_DIRECTORIES off
 	RELATIVE off
 	ROOT_DIR "${${PROJECT_NAME}_SRC_DIR}"
-	INCLUDE_REGEX ".*[.]h$|.*[.]hpp$"
+	INCLUDE_REGEX ".*[.]h$|.*[.]hpp$|.*[.]hxx$|.*[.]inl$"
 )
 
 
@@ -40,7 +40,7 @@ directory(SCAN ${PROJECT_NAME}_HEADER_INCLUDE_FILES
 	LIST_DIRECTORIES off
 	RELATIVE off
 	ROOT_DIR "${${PROJECT_NAME}_INCLUDE_DIR}/${PROJECT_NAME}"
-	INCLUDE_REGEX ".*[.]h$|.*[.]hpp$"
+	INCLUDE_REGEX ".*[.]h$|.*[.]hpp$|.*[.]hxx$|.*[.]inl$"
 )
 
 
