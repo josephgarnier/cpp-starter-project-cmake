@@ -3,6 +3,10 @@
 #
 # This source code is licensed under the license found in the
 # LICENSE file in the root directory of this source tree.
+# =============================================================================
+# What Is This?
+# -------------
+# See README file in the root directory of this source tree.
 
 # CMAKE_SYSTEM_NAME - on unix use command `uname -s`, for windows write `Windows` OR use command `cmake --system-information`.
 set(CMAKE_SYSTEM_NAME "Windows")
