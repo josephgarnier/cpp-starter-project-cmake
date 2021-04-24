@@ -185,7 +185,7 @@
 			"options": {
 				"cwd": "${workspaceFolder}/build"
 			},
-			"command": "cmake --build . --target docs  --verbose",
+			"command": "cmake --build . --target docs",
 			"presentation": {
 				"reveal": "always",
 				"panel": "dedicated",
@@ -200,7 +200,7 @@
 			"options": {
 				"cwd": "${workspaceFolder}/build"
 			},
-			"command": "sudo cmake --build . --target install --verbose",
+			"command": "sudo cmake --build . --target install",
 			"presentation": {
 				"reveal": "always",
 				"panel": "dedicated",
