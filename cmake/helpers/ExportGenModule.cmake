@@ -101,21 +101,17 @@ set(CMAKE_BUILD_WITH_INSTALL_RPATH      off) # Don't use the install RPATH alrea
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH   on) # Add paths to linker search and installed rpath.
 set(CMAKE_INSTALL_RPATH                 "${${PROJECT_NAME}_INSTALL_LIBRARY_DIR}") # The rpath to use for installed targets.
 
-# Create a list of relative header files for INSTALL_INTERFACE of `target_sources()` command.
-set(${PROJECT_NAME}_INSTALL_HEADER_RELATIVE_FILES "${${PROJECT_NAME}_HEADER_PUBLIC_FILES}")
-file_manip(STRIP_PATH ${PROJECT_NAME}_INSTALL_HEADER_RELATIVE_FILES
+# Create a list of header files for INSTALL_INTERFACE of `target_sources()` command.
+set(${PROJECT_NAME}_INSTALL_HEADER_FILES "${${PROJECT_NAME}_HEADER_PUBLIC_FILES}")
+file_manip(STRIP_PATH ${PROJECT_NAME}_INSTALL_HEADER_FILES
 	BASE_DIR "${${PROJECT_NAME}_HEADER_PUBLIC_DIR}"
 )
-# file_manip(ABSOLUTE_PATH ${PROJECT_NAME}_INSTALL_HEADER_RELATIVE_FILES
-# 	BASE_DIR "${${PROJECT_NAME}_INSTALL_RELATIVE_INCLUDE_DIR}/${PROJECT_NAME}"
-# )
-file_manip(ABSOLUTE_PATH ${PROJECT_NAME}_INSTALL_HEADER_RELATIVE_FILES
+file_manip(ABSOLUTE_PATH ${PROJECT_NAME}_INSTALL_HEADER_FILES
 	BASE_DIR "${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}/${PROJECT_NAME}"
 )
 
-# Create an absolute precompiled header file for INSTALL_INTERFACE of `target_precompile_headers()`
-# command (for some unknown reason the command `install(EXPORT...)` does not add a
-# suffix to the relative path).
+# Create a list of precompiled header file for INSTALL_INTERFACE of `target_precompile_headers()`
+# command.
 set(${PROJECT_NAME}_INSTALL_PRECOMPILED_HEADER_FILE "${${PROJECT_NAME}_PRECOMPILED_HEADER_FILE}")
 file_manip(STRIP_PATH ${PROJECT_NAME}_INSTALL_PRECOMPILED_HEADER_FILE
 	BASE_DIR "${${PROJECT_NAME}_HEADER_PUBLIC_DIR}"
