@@ -11,71 +11,7 @@
 include(StringManip)
 
 
-#---- Exporting from a Build Tree. ----
-# See: https://gitlab.kitware.com/cmake/community/-/wikis/doc/tutorials/Exporting-and-Importing-Targets.
-# See: https://cmake.org/cmake/help/latest/command/export.html
-# See: https://cmake.org/cmake/help/latest/guide/importing-exporting/#exporting-targets-from-the-build-tree
-message(STATUS "Export the target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\" from the build tree")
-list(APPEND CMAKE_MESSAGE_INDENT "  ")
-
-# Add usage requirements for the build tree to the build target.
-message(STATUS "Add usage requirements for the build tree (BUILD_INTERFACE) to the target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\"")
-
-target_compile_features("${${PROJECT_NAME}_BUILD_TARGET_NAME}"
-	PUBLIC
-		"$<BUILD_INTERFACE:cxx_std_${CMAKE_CXX_STANDARD}>"
-)
-target_compile_definitions("${${PROJECT_NAME}_BUILD_TARGET_NAME}"
-	PUBLIC
-		"$<BUILD_INTERFACE:${${PROJECT_NAME}_COMPILE_DEFINITIONS}>"
-)
-target_compile_options("${${PROJECT_NAME}_BUILD_TARGET_NAME}"
-	PUBLIC
-		"$<BUILD_INTERFACE:>"
-)
-target_sources("${${PROJECT_NAME}_BUILD_TARGET_NAME}"
-	PUBLIC
-		"$<BUILD_INTERFACE:${${PROJECT_NAME}_HEADER_PUBLIC_FILES}>"
-)
-if(${PROJECT_NAME}_PRECOMPILED_HEADER_FILE)
-	target_precompile_headers("${${PROJECT_NAME}_BUILD_TARGET_NAME}"
-		PUBLIC
-			"$<BUILD_INTERFACE:${${PROJECT_NAME}_PRECOMPILED_HEADER_FILE}>"
-	)
-endif()
-target_include_directories("${${PROJECT_NAME}_BUILD_TARGET_NAME}"
-	PUBLIC
-		# For consummer within the build.
-		"$<BUILD_INTERFACE:${${PROJECT_NAME}_HEADER_PUBLIC_DIR}>"
-)
-target_link_libraries("${${PROJECT_NAME}_BUILD_TARGET_NAME}"
-	PUBLIC
-		"$<BUILD_INTERFACE:${${PROJECT_NAME}_LIBRARY_FILES}>"
-)
-
-# Generate the export script `Targets.cmake` for importing the build tree,
-set(${PROJECT_NAME}_EXPORT_NAME               "${PROJECT_NAME}Targets")
-string_manip(TRANSFORM ${PROJECT_NAME}_EXPORT_NAME START_CASE)
-set(${PROJECT_NAME}_EXPORT_NAMESPACE          "${PARAM_EXPORT_NAMESPACE}")
-set(${PROJECT_NAME}_EXPORT_CONFIG_FILE_NAME   "${${PROJECT_NAME}_EXPORT_NAME}.cmake")
-
-export(TARGETS "${${PROJECT_NAME}_BUILD_TARGET_NAME}"
-	FILE "${${PROJECT_NAME}_BUILD_DIR}/${${PROJECT_NAME}_EXPORT_CONFIG_FILE_NAME}"
-	NAMESPACE "${${PROJECT_NAME}_EXPORT_NAMESPACE}::"
-)
-file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_DIR}" "${${PROJECT_NAME}_BUILD_DIR}/${${PROJECT_NAME}_EXPORT_CONFIG_FILE_NAME}")
-message(STATUS "Export script for the build tree generated: ${relative_path}")
-list(POP_BACK CMAKE_MESSAGE_INDENT)
-message(STATUS "The target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\" of the build tree is now importable")
-
-
-#---- Exporting from an Install Tree. ----
-# See: https://gitlab.kitware.com/cmake/community/-/wikis/doc/tutorials/Exporting-and-Importing-Targets.
-# See: https://cmake.org/cmake/help/latest/command/export.html
-# See: https://cmake.org/cmake/help/latest/guide/importing-exporting/#exporting-targets-from-the-build-tree
-message("")
-message(STATUS "Export the target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\" from the install tree")
-list(APPEND CMAKE_MESSAGE_INDENT "  ")
+#---- Add usage requirements. ----
 
 # Set output directories and names.
 if(DEFINED PARAM_INSTALL_DIRECTORY AND IS_DIRECTORY "${PARAM_INSTALL_DIRECTORY}")
@@ -84,6 +20,8 @@ if(DEFINED PARAM_INSTALL_DIRECTORY AND IS_DIRECTORY "${PARAM_INSTALL_DIRECTORY}"
 else()
 	message(STATUS "No install directory set or it doesn't exists. The default path \"${CMAKE_INSTALL_PREFIX}\" will be used")
 endif()
+file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_DIR}" "${${PROJECT_NAME}_BUILD_DIR}/cmake_install.cmake")
+message(STATUS "Install script will be generated in \"${relative_path}\"")
 include(GNUInstallDirs)
 set(${PROJECT_NAME}_INSTALL_ASSETS_DIR             "${CMAKE_INSTALL_FULL_DATAROOTDIR}/${PROJECT_NAME}")         # <CMAKE_INSTALL_PREFIX>/share/<project-name>
 set(${PROJECT_NAME}_INSTALL_BIN_DIR                "${CMAKE_INSTALL_FULL_BINDIR}")                              # <CMAKE_INSTALL_PREFIX>/bin
@@ -121,53 +59,94 @@ file_manip(ABSOLUTE_PATH ${PROJECT_NAME}_INSTALL_PRECOMPILED_HEADER_FILE
 )
 
 # Create a list of library files for INSTALL_INTERFACE of `target_link_libraries()`.
-set(${PROJECT_NAME}_INSTALL_LIBRARY_FILES "")
-file_manip(GET_COMPONENT ${${PROJECT_NAME}_LIBRARY_FILES}
-	MODE NAME
-	OUTPUT_VARIABLE ${PROJECT_NAME}_INSTALL_LIBRARY_FILES
+set(${PROJECT_NAME}_INSTALL_LIBRARY_FILES "${${PROJECT_NAME}_LIBRARY_FILES}")
+file_manip(STRIP_PATH ${PROJECT_NAME}_INSTALL_LIBRARY_FILES
+	BASE_DIR "${${PROJECT_NAME}_LIB_DIR}"
 )
 file_manip(ABSOLUTE_PATH ${PROJECT_NAME}_INSTALL_LIBRARY_FILES
 	BASE_DIR "${${PROJECT_NAME}_INSTALL_LIBRARY_DIR}"
 )
 
-# Add usage requirements for the intall tree to the build target.
-message(STATUS "Add usage requirements for the install tree (INSTALL_INTERFACE) to the target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\"")
+# Add usage requirements to the build target for an import from the build tree (BUILD_INTERFACE) or install tree (INSTALL_INTERFACE).
+message(STATUS "Add usage requirements to the target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\" for importing")
+
 target_compile_features("${${PROJECT_NAME}_BUILD_TARGET_NAME}"
 	PUBLIC
+		"$<BUILD_INTERFACE:cxx_std_${CMAKE_CXX_STANDARD}>"
 		"$<INSTALL_INTERFACE:cxx_std_${CMAKE_CXX_STANDARD}>"
 )
 target_compile_definitions("${${PROJECT_NAME}_BUILD_TARGET_NAME}"
 	PUBLIC
+		"$<BUILD_INTERFACE:${${PROJECT_NAME}_COMPILE_DEFINITIONS}>"
 		"$<INSTALL_INTERFACE:${${PROJECT_NAME}_COMPILE_DEFINITIONS}>"
 )
 target_compile_options("${${PROJECT_NAME}_BUILD_TARGET_NAME}"
 	PUBLIC
+		"$<BUILD_INTERFACE:>"
 		"$<INSTALL_INTERFACE:>"
 )
 target_sources("${${PROJECT_NAME}_BUILD_TARGET_NAME}"
 	PUBLIC
-		"$<INSTALL_INTERFACE:${${PROJECT_NAME}_INSTALL_HEADER_RELATIVE_FILES}>"
+		"$<BUILD_INTERFACE:${${PROJECT_NAME}_HEADER_PUBLIC_FILES}>"
+		"$<INSTALL_INTERFACE:${${PROJECT_NAME}_INSTALL_HEADER_FILES}>"
 )
 if(${PROJECT_NAME}_PRECOMPILED_HEADER_FILE)
 	target_precompile_headers("${${PROJECT_NAME}_BUILD_TARGET_NAME}"
 		PUBLIC
+			"$<BUILD_INTERFACE:${${PROJECT_NAME}_PRECOMPILED_HEADER_FILE}>"
 			"$<INSTALL_INTERFACE:${${PROJECT_NAME}_INSTALL_PRECOMPILED_HEADER_FILE}>"
 	)
 endif()
 target_include_directories("${${PROJECT_NAME}_BUILD_TARGET_NAME}"
 	PUBLIC
+		# For consummer within the build.
+		"$<BUILD_INTERFACE:${${PROJECT_NAME}_HEADER_PUBLIC_DIR}>"
 		# For consummer outside the build who import the target after installation.
 		"$<INSTALL_INTERFACE:${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}>"
 )
 target_link_libraries("${${PROJECT_NAME}_BUILD_TARGET_NAME}"
 	PUBLIC
+		"$<BUILD_INTERFACE:${${PROJECT_NAME}_LIBRARY_FILES}>"
 		"$<INSTALL_INTERFACE:${${PROJECT_NAME}_INSTALL_LIBRARY_FILES}>"
 )
+
+
+#---- Exporting from a Build Tree. ----
+# See: https://gitlab.kitware.com/cmake/community/-/wikis/doc/tutorials/Exporting-and-Importing-Targets.
+# See: https://cmake.org/cmake/help/latest/command/export.html
+# See: https://cmake.org/cmake/help/latest/guide/importing-exporting/#exporting-targets-from-the-build-tree
+message("")
+message(STATUS "Export the target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\" from the build tree")
+list(APPEND CMAKE_MESSAGE_INDENT "  ")
+
+# Generate the export script `Targets.cmake` for importing the build target coming from the build tree,
+set(${PROJECT_NAME}_EXPORT_NAME               "${PROJECT_NAME}Targets")
+string_manip(TRANSFORM ${PROJECT_NAME}_EXPORT_NAME START_CASE)
+set(${PROJECT_NAME}_EXPORT_NAMESPACE          "${PARAM_EXPORT_NAMESPACE}")
+set(${PROJECT_NAME}_EXPORT_CONFIG_FILE_NAME   "${${PROJECT_NAME}_EXPORT_NAME}.cmake")
+set_target_properties("${${PROJECT_NAME}_BUILD_TARGET_NAME}" PROPERTIES EXPORT_NAME "${${PROJECT_NAME}_EXPORT_NAME}")
+
+export(TARGETS "${${PROJECT_NAME}_BUILD_TARGET_NAME}"
+	FILE "${${PROJECT_NAME}_BUILD_DIR}/${${PROJECT_NAME}_EXPORT_CONFIG_FILE_NAME}"
+	NAMESPACE "${${PROJECT_NAME}_EXPORT_NAMESPACE}::"
+)
+file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_DIR}" "${${PROJECT_NAME}_BUILD_DIR}/${${PROJECT_NAME}_EXPORT_CONFIG_FILE_NAME}")
+message(STATUS "Export script for the build tree generated: ${relative_path}")
+list(POP_BACK CMAKE_MESSAGE_INDENT)
+message(STATUS "The target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\" of the build tree is now importable")
+
+
+#---- Exporting from an Install Tree. ----
+# See: https://gitlab.kitware.com/cmake/community/-/wikis/doc/tutorials/Exporting-and-Importing-Targets.
+# See: https://cmake.org/cmake/help/latest/command/install.html#installing-exports
+# See: https://cmake.org/cmake/help/latest/guide/importing-exporting/#exporting-targets
+message("")
+message(STATUS "Export the target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\" from the install tree")
+list(APPEND CMAKE_MESSAGE_INDENT "  ")
 
 # Generate the install tree and the install rules.
 message(STATUS "Generate the install tree and the install rules")
 
-set_target_properties ("${${PROJECT_NAME}_BUILD_TARGET_NAME}" PROPERTIES EXPORT_NAME "${${PROJECT_NAME}_EXPORT_NAME}")
 # Rule for assets in `assets/`.
 install(DIRECTORY "${${PROJECT_NAME}_ASSETS_DIR}"
 	DESTINATION "${${PROJECT_NAME}_INSTALL_ASSETS_DIR}"
@@ -208,7 +187,7 @@ install(FILES ${${PROJECT_NAME}_LIBRARY_FILES}
 install(DIRECTORY "${${PROJECT_NAME}_RESOURCES_DIR}"
 	DESTINATION "${${PROJECT_NAME}_INSTALL_RESOURCES_DIR}"
 )
-# Generate the export script `Targets.cmake` for importing the install tree, and its install rule.
+# Generate the export script `Targets.cmake` for importing the build target coming from the install tree, and its install rule.
 install(EXPORT "${${PROJECT_NAME}_EXPORT_NAME}"
 	NAMESPACE "${${PROJECT_NAME}_EXPORT_NAMESPACE}::"
 	DESTINATION "${${PROJECT_NAME}_INSTALL_CMAKE_DIR}"
@@ -224,6 +203,7 @@ message(STATUS "The target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\" of the insta
 # See https://cmake.org/cmake/help/latest/module/CMakePackageConfigHelpers.html
 # See https://cmake.org/cmake/help/latest/guide/importing-exporting/#creating-a-package-configuration-file
 # See https://cmake.org/cmake/help/latest/command/find_package.html#full-signature-and-config-mode
+# See https://cmake.org/cmake/help/latest/manual/cmake-packages.7.html
 message("")
 message(STATUS "Make the target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\" foundable with the find_package() command")
 list(APPEND CMAKE_MESSAGE_INDENT "  ")
