@@ -8,6 +8,7 @@
 # -------------
 # See README file in the root directory of this source tree.
 
+cmake_minimum_required (VERSION 3.16)
 include(CMakeFindDependencyMacro)
 
 @PACKAGE_INIT@
