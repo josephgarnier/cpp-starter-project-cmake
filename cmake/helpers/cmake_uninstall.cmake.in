@@ -9,18 +9,21 @@
 # See README file in the root directory of this source tree.
 
 # Inspired from: https://gitlab.kitware.com/cmake/community/wikis/FAQ#can-i-do-make-uninstall-with-cmake
+cmake_minimum_required (VERSION 3.16)
 
 if(NOT EXISTS "@LOCAL_BUILD_DIR@/install_manifest.txt")
 	message(FATAL_ERROR "Cannot find install manifest: @LOCAL_BUILD_DIR@/install_manifest.txt")
 endif()
 
-file(READ "@LOCAL_BUILD_DIR@/install_manifest.txt" files)
-string(REGEX REPLACE "\n" ";" files "${files}")
-foreach(file IN ITEMS ${files})
-	message(STATUS "Uninstall \"${file}\"")
+file(READ "@LOCAL_BUILD_DIR@/install_manifest.txt" installed_files)
+string(REGEX REPLACE "\n" ";" installed_files "${installed_files}")
+list(SORT installed_files)
+
+foreach(file IN ITEMS ${installed_files})
+	message(STATUS "Uninstalling \"${file}\"")
 	if(EXISTS "${file}")
 		execute_process(COMMAND
-			"@CMAKE_COMMAND@" -E remove "${file}"
+			"@CMAKE_COMMAND@" -E rm "${file}"
 			OUTPUT_VARIABLE rm_out
 			RESULT_VARIABLE rm_retval
 		)
@@ -28,28 +31,46 @@ foreach(file IN ITEMS ${files})
 			message(FATAL_ERROR "Problem when removing \"${file}\": ${rm_out}")
 		endif()
 	else()
-		message(STATUS "File \"${file}\" does not exist.")
+		message(STATUS "File \"${file}\" does not exist!")
 	endif()
-	
-	# Remove sub folders in /include and in /lib
-	get_filename_component(path "${file}" DIRECTORY)
-	file(GLOB contents RELATIVE "${path}" "${path}/*" )
-	while((("${path}" MATCHES ".*@LOCAL_INSTALL_INCLUDE_DIR@.*")
-		OR ("${path}" MATCHES ".*@LOCAL_INSTALL_LIBRARY_DIR@.*"))
-		AND (NOT contents))
-			message(STATUS "Removing empty directory \"${path}\"")
-			execute_process(COMMAND
-				"@CMAKE_COMMAND@" -E remove_directory "${path}"
-				OUTPUT_VARIABLE rm_out
-				RESULT_VARIABLE rm_retval
-			)
-			if(${rm_retval} EQUAL 0)
-				get_filename_component(path "${path}" DIRECTORY)
-				file(GLOB contents RELATIVE "${path}" "${path}/*" )
-			else()
-				message(FATAL_ERROR "Problem when removing \"${path}\"")
-			endif()
-	endwhile()
 endforeach()
 
-message(STATUS "Project uninstalled")
+# Using of a Depth-first search algorithm to get all directories in:
+#    - INSTALL_DATAROOT_DIR: `<CMAKE_INSTALL_PREFIX>/share/<project-name>`, 
+#    - INSTALL_DOC_DIR: `<CMAKE_INSTALL_PREFIX>/share/doc/<project-name>`
+#    - INSTALL_INCLUDE_DIR: `<CMAKE_INSTALL_PREFIX>/include/<project-name>`
+#    - INSTALL_LIBRARY_DIR: `<CMAKE_INSTALL_PREFIX>/lib/<project-name>`
+set(stack "")
+set(visited "")
+list(APPEND stack "@LOCAL_INSTALL_DATAROOT_DIR@" "@LOCAL_INSTALL_DOC_DIR@" "@LOCAL_INSTALL_INCLUDE_DIR@" "@LOCAL_INSTALL_LIBRARY_DIR@")
+while(stack)
+	list(POP_BACK stack directory)
+	if(NOT "${directory}" IN_LIST visited)
+		list(APPEND visited "${directory}")
+		file(GLOB subdirectories LIST_DIRECTORIES on "${directory}/*")
+		foreach(children IN ITEMS ${subdirectories})
+			list(APPEND stack "${children}")
+		endforeach()
+	endif()
+endwhile()
+
+# Remove previously found directories
+list(REVERSE visited)
+foreach(directory IN ITEMS ${visited})
+	message(STATUS "Removing directory \"${directory}\"")
+	if(EXISTS "${directory}")
+		execute_process(COMMAND
+			"@CMAKE_COMMAND@" -E rm -r "${directory}"
+			OUTPUT_VARIABLE rm_out
+			RESULT_VARIABLE rm_retval
+		)
+		if(NOT ${rm_retval} EQUAL 0)
+			message(FATAL_ERROR "Problem when removing \"${directory}\": ${rm_out}")
+		endif()
+	else()
+		message(STATUS "Directory \"${directory}\" does not exist!")
+	endif()
+endforeach()
+
+message("")
+message("Project successfully uninstalled!")

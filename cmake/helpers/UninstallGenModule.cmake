@@ -16,6 +16,8 @@ if(NOT TARGET uninstall)
 	# Add uninstall rules.
 	message(STATUS "Generate the uninstall rules")
 	set(LOCAL_BUILD_DIR "${${PROJECT_NAME}_BUILD_DIR}")
+	set(LOCAL_INSTALL_DATAROOT_DIR "${${PROJECT_NAME}_INSTALL_DATAROOT_DIR}")
+	set(LOCAL_INSTALL_DOC_DIR "${${PROJECT_NAME}_INSTALL_DOC_DIR}")
 	set(LOCAL_INSTALL_INCLUDE_DIR "${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}")
 	set(LOCAL_INSTALL_LIBRARY_DIR "${${PROJECT_NAME}_INSTALL_LIBRARY_DIR}")
 	configure_file(
@@ -24,12 +26,14 @@ if(NOT TARGET uninstall)
 		@ONLY
 	)
 	unset(LOCAL_BUILD_DIR)
+	unset(LOCAL_INSTALL_DATAROOT_DIR)
+	unset(LOCAL_INSTALL_DOC_DIR)
 	unset(LOCAL_INSTALL_INCLUDE_DIR)
 	unset(LOCAL_INSTALL_LIBRARY_DIR)
 	file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_DIR}" "${${PROJECT_NAME}_UNINSTALL_SCRIPT_FILE}")
 	message(STATUS "Uninstall script generated: ${relative_path}")
 	
-	# Add `make uninstall` command.
+	# Add `cmake --build build/ --target uninstall` command.
 	message(STATUS "Add the uninstall command")
 	add_custom_target(uninstall
 		COMMAND ${CMAKE_COMMAND} -P "${${PROJECT_NAME}_UNINSTALL_SCRIPT_FILE}"
