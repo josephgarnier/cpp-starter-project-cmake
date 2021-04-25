@@ -23,15 +23,11 @@ endif()
 file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_DIR}" "${${PROJECT_NAME}_BUILD_DIR}/cmake_install.cmake")
 message(STATUS "Install script will be generated in \"${relative_path}\"")
 include(GNUInstallDirs)
-set(${PROJECT_NAME}_INSTALL_ASSETS_DIR             "${CMAKE_INSTALL_FULL_DATAROOTDIR}/${PROJECT_NAME}")         # <CMAKE_INSTALL_PREFIX>/share/<project-name>
 set(${PROJECT_NAME}_INSTALL_BIN_DIR                "${CMAKE_INSTALL_FULL_BINDIR}")                              # <CMAKE_INSTALL_PREFIX>/bin
-set(${PROJECT_NAME}_INSTALL_CMAKE_DIR              "${CMAKE_INSTALL_FULL_DATAROOTDIR}/${PROJECT_NAME}/cmake")   # <CMAKE_INSTALL_PREFIX>/share/<project-name>/cmake
-set(${PROJECT_NAME}_INSTALL_CONFIG_DIR             "${CMAKE_INSTALL_FULL_DATAROOTDIR}/${PROJECT_NAME}")         # <CMAKE_INSTALL_PREFIX>/share/<project-name>
+set(${PROJECT_NAME}_INSTALL_DATAROOT_DIR           "${CMAKE_INSTALL_FULL_DATAROOTDIR}/${PROJECT_NAME}")         # <CMAKE_INSTALL_PREFIX>/share/<project-name>
 set(${PROJECT_NAME}_INSTALL_DOC_DIR                "${CMAKE_INSTALL_FULL_DOCDIR}")                              # <CMAKE_INSTALL_PREFIX>/share/doc/<project-name>
 set(${PROJECT_NAME}_INSTALL_INCLUDE_DIR            "${CMAKE_INSTALL_FULL_INCLUDEDIR}/${PROJECT_NAME}")          # <CMAKE_INSTALL_PREFIX>/include/<project-name>
-set(${PROJECT_NAME}_INSTALL_RELATIVE_INCLUDE_DIR   "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}")               # include/<project-name>
 set(${PROJECT_NAME}_INSTALL_LIBRARY_DIR            "${CMAKE_INSTALL_FULL_LIBDIR}/${PROJECT_NAME}")              # <CMAKE_INSTALL_PREFIX>/lib/<project-name>
-set(${PROJECT_NAME}_INSTALL_RESOURCES_DIR          "${CMAKE_INSTALL_FULL_DATAROOTDIR}/${PROJECT_NAME}")         # <CMAKE_INSTALL_PREFIX>/share/<project-name>
 
 # Set the RPATH, see https://gitlab.kitware.com/cmake/community/-/wikis/doc/cmake/RPATH-handling
 set(CMAKE_SKIP_BUILD_RPATH              off) # Include RPATHs in the build tree.
@@ -149,7 +145,7 @@ message(STATUS "Generate the install tree and the install rules")
 
 # Rule for assets in `assets/`.
 install(DIRECTORY "${${PROJECT_NAME}_ASSETS_DIR}"
-	DESTINATION "${${PROJECT_NAME}_INSTALL_ASSETS_DIR}"
+	DESTINATION "${${PROJECT_NAME}_INSTALL_DATAROOT_DIR}"
 )
 # Rule for the binary in `bin/`
 install(TARGETS "${${PROJECT_NAME}_BUILD_TARGET_NAME}"
@@ -161,7 +157,7 @@ install(TARGETS "${${PROJECT_NAME}_BUILD_TARGET_NAME}"
 )
 # Rule for config in `config/`.
 install(DIRECTORY "${${PROJECT_NAME}_CONFIG_DIR}"
-	DESTINATION "${${PROJECT_NAME}_INSTALL_CONFIG_DIR}"
+	DESTINATION "${${PROJECT_NAME}_INSTALL_DATAROOT_DIR}"
 )
 # Rule for doc in `doc/`.
 install(DIRECTORY "${${PROJECT_NAME}_DOC_DIR}/"
@@ -185,15 +181,15 @@ install(FILES ${${PROJECT_NAME}_LIBRARY_FILES}
 )
 # Rule for externals resources in `resources/`.
 install(DIRECTORY "${${PROJECT_NAME}_RESOURCES_DIR}"
-	DESTINATION "${${PROJECT_NAME}_INSTALL_RESOURCES_DIR}"
+	DESTINATION "${${PROJECT_NAME}_INSTALL_DATAROOT_DIR}"
 )
 # Generate the export script `Targets.cmake` for importing the build target coming from the install tree, and its install rule.
 install(EXPORT "${${PROJECT_NAME}_EXPORT_NAME}"
 	NAMESPACE "${${PROJECT_NAME}_EXPORT_NAMESPACE}::"
-	DESTINATION "${${PROJECT_NAME}_INSTALL_CMAKE_DIR}"
+	DESTINATION "${${PROJECT_NAME}_INSTALL_DATAROOT_DIR}/cmake"
 	FILE "${${PROJECT_NAME}_EXPORT_CONFIG_FILE_NAME}"
 )
-file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_DIR}" "${${PROJECT_NAME}_BUILD_DIR}/CMakeFiles/Export${${PROJECT_NAME}_INSTALL_CMAKE_DIR}/${${PROJECT_NAME}_EXPORT_CONFIG_FILE_NAME}")
+file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_DIR}" "${${PROJECT_NAME}_BUILD_DIR}/CMakeFiles/Export${${PROJECT_NAME}_INSTALL_DATAROOT_DIR}/cmake/${${PROJECT_NAME}_EXPORT_CONFIG_FILE_NAME}")
 message(STATUS "Export script for the install tree generated: ${relative_path}")
 list(POP_BACK CMAKE_MESSAGE_INDENT)
 message(STATUS "The target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\" of the install tree is now importable")
@@ -222,7 +218,7 @@ set(LOCAL_EXPORT_CONFIG_FILE_NAME   "${${PROJECT_NAME}_EXPORT_CONFIG_FILE_NAME}"
 configure_package_config_file(
 	"${${PROJECT_NAME}_PACKAGE_TEMPLATE_CONFIG_FILE}"
 	"${${PROJECT_NAME}_PACKAGE_CONFIG_FILE}"
-	INSTALL_DESTINATION "${${PROJECT_NAME}_INSTALL_CMAKE_DIR}"
+	INSTALL_DESTINATION "${${PROJECT_NAME}_INSTALL_DATAROOT_DIR}/cmake"
 	INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}"
 )
 unset(LOCAL_BUILD_TARGET_NAME)
@@ -250,7 +246,7 @@ message(STATUS "Generate the install rules for config-file and version-file")
 install(FILES
 	"${${PROJECT_NAME}_PACKAGE_CONFIG_FILE}"
 	"${${PROJECT_NAME}_PACKAGE_VERSION_FILE}"
-	DESTINATION "${${PROJECT_NAME}_INSTALL_CMAKE_DIR}"
+	DESTINATION "${${PROJECT_NAME}_INSTALL_DATAROOT_DIR}/cmake"
 )
 list(POP_BACK CMAKE_MESSAGE_INDENT)
 message(STATUS "The target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\" can now be imported with the find_package() command")
