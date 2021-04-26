@@ -240,7 +240,7 @@ message(STATUS "Export version-file generated: ${relative_path}")
 message(STATUS "Store the build directory in the user package registry")
 export(PACKAGE "${${PROJECT_NAME}_PACKAGE_NAME}")
 
-# Install the config-file and the config-version-file in cmake directory.
+# Install the config-file and the version-file in cmake directory.
 message(STATUS "Generate the install rules for config-file and version-file")
 install(FILES
 	"${${PROJECT_NAME}_PACKAGE_CONFIG_FILE}"
