@@ -390,6 +390,18 @@ target_include_directories("${${PROJECT_NAME}_BUILD_TARGET_NAME}"
 
 
 #------------------------------------------------------------------------------
+# 5. Generate the `doc` phase
+#------------------------------------------------------------------------------
+if(${PARAM_ENABLE_DOC_MODULE})
+	message("")
+	message("")
+	message("== 5. Execution of the \"Doc\" generator module ==")
+	include(DocGenModule)
+endif()
+
+
+
+#------------------------------------------------------------------------------
 # 6. Generate the `install` phase
 #------------------------------------------------------------------------------
 if(${PARAM_ENABLE_EXPORT_MODULE})
