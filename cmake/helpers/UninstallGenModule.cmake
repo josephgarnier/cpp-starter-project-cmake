@@ -8,11 +8,12 @@
 # -------------
 # See README file in the root directory of this source tree.
 
-set(${PROJECT_NAME}_UNINSTALL_TEMPLATE_SCRIPT_FILE  "${${PROJECT_NAME}_CMAKE_HELPERS_DIR}/cmake_uninstall.cmake.in")
-set(${PROJECT_NAME}_UNINSTALL_SCRIPT_FILE           "${${PROJECT_NAME}_BUILD_DIR}/cmake_uninstall.cmake")
-
 # Add the target (or command) onyl if it doesn't exist.
 if(NOT TARGET uninstall)
+	# Set output files, directories and names.
+	set(${PROJECT_NAME}_UNINSTALL_TEMPLATE_SCRIPT_FILE  "${${PROJECT_NAME}_CMAKE_HELPERS_DIR}/cmake_uninstall.cmake.in")
+	set(${PROJECT_NAME}_UNINSTALL_SCRIPT_FILE           "${${PROJECT_NAME}_BUILD_DIR}/cmake_uninstall.cmake")
+	
 	# Add uninstall rules.
 	message(STATUS "Generate the uninstall rules")
 	set(LOCAL_BUILD_DIR "${${PROJECT_NAME}_BUILD_DIR}")
@@ -37,6 +38,9 @@ if(NOT TARGET uninstall)
 	message(STATUS "Add the uninstall command")
 	add_custom_target(uninstall
 		COMMAND ${CMAKE_COMMAND} -P "${${PROJECT_NAME}_UNINSTALL_SCRIPT_FILE}"
+		WORKING_DIRECTORY "${${PROJECT_NAME}_BUILD_DIR}"
+		COMMENT "Uninstall the project..."
+		VERBATIM
 	)
 
 	# Add uninstall target in a folder for IDE project generation.
