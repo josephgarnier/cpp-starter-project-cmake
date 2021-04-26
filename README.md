@@ -184,7 +184,7 @@ Moreover, it is in this file, after the message *Import and link external librar
 <details>
 <summary>Link Qt</summary>
 
-```bash
+```cmake
 #------------------------------------------------------
 # Import and link external libraries from here.
 #------------------------------------------------------
@@ -329,22 +329,22 @@ endif()
 <details>
 <summary>Link Eigen3</summary>
 
-```bash
+```cmake
 #------------------------------------------------------
 # Link external libraries from here.
 #------------------------------------------------------
 message("** Include Eigen3 **")
 if(DEFINED ENV{Eigen3_DIR}) 
-	set(Eigen3_DIR "$ENV{Eigen3_DIR}")
+  set(Eigen3_DIR "$ENV{Eigen3_DIR}")
 else()
-	set(Eigen3_DIR "D:/library/eigen-3.3.7/bin/share/eigen3/cmake")
+  set(Eigen3_DIR "D:/library/eigen-3.3.7/bin/share/eigen3/cmake")
 endif()
 find_package(Eigen3 REQUIRED NO_MODULE)
 
 target_link_libraries("${${PROJECT_NAME}_TARGET_NAME}"
- 	PUBLIC
- 		"$<BUILD_INTERFACE:Eigen3::Eigen>"
- 		"$<INSTALL_INTERFACE:Eigen3::Eigen>"
+  PUBLIC
+    "$<BUILD_INTERFACE:Eigen3::Eigen>"
+    "$<INSTALL_INTERFACE:Eigen3::Eigen>"
 )
 ```
 
@@ -405,9 +405,9 @@ The configuration of this export mechanism has been greatly [simplified by CMake
 # Declare here all requirements upstream dependencies.
 #------------------------------------------------------
 if(DEFINED ENV{Qt5_DIR}) 
-	set(Qt5_DIR "$ENV{Qt5_DIR}")
+  set(Qt5_DIR "$ENV{Qt5_DIR}")
 else()
-	set(Qt5_DIR "/opt/Qt/5.12.6/gcc_64/lib/cmake/Qt5")
+  set(Qt5_DIR "/opt/Qt/5.12.6/gcc_64/lib/cmake/Qt5")
 endif()
 find_dependency(Qt5 COMPONENTS Widgets Gui Core Svg Concurrent REQUIRED)
 #------------------------------------------------------
@@ -425,9 +425,9 @@ find_dependency(Qt5 COMPONENTS Widgets Gui Core Svg Concurrent REQUIRED)
 # Declare here all requirements upstream dependencies.
 #------------------------------------------------------
 if(DEFINED ENV{Eigen3_DIR}) 
-	set(Eigen3_DIR "$ENV{Eigen3_DIR}")
+  set(Eigen3_DIR "$ENV{Eigen3_DIR}")
 else()
-	set(Eigen3_DIR "D:/library/eigen-3.3.7/bin/share/eigen3/cmake")
+  set(Eigen3_DIR "D:/library/eigen-3.3.7/bin/share/eigen3/cmake")
 endif()
 find_dependency(Eigen3 REQUIRED NO_MODULE)
 #------------------------------------------------------
