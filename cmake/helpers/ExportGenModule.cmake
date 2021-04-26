@@ -13,7 +13,7 @@ include(StringManip)
 
 #---- Add usage requirements. ----
 
-# Set output directories and names.
+# Set output files, directories and names.
 if(DEFINED PARAM_INSTALL_DIRECTORY AND IS_DIRECTORY "${PARAM_INSTALL_DIRECTORY}")
 	set(CMAKE_INSTALL_PREFIX "${PARAM_INSTALL_DIRECTORY}")
 	message(STATUS "Set the install directory to \"${CMAKE_INSTALL_PREFIX}\"")
@@ -206,14 +206,14 @@ list(APPEND CMAKE_MESSAGE_INDENT "  ")
 
 include(CMakePackageConfigHelpers)
 
-# Set output directories and names.
+# Set output files, directories and names.
 set(${PROJECT_NAME}_PACKAGE_NAME                   "${${PROJECT_NAME}_EXPORT_NAME}")
 set(${PROJECT_NAME}_PACKAGE_TEMPLATE_CONFIG_FILE   "${${PROJECT_NAME}_CMAKE_PROJECT_DIR}/ExportConfig.cmake.in")
 set(${PROJECT_NAME}_PACKAGE_CONFIG_FILE            "${${PROJECT_NAME}_BUILD_DIR}/${${PROJECT_NAME}_PACKAGE_NAME}Config.cmake")
 set(${PROJECT_NAME}_PACKAGE_VERSION_FILE           "${${PROJECT_NAME}_BUILD_DIR}/${${PROJECT_NAME}_PACKAGE_NAME}ConfigVersion.cmake")
 
 # Generate a package config-file.
-set(LOCAL_BUILD_TARGET_NAME               "${${PROJECT_NAME}_BUILD_TARGET_NAME}")
+set(LOCAL_BUILD_TARGET_NAME         "${${PROJECT_NAME}_BUILD_TARGET_NAME}")
 set(LOCAL_EXPORT_CONFIG_FILE_NAME   "${${PROJECT_NAME}_EXPORT_CONFIG_FILE_NAME}")
 configure_package_config_file(
 	"${${PROJECT_NAME}_PACKAGE_TEMPLATE_CONFIG_FILE}"
@@ -223,7 +223,6 @@ configure_package_config_file(
 )
 unset(LOCAL_BUILD_TARGET_NAME)
 unset(LOCAL_EXPORT_CONFIG_FILE_NAME)
-
 file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_DIR}" "${${PROJECT_NAME}_PACKAGE_CONFIG_FILE}")
 message(STATUS "Export config-file generated: ${relative_path}")
 

@@ -2,7 +2,7 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"label": "Clean Build LifeCycle",
+			"label": "Clean Build Lifecycle",
 			"type": "shell",
 			"options": {
 				"cwd": "${workspaceFolder}"
@@ -22,7 +22,7 @@
 			"problemMatcher": []
 		},
 		{
-			"label": "Generate Build LifeCycle",
+			"label": "Generate Build Lifecycle",
 			"type": "shell",
 			"options": {
 				"cwd": "${workspaceFolder}"
@@ -42,7 +42,7 @@
 			"problemMatcher": []
 		},
 		{
-			"label": "Generate Build LifeCycle with Clean Build LifeCycle ",
+			"label": "Generate Build Lifecycle with Clean Build Lifecycle",
 			"type": "shell",
 			"options": {
 				"cwd": "${workspaceFolder}"
@@ -185,7 +185,7 @@
 			"options": {
 				"cwd": "${workspaceFolder}/build"
 			},
-			"command": "cmake --build . --target docs",
+			"command": "cmake --build . --target doc",
 			"presentation": {
 				"reveal": "always",
 				"panel": "dedicated",
