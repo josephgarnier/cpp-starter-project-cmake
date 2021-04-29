@@ -111,7 +111,7 @@ macro(file_manip_relative_path)
 	set(relative_path_list "")
 	foreach(file IN ITEMS ${${FM_RELATIVE_PATH}})
 		file(RELATIVE_PATH relative_path "${FM_BASE_DIR}" "${file}")
-		list(APPEND relative_path_list ${relative_path})
+		list(APPEND relative_path_list "${relative_path}")
 	endforeach()
 	
 	if(NOT DEFINED FM_OUTPUT_VARIABLE)
