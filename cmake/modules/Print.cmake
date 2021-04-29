@@ -44,8 +44,8 @@ Conversion specifier is one of:
 
   print([<mode>] PATHS <file_list>... [INDENT])
 
-Record each file ``<file_list>`` in the log after having computed their absolute
-path from ``PRINT_BASE_DIR``. The message is indented if INDENT is set. This
+Record each file ``<file_list>`` in the log after having computed their relative
+path to ``PRINT_BASE_DIR``. The message is indented if INDENT is set. This
 command is inspired by `message()` from CMake.
 The optional ``<mode>`` keyword determines the type of message like in CMake
 (see https://cmake.org/cmake/help/latest/command/message.html#general-messages).
@@ -131,31 +131,34 @@ endmacro()
 #------------------------------------------------------------------------------
 # Internal usage.
 macro(_substitute_directives)
-	set(formated_message "")
 	set(message_head "")
 	set(message_tail "${message}")
+	set(message_cursor "")
 	while(on)
-		# Extract the directive "@...@ "in traveling through the message managed as a queue.
+		# Extract the directive "@...@ "in traveling through the message parsed like
+		# a cursor moving on a ribbon (like on a Turing machine).
+		# `message_head` is what has already been parsed, `message_cursor` is what is
+		# currently parsed () and `message_tail` is what will be parsed.
 		string(FIND "${message_tail}" "@" pos_first)
 		if(pos_first EQUAL -1)
 			break()
 		endif()
-		string(SUBSTRING "${message_tail}" 0 ${pos_first} message_head)
+		string(SUBSTRING "${message_tail}" 0 ${pos_first} message_cursor)
 		math(EXPR pos_first "${pos_first}+1") # +1 because the first char @ is excluded.
 		string(SUBSTRING "${message_tail}" ${pos_first}+1 -1 message_tail)
-		string(APPEND formated_message "${message_head}")
+		string(APPEND message_head "${message_cursor}")
 		
 		string(FIND "${message_tail}" "@" pos_second)
 		if(pos_second EQUAL -1)
 			break()
 		endif()
-		string(SUBSTRING "${message_tail}" 0 ${pos_second} message_head)
+		string(SUBSTRING "${message_tail}" 0 ${pos_second} message_cursor)
 		math(EXPR pos_second "${pos_second}+1") # +1 because the second char @ is excluded.
 		string(SUBSTRING "${message_tail}" ${pos_second} -1 message_tail)
 		
 		
 		# Substitute the directive by its value
-		set(directive_to_substitute "@${message_head}@")
+		set(directive_to_substitute "@${message_cursor}@")
 		list(POP_FRONT message_arg_list message_arg)
 		if("${message_arg}" STREQUAL "")
 			message(FATAL_ERROR "Argument missing for directive \"${directive_to_substitute}\"!")
@@ -170,9 +173,10 @@ macro(_substitute_directives)
 		else()
 			message(FATAL_ERROR "Directive \"${directive_to_substitute}\" is unsupported!")
 		endif()
-		string(APPEND formated_message "${directive_to_substitute}")
+		set(message_cursor "${directive_to_substitute}")
 		
-		set(message "${formated_message}")
+		string(APPEND message_head "${message_cursor}")
+		set(message "${message_head}${message_tail}")
 	endwhile()
 endmacro()
 
@@ -197,11 +201,12 @@ macro(_print_paths)
 	endif()
 	
 	# Format the paths
-	set(formated_message "")
+	set(relative_path_list "")
 	foreach(file IN ITEMS ${PRT_PATHS})
 		file(RELATIVE_PATH relative_path "${PRINT_BASE_DIR}" "${file}")
-		string(APPEND formated_message "${relative_path} ; ")
+		list(APPEND relative_path_list "${relative_path}")
 	endforeach()
+	list(JOIN relative_path_list " ; " formated_message)
 	set(message "${formated_message}")
 
 	if(${PRT_INDENT})
