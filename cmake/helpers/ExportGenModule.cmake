@@ -20,8 +20,7 @@ if(DEFINED PARAM_INSTALL_DIRECTORY AND IS_DIRECTORY "${PARAM_INSTALL_DIRECTORY}"
 else()
 	message(STATUS "No install directory set or it doesn't exists. The default path \"${CMAKE_INSTALL_PREFIX}\" will be used")
 endif()
-file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_DIR}" "${${PROJECT_NAME}_BUILD_DIR}/cmake_install.cmake")
-message(STATUS "Install script will be generated in \"${relative_path}\"")
+print(STATUS "Install script will be generated in \"@rp@\"" "${${PROJECT_NAME}_BUILD_DIR}/cmake_install.cmake")
 include(GNUInstallDirs)
 set(${PROJECT_NAME}_INSTALL_BIN_DIR                "${CMAKE_INSTALL_FULL_BINDIR}")                              # <CMAKE_INSTALL_PREFIX>/bin
 set(${PROJECT_NAME}_INSTALL_DATAROOT_DIR           "${CMAKE_INSTALL_FULL_DATAROOTDIR}/${PROJECT_NAME}")         # <CMAKE_INSTALL_PREFIX>/share/<project-name>
@@ -126,8 +125,7 @@ export(TARGETS "${${PROJECT_NAME}_BUILD_TARGET_NAME}"
 	FILE "${${PROJECT_NAME}_BUILD_DIR}/${${PROJECT_NAME}_EXPORT_CONFIG_FILE_NAME}"
 	NAMESPACE "${${PROJECT_NAME}_EXPORT_NAMESPACE}::"
 )
-file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_DIR}" "${${PROJECT_NAME}_BUILD_DIR}/${${PROJECT_NAME}_EXPORT_CONFIG_FILE_NAME}")
-message(STATUS "Export script for the build tree generated: ${relative_path}")
+print(STATUS "Export script for the build tree generated: @rp@" "${${PROJECT_NAME}_BUILD_DIR}/${${PROJECT_NAME}_EXPORT_CONFIG_FILE_NAME}")
 list(POP_BACK CMAKE_MESSAGE_INDENT)
 message(STATUS "The target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\" of the build tree is now importable")
 
@@ -189,8 +187,7 @@ install(EXPORT "${${PROJECT_NAME}_EXPORT_NAME}"
 	DESTINATION "${${PROJECT_NAME}_INSTALL_DATAROOT_DIR}/cmake"
 	FILE "${${PROJECT_NAME}_EXPORT_CONFIG_FILE_NAME}"
 )
-file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_DIR}" "${${PROJECT_NAME}_BUILD_DIR}/CMakeFiles/Export${${PROJECT_NAME}_INSTALL_DATAROOT_DIR}/cmake/${${PROJECT_NAME}_EXPORT_CONFIG_FILE_NAME}")
-message(STATUS "Export script for the install tree generated: ${relative_path}")
+print(STATUS "Export script for the install tree generated: @rp@" "${${PROJECT_NAME}_BUILD_DIR}/CMakeFiles/Export${${PROJECT_NAME}_INSTALL_DATAROOT_DIR}/cmake/${${PROJECT_NAME}_EXPORT_CONFIG_FILE_NAME}")
 list(POP_BACK CMAKE_MESSAGE_INDENT)
 message(STATUS "The target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\" of the install tree is now importable")
 
@@ -223,8 +220,7 @@ configure_package_config_file(
 )
 unset(LOCAL_BUILD_TARGET_NAME)
 unset(LOCAL_EXPORT_CONFIG_FILE_NAME)
-file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_DIR}" "${${PROJECT_NAME}_PACKAGE_CONFIG_FILE}")
-message(STATUS "Export config-file generated: ${relative_path}")
+print(STATUS "Export config-file generated: @rp@" "${${PROJECT_NAME}_PACKAGE_CONFIG_FILE}")
 
 # Generate a package version-file.
 write_basic_package_version_file(
@@ -232,8 +228,7 @@ write_basic_package_version_file(
 	VERSION "${${PROJECT_NAME}_VERSION}"
 	COMPATIBILITY AnyNewerVersion
 )
-file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_DIR}" "${${PROJECT_NAME}_PACKAGE_VERSION_FILE}")
-message(STATUS "Export version-file generated: ${relative_path}")
+print(STATUS "Export version-file generated: @rp@" "${${PROJECT_NAME}_PACKAGE_VERSION_FILE}")
 
 # Store the current build directory in the CMake user package registry.
 # See https://cmake.org/cmake/help/latest/manual/cmake-packages.7.html#user-package-registry

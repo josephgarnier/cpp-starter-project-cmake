@@ -44,8 +44,7 @@ configure_file(
 	"${${PROJECT_NAME}_DOXYGEN_CONFIG_FILE}"
 	@ONLY
 )
-file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_DIR}" "${${PROJECT_NAME}_DOXYGEN_CONFIG_FILE}")
-message(STATUS "Doxygen config-file generated: ${relative_path}")
+print(STATUS "Doxygen config-file generated: @rp@" "${${PROJECT_NAME}_DOXYGEN_CONFIG_FILE}")
 
 # Add `cmake --build build/ --target doc` command.
 message(STATUS "Add the doc command")

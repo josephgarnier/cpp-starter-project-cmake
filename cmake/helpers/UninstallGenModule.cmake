@@ -31,8 +31,7 @@ if(NOT TARGET uninstall)
 	unset(LOCAL_INSTALL_DOC_DIR)
 	unset(LOCAL_INSTALL_INCLUDE_DIR)
 	unset(LOCAL_INSTALL_LIBRARY_DIR)
-	file(RELATIVE_PATH relative_path "${${PROJECT_NAME}_PROJECT_DIR}" "${${PROJECT_NAME}_UNINSTALL_SCRIPT_FILE}")
-	message(STATUS "Uninstall script generated: ${relative_path}")
+	print(STATUS "Uninstall script generated: @rp@" "${${PROJECT_NAME}_UNINSTALL_SCRIPT_FILE}")
 	
 	# Add `cmake --build build/ --target uninstall` command.
 	message(STATUS "Add the uninstall command")
