@@ -15,6 +15,7 @@ Synopsis
 .. parsed-literal::
 
     `print`_([<mode>] "message with format text" <argument_list>...)
+    `print`_([<mode>] PATHS <file_list>... INDENT)
 
 Usage
 ^^^^^
@@ -36,7 +37,18 @@ Conversion specifier is one of:
 ::
 
  @ap@ = The given path will be convert into an absolute path
- @rp@ = The given path will be convert into an relative path to project
+ @rp@ = The given path will be convert into an relative path to `PRINT_BASE_DIR`
+
+ .. _print:
+.. code-block:: cmake
+
+  print([<mode>] PATHS <file_list>... [INDENT])
+
+Record each file ``<file_list>`` in the log after having computed their absolute
+path from ``PRINT_BASE_DIR``. The message is indented if INDENT is set. This
+command is inspired by `message()` from CMake.
+The optional ``<mode>`` keyword determines the type of message like in CMake
+(see https://cmake.org/cmake/help/latest/command/message.html#general-messages).
 
 #]=======================================================================]
 cmake_minimum_required (VERSION 3.16)
@@ -47,44 +59,74 @@ set(PRINT_BASE_DIR "${CMAKE_SOURCE_DIR}")
 #------------------------------------------------------------------------------
 # Public function of this module.
 function(print)
-	set(options FATAL_ERROR SEND_ERROR WARNING AUTHOR_WARNING DEPRECATION NOTICE STATUS VERBOSE DEBUG TRACE)
+	set(options FATAL_ERROR SEND_ERROR WARNING AUTHOR_WARNING DEPRECATION NOTICE STATUS VERBOSE DEBUG TRACE INDENT)
 	set(one_value_args "")
-	set(multi_value_args "")
+	set(multi_value_args PATHS)
 	cmake_parse_arguments(PRT "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
 	
+	# Parse arguments. The macro `_print_message()` can't use the result of
+	# cmake_parse_arguments() because it has to parse each argument.
+	set(PRT_ARGV "")
+	set(PRT_ARGC ${ARGC})
+	set(PRT_ARGC_MAX_INDEX "")
+	math(EXPR PRT_ARGC_MAX_INDEX "${ARGC}-1") # need this variable because the max index is included in range of foreach.
+	foreach(arg_index RANGE ${PRT_ARGC_MAX_INDEX})
+		set(PRT_ARGV${arg_index} "${ARGV${arg_index}}")
+		list(APPEND PRT_ARGV "${ARGV${arg_index}}")
+	endforeach()
+
+	if((DEFINED PRT_PATHS) OR ("PATHS" IN_LIST PRT_KEYWORDS_MISSING_VALUES))
+		_print_paths()
+	else()
+		_print_message()
+	endif()
+endfunction()
+
+#------------------------------------------------------------------------------
+# Internal usage.
+macro(_print_message)
+	# Error when no arguments are given.
+	if(${PRT_ARGC} EQUAL 0)
+		message(FATAL_ERROR "Incorrect number of arguments!")
+	endif()
+	
+	# Warning: this macro doesn't have to loop on ARGV or ARGN because the message
+	# to print can contain a semi column character ";", which will be interpreted as
+	# a new argument, as an item separator. So, it is necessary to use PRT_ARGV#, PRT_ARGC_MAX and PRT_ARGC.
 	set(mode "")
 	set(message "")
 	set(message_arg_list "")
-	
-	# When no arguments are given: print("").
-	list(LENGTH ARGN arg_list_size)
-	if(${arg_list_size} EQUAL 0)
-		message("${message}")
-		return()
+	set(current_argv_index 0)
+
+	# If the first of PRT_ARGV (index 0) is a mode from "options", set the
+	# mode var and increment the current index of PRT_ARGV.
+	if("${PRT_ARGV${current_argv_index}}" IN_LIST options)
+		set(mode "${PRT_ARGV${current_argv_index}}")
+		math(EXPR current_argv_index "${current_argv_index}+1")
 	endif()
-	
-	# If the first of ARGN is a mode from "option", set the mode var and pop the first of ARGN.
-	list(GET ARGN 0 first_arg)
-	if("${first_arg}" IN_LIST options)
-		set(mode "${first_arg}")
-		list(POP_FRONT ARGN)
+
+	# Get the message.
+	if(${current_argv_index} LESS ${PRT_ARGC})
+		set(message "${PRT_ARGV${current_argv_index}}")
+		math(EXPR current_argv_index "${current_argv_index}+1")
 	endif()
-	
-	# Get the message and the argument list.
-	list(LENGTH ARGN arg_list_size)
-	if(${arg_list_size} GREATER 0)
-		list(POP_FRONT ARGN message)
-		set(message_arg_list "${ARGN}")
+
+	# Get the message arg list.
+	if(${current_argv_index} LESS ${PRT_ARGC})
+		foreach(argv_index RANGE ${current_argv_index} ${PRT_ARGC_MAX_INDEX})
+			list(APPEND message_arg_list "${PRT_ARGV${current_argv_index}}")
+			math(EXPR current_argv_index "${current_argv_index}+1")
+		endforeach()
 	endif()
-	
-	# If has got directives, they are substituted.
+
+	# If arguments to the message are given, the directives are substituted.
 	list(LENGTH message_arg_list message_arg_list_size)
 	if(${message_arg_list_size} GREATER 0)
 		_substitute_directives()
 	endif()
-	
+
 	message("${mode}" "${message}")
-endfunction()
+endmacro()
 
 #------------------------------------------------------------------------------
 # Internal usage.
@@ -132,4 +174,41 @@ macro(_substitute_directives)
 		
 		set(message "${formated_message}")
 	endwhile()
+endmacro()
+
+#------------------------------------------------------------------------------
+# Internal usage.
+macro(_print_paths)
+	if(DEFINED PRT_UNPARSED_ARGUMENTS)
+		message(FATAL_ERROR "Unrecognized arguments: \"${PRT_UNPARSED_ARGUMENTS}\"")
+	endif()
+	if((NOT DEFINED PRT_PATHS)
+		AND (NOT "PRT_PATHS" IN_LIST PRT_KEYWORDS_MISSING_VALUES))
+		message(FATAL_ERROR "PATHS arguments is missing")
+	endif()
+	
+	set(mode "")
+	set(message "")
+	
+	# If the first of PRT_ARGV (index 0) is a mode from "options", set the
+	# mode var.
+	if("${PRT_ARGV0}" IN_LIST options)
+		set(mode "${PRT_ARGV0}")
+	endif()
+	
+	# Format the paths
+	set(formated_message "")
+	foreach(file IN ITEMS ${PRT_PATHS})
+		file(RELATIVE_PATH relative_path "${PRINT_BASE_DIR}" "${file}")
+		string(APPEND formated_message "${relative_path} ; ")
+	endforeach()
+	set(message "${formated_message}")
+
+	if(${PRT_INDENT})
+		list(APPEND CMAKE_MESSAGE_INDENT "  ")
+	endif()
+	message("${mode}" "${message}")
+	if(${PRT_INDENT})
+		list(POP_BACK CMAKE_MESSAGE_INDENT)
+	endif()
 endmacro()
