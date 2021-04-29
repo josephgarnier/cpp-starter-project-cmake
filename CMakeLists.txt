@@ -143,6 +143,7 @@ message(STATUS "Checking project structure - done")
 #------------------------------------------------------------------------------
 # 2. Generate the `build` and `clean` phases
 #------------------------------------------------------------------------------
+include(Print)
 message("")
 message("")
 message("== 2. Execution of the Build Generator Module ==")
@@ -164,7 +165,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG     "${${PROJECT_NAME}_BIN_DIR}")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE   "${${PROJECT_NAME}_BIN_DIR}")
 set(CMAKE_STATIC_LIBRARY_PREFIX              "")
 set(CMAKE_SHARED_LIBRARY_PREFIX              "")
-message(STATUS "Binary will be built in: ${${PROJECT_NAME}_BIN_DIR}")
+print(STATUS "Binary will be built in: @rp@" "${${PROJECT_NAME}_BIN_DIR}")
 
 # Set the name of the system.
 set(SYSTEM_NAME "${CMAKE_SYSTEM_NAME}-${CMAKE_CXX_COMPILER_ID}-${CMAKE_SYSTEM_PROCESSOR}")
@@ -194,7 +195,7 @@ endif()
 message(STATUS "Targets will be build in \"${CMAKE_BUILD_TYPE}\" if a single-configuration generator is used")
 
 
-#---- Add the build targets. ----
+#---- Add the build target. ----
 message("")
 set(${PROJECT_NAME}_BUILD_TARGET_IS_STATIC   off)
 set(${PROJECT_NAME}_BUILD_TARGET_IS_SHARED   off)
@@ -272,7 +273,7 @@ endif()
 # endif()
 
 message(STATUS "Found the following source files:")
-message(STATUS "    ${${PROJECT_NAME}_SOURCE_SRC_FILES}")
+print(STATUS PATHS ${${PROJECT_NAME}_SOURCE_SRC_FILES} INDENT)
 
 # Check header files.
 if(NOT DEFINED ${PROJECT_NAME}_HEADER_SRC_FILES)
@@ -299,7 +300,7 @@ else()
 	message(STATUS "Mark the headers in \"src/\" as public and ignore those in \"include/\".")
 endif()
 message(STATUS "Found the following header files:")
-message(STATUS "    ${${PROJECT_NAME}_HEADER_PRIVATE_FILES};${${PROJECT_NAME}_HEADER_PUBLIC_FILES}")
+print(STATUS PATHS ${${PROJECT_NAME}_HEADER_PRIVATE_FILES};${${PROJECT_NAME}_HEADER_PUBLIC_FILES} INDENT)
 
 # Add source and header files to the build target.
 message(STATUS "Add the found source and header files to the target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\"")
@@ -328,7 +329,7 @@ elseif(${PROJECT_NAME}_PRECOMPILED_HEADER_FILE)
 		PRIVATE
 			"${${PROJECT_NAME}_PRECOMPILED_HEADER_FILE}"
 	)
-	message(STATUS "    ${${PROJECT_NAME}_PRECOMPILED_HEADER_FILE}")
+	print(STATUS PATHS ${${PROJECT_NAME}_PRECOMPILED_HEADER_FILE} INDENT)
 else()
 	set(CMAKE_DISABLE_PRECOMPILE_HEADERS off)
 	message(STATUS "No precompiled header set")
@@ -352,7 +353,7 @@ target_include_directories("${${PROJECT_NAME}_BUILD_TARGET_NAME}"
 		"$<$<BOOL:${${PROJECT_NAME}_HEADER_PRIVATE_DIR}>:${${PROJECT_NAME}_HEADER_PRIVATE_DIR}>"
 		"${${PROJECT_NAME}_HEADER_PUBLIC_DIR}"
 )
-message(STATUS "    ${${PROJECT_NAME}_HEADER_PUBLIC_DIR};${${PROJECT_NAME}_HEADER_PRIVATE_DIR}")
+print(STATUS PATHS ${${PROJECT_NAME}_HEADER_PUBLIC_DIR};${${PROJECT_NAME}_HEADER_PRIVATE_DIR} INDENT)
 
 
 #---- Add dependencies to the build target. ----
@@ -369,9 +370,9 @@ if(NOT DEFINED ${PROJECT_NAME}_LIBRARY_HEADER_DIRS)
 	message(FATAL_ERROR "${PROJECT_NAME}_LIBRARY_HEADER_DIRS must be specified!")
 endif()
 message(STATUS "Found the following library files in \"lib/\" directory:")
-message(STATUS "    ${${PROJECT_NAME}_LIBRARY_FILES}")
+print(STATUS PATHS ${${PROJECT_NAME}_LIBRARY_FILES} INDENT)
 message(STATUS "Found the following library header directories in \"include/\" directory:")
-message(STATUS "    ${${PROJECT_NAME}_LIBRARY_HEADER_DIRS}")
+print(STATUS PATHS ${${PROJECT_NAME}_LIBRARY_HEADER_DIRS} INDENT)
 
 # Link libraries to the build target.
 message(STATUS "Link libraries found to the build target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\"")
