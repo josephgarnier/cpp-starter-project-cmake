@@ -104,7 +104,7 @@ set(${PROJECT_NAME}_INCLUDE_DIR                 "${${PROJECT_NAME}_PROJECT_DIR}/
 set(${PROJECT_NAME}_LIB_DIR                     "${${PROJECT_NAME}_PROJECT_DIR}/lib")
 set(${PROJECT_NAME}_RESOURCES_DIR               "${${PROJECT_NAME}_PROJECT_DIR}/resources")
 set(${PROJECT_NAME}_SRC_DIR                     "${${PROJECT_NAME}_PROJECT_DIR}/src")
-set(${PROJECT_NAME}_TEST_DIR                    "${${PROJECT_NAME}_PROJECT_DIR}/tests")
+set(${PROJECT_NAME}_TESTS_DIR                    "${${PROJECT_NAME}_PROJECT_DIR}/tests")
 
 list(APPEND ${PROJECT_NAME}_PROJECT_DIRS
 	"${${PROJECT_NAME}_ASSETS_DIR}"
@@ -121,7 +121,7 @@ list(APPEND ${PROJECT_NAME}_PROJECT_DIRS
 	"${${PROJECT_NAME}_LIB_DIR}"
 	"${${PROJECT_NAME}_RESOURCES_DIR}"
 	"${${PROJECT_NAME}_SRC_DIR}"
-	"${${PROJECT_NAME}_TEST_DIR}")
+	"${${PROJECT_NAME}_TESTS_DIR}")
 
 foreach(folder IN ITEMS ${${PROJECT_NAME}_PROJECT_DIRS})
 	if((NOT EXISTS "${folder}") OR (NOT IS_DIRECTORY "${folder}"))
