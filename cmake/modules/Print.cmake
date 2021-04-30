@@ -187,7 +187,7 @@ macro(_print_paths)
 		message(FATAL_ERROR "Unrecognized arguments: \"${PRT_UNPARSED_ARGUMENTS}\"")
 	endif()
 	if((NOT DEFINED PRT_PATHS)
-		AND (NOT "PRT_PATHS" IN_LIST PRT_KEYWORDS_MISSING_VALUES))
+		AND (NOT "PATHS" IN_LIST PRT_KEYWORDS_MISSING_VALUES))
 		message(FATAL_ERROR "PATHS arguments is missing")
 	endif()
 	
