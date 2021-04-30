@@ -44,9 +44,9 @@ directory(SCAN ${PROJECT_NAME}_HEADER_INCLUDE_FILES
 )
 
 
-# Note: set the absolute path to the precompiled header file or let it empty if you don't use it.
+# Note: set the absolute path to the precompiled header file. Ignore it or let it empty if you don't use it.
 set(${PROJECT_NAME}_PRECOMPILED_HEADER_FILE "${${PROJECT_NAME}_INCLUDE_DIR}/${PROJECT_NAME}/${PROJECT_NAME}_pch.h")
 
 
 # Note: set the absolute path to the main source file.
-# set(${PROJECT_NAME}_MAIN_SOURCE_FILE "${${PROJECT_NAME}_SRC_DIR}/main.cpp")
+set(${PROJECT_NAME}_MAIN_SOURCE_FILE "${${PROJECT_NAME}_SRC_DIR}/main.cpp")
