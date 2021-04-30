@@ -155,11 +155,11 @@ The `PUBLIC_HEADERS_SEPARATED` option is there to provide **support for the two 
 
 [IMAGE]
 
-The first is to put all header files in the `src/` tree files and none in `include/`. In this case `PUBLIC_HEADERS_SEPARATED` must be set to `off` and the header files will all be public. The second policy, when `PUBLIC_HEADERS_SEPARATED` is set to `on`, is to put only the private header files in `src/`, and to put the public header files in a sub-folder of `include/` in the name of your project. Therefore, if you choose the second policy you must create a `include/<project-name>` directory.
+The first is to put all header files in the `src/` tree files and none in `include/`. In this case `PUBLIC_HEADERS_SEPARATED` must be set to `off` and the header files will all be public. The second policy, when `PUBLIC_HEADERS_SEPARATED` is set to `on`, is to put only the private header files in `src/` and the public header files in a sub-folder of `include/` named like your project. Therefore, if you choose the second policy you must create a `include/<project-name>` directory.
 
 Except for personal convenience, the consequence of choosing a policy will only be visible if you enable the *Export Generator Module*. Indeed, only public header files will be exported outside the project to be made accessible for import by other projects (see the dedicated section for more details).
 
-Finally, when you set `PUBLIC_HEADERS_SEPARATED` to `on`, header files can still be included in source files (.cpp) in two ways to allow greater flexibility: either by prefixing the paths with the project name, e.g. `#include "project-name/include1.h"`, or without prefixing, e.g. `#include "include1.h"`. This is possible because the two folders `include/` and `include/<project-name>` are added to the built binary with the command `target_include_directories()`.
+Finally, when you set `PUBLIC_HEADERS_SEPARATED` to `on`, the header files must be included in the source files (. cpp) in two different ways depending on where they are located: public files located in `include/<project-name>` should be included by prefixing the paths with the project name, e.g. `#include "project-name/include1.h"`, while files located in `src/` should be included without prefixing, e.g. `#include "include1.h"`. When you set `PUBLIC_HEADERS_SEPARATED` to `off`, the header files are always included without prefixing, e.g. `#include "include1.h"`.
 
 The `TOOLCHAIN_FILE` option allows you to provide to the generator a path to a file that configures a [toolchain](https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html) of utilities to compile, link libraries and create archives, and other tasks to drive the build. This feature offered by CMake is very useful for cross compiling. By default, the project comes with four toolchain files, located in the `cmake/toolchains` folder. If needed, you can add your own by following the [documentation provided by CMake](https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html).
 
@@ -175,7 +175,7 @@ In order to minimize configuration time and to make CMake accessible, **the firs
 The **third and last file to configure** concerns the libraries to be linked to the binary. Open the file `cmake/project/DependenciesOptions.cmake` and edit each of the following variables as necessary:
 
 - `${PROJECT_NAME}_LIBRARY_FILES`: contains the list of libraries in the `lib/` folder.
-- `${PROJECT_NAME}_LIBRARY_HEADER_DIRS`: contains the list of subdirectories of `include/` that have header files for the libraries. The directory `include/<project-name>` is not in the list.
+- `${PROJECT_NAME}_LIBRARY_HEADER_DIRS`: contains the list of subdirectories of `include/` that have header files for the libraries. The directory `include/<project-name>` must not be in the list.
 
 By default, and to simplify the use of CMake, all the internal libraries that are in the `lib/` folder will be automatically linked to the binary, with their header files that are in the subdirectories of `include/` (for linux workers, don't forget to create a link to each library in `lib\` for the [soname policy](https://en.wikipedia.org/wiki/Soname)). If you don't want to use this feature, just initialize both variables to empty.
 
