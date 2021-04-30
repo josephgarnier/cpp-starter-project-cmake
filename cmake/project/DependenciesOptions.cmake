@@ -24,6 +24,7 @@ directory(SCAN ${PROJECT_NAME}_LIBRARY_FILES
 
 # Note: set the list of absolute paths to libary header files (.h) that are
 # inside `include/` directory. By default, the function use a glob function.
+# Warning: the `include/<project-name>` directory must be excluded.
 set(${PROJECT_NAME}_LIBRARY_HEADER_DIRS "")
 directory(SCAN_DIRS ${PROJECT_NAME}_LIBRARY_HEADER_DIRS
 	RECURSE off
