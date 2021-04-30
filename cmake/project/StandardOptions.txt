@@ -36,7 +36,7 @@ set(BUILD_STANDARD_VERSION_VAL        "17")
 set(BUILD_TYPE_VAL                    "debug")
 set(BUILD_TARGET_TYPE_VAL             "exec")
 set(COMPILE_DEFINITIONS_VAL           "")
-set(PUBLIC_HEADERS_SEPARATED_VAL      on)
+set(PUBLIC_HEADERS_SEPARATED_VAL      off)
 if("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Linux")
 	set(COMPILE_TOOLCHAIN_FILE_VAL    "${CMAKE_SOURCE_DIR}/cmake/toolchains/Linux_gcc.cmake")
 elseif("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Windows")
@@ -57,10 +57,10 @@ set(ENABLE_CODE_ANALYSIS_MODULE_VAL   off)
 set(ENABLE_DOC_MODULE_VAL             off)
 
 #---- Export Generator Module options ----
-set(ENABLE_EXPORT_MODULE_VAL          on)
+set(ENABLE_EXPORT_MODULE_VAL          off)
 set(EXPORT_NAMESPACE_VAL              "MyProject")
 if("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Linux")
-	set(INSTALL_DIRECTORY_VAL         "/home/joseph/Desktop/TEST_INSTALL")
+	set(INSTALL_DIRECTORY_VAL         "")
 elseif("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Windows")
 	set(INSTALL_DIRECTORY_VAL         "")
 elseif("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Darwin")
@@ -73,7 +73,7 @@ endif()
 set(ENABLE_PACKAGE_MODULE_VAL         off)
 
 #---- Uninstall Generator Module options ----
-set(ENABLE_UNINSTALL_MODULE_VAL       on)
+set(ENABLE_UNINSTALL_MODULE_VAL       off)
 
 #------------------------------------------------------------------------------
 # End of customize section.
