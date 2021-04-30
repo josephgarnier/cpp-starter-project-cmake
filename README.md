@@ -76,14 +76,22 @@ The following dependencies are **optional** because they will be **automatically
     cd cpp-starter-project-cmake
     ```
 
-2. **Clean the project.** This starter ships is delivered with demo files to allow you to test different settings. If you want to keep them for now, go to the next section and come back here later. Else, if you want to delete them now to put your own files or when the time comes, empty the content of directories `src/`, `include/` and `tests/` manually (**except for** `CMakeLists.txt`) or use the following commands from the root:
+2. **Clean the project.** This starter ships is delivered with demo files to allow you to test different settings. If you want to keep them for now, go to the next section and come back here later. Else, if you want to delete them now to put your own files or when the time comes, empty the content of directories `src/`, `include/` and `tests/` manually or use the following commands from the root:
 
     ```bash
     cd cpp-starter-project-cmake
     rm -rfvI src/* # "r" to recursively remove, "f" to force, "v" explain what is being done, "I" prompt once before removing
     rm -rfvI include/*
-    shopt -s extglob && rm -rfvI tests/!(CMakeLists.txt) && shopt -u extglob
+    rm -rfvI tests/*
     ```
+
+3. **Edit the basic settings.** Open the file `cmake/project/StandardOptions.txt` and edit the name of your project in the variable `PROJECT_NAME` and the type of build in `BUILD_TARGET_TYPE` ("static", "shared", "header", for header-only library, or "exec).
+
+4. **Add the dependencies**. If the project requires dependencies, add the libraries (.dll or .so) in the `lib/` directory and their header files in a sub-folder of the `include/` directory, or add the instructions to link them at the end of the `cmake/project/DependenciesOptions.cmake` file.
+
+5. **Let's go to dev your amazing project.** The project structure is now ready to receive your C++ files. Put the header and source files in the `src/` directory, and name the file containing the main function `main.cpp`.Then, generate the build environment with the command `./clean-cmake.sh && sleep 3s && echo \"\" && ./run-cmake.sh` and finally compile with the command `cmake --build build/ --clean-first`. The generated binary will be in the `bin/` directory.
+
+For more advanced use and with more functionality, please refer to the following sections.
 
 ## 💫 *Build Lifecycle* overview
 
@@ -114,7 +122,7 @@ The dashed lines indicate a dependency. Thus, for example, the *Uninstall Genera
 
 ## 📄 Setting up the generator modules
 
-Let's see now how to configure the generator modules and each build phases of the *Build Lifecycle* of your C++ project. Please remember that **only the generator module named `build` is mandatory to configure**, the others are optional and depend on your needs.
+Let's see now how to configure the generator modules and each build phases of the *Build Lifecycle* of your C++ project. All **the configuration files you will need** are in the `cmake/project` directory. Please remember that **only the generator module named `build` is mandatory to configure**, the others are optional and depend on your needs.
 
 All standard options are passed to CMake thank to the [`initial-cache` feature](https://cmake.org/cmake/help/latest/manual/cmake.1.html#options) which pre-loads the script `cmake/project/StandardOptions.txt` to populate the cache. Then, it is called with the command `cmake -C <initial-cache>` (we will see later how use it easily). With this feature, it is no longer necessary to directly modify the `CMakeLists.txt` file and its is a more convenient way than using the [options](https://cmake.org/cmake/help/latest/command/option.html). Once the CMake generation command has been called, it will be possible, from the `build/` directory, to view cached variables and their descriptions with the command `cmake -LAH`.
 
@@ -148,7 +156,8 @@ To use this module, **three options files** need to be configured. The **first f
 - `BUILD_TYPE=[(default) debug|release]`: specifies type of build "debug" or "release", see [CMAKE_BUILD_TYPE](https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html);
 - `BUILD_TARGET=[static|shared|header|exec (default)]`: specified whether build static or shared or header-only library or as an exec, see [TYPE](https://cmake.org/cmake/help/latest/prop_tgt/TYPE.html);
 - `COMPILE_DEFINITIONS`: specifies a semicolon-separated list of preprocessor definitions (e.g -DFOO;-DBAR or FOO;BAR). Can be empty;
-- `PUBLIC_HEADERS_SEPARATED=[ON (default)|OFF]`: specifies whether public header files are separated from private header files (see below for more details);
+- `PUBLIC_HEADERS_SEPARATED=[ON|OFF (default)]`: specifies whether public header files are separated from private header files (see below for more details);
+- `USE_PRECOMPILED_HEADER=[ON|OFF (default)]`: specifies whether a precompiled header file will be used or not;
 - `TOOLCHAIN_FILE`: specifies a path to a [toolchain file](https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html), (see below for more details).
 
 The `PUBLIC_HEADERS_SEPARATED` option is there to provide **support for the two common policies in C++ projects** shown below:
@@ -168,7 +177,8 @@ The **second file to configure** is the one that provides to the *Build Generato
 - `${PROJECT_NAME}_SOURCE_SRC_FILES`: contains the list of source files (.cpp) present in the `src/` folder;
 - `${PROJECT_NAME}_HEADER_SRC_FILES`: contains the list of header files (.h) in the `src/` directory;
 - `${PROJECT_NAME}_HEADER_INCLUDE_FILES`: contains the list of header files present in the `include/<project-name>` folder (can be empty depending on the chosen policy).
-- `${PROJECT_NAME}_PRECOMPILED_HEADER_FILE`: path to the **[precompiled header](https://en.wikipedia.org/wiki/Precompiled_header) file**. Initiated by default with a path pointing to the `include/` folder and more precisely `${${PROJECT_NAME}_INCLUDE_DIR}/${PROJECT_NAME}/${PROJECT_NAME}_pch.h`, set the value to empty if you don't use this feature.
+- `${PROJECT_NAME}_PRECOMPILED_HEADER_FILE`: path to the **[precompiled header](https://en.wikipedia.org/wiki/Precompiled_header) file**. Initiated by default with a path pointing to the `include/` folder and more precisely `${${PROJECT_NAME}_INCLUDE_DIR}/${PROJECT_NAME}/${PROJECT_NAME}_pch.h`, set the value to your own filename if you don't want to use this format. The file will be ignored if you previously set the associated option to off.
+- `${PROJECT_NAME}_MAIN_SOURCE_FILE`: path to the file containing the main function.
 
 In order to minimize configuration time and to make CMake accessible, **the first three variables are automatically initialized** using a [glob function](https://cmake.org/cmake/help/latest/command/file.html#glob). So by default you don't have to configure them. However, using a glob function is [not a recommended practice](https://cmake.org/cmake/help/latest/command/file.html#glob) by CMake, so you are free to replace it with a manual initialization.
 
@@ -451,7 +461,7 @@ The **role of the *Uninstall Generator Module*** is to generate a script and a c
 
 This module is the most succinct of all and has only **one option in a single file**. Open the file `cmake/project/StandardOptions.txt` and edit the options in the section *Uninstall Generator Module options*:
 
-- `ENABLE_UNINSTALL_MODULE=[ON (default)|OFF]`: specifies whether enable the uninstall generator module.
+- `ENABLE_UNINSTALL_MODULE=[ON|OFF (default)]`: specifies whether enable the uninstall generator module.
 
 If after configuring this module you do not wish to activate any others, go directly to the next section.
 
