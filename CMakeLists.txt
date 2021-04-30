@@ -30,6 +30,7 @@ message(" - Build type: \"${PARAM_BUILD_TYPE}\"")
 message(" - Build target type: \"${PARAM_BUILD_TARGET_TYPE}\"")
 message(" - Compile definitions: \"${PARAM_COMPILE_DEFINITIONS}\"")
 message(" - Public headers separated: \"${PARAM_PUBLIC_HEADERS_SEPARATED}\"")
+message(" - Use precompiled header: \"${PARAM_USE_PRECOMPILED_HEADER}\"")
 message(" - Toolchain file used: \"${CMAKE_TOOLCHAIN_FILE}\"")
 message("Test Generator Module settings:")
 message(" - Enable this module: \"${PARAM_ENABLE_TEST_MODULE}\"")
@@ -321,18 +322,21 @@ endif()
 
 # Add the precompiled header file to the build target.
 message(STATUS "Check precompiled header file")
-if((NOT ${PROJECT_NAME}_PRECOMPILED_HEADER_FILE) AND (NOT EXISTS "${${PROJECT_NAME}_PRECOMPILED_HEADER_FILE}"))
-	message(FATAL_ERROR "Precompiled header file \"${${PROJECT_NAME}_PRECOMPILED_HEADER_FILE}\" doesn't exists!")
-elseif(${PROJECT_NAME}_PRECOMPILED_HEADER_FILE)
-	message(STATUS "Add the following precompiled header to the target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\":")
-	target_precompile_headers("${${PROJECT_NAME}_BUILD_TARGET_NAME}"
-		PRIVATE
-			"${${PROJECT_NAME}_PRECOMPILED_HEADER_FILE}"
-	)
-	print(STATUS PATHS ${${PROJECT_NAME}_PRECOMPILED_HEADER_FILE} INDENT)
+if(${PARAM_USE_PRECOMPILED_HEADER})
+	if((NOT ${PROJECT_NAME}_PRECOMPILED_HEADER_FILE) OR (NOT EXISTS "${${PROJECT_NAME}_PRECOMPILED_HEADER_FILE}"))
+		message(FATAL_ERROR "Precompiled header file \"${${PROJECT_NAME}_PRECOMPILED_HEADER_FILE}\" doesn't exists!")
+	else()
+		message(STATUS "Add the following precompiled header file to the target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\":")
+		target_precompile_headers("${${PROJECT_NAME}_BUILD_TARGET_NAME}"
+			PRIVATE
+				"${${PROJECT_NAME}_PRECOMPILED_HEADER_FILE}"
+		)
+		print(STATUS PATHS ${${PROJECT_NAME}_PRECOMPILED_HEADER_FILE} INDENT)
+	endif()
 else()
 	set(CMAKE_DISABLE_PRECOMPILE_HEADERS off)
-	message(STATUS "No precompiled header set")
+	set(${PROJECT_NAME}_PRECOMPILED_HEADER_FILE "")
+	message(STATUS "Precompiled header file set off")
 endif()
 
 

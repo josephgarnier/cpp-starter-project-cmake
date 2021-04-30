@@ -37,6 +37,7 @@ set(BUILD_TYPE_VAL                    "debug")
 set(BUILD_TARGET_TYPE_VAL             "exec")
 set(COMPILE_DEFINITIONS_VAL           "")
 set(PUBLIC_HEADERS_SEPARATED_VAL      off)
+set(USE_PRECOMPILED_HEADER_VAL        off)
 if("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Linux")
 	set(COMPILE_TOOLCHAIN_FILE_VAL    "${CMAKE_SOURCE_DIR}/cmake/toolchains/Linux_gcc.cmake")
 elseif("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Windows")
@@ -100,6 +101,7 @@ set(BUILD_TYPE_DESC                    "Specifies type of build \"debug\" or \"r
 set(BUILD_TARGET_TYPE_DESC             "Specified whether build \"static\" or \"shared\" or \"header\" (for header-only library) or as an \"exec\", see https://cmake.org/cmake/help/latest/prop_tgt/TYPE.html")
 set(COMPILE_DEFINITIONS_DESC           "Specifies a semicolon-separated list of preprocessor definitions (e.g -DFOO;-DBAR or FOO;BAR). Can be empty.")
 set(PUBLIC_HEADERS_SEPARATED_DESC      "Specifies whether public header files are separated from private header files.")
+set(USE_PRECOMPILED_HEADER_DESC        "Specifies whether a precompiled header file will be used or not.")
 set(COMPILE_TOOLCHAIN_FILE_DESC        "Specifies a path to a toolchain file, see https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html")
 
 #---- Test Generator Module options ----
@@ -136,6 +138,7 @@ set(PARAM_BUILD_TYPE                    "${BUILD_TYPE_VAL}"                  CAC
 set(PARAM_BUILD_TARGET_TYPE             "${BUILD_TARGET_TYPE_VAL}"           CACHE   STRING     "${BUILD_TARGET_TYPE_DESC}")
 set(PARAM_COMPILE_DEFINITIONS           "${COMPILE_DEFINITIONS_VAL}"         CACHE   STRING     "${COMPILE_DEFINITIONS_DESC}")
 set(PARAM_PUBLIC_HEADERS_SEPARATED      "${PUBLIC_HEADERS_SEPARATED_VAL}"    CACHE   BOOL       "${PUBLIC_HEADERS_SEPARATED_DESC}")
+set(PARAM_USE_PRECOMPILED_HEADER        "${USE_PRECOMPILED_HEADER_VAL}"      CACHE   BOOL       "${USE_PRECOMPILED_HEADER_DESC}")
 set(CMAKE_TOOLCHAIN_FILE                "${COMPILE_TOOLCHAIN_FILE_VAL}"      CACHE   FILEPATH   "${COMPILE_TOOLCHAIN_FILE_DESC}")
 set(PARAM_ENABLE_TEST_MODULE            ${ENABLE_TEST_MODULE_VAL}            CACHE   BOOL       "${ENABLE_TEST_MODULE_DESC}")
 set(PARAM_ENABLE_CODE_ANALYSIS_MODULE   ${ENABLE_CODE_ANALYSIS_MODULE_VAL}   CACHE   BOOL       "${ENABLE_CODE_ANALYSIS_MODULE_DESC}")
