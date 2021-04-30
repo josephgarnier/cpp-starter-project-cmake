@@ -287,7 +287,7 @@ endif()
 if(${PARAM_PUBLIC_HEADERS_SEPARATED} AND (NOT IS_DIRECTORY "${${PROJECT_NAME}_INCLUDE_DIR}/${PROJECT_NAME}"))
 	message(FATAL_ERROR "\"include/<project-name>\" directory is missing! Needed when \"PARAM_PUBLIC_HEADERS_SEPARATED\" is set with on")
 elseif(${PARAM_PUBLIC_HEADERS_SEPARATED})
-	set(${PROJECT_NAME}_HEADER_PUBLIC_DIR      "${${PROJECT_NAME}_INCLUDE_DIR}/${PROJECT_NAME}")
+	set(${PROJECT_NAME}_HEADER_PUBLIC_DIR      "${${PROJECT_NAME}_INCLUDE_DIR}")
 	set(${PROJECT_NAME}_HEADER_PUBLIC_FILES    "${${PROJECT_NAME}_HEADER_INCLUDE_FILES}")
 	set(${PROJECT_NAME}_HEADER_PRIVATE_DIR     "${${PROJECT_NAME}_SRC_DIR}")
 	set(${PROJECT_NAME}_HEADER_PRIVATE_FILES   "${${PROJECT_NAME}_HEADER_SRC_FILES}")
@@ -336,10 +336,10 @@ else()
 endif()
 
 
-#---- Add the include directories to the build target. ----
+#---- Add the header directories to the build target. ----
 
 # Add header directories to incude directories of the build target.
-message(STATUS "Add the following directories to include directories of the target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\":")
+message(STATUS "Add the following header directories to include directories of the target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\":")
 target_include_directories("${${PROJECT_NAME}_BUILD_TARGET_NAME}"
 	# see https://cmake.org/cmake/help/latest/manual/cmake-buildsystem.7.html#build-specification-and-usage-requirements
 	# and https://stackoverflow.com/questions/26243169/cmake-target-include-directories-meaning-of-scope
@@ -375,7 +375,7 @@ message(STATUS "Found the following library header directories in \"include/\" d
 print(STATUS PATHS ${${PROJECT_NAME}_LIBRARY_HEADER_DIRS} INDENT)
 
 # Link libraries to the build target.
-message(STATUS "Link libraries found to the build target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\"")
+message(STATUS "Link libraries found to the target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\"")
 target_link_libraries("${${PROJECT_NAME}_BUILD_TARGET_NAME}"
 	PRIVATE
 		"${${PROJECT_NAME}_LIBRARY_FILES}"
@@ -385,7 +385,9 @@ target_link_libraries("${${PROJECT_NAME}_BUILD_TARGET_NAME}"
 message(STATUS "Add \"include/\" directory to include-directories of the target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\"")
 target_include_directories("${${PROJECT_NAME}_BUILD_TARGET_NAME}"
 	PRIVATE
-		"${${PROJECT_NAME}_INCLUDE_DIR}"
+		# Ony need to add `include/` directory when PARAM_PUBLIC_HEADERS_SEPARATED is set to off because
+		# `the previous call to target_include_directories()` already add it.
+		"$<$<NOT:$<BOOL:${PARAM_PUBLIC_HEADERS_SEPARATED}>>:${${PROJECT_NAME}_INCLUDE_DIR}>"
 )
 
 

@@ -94,8 +94,10 @@ if(${PROJECT_NAME}_PRECOMPILED_HEADER_FILE)
 endif()
 target_include_directories("${${PROJECT_NAME}_BUILD_TARGET_NAME}"
 	PUBLIC
-		# For consummer within the build.
+		# For consummer within the build (header directory of the build target).
 		"$<BUILD_INTERFACE:${${PROJECT_NAME}_HEADER_PUBLIC_DIR}>"
+		# For consummer within the build (header directory of the libraries).
+		"$<BUILD_INTERFACE:$<$<NOT:$<BOOL:${PARAM_PUBLIC_HEADERS_SEPARATED}>>:${${PROJECT_NAME}_INCLUDE_DIR}>>"
 		# For consummer outside the build who import the target after installation.
 		"$<INSTALL_INTERFACE:${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}>"
 )

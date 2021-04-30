@@ -9,6 +9,7 @@
 # See README file in the root directory of this source tree.
 
 include(FetchContent)
+
 find_package(Doxygen REQUIRED)
 if(NOT DOXYGEN_FOUND)
 	message(STATUS "Doxygen not found, it will be auto-downloaded in the build tree")

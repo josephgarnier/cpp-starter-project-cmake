@@ -7,7 +7,7 @@
 ******************************************************************************/
 
 #include "sub2.h"
-#include "project-name_pch.h"
+#include "project-name/project-name_pch.h"
 
 Sub2::Sub2() noexcept
 {

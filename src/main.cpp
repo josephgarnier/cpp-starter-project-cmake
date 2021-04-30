@@ -7,11 +7,11 @@
 ******************************************************************************/
 
 #include "project-name/include1.h"
-#include "include2.h"
+#include "project-name/include2.h"
 #include "source1.h"
 #include "sub1/sub1.h"
 #include "sub2/sub2.h"
-#include "project-name_pch.h"
+#include "project-name/project-name_pch.h"
 
 int main() {
   std::cout << "Main: Hello, World!" << std::endl;
