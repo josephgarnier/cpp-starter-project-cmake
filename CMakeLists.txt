@@ -410,6 +410,20 @@ if(${PARAM_ENABLE_TEST_MODULE})
 	include(TestGenModule)
 endif()
 
+
+
+#------------------------------------------------------------------------------
+# 4. Generate the `code analysis` phase
+#------------------------------------------------------------------------------
+if(${PARAM_ENABLE_CODE_ANALYSIS_MODULE})
+	message("")
+	message("")
+	message("== 4. Execution of the Code Analysis Generator Module ==")
+	include(CodeAnalysisGenModule)
+endif()
+
+
+
 #------------------------------------------------------------------------------
 # 5. Generate the `doc` phase
 #------------------------------------------------------------------------------
