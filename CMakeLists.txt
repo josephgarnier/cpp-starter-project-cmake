@@ -337,7 +337,6 @@ if(${PARAM_USE_PRECOMPILED_HEADER})
 	endif()
 else()
 	set(CMAKE_DISABLE_PRECOMPILE_HEADERS off)
-	set(${PROJECT_NAME}_PRECOMPILED_HEADER_FILE "")
 	message(STATUS "Precompiled header file set off")
 endif()
 

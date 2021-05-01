@@ -10,7 +10,6 @@
 
 
 #---- Add the test target. ----
-message("")
 set(${PROJECT_NAME}_TEST_TARGET_NAME "${PROJECT_NAME}_test")
 message(STATUS "Add the test target \"${${PROJECT_NAME}_TEST_TARGET_NAME}\"")
 add_executable("${${PROJECT_NAME}_TEST_TARGET_NAME}")
@@ -81,11 +80,16 @@ target_sources("${${PROJECT_NAME}_TEST_TARGET_NAME}"
 
 
 #---- Add the precompiled header file to the test target. ----
-message(STATUS "Add the precompiled header file to the target \"${${PROJECT_NAME}_TEST_TARGET_NAME}\" if needed")
-target_precompile_headers("${${PROJECT_NAME}_TEST_TARGET_NAME}"
-	PRIVATE
-		"${${PROJECT_NAME}_PRECOMPILED_HEADER_FILE}"
-)
+message(STATUS "Check precompiled header file")
+if(${PARAM_USE_PRECOMPILED_HEADER})
+	message(STATUS "Add the precompiled header file to be tested to the target \"${${PROJECT_NAME}_TEST_TARGET_NAME}\"")
+	target_precompile_headers("${${PROJECT_NAME}_TEST_TARGET_NAME}"
+		PRIVATE
+			"${${PROJECT_NAME}_PRECOMPILED_HEADER_FILE}"
+	)
+else()
+	message(STATUS "Precompiled header file set off")
+endif()
 
 
 #---- Add the header directories to the test target. ----
