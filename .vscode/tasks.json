@@ -216,10 +216,10 @@
 				"cwd": "${workspaceFolder}/build"
 			},
 			"linux": {
-				"command": "cpack --config CPackConfig.cmake && sleep 3s && rm -rfvI ../bin/_CPack_Packages"
+				"command": "cmake --build . --target package && sleep 3s && rm -rfv ../bin/_CPack_Packages"
 			},
 			"windows": {
-				"command": "cpack --config CPackConfig.cmake && timeout /t 3 > NUL && del /a /f /s /q ../bin/_CPack_Packages"
+				"command": "cmake --build . --target package && timeout /t 3 > NUL && del /a /f /s /q ../bin/_CPack_Packages"
 			},
 			"presentation": {
 				"reveal": "always",
@@ -236,10 +236,10 @@
 				"cwd": "${workspaceFolder}/build"
 			},
 			"linux": {
-				"command": "cpack --config CPackSourceConfig.cmake && sleep 3s && rm -rfvI ../bin/_CPack_Packages"
+				"command": "cmake --build . --target package_source && sleep 3s && rm -rfv ../bin/_CPack_Packages"
 			},
 			"windows": {
-				"command": "cpack --config CPackSourceConfig.cmake && timeout /t 3 > NUL && del /a /f /s /q ../bin/_CPack_Packages"
+				"command": "cmake --build . --target package_source && timeout /t 3 > NUL && del /a /f /s /q ../bin/_CPack_Packages"
 			},
 			"presentation": {
 				"reveal": "always",

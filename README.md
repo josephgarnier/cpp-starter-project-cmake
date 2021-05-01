@@ -89,7 +89,7 @@ The following dependencies are **optional** because they will be **automatically
 
 4. **Add the dependencies**. If the project requires dependencies, add the libraries (.dll or .so) in the `lib/` directory and their header files in a sub-folder of the `include/` directory, or add the instructions to link them at the end of the `cmake/project/DependenciesOptions.cmake` file.
 
-5. **Let's go to dev your amazing project.** The project structure is now ready to receive your C++ files. Put the header and source files in the `src/` directory, and name the file containing the main function `main.cpp`.Then, generate the build environment with the command `./clean-cmake.sh && sleep 3s && echo \"\" && ./run-cmake.sh` and finally compile with the command `cmake --build build/ --clean-first`. The generated binary will be in the `bin/` directory.
+5. **Let's go to dev your amazing project.** The project structure is now ready to receive your C++ files. Put the header and source files in the `src/` directory, and name the file containing the main function `main.cpp`. Then, generate the build environment with the command `./clean-cmake.sh && sleep 3s && echo \"\" && ./run-cmake.sh` and finally compile with the command `cmake --build build/ --clean-first`. The generated binary will be in the `bin/` directory. The default configuration uses the compilers Visual Studio for Windows and GCC for Linux/MacOS.
 
 For more advanced use and with more functionality, please refer to the following sections.
 
@@ -462,7 +462,24 @@ If after configuring this module you do not wish to activate any others, go dire
 
 ### 7. *Package Generator Module* settings
 
-TODO With `package source` and `package binary`: https://gitlab.kitware.com/cmake/community/-/wikis/doc/cpack/PackageGenerators
+The **role of the *Package Generator Module*** is to generate the files that will allow the `cpack` command to package the project files in a distributable format, such as a ZIP or an installer. Two build phases are associated to it:
+
+- `package binary`: take the binary files and package them in its distributable format, such as a ZIP or an installer.
+- `package source`: take all project files and package them in its distributable format, such as a ZIP or an installer.
+
+The [`cpack` command](https://cmake.org/cmake/help/latest/manual/cpack.1.html) is a tool of CMake for packaging program. It generates installers and source packages in a variety of formats. However, [this program is independent](https://gitlab.kitware.com/cmake/community/-/wikis/doc/cpack/Packaging-With-CPack) of the main `cmake` command and is not accessible as a CMake target command. Therefore, when we want to integrate it into a build generation system like here, there is an intermediate step to do which is to generate the configuration files that `cpack` will need to generate a binary installers and a source packages, as well as a CMake target command to run the program. Fortunately, CMake provides the [CPack module](https://gitlab.kitware.com/cmake/community/-/wikis/doc/cpack/PackageGenerators) which allows to perform all these actions and to generate the configuration files needed by the `cpack` program.
+
+To use this module and customize the packaging, **three options files** need to be configured. The **first file** is `cmake/project/StandardOptions.txt`, so open it and edit the options in the *Package Generator Module options* section:
+
+- `ENABLE_PACKAGE_MODULE=[ON|OFF (default)]`: specifies whether enable the Package Generator Module;
+
+The **two other files to configure** are linked and allow to customize the generation for binary installers and source packages as well as the different generators used (zip, NSIS, DEB, etc). They will be read by CPack which will provide them to the `cpack` command.
+
+The **first file** is `cmake/project/PackageOptions.cmake`. Open it and edit it in using the [CPack](https://cmake.org/cmake/help/latest/module/CPack.html#variables-common-to-all-cpack-generators) and [CPackComponent](https://cmake.org/cmake/help/latest/module/CPackComponent.html) documentation. Only the options common to all generators should be written in this file, as the specific options will go in the second file. Normally there are few values to change and the default one already covers the classical use cases. However, the variables `CPACK_GENERATOR` and `CPACK_SOURCE_GENERATOR` should attract your attention, because it is with them that the list of generators of packaging to be used is specified (the two default one are WIX and ZIP). The complete list of available generators is available [here](https://cmake.org/cmake/help/latest/manual/cpack-generators.7.html).
+
+Then, the **second file** to configure is the one that allows to customize the generators listed individually. Open the file `cmake/project/PackageGeneratorConfig.cmake.in` and write for each of the generators listed in the previous file their individual options. Each of them has its own options, which can be found [here](https://cmake.org/cmake/help/latest/manual/cpack-generators.7.html). To help, an [example configuration](https://github.com/Kitware/CMake/blob/master/CMakeCPackOptions.cmake.in) is provided by CMake.
+
+If after configuring this module you do not wish to activate any others, go directly to the next section.
 
 ### 8. *Uninstall Generator Module* settings
 
@@ -574,20 +591,20 @@ Use the following commands to **execute the `package binary` phase** of the *Bui
 
 ```bash
 # execute the `package binary` phase (on Linux/MacOS)
-cpack --config CPackConfig.cmake && sleep 3s && rm -rfvI bin/_CPack_Packages
+cmake --build . --target package && sleep 3s && rm -rfv bin/_CPack_Packages
 
 # execute the `package binary` phase (on Windows)
-cpack --config CPackConfig.cmake && timeout /t 3 > NUL && del /a /f /s /q bin/_CPack_Packages
+cmake --build . --target package && timeout /t 3 > NUL && del /a /f /s /q bin/_CPack_Packages
 ```
 
 Use the following commands to **execute the `package source` phase** of the *Build Lifecycle* (only available if the *Package Generator Module* has been activated):
 
 ```bash
 # execute the `package source` phase (on Linux/MacOS)
-cpack --config CPackSourceConfig.cmake && sleep 3s && rm -rfvI bin/_CPack_Packages
+cmake --build . --target package_source && sleep 3s && rm -rfv bin/_CPack_Packages
 
 # execute the `package source` phase (on Windows)
-cpack --config CPackSourceConfig.cmake && timeout /t 3 > NUL && del /a /f /s /q bin/_CPack_Packages
+cmake --build . --target package_source && timeout /t 3 > NUL && del /a /f /s /q bin/_CPack_Packages
 ```
 
 Use the following commands to **execute the binary built** as executable:

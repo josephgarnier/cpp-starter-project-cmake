@@ -446,6 +446,20 @@ if(${PARAM_ENABLE_EXPORT_MODULE})
 	include(ExportGenModule)
 endif()
 
+
+
+#------------------------------------------------------------------------------
+# 7. Generate the `package source` and `package binary` phases
+#------------------------------------------------------------------------------
+if(${PARAM_ENABLE_PACKAGE_MODULE})
+	message("")
+	message("")
+	message("== 7. Execution of the Package Generator Module ==")
+	include(PackageGenModule)
+endif()
+
+
+
 #------------------------------------------------------------------------------
 # 8. Generate the `uninstall` phases
 #------------------------------------------------------------------------------

@@ -1,0 +1,23 @@
+# Copyright 2019-present, Joseph Garnier
+# All rights reserved.
+#
+# This source code is licensed under the license found in the
+# LICENSE file in the root directory of this source tree.
+# =============================================================================
+# What Is This?
+# -------------
+# See README file in the root directory of this source tree
+
+
+# @See https://cmake.org/cmake/help/latest/manual/cpack-generators.7.html
+# @See https://github.com/Kitware/CMake/blob/master/CMakeCPackOptions.cmake.in
+
+# @See https://cmake.org/cmake/help/latest/cpack_gen/wix.html#cpack_gen:CPack%20WIX%20Generator.
+if("${CPACK_GENERATOR}" STREQUAL "WIX")
+
+endif()
+
+# @See https://cmake.org/cmake/help/latest/cpack_gen/archive.html.
+if("${CPACK_GENERATOR}" STREQUAL "ZIP")
+
+endif()
