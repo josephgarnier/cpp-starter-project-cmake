@@ -364,8 +364,19 @@ If after configuring this module you do not wish to activate any others, go dire
 
 ### 3. *Test Generator Module* settings
 
-TODO `test`.
+The **role of the *Test Generator Module*** is to generate the `test` phase which will allow to build and execute the unit tests with [GoogleTest](https://github.com/google/googletest):
 
+- `test`: test the compiled source code using a suitable unit testing framework.
+
+The **module depends on GoogleTest**, so either you install it following the site instruction, or you let the module use the auto-download feature which will detect the absence of the dependency and download it in the build tree directly from its GitHub repository during generation. Since the test library is small, **auto-download is the preferred option**.
+
+To use this module, only **one option in a single file** has to be set. Open the file `cmake/project/StandardOptions.txt` and edit the option in the section *Test Generator Module options*:
+
+- `ENABLE_TEST_MODULE=[ON|OFF (default)]`: specifies whether enable the Test Generator Module.
+
+Then, write all your tests in the `tests/` directory, source and header files. The module will automatically detect these files and add theme to the test target. There are several strategies for linking test files to the files to be tested, each with their advantages and disadvantages. Here, the one that has been chosen is to add all the source and header files of the main target to the test executable. The disadvantage is that the project has to be built twice, but on one hand this reduces the dependencies between the main target and the test target, and on the other hand, the test configuration is much less complex to write.
+
+If after configuring this module you do not wish to activate any others, go directly to the next section.
 
 ### 4. *Code Analysis Generator Module* settings
 
@@ -377,7 +388,7 @@ The **role of the *Doc Generator Module*** is to generate the `doc` phase which 
 
 - `doc`: generate the project's documentation.
 
-The **module depends on Doxygen**, so either you install it following the [site instructions](https://www.doxygen.nl/manual/install.html), or you let the module use the [auto-download feature](https://cmake.org/cmake/help/latest/module/FetchContent.html) which will detect the absence of the dependency and download it directly from its GitHub repository during generation. However, due to the size of the library, it is **strongly discouraged to use auto-download** and recommended to install it, because CMake re-downloads and then rebuilds the whole library each time the project is cleaned up, which takes several minutes.
+The **module depends on Doxygen**, so either you install it following the [site instructions](https://www.doxygen.nl/manual/install.html), or you let the module use the [auto-download feature](https://cmake.org/cmake/help/latest/module/FetchContent.html) which will detect the absence of the dependency and download it in the build tree directly from its GitHub repository during generation. However, due to the size of the library, it is **strongly discouraged to use auto-download** and recommended to install it, because CMake re-downloads and then rebuilds the whole library each time the project is cleaned up, which takes several minutes.
 
 To use this module, **two option files** need to be configured. The **first file** is `cmake/project/StandardOptions.txt`, so open it and edit the options in the *Doc Generator Module options* section:
 

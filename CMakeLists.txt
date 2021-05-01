@@ -402,6 +402,16 @@ target_include_directories("${${PROJECT_NAME}_BUILD_TARGET_NAME}"
 
 
 #------------------------------------------------------------------------------
+# 3. Generate the `test` phase
+#------------------------------------------------------------------------------
+if(${PARAM_ENABLE_TEST_MODULE})
+	message("")
+	message("")
+	message("== 3. Execution of the Test Generator Module ==")
+	include(TestGenModule)
+endif()
+
+#------------------------------------------------------------------------------
 # 5. Generate the `doc` phase
 #------------------------------------------------------------------------------
 if(${PARAM_ENABLE_DOC_MODULE})
