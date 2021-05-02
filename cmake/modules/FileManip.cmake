@@ -81,17 +81,17 @@ function(file_manip)
 	endif()
 
 	if(DEFINED FM_RELATIVE_PATH)
-		file_manip_relative_path()
+		_file_manip_relative_path()
 	elseif(DEFINED FM_ABSOLUTE_PATH)
-		file_manip_absolute_path()
+		_file_manip_absolute_path()
 	elseif(DEFINED FM_STRIP_PATH)
-		file_manip_strip_path()
+		_file_manip_strip_path()
 	elseif((DEFINED FM_GET_COMPONENT)
 		OR ("GET_COMPONENT" IN_LIST FM_KEYWORDS_MISSING_VALUES))
 		if("${FM_MODE}" STREQUAL DIRECTORY)
-			file_manip_get_component_directory()
+			_file_manip_get_component_directory()
 		elseif("${FM_MODE}" STREQUAL NAME)
-			file_manip_get_component_name()
+			_file_manip_get_component_name()
 		else()
 			message(FATAL_ERROR "MODE arguments is missing")
 		endif()
@@ -102,7 +102,7 @@ endfunction()
 
 #------------------------------------------------------------------------------
 # Internal usage.
-macro(file_manip_relative_path)
+macro(_file_manip_relative_path)
 	if(DEFINED FM_UNPARSED_ARGUMENTS)
 		message(FATAL_ERROR "Unrecognized arguments: \"${FM_UNPARSED_ARGUMENTS}\"")
 	endif()
@@ -128,7 +128,7 @@ endmacro()
 
 #------------------------------------------------------------------------------
 # Internal usage.
-macro(file_manip_absolute_path)
+macro(_file_manip_absolute_path)
 	if(DEFINED FM_UNPARSED_ARGUMENTS)
 		message(FATAL_ERROR "Unrecognized arguments: \"${FM_UNPARSED_ARGUMENTS}\"")
 	endif()
@@ -154,7 +154,7 @@ endmacro()
 
 #------------------------------------------------------------------------------
 # Internal usage.
-macro(file_manip_strip_path)
+macro(_file_manip_strip_path)
 	if(DEFINED FM_UNPARSED_ARGUMENTS)
 		message(FATAL_ERROR "Unrecognized arguments: \"${FM_UNPARSED_ARGUMENTS}\"")
 	endif()
@@ -180,7 +180,7 @@ endmacro()
 
 #------------------------------------------------------------------------------
 # Internal usage.
-macro(file_manip_get_component_directory)
+macro(_file_manip_get_component_directory)
 	if(DEFINED FM_UNPARSED_ARGUMENTS)
 		message(FATAL_ERROR "Unrecognized arguments: \"${FM_UNPARSED_ARGUMENTS}\"")
 	endif()
@@ -206,7 +206,7 @@ endmacro()
 
 #------------------------------------------------------------------------------
 # Internal usage.
-macro(file_manip_get_component_name)
+macro(_file_manip_get_component_name)
 	if(DEFINED FM_UNPARSED_ARGUMENTS)
 		message(FATAL_ERROR "Unrecognized arguments: \"${FM_UNPARSED_ARGUMENTS}\"")
 	endif()

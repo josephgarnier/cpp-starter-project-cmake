@@ -74,13 +74,13 @@ function(debug)
 	endif()
 
 	if(${DB_DUMP_VARIABLES})
-		debug_dump_variables()
+		_debug_dump_variables()
 	elseif(${DB_DUMP_PROPERTIES})
-		debug_dump_properties()
+		_debug_dump_properties()
 	elseif(DEFINED DB_DUMP_TARGET_PROPERTIES)
-		debug_dump_target_properties()
+		_debug_dump_target_properties()
 	elseif(${DB_DUMP_PROJECT_VARIABLES})
-		debug_dump_project_variables()
+		_debug_dump_project_variables()
 	else()
 		message(FATAL_ERROR "Operation argument is missing")
 	endif()
@@ -88,7 +88,7 @@ endfunction()
 
 #------------------------------------------------------------------------------
 # Internal usage.
-macro(debug_dump_variables)
+macro(_debug_dump_variables)
 	if(DEFINED DB_UNPARSED_ARGUMENTS)
 		message(FATAL_ERROR "Unrecognized arguments: \"${DB_UNPARSED_ARGUMENTS}\"")
 	endif()
@@ -108,7 +108,7 @@ endmacro()
 
 #------------------------------------------------------------------------------
 # Internal usage.
-macro(debug_dump_properties)
+macro(_debug_dump_properties)
 	if(DEFINED DB_UNPARSED_ARGUMENTS)
 		message(FATAL_ERROR "Unrecognized arguments: \"${DB_UNPARSED_ARGUMENTS}\"")
 	endif()
@@ -131,7 +131,7 @@ endmacro()
 
 #------------------------------------------------------------------------------
 # Internal usage.
-macro(debug_dump_target_properties)
+macro(_debug_dump_target_properties)
 	if(DEFINED DB_UNPARSED_ARGUMENTS)
 		message(FATAL_ERROR "Unrecognized arguments: \"${DB_UNPARSED_ARGUMENTS}\"")
 	endif()
@@ -168,7 +168,7 @@ endmacro()
 
 #------------------------------------------------------------------------------
 # Internal usage.
-macro(debug_dump_project_variables)
+macro(_debug_dump_project_variables)
 	if(DEFINED DB_UNPARSED_ARGUMENTS)
 		message(FATAL_ERROR "Unrecognized arguments: \"${DB_UNPARSED_ARGUMENTS}\"")
 	endif()

@@ -62,9 +62,9 @@ function(directory)
 	endif()
 
 	if(DEFINED DIR_SCAN)
-		directory_scan()
+		_directory_scan()
 	elseif(DEFINED DIR_SCAN_DIRS)
-		directory_scan_dirs()
+		_directory_scan_dirs()
 	else()
 		message(FATAL_ERROR "Operation argument is missing")
 	endif()
@@ -72,7 +72,7 @@ endfunction()
 
 #------------------------------------------------------------------------------
 # Internal usage.
-macro(directory_scan)
+macro(_directory_scan)
 	if(NOT DEFINED DIR_SCAN)
 		message(FATAL_ERROR "SCAN arguments is missing")
 	endif()
@@ -115,7 +115,7 @@ endmacro()
 
 #------------------------------------------------------------------------------
 # Internal usage.
-macro(directory_scan_dirs)
+macro(_directory_scan_dirs)
 	if(NOT DEFINED DIR_SCAN_DIRS)
 		message(FATAL_ERROR "SCAN_DIRS arguments is missing")
 	endif()

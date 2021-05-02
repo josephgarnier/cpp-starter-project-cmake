@@ -67,13 +67,13 @@ function(string_manip)
 	endif()
 
 	if(DEFINED SM_SPLIT)
-		string_manip_split()
+		_string_manip_split()
 	elseif(DEFINED SM_TRANSFORM)
 		list(LENGTH ${SM_TRANSFORM} nb_args)
 		if(${nb_args} EQUAL 1)
-			string_manip_transform_string_var()
+			_string_manip_transform_string_var()
 		else()
-			string_manip_transform_string_list()
+			_string_manip_transform_string_list()
 		endif()
 	else()
 		message(FATAL_ERROR "Operation argument is missing")
@@ -82,7 +82,7 @@ endfunction()
 
 #------------------------------------------------------------------------------
 # Internal usage.
-macro(string_manip_split)
+macro(_string_manip_split)
 	if(DEFINED SM_UNPARSED_ARGUMENTS)
 		message(FATAL_ERROR "Unrecognized arguments: \"${SM_UNPARSED_ARGUMENTS}\"")
 	endif()
@@ -99,7 +99,7 @@ endmacro()
 
 #------------------------------------------------------------------------------
 # Internal usage.
-macro(string_manip_transform_string_list)
+macro(_string_manip_transform_string_list)
 	if(DEFINED SM_UNPARSED_ARGUMENTS)
 		message(FATAL_ERROR "Unrecognized arguments: \"${SM_UNPARSED_ARGUMENTS}\"")
 	endif()
@@ -125,7 +125,7 @@ endmacro()
 
 #------------------------------------------------------------------------------
 # Internal usage.
-macro(string_manip_transform_string_var)
+macro(_string_manip_transform_string_var)
 	if(DEFINED SM_UNPARSED_ARGUMENTS)
 		message(FATAL_ERROR "Unrecognized arguments: \"${SM_UNPARSED_ARGUMENTS}\"")
 	endif()
