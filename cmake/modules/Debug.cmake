@@ -53,6 +53,11 @@ naming convention which stipulates that each variable is prefixed
 by ${PROJECT_NAME}.
 
 #]=======================================================================]
+if(__debug)
+	return()
+endif()
+set(__debug on)
+
 cmake_minimum_required (VERSION 3.16)
 include(CMakePrintHelpers)
 

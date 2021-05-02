@@ -47,6 +47,11 @@ Transform the string ``<string_var>`` into start case then store de result in
 place or in the specified ``<output_var>``.
 
 #]=======================================================================]
+if(__string_manip)
+	return()
+endif()
+set(__string_manip on)
+
 cmake_minimum_required (VERSION 3.16)
 
 #------------------------------------------------------------------------------

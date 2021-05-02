@@ -42,6 +42,11 @@ returned as absolute paths to the given path ``<directory_path>`` if RELATIVE
 flag is set to off, else as relative path to ROOT_DIR. If RECURSE is set to on, the function will traverse all the subdirectories from ROOT_DIR.
 
 #]=======================================================================]
+if(__directory)
+	return()
+endif()
+set(__directory on)
+
 cmake_minimum_required (VERSION 3.16)
 
 #------------------------------------------------------------------------------

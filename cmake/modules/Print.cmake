@@ -51,6 +51,11 @@ The optional ``<mode>`` keyword determines the type of message like in CMake
 (see https://cmake.org/cmake/help/latest/command/message.html#general-messages).
 
 #]=======================================================================]
+if(__print)
+	return()
+endif()
+set(__print on)
+
 cmake_minimum_required (VERSION 3.16)
 
 # Global variables
