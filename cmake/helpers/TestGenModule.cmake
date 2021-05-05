@@ -111,11 +111,11 @@ target_include_directories("${${PROJECT_NAME}_TEST_TARGET_NAME}"
 
 #---- Add GTest to the test target. ----
 message("")
-message(STATUS "Check GTest")
+
+# Find GTest or auto-download it.
+message(STATUS "Find GTest")
 include(FetchContent)
 find_package(GTest)
-
-# Check if GTest has been found, else, auto-download it.
 if(NOT GTEST_FOUND)
 	message(STATUS "GTest not found, it will be auto-downloaded in the build tree")
 	set(FETCHCONTENT_QUIET off)
@@ -152,7 +152,7 @@ target_compile_definitions("${${PROJECT_NAME}_TEST_TARGET_NAME}"
 # Link GTest to the test target.
 message(STATUS "Link GTest library to the target \"${${PROJECT_NAME}_TEST_TARGET_NAME}\"")
 target_link_libraries("${${PROJECT_NAME}_TEST_TARGET_NAME}"
-	PRIVATE_HEADER
+	PRIVATE
 		"GTest::gtest;GTest::gtest_main;GTest::gmock;GTest::gmock_main"
 )
 

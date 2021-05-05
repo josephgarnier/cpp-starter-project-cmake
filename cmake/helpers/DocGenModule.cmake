@@ -8,11 +8,10 @@
 # -------------
 # See README file in the root directory of this source tree.
 
-message(STATUS "Check Doxygen")
+# Find Doxygen or auto-download it.
+message(STATUS "Find Doxygen")
 include(FetchContent)
-find_package(Doxygen REQUIRED)
-
-# Check if Doxygen has been found, else, auto-download it.
+find_package(Doxygen)
 if(NOT DOXYGEN_FOUND)
 	message(STATUS "Doxygen not found, it will be auto-downloaded in the build tree")
 	set(FETCHCONTENT_QUIET off)
