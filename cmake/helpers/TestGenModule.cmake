@@ -112,7 +112,6 @@ target_include_directories("${${PROJECT_NAME}_TEST_TARGET_NAME}"
 #---- Add GTest to the test target. ----
 message("")
 message(STATUS "Check GTest")
-
 include(FetchContent)
 find_package(GTest)
 
