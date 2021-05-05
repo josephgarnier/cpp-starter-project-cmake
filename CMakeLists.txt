@@ -361,11 +361,10 @@ target_include_directories("${${PROJECT_NAME}_BUILD_TARGET_NAME}"
 print(STATUS PATHS ${${PROJECT_NAME}_HEADER_PUBLIC_DIR};${${PROJECT_NAME}_HEADER_PRIVATE_DIR} INDENT)
 
 
-#---- Add dependencies to the build target. ----
+#---- Add internal dependencies to the build target. ----
 message("")
-message(STATUS "Check dependencies")
-
-include(DependenciesOptions)
+message(STATUS "Adding internal dependencies")
+include(DependenciesInternalOptions)
 
 # Check library files and header library files.
 if(NOT DEFINED ${PROJECT_NAME}_LIBRARY_FILES)
@@ -397,6 +396,14 @@ target_include_directories("${${PROJECT_NAME}_BUILD_TARGET_NAME}"
 		# `the previous call to target_include_directories()` already add it.
 		"$<$<NOT:$<BOOL:${PARAM_PUBLIC_HEADERS_SEPARATED}>>:${${PROJECT_NAME}_INCLUDE_DIR}>"
 )
+message(STATUS "Adding internal dependencies - done")
+
+
+#---- Add external dependencies to the build target. ----
+message("")
+message(STATUS "Adding external dependencies")
+include(DependenciesExternalOptions)
+message(STATUS "Adding external dependencies - done")
 
 
 

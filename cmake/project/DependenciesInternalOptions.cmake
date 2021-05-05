@@ -32,8 +32,3 @@ directory(SCAN_DIRS ${PROJECT_NAME}_LIBRARY_HEADER_DIRS
 	ROOT_DIR "${${PROJECT_NAME}_INCLUDE_DIR}"
 	EXCLUDE_REGEX "${PROJECT_NAME}"
 )
-
-
-#------------------------------------------------------------------------------
-# Import and link external libraries from here.
-#------------------------------------------------------------------------------
