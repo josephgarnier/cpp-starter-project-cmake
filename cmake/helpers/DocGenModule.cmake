@@ -8,9 +8,11 @@
 # -------------
 # See README file in the root directory of this source tree.
 
+message(STATUS "Check Doxygen")
 include(FetchContent)
-
 find_package(Doxygen REQUIRED)
+
+# Check if Doxygen has been found, else, auto-download it.
 if(NOT DOXYGEN_FOUND)
 	message(STATUS "Doxygen not found, it will be auto-downloaded in the build tree")
 	set(FETCHCONTENT_QUIET off)
@@ -33,40 +35,40 @@ if(NOT DOXYGEN_FOUND)
 		USES_TERMINAL_DOWNLOAD on
 	)
 	FetchContent_MakeAvailable(doxygen)
+else()
+	message(STATUS "Doxygen found")
 endif()
 
-# Set output files, directories and names.
-set(${PROJECT_NAME}_DOXYGEN_TEMPLATE_CONFIG_FILE   "${${PROJECT_NAME}_CMAKE_PROJECT_DIR}/DoxygenConfig.in")
-set(${PROJECT_NAME}_DOXYGEN_CONFIG_FILE            "${${PROJECT_NAME}_BUILD_DIR}/doxyfile")
+# Add package options.
+# @see https://cmake.org/cmake/help/latest/module/FindDoxygen.html
+# @see https://www.doxygen.nl/manual/config.html
+message(STATUS "Add doc options")
+include(DocOptions)
+set(DOXYGEN_OUTPUT_DIRECTORY   "${${PROJECT_NAME}_DOC_DIR}")
 
-# Generate a Doxygen config-file.
-configure_file(
-	"${${PROJECT_NAME}_DOXYGEN_TEMPLATE_CONFIG_FILE}"
-	"${${PROJECT_NAME}_DOXYGEN_CONFIG_FILE}"
-	@ONLY
-)
-print(STATUS "Doxygen config-file generated: @rp@" "${${PROJECT_NAME}_DOXYGEN_CONFIG_FILE}")
-
-# Add `cmake --build build/ --target doc` command.
-message(STATUS "Add the doc command")
-add_custom_target(doc
-	COMMAND ${DOXYGEN_EXECUTABLE} "${${PROJECT_NAME}_DOXYGEN_CONFIG_FILE}"
-	SOURCES "${${PROJECT_NAME}_DOXYGEN_CONFIG_FILE}"
+# Generate a Doxygen config-file and add the doc command.
+message(STATUS "Adding a target for generating documentation with Doxygen")
+doxygen_add_docs(doc
+	"${${PROJECT_NAME}_SRC_DIR};${${PROJECT_NAME}_INCLUDE_DIR}/${PROJECT_NAME}"
+	ALL
 	WORKING_DIRECTORY "${${PROJECT_NAME}_DOC_DIR}"
 	COMMENT "Generating documentation with Doxygen"
-	VERBATIM
 )
+message(STATUS "Doc command added")
+print(STATUS "Doxygen config-file generated: @rp@" "${${PROJECT_NAME}_BUILD_DIR}/Doxyfile.doc")
 
-# Add uninstall target in a folder for IDE project generation.
+# Add doc target in a folder for IDE project generation.
 get_cmake_property(target_folder PREDEFINED_TARGETS_FOLDER)
 set_target_properties(doc PROPERTIES FOLDER "${target_folder}")
 	
 # Add the generated documentation files to `cmake --build . --target clean` command.
-message(STATUS "Add the doc files to clean command")
+message(STATUS "Add the doc files to the clean command")
 set_property(DIRECTORY "${${PROJECT_NAME}_PROJECT_DIR}"
 	APPEND
 	PROPERTY ADDITIONAL_CLEAN_FILES
 	"${${PROJECT_NAME}_DOC_DIR}/html"
 	"${${PROJECT_NAME}_DOC_DIR}/latex"
-	"${${PROJECT_NAME}_DOXYGEN_CONFIG_FILE}"
+	"${${PROJECT_NAME}_BUILD_DIR}/CMakeDoxyfile.in"
+	"${${PROJECT_NAME}_BUILD_DIR}/CMakeDoxygenDefaults.cmake"
+	"${${PROJECT_NAME}_BUILD_DIR}/Doxyfile.doc"
 )

@@ -394,7 +394,7 @@ To use this module, **two option files** need to be configured. The **first file
 
 - `ENABLE_DOC_MODULE=[ON|OFF (default)]`: specifies whether enable the doc generator module.
 
-The **second file to configure** is the configuration template file `cmake/project/DoxygenConfig.in` which the module will autocomplete, in part, and use to generate the configuration file used by Doxygen. If you don't want to use the default values, open it and complete it following the instructions available on the [Doxygen documentation](https://www.doxygen.nl/manual/config.html). Values of the form `@var-name@` are autocomplete by CMake according to some project variables, so it is not recommended to modify them.
+The **second file to configure** is the options file `cmake/project/DocOptions.cmake` which the module will use, with the CMake FindDoxygen module, to generate the configuration file used by Doxygen. If you don't want to use the default values, open it and edit it, with the help of the CMake initialization functions, in using the [FindDoxygen](https://cmake.org/cmake/help/latest/module/FindDoxygen.html) module and [Doxygen](https://www.doxygen.nl/manual/config.html) documentation. Please note, the variables `DOXYGEN_OUTPUT_DIRECTORY` and `DOXYGEN_INPUT` should not be changed as indicated in the FindDoxygen module documentation.
 
 If after configuring this module you do not wish to activate any others, go directly to the next section.
 
