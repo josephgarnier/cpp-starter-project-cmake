@@ -36,13 +36,13 @@ foreach(file IN ITEMS ${installed_files})
 endforeach()
 
 # Using of a Depth-first search algorithm to get all directories in:
-#    - INSTALL_DATAROOT_DIR: `<CMAKE_INSTALL_PREFIX>/share/<project-name>`, 
-#    - INSTALL_DOC_DIR: `<CMAKE_INSTALL_PREFIX>/share/doc/<project-name>`
-#    - INSTALL_INCLUDE_DIR: `<CMAKE_INSTALL_PREFIX>/include/<project-name>`
-#    - INSTALL_LIBRARY_DIR: `<CMAKE_INSTALL_PREFIX>/lib/<project-name>`
+#    - INSTALL_RELATIVE_DATAROOT_DIR:   `share/<project-name>`, 
+#    - INSTALL_RELATIVE_DOC_DIR:        `share/doc/<project-name>`
+#    - INSTALL_RELATIVE_INCLUDE_DIR:    `include/<project-name>`
+#    - INSTALL_RELATIVE_LIBRARY_DIR:    `lib/<project-name>`
 set(stack "")
 set(visited "")
-list(APPEND stack "@LOCAL_INSTALL_DATAROOT_DIR@" "@LOCAL_INSTALL_DOC_DIR@" "@LOCAL_INSTALL_INCLUDE_DIR@" "@LOCAL_INSTALL_LIBRARY_DIR@")
+list(APPEND stack "@CMAKE_INSTALL_PREFIX@/@LOCAL_INSTALL_RELATIVE_DATAROOT_DIR@" "@CMAKE_INSTALL_PREFIX@/@LOCAL_INSTALL_RELATIVE_DOC_DIR@" "@CMAKE_INSTALL_PREFIX@/@LOCAL_INSTALL_RELATIVE_INCLUDE_DIR@" "@CMAKE_INSTALL_PREFIX@/@LOCAL_INSTALL_RELATIVE_LIBRARY_DIR@")
 while(stack)
 	list(POP_BACK stack directory)
 	if(NOT "${directory}" IN_LIST visited)

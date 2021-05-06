@@ -22,17 +22,17 @@ else()
 endif()
 print(STATUS "Install script will be generated in \"@rp@\"" "${${PROJECT_NAME}_BUILD_DIR}/cmake_install.cmake")
 include(GNUInstallDirs)
-set(${PROJECT_NAME}_INSTALL_BIN_DIR                "${CMAKE_INSTALL_FULL_BINDIR}")                              # <CMAKE_INSTALL_PREFIX>/bin
-set(${PROJECT_NAME}_INSTALL_DATAROOT_DIR           "${CMAKE_INSTALL_FULL_DATAROOTDIR}/${PROJECT_NAME}")         # <CMAKE_INSTALL_PREFIX>/share/<project-name>
-set(${PROJECT_NAME}_INSTALL_DOC_DIR                "${CMAKE_INSTALL_FULL_DOCDIR}")                              # <CMAKE_INSTALL_PREFIX>/share/doc/<project-name>
-set(${PROJECT_NAME}_INSTALL_INCLUDE_DIR            "${CMAKE_INSTALL_FULL_INCLUDEDIR}/${PROJECT_NAME}")          # <CMAKE_INSTALL_PREFIX>/include/<project-name>
-set(${PROJECT_NAME}_INSTALL_LIBRARY_DIR            "${CMAKE_INSTALL_FULL_LIBDIR}/${PROJECT_NAME}")              # <CMAKE_INSTALL_PREFIX>/lib/<project-name>
+set(${PROJECT_NAME}_INSTALL_REALTIVE_BIN_DIR        "${CMAKE_INSTALL_BINDIR}")                        # in absolute: <CMAKE_INSTALL_PREFIX>/bin
+set(${PROJECT_NAME}_INSTALL_RELATIVE_DATAROOT_DIR   "${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}")   # in absolute: <CMAKE_INSTALL_PREFIX>/share/<project-name>
+set(${PROJECT_NAME}_INSTALL_RELATIVE_DOC_DIR        "${CMAKE_INSTALL_DOCDIR}")                        # in absolute: <CMAKE_INSTALL_PREFIX>/share/doc/<project-name>
+set(${PROJECT_NAME}_INSTALL_RELATIVE_INCLUDE_DIR    "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}")    # in absolute: <CMAKE_INSTALL_PREFIX>/include/<project-name>
+set(${PROJECT_NAME}_INSTALL_RELATIVE_LIBRARY_DIR    "${CMAKE_INSTALL_LIBDIR}/${PROJECT_NAME}")        # in absolute: <CMAKE_INSTALL_PREFIX>/lib/<project-name>
 
 # Set the RPATH, see https://gitlab.kitware.com/cmake/community/-/wikis/doc/cmake/RPATH-handling
 set(CMAKE_SKIP_BUILD_RPATH              off) # Include RPATHs in the build tree.
 set(CMAKE_BUILD_WITH_INSTALL_RPATH      off) # Don't use the install RPATH already (but later on when installing)
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH   on) # Add paths to linker search and installed rpath.
-set(CMAKE_INSTALL_RPATH                 "${${PROJECT_NAME}_INSTALL_LIBRARY_DIR}") # The rpath to use for installed targets.
+set(CMAKE_INSTALL_RPATH                 "${${PROJECT_NAME}_INSTALL_RELATIVE_LIBRARY_DIR}") # The rpath to use for installed targets.
 
 # Create a list of header files for INSTALL_INTERFACE of `target_sources()` command.
 set(${PROJECT_NAME}_INSTALL_HEADER_FILES "${${PROJECT_NAME}_HEADER_PUBLIC_FILES}")
@@ -40,7 +40,7 @@ file_manip(STRIP_PATH ${PROJECT_NAME}_INSTALL_HEADER_FILES
 	BASE_DIR "${${PROJECT_NAME}_HEADER_PUBLIC_DIR}"
 )
 file_manip(ABSOLUTE_PATH ${PROJECT_NAME}_INSTALL_HEADER_FILES
-	BASE_DIR "${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}/${PROJECT_NAME}"
+	BASE_DIR "${${PROJECT_NAME}_INSTALL_RELATIVE_INCLUDE_DIR}/${PROJECT_NAME}"
 )
 
 # Create a list of precompiled header files for INSTALL_INTERFACE of `target_precompile_headers()`
@@ -51,7 +51,7 @@ if(${PARAM_USE_PRECOMPILED_HEADER})
 		BASE_DIR "${${PROJECT_NAME}_HEADER_PUBLIC_DIR}"
 	)
 	file_manip(ABSOLUTE_PATH ${PROJECT_NAME}_INSTALL_PRECOMPILED_HEADER_FILE
-		BASE_DIR "${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}"
+		BASE_DIR "${${PROJECT_NAME}_INSTALL_RELATIVE_INCLUDE_DIR}/${PROJECT_NAME}"
 	)
 endif()
 
@@ -61,7 +61,7 @@ file_manip(STRIP_PATH ${PROJECT_NAME}_INSTALL_LIBRARY_FILES
 	BASE_DIR "${${PROJECT_NAME}_LIB_DIR}"
 )
 file_manip(ABSOLUTE_PATH ${PROJECT_NAME}_INSTALL_LIBRARY_FILES
-	BASE_DIR "${${PROJECT_NAME}_INSTALL_LIBRARY_DIR}"
+	BASE_DIR "${${PROJECT_NAME}_INSTALL_RELATIVE_LIBRARY_DIR}"
 )
 
 # Add usage requirements to the build target for an import from the build tree (BUILD_INTERFACE) or install tree (INSTALL_INTERFACE).
@@ -99,9 +99,9 @@ target_include_directories("${${PROJECT_NAME}_BUILD_TARGET_NAME}"
 		# For consummer within the build (header directory of the build target).
 		"$<BUILD_INTERFACE:${${PROJECT_NAME}_HEADER_PUBLIC_DIR}>"
 		# For consummer within the build (header directory of the libraries).
-		"$<BUILD_INTERFACE:$<$<NOT:$<BOOL:${PARAM_PUBLIC_HEADERS_SEPARATED}>>:${${PROJECT_NAME}_INCLUDE_DIR}>>"
+		"$<BUILD_INTERFACE:${${PROJECT_NAME}_INCLUDE_DIR}>"
 		# For consummer outside the build who import the target after installation.
-		"$<INSTALL_INTERFACE:${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}>"
+		"$<INSTALL_INTERFACE:${${PROJECT_NAME}_INSTALL_RELATIVE_INCLUDE_DIR}>"
 )
 target_link_libraries("${${PROJECT_NAME}_BUILD_TARGET_NAME}"
 	PUBLIC
@@ -147,51 +147,51 @@ message(STATUS "Generate the install tree and the install rules")
 
 # Rule for assets in `assets/`.
 install(DIRECTORY "${${PROJECT_NAME}_ASSETS_DIR}"
-	DESTINATION "${${PROJECT_NAME}_INSTALL_DATAROOT_DIR}"
+	DESTINATION "${${PROJECT_NAME}_INSTALL_RELATIVE_DATAROOT_DIR}"
 )
 # Rule for the binary in `bin/`
 install(TARGETS "${${PROJECT_NAME}_BUILD_TARGET_NAME}"
 	EXPORT "${${PROJECT_NAME}_EXPORT_NAME}"
-	ARCHIVE DESTINATION "${${PROJECT_NAME}_INSTALL_LIBRARY_DIR}"
-	LIBRARY DESTINATION "${${PROJECT_NAME}_INSTALL_LIBRARY_DIR}"
-	RUNTIME DESTINATION "${${PROJECT_NAME}_INSTALL_BIN_DIR}"
-	PUBLIC_HEADER DESTINATION "${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}"
+	ARCHIVE DESTINATION "${${PROJECT_NAME}_INSTALL_RELATIVE_LIBRARY_DIR}"
+	LIBRARY DESTINATION "${${PROJECT_NAME}_INSTALL_RELATIVE_LIBRARY_DIR}"
+	RUNTIME DESTINATION "${${PROJECT_NAME}_INSTALL_REALTIVE_BIN_DIR}"
+	PUBLIC_HEADER DESTINATION "${${PROJECT_NAME}_INSTALL_RELATIVE_INCLUDE_DIR}"
 )
 # Rule for config in `config/`.
 install(DIRECTORY "${${PROJECT_NAME}_CONFIG_DIR}"
-	DESTINATION "${${PROJECT_NAME}_INSTALL_DATAROOT_DIR}"
+	DESTINATION "${${PROJECT_NAME}_INSTALL_RELATIVE_DATAROOT_DIR}"
 )
 # Rule for doc in `doc/`.
 install(DIRECTORY "${${PROJECT_NAME}_DOC_DIR}/"
-	DESTINATION "${${PROJECT_NAME}_INSTALL_DOC_DIR}"
+	DESTINATION "${${PROJECT_NAME}_INSTALL_RELATIVE_DOC_DIR}"
 )
 # Rule for public header files in `include/<project-name>` or `src/`.
 install(DIRECTORY "${${PROJECT_NAME}_HEADER_PUBLIC_DIR}/"
-	DESTINATION "${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}/${PROJECT_NAME}"
+	DESTINATION "${${PROJECT_NAME}_INSTALL_RELATIVE_INCLUDE_DIR}/${PROJECT_NAME}"
 	FILES_MATCHING REGEX ".*[.]h$|.*[.]hpp$|.*[.]hxx$|.*[.]inl$"
 )
 # Rule for library header files in `include/<...>`
 foreach(directory IN ITEMS ${${PROJECT_NAME}_LIBRARY_HEADER_DIRS})
 	install(DIRECTORY "${directory}"
-		DESTINATION "${${PROJECT_NAME}_INSTALL_INCLUDE_DIR}"
+		DESTINATION "${${PROJECT_NAME}_INSTALL_RELATIVE_INCLUDE_DIR}"
 		FILES_MATCHING REGEX ".*[.]h$|.*[.]hpp$|.*[.]hxx$|.*[.]inl$"
 	)
 endforeach()
 # Rule for externals libraries in `lib/`.
 install(FILES ${${PROJECT_NAME}_LIBRARY_FILES}
-	DESTINATION "${${PROJECT_NAME}_INSTALL_LIBRARY_DIR}"
+	DESTINATION "${${PROJECT_NAME}_INSTALL_RELATIVE_LIBRARY_DIR}"
 )
 # Rule for externals resources in `resources/`.
 install(DIRECTORY "${${PROJECT_NAME}_RESOURCES_DIR}"
-	DESTINATION "${${PROJECT_NAME}_INSTALL_DATAROOT_DIR}"
+	DESTINATION "${${PROJECT_NAME}_INSTALL_RELATIVE_DATAROOT_DIR}"
 )
 # Generate the export script `Targets.cmake` for importing the build target coming from the install tree, and its install rule.
 install(EXPORT "${${PROJECT_NAME}_EXPORT_NAME}"
 	NAMESPACE "${${PROJECT_NAME}_EXPORT_NAMESPACE}::"
-	DESTINATION "${${PROJECT_NAME}_INSTALL_DATAROOT_DIR}/cmake"
+	DESTINATION "${${PROJECT_NAME}_INSTALL_RELATIVE_DATAROOT_DIR}/cmake"
 	FILE "${${PROJECT_NAME}_EXPORT_CONFIG_FILE_NAME}"
 )
-print(STATUS "Export script for the install tree generated: @rp@" "${${PROJECT_NAME}_BUILD_DIR}/CMakeFiles/Export${${PROJECT_NAME}_INSTALL_DATAROOT_DIR}/cmake/${${PROJECT_NAME}_EXPORT_CONFIG_FILE_NAME}")
+print(STATUS "Export script for the install tree generated: @rp@" "${${PROJECT_NAME}_BUILD_DIR}/CMakeFiles/Export/${${PROJECT_NAME}_INSTALL_RELATIVE_DATAROOT_DIR}/cmake/${${PROJECT_NAME}_EXPORT_CONFIG_FILE_NAME}")
 list(POP_BACK CMAKE_MESSAGE_INDENT)
 message(STATUS "The target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\" of the install tree is now importable")
 
@@ -219,7 +219,7 @@ set(LOCAL_EXPORT_CONFIG_FILE_NAME   "${${PROJECT_NAME}_EXPORT_CONFIG_FILE_NAME}"
 configure_package_config_file(
 	"${${PROJECT_NAME}_PACKAGE_TEMPLATE_CONFIG_FILE}"
 	"${${PROJECT_NAME}_PACKAGE_CONFIG_FILE}"
-	INSTALL_DESTINATION "${${PROJECT_NAME}_INSTALL_DATAROOT_DIR}/cmake"
+	INSTALL_DESTINATION "${${PROJECT_NAME}_INSTALL_RELATIVE_DATAROOT_DIR}/cmake"
 	INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}"
 )
 unset(LOCAL_BUILD_TARGET_NAME)
@@ -244,7 +244,7 @@ message(STATUS "Generate the install rules for config-file and version-file")
 install(FILES
 	"${${PROJECT_NAME}_PACKAGE_CONFIG_FILE}"
 	"${${PROJECT_NAME}_PACKAGE_VERSION_FILE}"
-	DESTINATION "${${PROJECT_NAME}_INSTALL_DATAROOT_DIR}/cmake"
+	DESTINATION "${${PROJECT_NAME}_INSTALL_RELATIVE_DATAROOT_DIR}/cmake"
 )
 list(POP_BACK CMAKE_MESSAGE_INDENT)
 message(STATUS "The target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\" can now be imported with the find_package() command")

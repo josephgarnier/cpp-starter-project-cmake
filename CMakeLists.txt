@@ -290,7 +290,7 @@ endif()
 if(${PARAM_PUBLIC_HEADERS_SEPARATED} AND (NOT IS_DIRECTORY "${${PROJECT_NAME}_INCLUDE_DIR}/${PROJECT_NAME}"))
 	message(FATAL_ERROR "\"include/<project-name>\" directory is missing! Needed when \"PARAM_PUBLIC_HEADERS_SEPARATED\" is set with on")
 elseif(${PARAM_PUBLIC_HEADERS_SEPARATED})
-	set(${PROJECT_NAME}_HEADER_PUBLIC_DIR      "${${PROJECT_NAME}_INCLUDE_DIR}")
+	set(${PROJECT_NAME}_HEADER_PUBLIC_DIR      "${${PROJECT_NAME}_INCLUDE_DIR}/${PROJECT_NAME}")
 	set(${PROJECT_NAME}_HEADER_PUBLIC_FILES    "${${PROJECT_NAME}_HEADER_INCLUDE_FILES}")
 	set(${PROJECT_NAME}_HEADER_PRIVATE_DIR     "${${PROJECT_NAME}_SRC_DIR}")
 	set(${PROJECT_NAME}_HEADER_PRIVATE_FILES   "${${PROJECT_NAME}_HEADER_SRC_FILES}")
@@ -394,9 +394,7 @@ target_link_libraries("${${PROJECT_NAME}_BUILD_TARGET_NAME}"
 message(STATUS "Add \"include/\" directory to include-directories of the target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\"")
 target_include_directories("${${PROJECT_NAME}_BUILD_TARGET_NAME}"
 	PRIVATE
-		# Ony need to add `include/` directory when PARAM_PUBLIC_HEADERS_SEPARATED is set to off because
-		# `the previous call to target_include_directories()` already add it.
-		"$<$<NOT:$<BOOL:${PARAM_PUBLIC_HEADERS_SEPARATED}>>:${${PROJECT_NAME}_INCLUDE_DIR}>"
+		"${${PROJECT_NAME}_INCLUDE_DIR}"
 )
 message(STATUS "Adding internal dependencies - done")
 
