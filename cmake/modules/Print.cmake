@@ -14,7 +14,7 @@ Synopsis
 ^^^^^^^^
 .. parsed-literal::
 
-    `print`_([<mode>] "message with format text" <argument_list>...)
+    `print`_([<mode>] "message with format text" <argument>...)
     `print`_([<mode>] PATHS <file_list>... INDENT)
 
 Usage
@@ -22,7 +22,7 @@ Usage
 .. _print:
 .. code-block:: cmake
 
-  print([<mode>] "message with format text" <argument_list>...)
+  print([<mode>] "message with format text" <argument>...)
 
 Record the specified message text in the log. This command is inspired by
 `message()` from CMake and `printf()` from C (see https://linux.die.net/man/3/printf).
