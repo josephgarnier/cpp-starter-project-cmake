@@ -626,6 +626,12 @@ cmake --build . --target package && sleep 3s && rm -rfv bin/_CPack_Packages
 
 # execute the `package binary` phase (on Windows)
 cmake --build . --target package && timeout /t 3 > NUL && del /a /f /s /q bin/_CPack_Packages
+
+# a useful command for debugging during the package configuration step (on Linux/MacOS)
+cpack --debug --verbose --config build/CPackConfig.cmake && sleep 3s && rm -rfv bin/_CPack_Packages
+
+# a useful command for debugging during the package configuration step (on Windows)
+cpack --debug --verbose --config build/CPackConfig.cmake && timeout /t 3 > NUL && del /a /f /s /q bin/_CPack_Packages
 ```
 
 Use the following commands to **execute the `package source` phase** of the *Build Lifecycle* (only available if the *Package Generator Module* has been activated):
