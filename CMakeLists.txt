@@ -276,7 +276,7 @@ elseif((NOT ${PROJECT_NAME}_MAIN_SOURCE_FILE) OR (NOT EXISTS "${${PROJECT_NAME}_
 endif()
 
 message(STATUS "Found the following source files:")
-print(STATUS PATHS ${${PROJECT_NAME}_SOURCE_SRC_FILES} INDENT)
+print(STATUS PATHS "${${PROJECT_NAME}_SOURCE_SRC_FILES}" INDENT)
 
 # Check header files.
 if(NOT DEFINED ${PROJECT_NAME}_HEADER_SRC_FILES)
@@ -303,7 +303,7 @@ else()
 	message(STATUS "Mark the headers in \"src/\" as public and ignore those in \"include/\".")
 endif()
 message(STATUS "Found the following header files:")
-print(STATUS PATHS ${${PROJECT_NAME}_HEADER_PRIVATE_FILES};${${PROJECT_NAME}_HEADER_PUBLIC_FILES} INDENT)
+print(STATUS PATHS "${${PROJECT_NAME}_HEADER_PRIVATE_FILES}" "${${PROJECT_NAME}_HEADER_PUBLIC_FILES}" INDENT)
 
 # Add source and header files to the build target.
 message(STATUS "Add the found source and header files to the target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\"")
@@ -333,7 +333,7 @@ if(${PARAM_USE_PRECOMPILED_HEADER})
 			PRIVATE
 				"${${PROJECT_NAME}_PRECOMPILED_HEADER_FILE}"
 		)
-		print(STATUS PATHS ${${PROJECT_NAME}_PRECOMPILED_HEADER_FILE} INDENT)
+		print(STATUS PATHS "${${PROJECT_NAME}_PRECOMPILED_HEADER_FILE}" INDENT)
 	endif()
 else()
 	set(CMAKE_DISABLE_PRECOMPILE_HEADERS off)
@@ -358,7 +358,7 @@ target_include_directories("${${PROJECT_NAME}_BUILD_TARGET_NAME}"
 		"$<$<BOOL:${${PROJECT_NAME}_HEADER_PRIVATE_DIR}>:${${PROJECT_NAME}_HEADER_PRIVATE_DIR}>"
 		"${${PROJECT_NAME}_HEADER_PUBLIC_DIR}"
 )
-print(STATUS PATHS ${${PROJECT_NAME}_HEADER_PUBLIC_DIR};${${PROJECT_NAME}_HEADER_PRIVATE_DIR} INDENT)
+print(STATUS PATHS "${${PROJECT_NAME}_HEADER_PUBLIC_DIR}" "${${PROJECT_NAME}_HEADER_PRIVATE_DIR}" INDENT)
 
 
 #---- Add internal dependencies to the build target. ----
@@ -377,9 +377,9 @@ if("${${PROJECT_NAME}_INCLUDE_DIR}/${PROJECT_NAME}" IN_LIST ${PROJECT_NAME}_LIBR
 	print(FATAL_ERROR "@rp@ must be excluded!" "${${PROJECT_NAME}_INCLUDE_DIR}/${PROJECT_NAME}")
 endif()
 message(STATUS "Found the following library files in \"lib/\" directory:")
-print(STATUS PATHS ${${PROJECT_NAME}_LIBRARY_FILES} INDENT)
+print(STATUS PATHS "${${PROJECT_NAME}_LIBRARY_FILES}" INDENT)
 message(STATUS "Found the following library header directories in \"include/\" directory:")
-print(STATUS PATHS ${${PROJECT_NAME}_LIBRARY_HEADER_DIRS} INDENT)
+print(STATUS PATHS "${${PROJECT_NAME}_LIBRARY_HEADER_DIRS}" INDENT)
 
 # Link libraries to the build target.
 message(STATUS "Link libraries found to the target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\"")

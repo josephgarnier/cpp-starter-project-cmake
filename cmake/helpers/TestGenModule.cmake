@@ -58,9 +58,9 @@ directory(SCAN ${PROJECT_NAME}_HEADER_TESTS_FILES
 )
 
 message(STATUS "Found the following source files:")
-print(STATUS PATHS ${${PROJECT_NAME}_SOURCE_TESTS_FILES} INDENT)
+print(STATUS PATHS "${${PROJECT_NAME}_SOURCE_TESTS_FILES}" INDENT)
 message(STATUS "Found the following header files:")
-print(STATUS PATHS ${${PROJECT_NAME}_HEADER_TESTS_FILES} INDENT)
+print(STATUS PATHS "${${PROJECT_NAME}_HEADER_TESTS_FILES}" INDENT)
 
 # Add source and header files to the test target.
 message(STATUS "Add the found source and header files to the target \"${${PROJECT_NAME}_TEST_TARGET_NAME}\"")
@@ -100,7 +100,7 @@ target_include_directories("${${PROJECT_NAME}_TEST_TARGET_NAME}"
 	PRIVATE
 		"${${PROJECT_NAME}_TESTS_DIR}"
 )
-print(STATUS PATHS ${${PROJECT_NAME}_TESTS_DIR} INDENT)
+print(STATUS PATHS "${${PROJECT_NAME}_TESTS_DIR}" INDENT)
 message(STATUS "Add the header directories to be tested to include directories of the target \"${${PROJECT_NAME}_TEST_TARGET_NAME}\":")
 target_include_directories("${${PROJECT_NAME}_TEST_TARGET_NAME}"
 	PRIVATE
