@@ -330,12 +330,11 @@ if(${PARAM_USE_PRECOMPILED_HEADER})
 	elseif(NOT "${${PROJECT_NAME}_PRECOMPILED_HEADER_FILE}" MATCHES "${${PROJECT_NAME}_HEADER_PUBLIC_DIR}")
 		print(FATAL_ERROR "Precompiled header file \"@rp@\" is not in the header public directory!" "${${PROJECT_NAME}_PRECOMPILED_HEADER_FILE}")
 	else()
-		message(STATUS "Add the following precompiled header file to the target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\":")
+		print(STATUS "Add the precompiled header file \"@rp@\" to the target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\":" "${${PROJECT_NAME}_PRECOMPILED_HEADER_FILE}")
 		target_precompile_headers("${${PROJECT_NAME}_BUILD_TARGET_NAME}"
 			PRIVATE
 				"${${PROJECT_NAME}_PRECOMPILED_HEADER_FILE}"
 		)
-		print(STATUS PATHS "${${PROJECT_NAME}_PRECOMPILED_HEADER_FILE}" INDENT)
 	endif()
 else()
 	set(CMAKE_DISABLE_PRECOMPILE_HEADERS off)
