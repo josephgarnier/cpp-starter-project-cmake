@@ -367,6 +367,13 @@ message("")
 message(STATUS "Adding internal dependencies")
 include(DependenciesInternalOptions)
 
+# Add link options to the build target.
+message(STATUS "Add link options to the target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\"")
+target_link_options("${${PROJECT_NAME}_BUILD_TARGET_NAME}"
+	PRIVATE
+		""
+)
+
 # Check library files and header library files.
 if(NOT DEFINED ${PROJECT_NAME}_LIBRARY_FILES)
 	message(FATAL_ERROR "${PROJECT_NAME}_LIBRARY_FILES must be specified!")
