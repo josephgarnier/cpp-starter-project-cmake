@@ -18,6 +18,25 @@ add_compile_options("/Zm200") # specifies the precompiled header memory allocati
 add_compile_options("$<$<CONFIG:DEBUG>:/Zi>") # generates complete debugging information
 add_compile_options("$<$<CONFIG:DEBUG>:/MP>") # builds multiple source files concurrently
 add_compile_options("$<$<CONFIG:DEBUG>:/W4>") # displays level 1, level 2, and level 3 warnings, and all level 4 (informational) warnings that aren't off by default
+add_compile_options("$<$<CONFIG:DEBUG>:/w14242>") # 'identfier': conversion from 'type1' to 'type1', possible loss of data
+add_compile_options("$<$<CONFIG:DEBUG>:/w14254>") # 'operator': conversion from 'type1:field_bits' to 'type2:field_bits', possible loss of data
+add_compile_options("$<$<CONFIG:DEBUG>:/w14263>") # 'function': member function does not override any base class virtual member function
+add_compile_options("$<$<CONFIG:DEBUG>:/w14265>") # 'classname': class has virtual functions, but destructor is not virtual instances of this class may not be destructed correctly
+add_compile_options("$<$<CONFIG:DEBUG>:/w14287>") # 'operator': unsigned/negative constant mismatch
+add_compile_options("$<$<CONFIG:DEBUG>:/we4289>") # nonstandard extension used: 'variable': loop control variable declared in the for-loop is used outside the for-loop scope
+add_compile_options("$<$<CONFIG:DEBUG>:/w14296>") # 'operator': expression is always 'boolean_value'
+add_compile_options("$<$<CONFIG:DEBUG>:/w14311>") # 'variable': pointer truncation from 'type1' to 'type2'
+add_compile_options("$<$<CONFIG:DEBUG>:/w14545>") # expression before comma evaluates to a function which is missing an argument list
+add_compile_options("$<$<CONFIG:DEBUG>:/w14546>") # function call before comma missing argument list
+add_compile_options("$<$<CONFIG:DEBUG>:/w14547>") # 'operator': operator before comma has no effect; expected operator with side-effect
+add_compile_options("$<$<CONFIG:DEBUG>:/w14549>") # 'operator': operator before comma has no effect; did you intend 'operator'?
+add_compile_options("$<$<CONFIG:DEBUG>:/w14555>") # expression has no effect; expected expression with side-effect
+add_compile_options("$<$<CONFIG:DEBUG>:/w14619>") # pragma warning: there is no warning number 'number'
+add_compile_options("$<$<CONFIG:DEBUG>:/w14640>") # enable warning on thread un-safe static member initialization
+add_compile_options("$<$<CONFIG:DEBUG>:/w14826>") # conversion from 'type1' to 'type_2' is sign-extended. This may cause unexpected runtime behavior
+add_compile_options("$<$<CONFIG:DEBUG>:/w14905>") # wide string literal cast to 'LPSTR'
+add_compile_options("$<$<CONFIG:DEBUG>:/w14906>") # string literal cast to 'LPWSTR'
+add_compile_options("$<$<CONFIG:DEBUG>:/w14928>") # illegal copy-initialization; more than one user-defined conversion has been implicitly applied
 
 # Code generation options.
 # @see https://docs.microsoft.com/en-us/cpp/build/reference/compiler-options-listed-by-category?view=msvc-160#code-generation
