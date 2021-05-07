@@ -61,10 +61,7 @@ Sets in the specified ``<output_var>`` to a component of file of ``<file_list>``
  NAME      = File name without directory
 
 #]=======================================================================]
-if(__file_manip)
-	return()
-endif()
-set(__file_manip on)
+include_guard()
 
 cmake_minimum_required (VERSION 3.16)
 
