@@ -34,7 +34,6 @@ add_compile_options("$<$<STREQUAL:${PARAM_BUILD_TYPE},debug>:-Wnull-dereference>
 add_compile_options("$<$<STREQUAL:${PARAM_BUILD_TYPE},debug>:-Wuseless-cast>") # warn if you perform a cast to the same type
 add_compile_options("$<$<STREQUAL:${PARAM_BUILD_TYPE},debug>:-Wdouble-promotion>") # warn if float is implicit promoted to double
 add_compile_options("$<$<STREQUAL:${PARAM_BUILD_TYPE},debug>:-Wformat=2>") # warn on security issues around functions that format output (ie printf)
-add_compile_options("$<$<STREQUAL:${PARAM_BUILD_TYPE},debug>:-Wlifetime>") # shows object lifetime issues
 
 # Debugging options.
 # @see https://gcc.gnu.org/onlinedocs/gcc/Debugging-Options.html

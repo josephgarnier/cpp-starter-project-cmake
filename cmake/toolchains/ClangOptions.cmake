@@ -15,7 +15,10 @@
 
 include(GccOptions.cmake)
 
-# Target-independent compilation options
+# Warning options.
+# add_compile_options("$<$<STREQUAL:${PARAM_BUILD_TYPE},debug>:-Wlifetime>") # shows object lifetime issues (only special branch of Clang currently)
+
+# Target-independent compilation options.
 add_compile_options("$<$<STREQUAL:${PARAM_BUILD_TYPE},debug>:-fdebug-macro>") # emit macro debug information
 add_compile_options("$<$<STREQUAL:${PARAM_BUILD_TYPE},debug>:-fstandalone-debug>") # emit full debug info for all types used by the program
 add_compile_options("$<$<STREQUAL:${PARAM_BUILD_TYPE},debug>:-stdlib=libc++>") # c++ standard library to use
