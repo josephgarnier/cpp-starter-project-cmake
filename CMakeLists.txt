@@ -50,11 +50,11 @@ message(" - Enable this module: \"${PARAM_ENABLE_UNINSTALL_MODULE}\"")
 
 
 #------------------------------------------------------------------------------
-# 1. Initialization of the generation of the project build tree.
+# 1. Initialization of the generation of the project build-tree.
 #------------------------------------------------------------------------------
 message("")
 message("")
-message("== 1. Initialization of the generation of the project build tree  ==")
+message("== 1. Initialization of the generation of the project build-tree  ==")
 
 
 #---- Project declaration. ----
@@ -142,7 +142,7 @@ message(STATUS "Checking project structure - done")
 
 
 #------------------------------------------------------------------------------
-# 2. Generate the `build` and `clean` phases
+# 2. The Base Generator Module
 #------------------------------------------------------------------------------
 include(Print)
 message("")
@@ -414,7 +414,7 @@ message(STATUS "Adding external dependencies - done")
 
 
 #------------------------------------------------------------------------------
-# 3. Generate the `test` phase
+# 3. The Test Generator Module
 #------------------------------------------------------------------------------
 if(${PARAM_ENABLE_TEST_MODULE})
 	message("")
@@ -426,7 +426,7 @@ endif()
 
 
 #------------------------------------------------------------------------------
-# 4. Generate the `code analysis` phase
+# 4. The Code Analysis Generator Module
 #------------------------------------------------------------------------------
 if(${PARAM_ENABLE_CODE_ANALYSIS_MODULE})
 	message("")
@@ -438,7 +438,7 @@ endif()
 
 
 #------------------------------------------------------------------------------
-# 5. Generate the `doc` phase
+# 5. The Doc Generator Module
 #------------------------------------------------------------------------------
 if(${PARAM_ENABLE_DOC_MODULE})
 	message("")
@@ -450,7 +450,7 @@ endif()
 
 
 #------------------------------------------------------------------------------
-# 6. Generate the `install` phase
+# 6. The Export Generator Module
 #------------------------------------------------------------------------------
 if(${PARAM_ENABLE_EXPORT_MODULE})
 	message("")
@@ -462,7 +462,7 @@ endif()
 
 
 #------------------------------------------------------------------------------
-# 7. Generate the `package source` and `package binary` phases
+# 7. The Package Generator Module
 #------------------------------------------------------------------------------
 if(${PARAM_ENABLE_PACKAGE_MODULE})
 	message("")
@@ -474,7 +474,7 @@ endif()
 
 
 #------------------------------------------------------------------------------
-# 8. Generate the `uninstall` phases
+# 8. The Uninstall Generator Module
 #------------------------------------------------------------------------------
 if(${PARAM_ENABLE_UNINSTALL_MODULE})
 	message("")

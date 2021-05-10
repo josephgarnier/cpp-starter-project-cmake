@@ -117,7 +117,7 @@ message(STATUS "Find GTest")
 include(FetchContent)
 find_package(GTest)
 if(NOT GTEST_FOUND)
-	message(STATUS "GTest not found, it will be auto-downloaded in the build tree")
+	message(STATUS "GTest not found, it will be auto-downloaded in the build-tree")
 	set(FETCHCONTENT_QUIET off)
 	FetchContent_Declare(
 		googletest

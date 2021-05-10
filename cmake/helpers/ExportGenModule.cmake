@@ -29,7 +29,7 @@ set(${PROJECT_NAME}_INSTALL_RELATIVE_INCLUDE_DIR    "${CMAKE_INSTALL_INCLUDEDIR}
 set(${PROJECT_NAME}_INSTALL_RELATIVE_LIBRARY_DIR    "${CMAKE_INSTALL_LIBDIR}/${PROJECT_NAME}")        # in absolute: <CMAKE_INSTALL_PREFIX>/lib/<project-name>
 
 # Set the RPATH, see https://gitlab.kitware.com/cmake/community/-/wikis/doc/cmake/RPATH-handling
-set(CMAKE_SKIP_BUILD_RPATH              off) # Include RPATHs in the build tree.
+set(CMAKE_SKIP_BUILD_RPATH              off) # Include RPATHs in the build-tree.
 set(CMAKE_BUILD_WITH_INSTALL_RPATH      off) # Don't use the install RPATH already (but later on when installing)
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH   on) # Add paths to linker search and installed rpath.
 set(CMAKE_INSTALL_RPATH                 "${${PROJECT_NAME}_INSTALL_RELATIVE_LIBRARY_DIR}") # The rpath to use for installed targets.
@@ -64,7 +64,7 @@ file_manip(ABSOLUTE_PATH ${PROJECT_NAME}_INSTALL_LIBRARY_FILES
 	BASE_DIR "${${PROJECT_NAME}_INSTALL_RELATIVE_LIBRARY_DIR}"
 )
 
-# Add usage requirements to the build target for an import from the build tree (BUILD_INTERFACE) or install tree (INSTALL_INTERFACE).
+# Add usage requirements to the build target for an import from the build-tree (BUILD_INTERFACE) or install-tree (INSTALL_INTERFACE).
 message(STATUS "Add usage requirements to the target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\" for importing")
 
 target_compile_features("${${PROJECT_NAME}_BUILD_TARGET_NAME}"
@@ -110,15 +110,15 @@ target_link_libraries("${${PROJECT_NAME}_BUILD_TARGET_NAME}"
 )
 
 
-#---- Exporting from a Build Tree. ----
+#---- Exporting from a Build-Tree. ----
 # See: https://gitlab.kitware.com/cmake/community/-/wikis/doc/tutorials/Exporting-and-Importing-Targets.
 # See: https://cmake.org/cmake/help/latest/command/export.html
 # See: https://cmake.org/cmake/help/latest/guide/importing-exporting/#exporting-targets-from-the-build-tree
 message("")
-message(STATUS "Export the target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\" from the build tree")
+message(STATUS "Export the target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\" from the build-tree")
 list(APPEND CMAKE_MESSAGE_INDENT "  ")
 
-# Generate the export script `Targets.cmake` for importing the build target coming from the build tree,
+# Generate the export script `Targets.cmake` for importing the build target coming from the build-tree,
 set(${PROJECT_NAME}_EXPORT_NAME               "${PROJECT_NAME}Targets")
 string_manip(TRANSFORM ${PROJECT_NAME}_EXPORT_NAME START_CASE)
 set(${PROJECT_NAME}_EXPORT_NAMESPACE          "${PARAM_EXPORT_NAMESPACE}")
@@ -129,21 +129,21 @@ export(TARGETS "${${PROJECT_NAME}_BUILD_TARGET_NAME}"
 	FILE "${${PROJECT_NAME}_BUILD_DIR}/${${PROJECT_NAME}_EXPORT_CONFIG_FILE_NAME}"
 	NAMESPACE "${${PROJECT_NAME}_EXPORT_NAMESPACE}::"
 )
-print(STATUS "Export script for the build tree generated: @rp@" "${${PROJECT_NAME}_BUILD_DIR}/${${PROJECT_NAME}_EXPORT_CONFIG_FILE_NAME}")
+print(STATUS "Export script for the build-tree generated: @rp@" "${${PROJECT_NAME}_BUILD_DIR}/${${PROJECT_NAME}_EXPORT_CONFIG_FILE_NAME}")
 list(POP_BACK CMAKE_MESSAGE_INDENT)
-message(STATUS "The target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\" of the build tree is now importable")
+message(STATUS "The target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\" of the build-tree is now importable")
 
 
-#---- Exporting from an Install Tree. ----
+#---- Exporting from an Install-Tree. ----
 # See: https://gitlab.kitware.com/cmake/community/-/wikis/doc/tutorials/Exporting-and-Importing-Targets.
 # See: https://cmake.org/cmake/help/latest/command/install.html#installing-exports
 # See: https://cmake.org/cmake/help/latest/guide/importing-exporting/#exporting-targets
 message("")
-message(STATUS "Export the target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\" from the install tree")
+message(STATUS "Export the target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\" from the install-tree")
 list(APPEND CMAKE_MESSAGE_INDENT "  ")
 
-# Generate the install tree and the install rules.
-message(STATUS "Generate the install tree and the install rules")
+# Generate the install-tree and the install rules.
+message(STATUS "Generate the install-tree and the install rules")
 
 # Rule for assets in `assets/`.
 install(DIRECTORY "${${PROJECT_NAME}_ASSETS_DIR}"
@@ -185,15 +185,15 @@ install(FILES ${${PROJECT_NAME}_LIBRARY_FILES}
 install(DIRECTORY "${${PROJECT_NAME}_RESOURCES_DIR}"
 	DESTINATION "${${PROJECT_NAME}_INSTALL_RELATIVE_DATAROOT_DIR}"
 )
-# Generate the export script `Targets.cmake` for importing the build target coming from the install tree, and its install rule.
+# Generate the export script `Targets.cmake` for importing the build target coming from the install-tree, and its install rules.
 install(EXPORT "${${PROJECT_NAME}_EXPORT_NAME}"
 	NAMESPACE "${${PROJECT_NAME}_EXPORT_NAMESPACE}::"
 	DESTINATION "${${PROJECT_NAME}_INSTALL_RELATIVE_DATAROOT_DIR}/cmake"
 	FILE "${${PROJECT_NAME}_EXPORT_CONFIG_FILE_NAME}"
 )
-print(STATUS "Export script for the install tree generated: @rp@" "${${PROJECT_NAME}_BUILD_DIR}/CMakeFiles/Export/${${PROJECT_NAME}_INSTALL_RELATIVE_DATAROOT_DIR}/cmake/${${PROJECT_NAME}_EXPORT_CONFIG_FILE_NAME}")
+print(STATUS "Export script for the install-tree generated: @rp@" "${${PROJECT_NAME}_BUILD_DIR}/CMakeFiles/Export/${${PROJECT_NAME}_INSTALL_RELATIVE_DATAROOT_DIR}/cmake/${${PROJECT_NAME}_EXPORT_CONFIG_FILE_NAME}")
 list(POP_BACK CMAKE_MESSAGE_INDENT)
-message(STATUS "The target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\" of the install tree is now importable")
+message(STATUS "The target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\" of the install-tree is now importable")
 
 
 #---- Create the package configuration files for the `find_package()` command. ----
