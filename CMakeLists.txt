@@ -258,6 +258,13 @@ target_compile_options("${${PROJECT_NAME}_BUILD_TARGET_NAME}"
 		""
 )
 
+# Add link options to the build target.
+message(STATUS "Add link options to the target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\"")
+target_link_options("${${PROJECT_NAME}_BUILD_TARGET_NAME}"
+	PRIVATE
+		""
+)
+
 
 #---- Add source and header files to the build target. ----
 message(STATUS "Check source and header files")
@@ -366,13 +373,6 @@ print(STATUS PATHS "${${PROJECT_NAME}_HEADER_PUBLIC_DIR}" "${${PROJECT_NAME}_HEA
 message("")
 message(STATUS "Adding internal dependencies")
 include(DependenciesInternalOptions)
-
-# Add link options to the build target.
-message(STATUS "Add link options to the target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\"")
-target_link_options("${${PROJECT_NAME}_BUILD_TARGET_NAME}"
-	PRIVATE
-		""
-)
 
 # Check library files and header library files.
 if(NOT DEFINED ${PROJECT_NAME}_LIBRARY_FILES)
