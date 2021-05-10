@@ -8,6 +8,8 @@
 # -------------
 # See README file in the root directory of this source tree.
 
+include(Print)
+
 # Add the target (or command) onyl if it doesn't exist.
 if(NOT TARGET uninstall)
 	# Set output files, directories and names.
