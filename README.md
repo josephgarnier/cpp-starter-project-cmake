@@ -22,9 +22,11 @@ This starter ships with all you might need to get up and running blazing fast wi
 - [⚓ Requirements](#-requirements)
 - [🚀 Getting started](#-getting-started)
 - [💫 *Build Lifecycle* overview](#-build-lifecycle-overview)
+  - [The build phases](#the-build-phases)
+  - [The generator modules](#the-generator-modules)
 - [📄 Setting up the generator modules](#-setting-up-the-generator-modules)
   - [1. Global settings](#1-global-settings)
-  - [2. *Build Generator Module* settings](#2-build-generator-module-settings)
+  - [2. *Base Generator Module* settings](#2-base-generator-module-settings)
   - [3. *Test Generator Module* settings](#3-test-generator-module-settings)
   - [4. *Code Analysis Generator Module* settings](#4-code-analysis-generator-module-settings)
   - [5. *Doc Generator Module* settings](#5-doc-generator-module-settings)
@@ -85,7 +87,7 @@ The following dependencies are **optional** because they will be **automatically
     rm -rfvI tests/*
     ```
 
-3. **Edit the basic settings.** Open the file `cmake/project/StandardOptions.txt` and edit the name of your project in the variable `PROJECT_NAME` and the type of build in `BUILD_TARGET_TYPE` ("static", "shared", "header", for header-only library, or "exec).
+3. **Edit the basic settings.** Open the file `cmake/project/StandardOptions.txt` and edit the name of your project in the variable `PROJECT_NAME` and the type of the main binary build target in `BUILD_TARGET_TYPE` ("static", "shared", "header", for header-only library, or "exec).
 
 4. **Add the dependencies**. If the project requires dependencies, add the libraries (.dll or .so) in the `lib/` directory and their header files in a sub-folder of the `include/` directory, or add the instructions to link external libaries at the end of the `cmake/project/DependenciesExternalOptions.cmake` file.
 
@@ -97,34 +99,46 @@ For more advanced use and with more functionality, please refer to the following
 
 In the last few years, CMake has become complete and easy to use enough to handle the whole process of compilation, testing analyzing and distributing of a C ++ project. This is why the ambition of this template is to rely as much as possible on the power of CMake to propose a development base that is quick to use and covers all the steps of this process. Moreover, the objective is also to propose a structure that is generic enough to adapt to the greatest number of situations by offering a high level of customization.
 
-No longer limited to be a [generator of project build environment](https://cmake.org/overview/) only for building libraries or executables, [CMake](https://cmake.org/cmake/help/latest/manual/cmake.1.html) has become a **complete generator of build lifecycle**, with its multiple phases (e.g. to build binary, build tests, build doc, etc), that can cover all the expected steps of a C++ project building and distribution process (just like [Maven](https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html) for Java). Each phase is associated with a command. In using this template, here is an **overview of all the phases of the *Build Lifecycle*** that can be generated with their interactions:
+### The build phases
+
+Although designed and traditionally used to be a [generator of project build environment](https://cmake.org/overview/) and more specifically of [build target](https://cmake.org/cmake/help/latest/manual/cmake-buildsystem.7.html) for building libraries or executables from build target, we can now consider that [CMake](https://cmake.org/cmake/help/latest/manual/cmake.1.html) has become a **generator of complete *Build Lifecycle***.
+
+In this template project, we define a ***Build Lifecycle*** as a sequence of build phases that can be invoked to cover all the expected steps of a C++ project building and distribution process (just like [Maven](https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html) for Java). A **build phase** is a virtual set of [cmake targets](https://cmake.org/cmake/help/latest/command/add_custom_target.html) or [cmake commands](https://cmake.org/cmake/help/latest/command/add_custom_command.html) that can be executed to build a binary, build tests, generate the doc, build package, install or uninstall a project, etc.
+
+This **concept of build phase does not exist in CMake**, it is a convenient way introduced in this project to virtually group several targets or commands contributing to a major step in the *Build Lifecycle*. This means that you can completely customize your lifecycle. Thus, the objective of this project is only to generate with CMake all targets and commands you might need to run each of the proposed build phases or to compose yours.
+
+In the image below, you can see an **overview of the *Build Lifecycle* proposed by default** with its sequence of the build phases, their composition and their interactions:
 
 [TODO IMAGE OVERVIEW]
 
-Once all the files of phases of the *Build Lifecycle* have been generated, here is what they can do in using their respective command:
+Here is a description of what each build phase achieves (their associated targets and commands are described in the next section):
 
 - `uninstall`: uninstall the installed project files from a specific location on the disk.
-- `clean`: remove all files generated by a previous build and the generator.
-- `build`: compile the source code of the project into a binary, link it to dependencies and optionally export it from the build tree).
-- `test`: test the compiled source code using a suitable unit testing framework.
-- `code analysis`: !! not implented yet !!  run any checks on results of integration tests to ensure quality criteria are met.
+- `clean`: remove all files generated by other phases and the generator.
+- `compile`: compile the source code of the C++ project into an executable or a library. Can optionally export it from the build-tree.
+- `test`: compile the unit tests of the project into an executable for testing.
+- `code analysis`: !! not implented yet !!  run any checks on results of integration tests to ensure quality criteria are met. Also run many tools for code sanitizers.
 - `doc`: generate the project's documentation.
 - `install`: install the project files into a specific location on the disk.
-- `package source` and `package binary`: take the project files and package them in its distributable format, such as a ZIP or an installer.
+- `package`: take the project files and packs them into two packages in a distributable format, such as a ZIP or an installer.
 
-The above is an example of a complete sequence of build phases, but it is possible to customize the order and to not generate some phases by disabling generator modules. **Generator modules** are a split of the CMake code into multiple logical units performing a particular task in the generation of the *Build Lifecycle*. Each of them generate at least one build phase, but they can be disabled as needed when a phase is not useful. However, the generator module for the `clean` and `build` phases is always enabled by default, since it is the minimum code to generate the *Build Lifecycle*.
+### The generator modules
 
-A generator module is not an autonomous unit and it may share a dependency relationship with others, which conditions its activation. Here is the dependency graph of the modules with their configuration files:
+It is possible to completely customize this sequence of build phases, their composition and their behavior by setting up the so-called *Generator Module*. A ***Generator Module*** is a logical unit containing CMake instructions to generate or modify one or more [cmake targets](https://cmake.org/cmake/help/latest/command/add_custom_target.html) or [cmake commands](https://cmake.org/cmake/help/latest/command/add_custom_command.html) that contribute to the same step in the *Build Lifecycle*.
+
+Each *Generator Module* has its own configuration parameters and can be disabled to prevent the generation of its targets and commands that you may consider not useful. However, it is not possible to deactivate a particular target, just like the *Base Generator Module* responsible for compiling the project and cleaning it. This one generate the minimum code for a *Build Lifecycle*. Furthermore, a *Generator Module* is not an autonomous unit and it may share a dependency relationship with others, which conditions its activation.
+
+Here is **the dependency graph of the modules**, their configuration files and the cmake targets or command they generate:
 
 [TODO IMAGE WORKFLOW]
 
-The dashed lines indicate a dependency. Thus, for example, the *Uninstall Generator Module* depends on the *Export Generator Module*.
+The dashed lines indicate a dependency. Thus, for example, the *Package Generator Module* depends on the *Export Generator Module*.
 
 ## 📄 Setting up the generator modules
 
-Let's see now how to configure the generator modules and each build phases of the *Build Lifecycle* of your C++ project. All **the configuration files you will need** are in the `cmake/project` directory. Please remember that **only the generator module named `build` is mandatory to configure**, the others are optional and depend on your needs.
+All **the configuration files you will need** to set up the generator modules are in the `cmake/project/` directory. Please remember that **only the *Base Generator Module* is mandatory to configure**, the others are optional and depend on your needs. All generator modules are in the directory `cmake/helpers/` but your don't need to edit them. Finally, if for some reason you want to know what targets has been generated by a module, you can use this command `cmake --build build/ --target help` from the project root.
 
-All standard options are passed to CMake thank to the [`initial-cache` feature](https://cmake.org/cmake/help/latest/manual/cmake.1.html#options) which pre-loads the script `cmake/project/StandardOptions.txt` to populate the cache. Then, it is called with the command `cmake -C <initial-cache>` (we will see later how use it easily). With this feature, it is no longer necessary to directly modify the `CMakeLists.txt` file and its is a more convenient way than using the [options](https://cmake.org/cmake/help/latest/command/option.html). Once the CMake generation command has been called, it will be possible, from the `build/` directory, to view cached variables and their descriptions with the command `cmake -LAH`.
+All standard options are passed to CMake thank to the [`initial-cache` feature](https://cmake.org/cmake/help/latest/manual/cmake.1.html#options) which pre-loads the script `cmake/project/StandardOptions.txt` to populate the cache. Then, it is called with the command `cmake -C <initial-cache>` (we will see later how use it easily). With this feature, it is no longer necessary to directly modify the `CMakeLists.txt` file and its is a more convenient way than using the [options](https://cmake.org/cmake/help/latest/command/option.html). Once the CMake generation command has been called, it will be possible to view cached variables and their descriptions with the command `cmake -LAH build/`.
 
 In general, **don't worry if you make a mistake or forget an essential option** in a configuration file, each of them will be checked in `CMakeLists.txt` and you will receive an error message if necessary.
 
@@ -143,18 +157,24 @@ Open the file `cmake/project/StandardOptions.txt` and edit them as you wish:
 - `PROJECT_VERSION_PATCH`: project patch version;
 - `LIFECYCLE_GENERATOR`: specifies for each platform with which generator the *Build Lifecycle* will be generated, see [cmake-generators](https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html). By default, *Unix Makefiles* is used for Linux and MacOS, while *Visual Studio 16 2019* is used for Windows.
 
-### 2. *Build Generator Module* settings
+### 2. *Base Generator Module* settings
 
-The **role of the *Build Generator Module*** is to use the optional generator given from options and the source tree files to initialize the generation of the [build tree](https://cmake.org/cmake/help/latest/manual/cmake.1.html#introduction-to-cmake-buildsystems) which will contain all the information and files of the *Build Lifecycle* of the C++ project. This basic structure will be used for all other modules. This is why this module cannot be disabled. Once the initialization is completed, the module will generate in the build tree the two build phases associated with it:
+The **role of the *Base Generator Module*** is to use the generator given from options and the source-tree files to initialize the generation of the [build-tree](https://cmake.org/cmake/help/latest/manual/cmake.1.html#introduction-to-cmake-buildsystems) which will contain all files of the *Build Lifecycle* of the C++ project. This basic structure will be used for all other modules. This is why this module cannot be disabled. Once the initialization is completed, the other role of this module is to generate at least one [binary build target](https://cmake.org/cmake/help/latest/manual/cmake-buildsystem.7.html#binary-targets), for building the project binary, and five additional targets:
 
-- `build`, to compile the source code of the project into a binary, link it to dependencies and optionally export it from the build tree (if *Export Generator Module* is enabled);
-- `clean`, to remove all files generated by a previous build and the generator.
+- `all`: the default build target that build all binary build targets and compile all source code in the source-tree into one or more binaries (executable or library);
+- `<project-name>`: the main binary build target that build an [executable](https://cmake.org/cmake/help/latest/manual/cmake-buildsystem.7.html#binary-executables) or a [library](https://cmake.org/cmake/help/latest/manual/cmake-buildsystem.7.html#binary-library-types) from source code of the project in the source-tree;
+- `clean`: remove all files generated by other targets and the generator;
+- `edit_cache`: edit the project configuration with [ccmake](https://cmake.org/cmake/help/latest/manual/ccmake.1.html) instead of [cmake-gui](https://cmake.org/cmake/help/latest/manual/cmake-gui.1.html);
+- `rebuild_cache`: run cmake command on the source-tree and picks up additional cache entries if they exist;
+- `depend`: run cmake to generate dependencies for the source files.
 
-To use this module, **four options files** need to be configured. The **first file** is `cmake/project/StandardOptions.txt`, so open it and edit the options in the *Build Generator Module options* section:
+By default there is only one binary build target, so the build targets `all` and `<project-name>` do the same thing.
 
-- `BUILD_STANDARD_VERSION=[11|14|17 (default)|20|23]`: specifies build standard version "11" or "14" or "17" or "20" or 23, see [CMAKE_CXX_STANDARD](https://cmake.org/cmake/help/latest/variable/CMAKE_CXX_STANDARD.html);
-- `BUILD_TYPE=[(default) debug|release]`: specifies type of build "debug" or "release", see [CMAKE_BUILD_TYPE](https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html);
-- `BUILD_TARGET=[static|shared|header|exec (default)]`: specified whether build static or shared or header-only library or as an exec, see [TYPE](https://cmake.org/cmake/help/latest/prop_tgt/TYPE.html);
+To use this module, **four options files** need to be configured. The **first file** is `cmake/project/StandardOptions.txt`, so open it and edit the options in the *Base Generator Module options* section:
+
+- `BUILD_STANDARD_VERSION=[11|14|17 (default)|20|23]`: specifies the standard version for building binaries, "11" or "14" or "17" or "20" or 23, see [CMAKE_CXX_STANDARD](https://cmake.org/cmake/help/latest/variable/CMAKE_CXX_STANDARD.html);
+- `BUILD_TYPE=[(default) debug|release]`: specifies the type of configuration for the build-tree, "debug" or "release", see [CMAKE_BUILD_TYPE](https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html);
+- `BUILD_TARGET_TYPE=[static|shared|header|exec (default)]`: specifies the type of the main binary build target, "static" or "shared" or "header" (for header-only library) or as an "exec", see [TYPE](https://cmake.org/cmake/help/latest/prop_tgt/TYPE.html);
 - `COMPILE_DEFINITIONS`: specifies a semicolon-separated list of preprocessor definitions (e.g -DFOO;-DBAR or FOO;BAR). Can be empty;
 - `PUBLIC_HEADERS_SEPARATED=[ON|OFF (default)]`: specifies whether public header files are separated from private header files (see below for more details);
 - `USE_PRECOMPILED_HEADER=[ON|OFF (default)]`: specifies whether a precompiled header file will be used or not;
@@ -164,32 +184,38 @@ The `PUBLIC_HEADERS_SEPARATED` option is there to provide **support for the two 
 
 [IMAGE]
 
-The first is to put all header files in the `src/` tree files and none in `include/`. In this case `PUBLIC_HEADERS_SEPARATED` must be set to `off` and the header files will all be public. The second policy, when `PUBLIC_HEADERS_SEPARATED` is set to `on`, is to put only the private header files in `src/` and the public header files in a sub-folder of `include/` named like your project. Therefore, if you choose the second policy you must create a `include/<project-name>` directory.
+The first is to put all header files in `src/` and none in `include/`. In this case, `PUBLIC_HEADERS_SEPARATED` must be set to `off` and the header files will all be public. The second policy, when `PUBLIC_HEADERS_SEPARATED` is set to `on`, is to put only the private header files in `src/` and the public header files in a sub-folder of `include/` named like your project. Therefore, if you choose the second policy you must create a `include/<project-name>` directory.
 
 Except for personal convenience, the consequence of choosing a policy will only be visible if you enable the *Export Generator Module*. Indeed, only public header files will be exported outside the project to be made accessible for import by other projects (see the dedicated section for more details).
 
-Finally, when you set `PUBLIC_HEADERS_SEPARATED` to `on`, the header files can still included in the source files (. cpp) in two different ways to allow a greater flexibility: either by prefixing the paths with the project name, e.g. `#include "project-name/include1.h"`, or without prefixing, e.g. `#include "include1.h"`. This is possible because the three directories `src/`, `include/` and `include/<project-name>` are added to the build binary with the command `target_include_directories()`.
+Finally, when you set `PUBLIC_HEADERS_SEPARATED` to `on`, the header files can still included in the source files (. cpp) in two different ways to allow a greater flexibility: either by prefixing the paths with the project name, e.g. `#include "project-name/include1.h"`, or without prefixing, e.g. `#include "include1.h"`. This is possible because the three directories, `src/`, `include/` and `include/<project-name>`, are added to the main binary build target with the command `target_include_directories()`.
 
-The `TOOLCHAIN_FILE` option allows you to provide to the generator a path to a file that configures a [toolchain](https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html) of utilities to compile, link libraries and create archives, and other tasks to drive the build. This feature offered by CMake is very useful for cross compiling. By default, the project comes with four toolchain files, located in the `cmake/toolchains` folder. If needed, you can add your own by following the [documentation provided by CMake](https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html).
+The `TOOLCHAIN_FILE` option allows you to provide to the generator a path to a file that configures a [toolchain](https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html). For CMake, a toolchain is a set of all the necessary tools required to drive the binaries building: the working environment, the CMake executable, the make tool and compilers, and the debugger. This feature offered by CMake is very useful for cross compiling. By default, the project comes with four toolchain files, located in the `cmake/toolchains` folder. If needed, you can add your own by following the [documentation provided by CMake](https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html).
 
-The **second file to configure** is the one that provides to the *Build Generator Module* the list of source and header files. Open the file `cmake/project/HeadersAndSourcesOptions.cmake` and edit each of the following variables as necessary:
+In addition, each toolchain includes options for the compilers set by default in the project (most of them are based on those proposed by [Jason Turner](https://github.com/lefticus/cppbestpractices/blob/master/02-Use_the_Tools_Available.md) in his best practices). Feel free to modify them by referring to their respective compiler documentations:
 
-- `${PROJECT_NAME}_SOURCE_SRC_FILES`: contains the list of source files (.cpp) present in the `src/` folder;
-- `${PROJECT_NAME}_HEADER_SRC_FILES`: contains the list of header files (.h) in the `src/` directory;
+- `cmake/toolchains/ClangOptions.cmake` for the [Clang options](https://clang.llvm.org/docs/ClangCommandLineReference.html);
+- `cmake/toolchains/GccOptions.cmake` for the [GCC options](https://gcc.gnu.org/onlinedocs/gcc/Option-Summary.html);
+- `cmake/toolchains/VsOptions.cmake` for the [Visual Studio options](https://docs.microsoft.com/en-us/cpp/build/reference/compiler-options-listed-by-category);
+
+The **second file to configure** is the one that provides to the *Base Generator Module* the list of source and header files. Open the file `cmake/project/HeadersAndSourcesOptions.cmake` and edit each of the following variables as necessary:
+
+- `${PROJECT_NAME}_SOURCE_SRC_FILES`: contains the list of source files (.cpp) present in `src/`;
+- `${PROJECT_NAME}_HEADER_SRC_FILES`: contains the list of header files (.h) in `src/`;
 - `${PROJECT_NAME}_HEADER_INCLUDE_FILES`: contains the list of header files present in the `include/<project-name>` folder (can be empty depending on the chosen policy).
-- `${PROJECT_NAME}_PRECOMPILED_HEADER_FILE`: path to the **[precompiled header](https://en.wikipedia.org/wiki/Precompiled_header) file**. Initiated by default with a path pointing to the `include/` folder and more precisely `${${PROJECT_NAME}_INCLUDE_DIR}/${PROJECT_NAME}/${PROJECT_NAME}_pch.h`, set the value to your own filename if you don't want to use this format. The file will be ignored if you previously set the associated option to off.
+- `${PROJECT_NAME}_PRECOMPILED_HEADER_FILE`: path to the **[precompiled header](https://en.wikipedia.org/wiki/Precompiled_header) file**. Initiated by default with a path pointing to `include/` and more precisely to `${${PROJECT_NAME}_INCLUDE_DIR}/${PROJECT_NAME}/${PROJECT_NAME}_pch.h`, set the value to your own filename if you don't want to use this format. The file will be ignored if you previously set the associated option to off.
 - `${PROJECT_NAME}_MAIN_SOURCE_FILE`: path to the file containing the main function.
 
 In order to minimize configuration time and to make CMake accessible, **the first three variables are automatically initialized** using a [glob function](https://cmake.org/cmake/help/latest/command/file.html#glob). So by default you don't have to configure them. However, using a glob function is [not a recommended practice](https://cmake.org/cmake/help/latest/command/file.html#glob) by CMake, so you are free to replace it with a manual initialization.
 
-The **third file to configure** concerns the internal dependencies to be linked to the binary. Open the file `cmake/project/DependenciesInternalOptions.cmake` and edit each of the following variables as necessary:
+The **third file to configure** concerns the internal dependencies to be linked to the main binary build target. Open the file `cmake/project/DependenciesInternalOptions.cmake` and edit each of the following variables as necessary:
 
-- `${PROJECT_NAME}_LIBRARY_FILES`: contains the list of libraries in the `lib/` folder.
+- `${PROJECT_NAME}_LIBRARY_FILES`: contains the list of libraries in `lib/`.
 - `${PROJECT_NAME}_LIBRARY_HEADER_DIRS`: contains the list of subdirectories of `include/` that have header files for the libraries. The directory `include/<project-name>` must not be in the list.
 
-**Setting these variables is facultative**. Indeed, by default, and to simplify the use of CMake, all the internal libraries that are in the `lib/` folder will be automatically linked to the binary, with their header files that are in the subdirectories of `include/` (for linux workers, don't forget to create a link to each library in `lib\` for the [soname policy](https://en.wikipedia.org/wiki/Soname)). If you don't want to use this feature, just initialize both variables to empty.
+**Setting these variables is facultative**. Indeed, by default, and to simplify the use of CMake, all the internal libraries that are in `lib/` will be automatically linked to the main binary build target, with their header files that are in the subdirectories of `include/` (for linux workers, don't forget to create a link to each library in `lib/` for the [soname policy](https://en.wikipedia.org/wiki/Soname)). If you don't want to use this feature, just initialize both variables to empty or let the lib directory empty.
 
-The **fourth and last file to configure** concerns the external dependencies to be linked to the binary. Open the file `cmake/project/DependenciesExternalOptions.cmake` and put the **instructions necessary to import and link the external libaries** to the binary after the message *Import and link external libraries from here*. Here are two examples of library import.
+The **fourth and last file to configure** concerns the external dependencies to be linked to the main binary build target. Open the file `cmake/project/DependenciesExternalOptions.cmake` and put the **instructions necessary to import and link the external libaries** to the main binary build target after the message *Import and link external libraries from here*. Here are two examples of library import.
 
 <details>
 <summary>Link Qt</summary>
@@ -356,7 +382,7 @@ message(STATUS "Find Eigen3 package")
 include(FetchContent)
 find_package(Eigen3 NO_MODULE)
 if(NOT EIGEN3_FOUND)
-  message(STATUS "Eigen3 not found, it will be auto-downloaded in the build tree")
+  message(STATUS "Eigen3 not found, it will be auto-downloaded in the build-tree")
   set(FETCHCONTENT_QUIET off)
   FetchContent_Declare(
     eigen3
@@ -381,7 +407,7 @@ else()
   message(STATUS "Eigen3 found")
 endif()
 
-# Link Eigen3 to the build target.
+# Link Eigen3 to the main binary build target.
 message(STATUS "Link Eigen3 library to the target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\"")
 target_link_libraries("${${PROJECT_NAME}_BUILD_TARGET_NAME}"
   PRIVATE
@@ -395,17 +421,22 @@ If after configuring this module you do not wish to activate any others, go dire
 
 ### 3. *Test Generator Module* settings
 
-The **role of the *Test Generator Module*** is to generate the `test` phase which will allow to build and execute the unit tests with [GoogleTest](https://github.com/google/googletest):
+The **role of the *Test Generator Module*** is to generate the test binary build target, which will allow to compile and execute the unit tests with [GoogleTest](https://github.com/google/googletest):
 
-- `test`: test the compiled source code using a suitable unit testing framework.
+- `<project-name>_test`: the test binary build target that build an executable from the test code in using a suitable unit testing framework. This target is not added to the `all` target.
+- `gtest`: the binary build target of Google Test that build the gtest library from source code in the build-tree;
+- `gtest_main`: the binary build target of Google Test that build the gtest_main library from source code in the build-tree;
+- `gmock`: the binary build target of Google Test that build the gmock library from source code in the build-tree;
+- `gmock_main`: the binary build target of Google Test that build the gmock_main library from source code in the build-tree;
+- `clean`: remove all files generated by the previous targets and the generator.
 
-The **module depends on GoogleTest**, so either you install it following the [site instructions](https://github.com/google/googletest/blob/master/googletest/README.md), or you let the module use the auto-download feature which will detect the absence of the dependency and download it in the build tree directly from its GitHub repository during generation. Since the test library is small, **auto-download is the preferred option**.
+The **module depends on GoogleTest**, so either you install it following the [site instructions](https://github.com/google/googletest/blob/master/googletest/README.md), or you let the module use the auto-download feature which will detect the absence of the dependency and download it in the build-tree directly from its GitHub repository during generation. Since the test library is small, **auto-download is the preferred option**.
 
 To use this module, only **one option in a single file** has to be set. Open the file `cmake/project/StandardOptions.txt` and edit the option in the section *Test Generator Module options*:
 
 - `ENABLE_TEST_MODULE=[ON|OFF (default)]`: specifies whether enable the Test Generator Module.
 
-Then, write all your tests in the `tests/` directory, source and header files. The module will automatically detect these files and add theme to the test target. There are several strategies for linking test files to the files to be tested, each with their advantages and disadvantages. Here, the one that has been chosen is to add all the source and header files of the main target to the test executable. The disadvantage is that the project has to be built twice, but on one hand this reduces the dependencies between the main target and the test target, and on the other hand, the test configuration is much less complex to write.
+Then, write all your tests (source and header files) in `tests/`. The module will automatically detect these files and add theme to the test binary build target. There are several strategies for linking test files to the files to be tested, each with their advantages and disadvantages. Here, the one that has been chosen is to add all the source and header files of the main binary build target to the test executable. The disadvantage is that the project has to be built twice, but on one hand this reduces the dependencies between the main target and the test target, and on the other hand, the test configuration is much less complex to write.
 
 If after configuring this module you do not wish to activate any others, go directly to the next section.
 
@@ -415,11 +446,12 @@ If after configuring this module you do not wish to activate any others, go dire
 
 ### 5. *Doc Generator Module* settings
 
-The **role of the *Doc Generator Module*** is to generate the `doc` phase which will allow to build the documentation [Doxygen](http://www.doxygen.nl/) of the project:
+The **role of the *Doc Generator Module*** is to generate the target which will allow to generate the documentation [Doxygen](http://www.doxygen.nl/) of the project:
 
-- `doc`: generate the project's documentation.
+- `doc`: the target to generate the project's documentation;
+- `clean`: remove all files generated by the previous target and the generator.
 
-The **module depends on Doxygen**, so either you install it following the [site instructions](https://www.doxygen.nl/manual/install.html), or you let the module use the [auto-download feature](https://cmake.org/cmake/help/latest/module/FetchContent.html) which will detect the absence of the dependency and download it in the build tree directly from its GitHub repository during generation. However, due to the size of the library, it is **strongly discouraged to use auto-download** and recommended to install it, because CMake re-downloads and then rebuilds the whole library each time the project is cleaned up, which takes several minutes.
+The **module depends on Doxygen**, so either you install it following the [site instructions](https://www.doxygen.nl/manual/install.html), or you let the module use the [auto-download feature](https://cmake.org/cmake/help/latest/module/FetchContent.html) which will detect the absence of the dependency and download it in the build-tree directly from its GitHub repository during generation. However, due to the size of the library, it is **strongly discouraged to use auto-download** and recommended to install it, because CMake re-downloads and then rebuilds the whole library each time the project is cleaned up, which takes several minutes.
 
 To use this module, **two option files** need to be configured. The **first file** is `cmake/project/StandardOptions.txt`, so open it and edit the options in the *Doc Generator Module options* section:
 
@@ -431,18 +463,22 @@ If after configuring this module you do not wish to activate any others, go dire
 
 ### 6. *Export Generator Module* settings
 
-The **role of the *Export Generator Module*** is to [export](https://cmake.org/cmake/help/latest/command/export.html) (if you are not familiar with this concept of modern CMake, two good tutorials are available [here](https://gitlab.kitware.com/cmake/community/-/wikis/doc/tutorials/Exporting-and-Importing-Targets), [here](https://cmake.org/cmake/help/latest/guide/importing-exporting/) and [here](https://cmake.org/cmake/help/latest/manual/cmake-packages.7.html)) the project from the [build tree](https://cmake.org/cmake/help/latest/manual/cmake.1.html#introduction-to-cmake-buildsystems) and the [install tree](https://cmake.org/cmake/help/latest/command/install.html), after generating it, to make it accessible to the [import](https://cmake.org/cmake/help/latest/guide/importing-exporting/#importing-targets) by other projects with the `find-package()` command. Thus, will be exported all source files compiled in `bin/`, the libraries in `lib/`, the header files from `include/`, the public header files of the project located in `src/` or in `include/<project-name>`, according to the option value `PUBLIC_HEADERS_SEPARATED` specified in the *Build Generator Module*, the documentation in `doc/`, the assets in `assets/`, the configuration files in `config/` and the resources in `resources/`.
+The **first role of the *Export Generator Module*** is to [export](https://cmake.org/cmake/help/latest/command/export.html) (if you are not familiar with this concept of modern CMake, two good tutorials are available [here](https://gitlab.kitware.com/cmake/community/-/wikis/doc/tutorials/Exporting-and-Importing-Targets), [here](https://cmake.org/cmake/help/latest/guide/importing-exporting/) and [here](https://cmake.org/cmake/help/latest/manual/cmake-packages.7.html)) the project from the [build-tree](https://cmake.org/cmake/help/latest/manual/cmake.1.html#introduction-to-cmake-buildsystems) and the [install-tree](https://cmake.org/cmake/help/latest/command/install.html), after generating it, to make it accessible to the [import](https://cmake.org/cmake/help/latest/guide/importing-exporting/#importing-targets) by other projects with the `find-package()` command. Thus, will be exported all source files compiled in `bin/`, the libraries in `lib/`, the header files from `include/`, the public header files of the project located in `src/` or in `include/<project-name>`, according to the option value `PUBLIC_HEADERS_SEPARATED` specified in the *Base Generator Module*, the documentation in `doc/`, the assets in `assets/`, the configuration files in `config/` and the resources in `resources/`.
 
-To make the project importable by others, **the module will work in three steps**. During the first step, it will initialize all the properties of the project binaries that define its [usage requirements](https://cmake.org/cmake/help/latest/manual/cmake-buildsystem.7.html#transitive-usage-requirements) (include directories, compile definitions, etc) for import from the build or install tree. Then during the second step, it will use these properties to perform the actual export by generating a first [target file](https://cmake.org/cmake/help/latest/command/export.html) called `build/<project-name>Targets.cmake` which will contain all the code to be executed to import the project and its files located in the build tree (take a look at it, it's very instructive) generated by the *Build Generator Module*, as well as a second [target file](https://cmake.org/cmake/help/latest/command/install.html#installing-exports) that, this time, will allow an import of the binary from the install tree. Moreover, it will create install rules to build the install tree, which will be executed during the only build phase associated with the module:
+To make the project importable by others, **the module will work in four steps**. During the first step, it will initialize all the properties of the main binary build target to define its [usage requirements](https://cmake.org/cmake/help/latest/manual/cmake-buildsystem.7.html#transitive-usage-requirements) (include directories, compile definitions, etc) for importing from the build or install-tree. Then during the second step, it will use these properties to perform the actual export by generating a first [target file](https://cmake.org/cmake/help/latest/command/export.html) called `build/<project-name>Targets.cmake` which will contain all the code to be executed to import the project and its files located in the build-tree (take a look at it, it's very instructive) generated by the *Base Generator Module*, as well as a second [target file](https://cmake.org/cmake/help/latest/command/install.html#installing-exports) that, this time, will allow an import of the binary from the install-tree. Moreover, it will create install rules to build the install-tree, which will be executed during this first target associated with the module:
 
-- `install`, to install the project files into a specific location on the disk.
+- `install`: target to install the project files into a specific location on the disk.
 
-Finally in the third and last step, the module will create files that will allow the [`find_package()` command](https://cmake.org/cmake/help/latest/command/find_package.html) of another project to locate on the disk the `<project-name>Targets.cmake` import files of the build tree and the install tree. Details are given below.
+In the third and last step, the module will create files that will allow the [`find_package()` command](https://cmake.org/cmake/help/latest/command/find_package.html) of another project to locate on the disk the `<project-name>Targets.cmake` import files of the build-tree and the install-tree. Details are given below.
+
+The **second role of the *Export Generator Module*** is to generate a script and a command that will remove all installed files during the execution of the `install` target. The command is activated with the following target:
+
+- `uninstall`: target to uninstall the installed project files from a specific location on the disk.
 
 To use this module, **two options files** need to be configured. The **first file** is `cmake/project/StandardOptions.txt`, so open it and edit the options in the *Export Generator Module options* section:
 
 - `ENABLE_EXPORT_MODULE=[ON (default)|OFF]`: specifies whether enable the export generator module;
-- `EXPORT_NAMESPACE`: name to prepend to the build target name when it [will be imported](https://cmake.org/cmake/help/latest/command/install.html#export). Usually, the namespace of the C++ project;
+- `EXPORT_NAMESPACE`: namespace to prepend to name of the main binary build target when it [will be imported](https://cmake.org/cmake/help/latest/command/install.html#export). Usually, the namespace of the C++ project;
 - `INSTALL_DIRECTORY`: location on the disk where the compiled source will be installed. Let empty to use the [default value](https://cmake.org/cmake/help/latest/variable/CMAKE_INSTALL_PREFIX.html);
 
 The **second file to configure** is the configuration template file `cmake/project/ExportConfig.cmake.in` that the *Export Generator Module* will use to [generate two files](https://cmake.org/cmake/help/latest/module/CMakePackageConfigHelpers.html) intended to allow import with the [`find_package()` command](https://cmake.org/cmake/help/latest/command/find_package.html#full-signature-and-config-mode): `build/<project-name>Config.cmake` and `build/<project-name>ConfigVersion.cmake`. These two files provide to a downstream consumer project the information to locate on disk the import file `<project-name>Targets.cmake` which informs about the project and about include-directories, libraries and their dependencies, required compile-flags or locations of executables. The format of their name is imposed by the [`find_package(<project-name>)` command](https://cmake.org/cmake/help/latest/command/find_package.html#full-signature-and-config-mode), which will use the environment variable `<project-name>_DIR`, the project name as a parameter and possibly a [version number](https://cmake.org/cmake/help/latest/command/find_package.html#version-selection) to find them.
@@ -493,12 +529,13 @@ If after configuring this module you do not wish to activate any others, go dire
 
 ### 7. *Package Generator Module* settings
 
-The **role of the *Package Generator Module*** is to generate the files that will allow the `cpack` program to package the project files in a distributable format, such as a ZIP or an installer. Two build phases are associated to it:
+The **role of the *Package Generator Module*** is to generate the files that will allow the `cpack` program to pack the project files in a distributable format, such as a ZIP or an installer. Three targets are associated to it:
 
-- `package binary`: take the binary files and package them in its distributable format, such as a ZIP or an installer.
-- `package source`: take all project files and package them in its distributable format, such as a ZIP or an installer.
+- `package`: take the binary files and packs them into a packages in a distributable format, such as a ZIP or an installer.
+- `package_source`: take all project files and packs them into a packages in a distributable format, such as a ZIP or an installer.
+- `clean`: remove all files generated by the previous targets and the generator.
 
-The [`cpack` program](https://cmake.org/cmake/help/latest/manual/cpack.1.html) is a tool of CMake for packaging program. It generates installers and source packages in a variety of formats. However, [this program is independent](https://gitlab.kitware.com/cmake/community/-/wikis/doc/cpack/Packaging-With-CPack) of the main `cmake` command and is not accessible as a CMake target command. Therefore, when we want to integrate it into a build generation system like here, there is an intermediate step to do which is to generate the configuration files that `cpack` will need to generate a binary installers and a source packages, as well as a CMake target command to run the program. Fortunately, CMake provides the [CPack module](https://gitlab.kitware.com/cmake/community/-/wikis/doc/cpack/PackageGenerators) which allows to perform all these actions and to generate the configuration files needed by the `cpack` program.
+The [`cpack` program](https://cmake.org/cmake/help/latest/manual/cpack.1.html) is a tool of CMake for packaging programs. It generates installers and source packages in a variety of formats. However by default, [this program is independent](https://gitlab.kitware.com/cmake/community/-/wikis/doc/cpack/Packaging-With-CPack) of the main `cmake` command and is not accessible as a CMake target. Therefore, when we want to integrate it into a build system generator like here, there is an intermediate step to do which is to generate the configuration files that `cpack` will need to generate a binary installers and a source packages, as well as a CMake target to run the program. Fortunately, CMake provides the [CPack module](https://gitlab.kitware.com/cmake/community/-/wikis/doc/cpack/PackageGenerators) which allows to perform all these actions and to generate the configuration files needed by the `cpack` program.
 
 To use this module and customize the packaging, **three options files** need to be configured. The **first file** is `cmake/project/StandardOptions.txt`, so open it and edit the options in the *Package Generator Module options* section:
 
@@ -526,9 +563,9 @@ If after configuring this module you do not wish to activate any others, go dire
 
 ## ⚙️ Usage and commands
 
-This project provide several scripts and commands to generate the *Build Lifecycle* and execute each build phase. If you are using VS Code, they have all been written in `.vscode/tasks.json` and can be launched from the [command palette](https://code.visualstudio.com/docs/editor/tasks), otherwise you can use a command prompt. All the following instructions have to be executed from the root of the project. They are listed in the order of execution of a complete and classic sequence of build phases.
+This project provide several scripts and commands to generate the *Build Lifecycle* and execute each build phase with their targets. If you are a VS Code user, they have all been written in `.vscode/tasks.json` and can be launched from the [command palette](https://code.visualstudio.com/docs/editor/tasks), otherwise you can use a command prompt. All the following instructions have to be executed from the root of the project. They are listed in the order of execution of a complete and classic sequence of build phases.
 
-Use the following commands to **clean the *Build Lifecycle*** (these scripts clean the `build/`, `doc/` and `bin/` directories):
+Commands to **clean the *Build Lifecycle*** (these scripts clean `build/`, `doc/` and `bin/`):
 
 ```bash
 # clean the Build Lifecycle (on Linux/MacOS)
@@ -538,7 +575,7 @@ Use the following commands to **clean the *Build Lifecycle*** (these scripts cle
 clean-cmake.bat
 ```
 
-Use the following commands to **generate the *Build Lifecycle*** (these scripts call the `cmake` command):
+Commands to **generate the *Build Lifecycle*** (these scripts call the `cmake` command):
 
 ```bash
 # generate the Build Lifecycle (on Linux/MacOS)
@@ -546,9 +583,15 @@ Use the following commands to **generate the *Build Lifecycle*** (these scripts 
 
 # generate the Build Lifecycle (on Windows)
 run-cmake.bat
+
+# a useful command for listing what targets has been generated
+cmake --build build/ --target help
+
+# a useful command for listing variables in the cache and their descriptions
+cmake -LAH build/
 ```
 
-Use the following commands to **clean and generate the *Build Lifecycle***:
+Commands to **clean and generate the *Build Lifecycle***:
 
 ```bash
 # clean and generate the Build Lifecycle (on Linux/MacOS)
@@ -558,74 +601,83 @@ Use the following commands to **clean and generate the *Build Lifecycle***:
 clean-cmake.bat && timeout /t 3 > NUL && echo. && run-cmake.bat
 ```
 
-Use the following commands to **execute the `uninstall` phase** of the *Build Lifecycle* (only available if the *Uninstall Generator Module* has been activated):
+Commands to **execute the `uninstall` build phase** of the *Build Lifecycle* (only available if the *Export Generator Module* has been activated):
 
 ```bash
-# `execute the `uninstall` phase (on Linux/MacOS)
+# run the uninstall target (on Linux/MacOS)
 sudo cmake --build build/ --target uninstall
 
-# execute the `uninstall` phase (on Windows)
+# run the uninstall target (on Windows)
 cmake --build build/ --target uninstall
 ```
 
-Use the following commands to **execute the `clean` phase** of the *Build Lifecycle* (clean the `build/`, `doc/` and `bin/` directories):
+Commands to **execute the `clean` build phase** of the *Build Lifecycle*:
 
 ```bash
-# execute the `clean` phase
+# run the clean target
 cmake --build build/ --target clean
 ```
 
-Use the following commands to **execute the `build` phase** of the *Build Lifecycle*:
+Commands to **execute the `compile` build phase** of the *Build Lifecycle*:
 
 ```bash
-# execute the `build` phase
-cmake --build build/
+# build all binary targets (except for tests)
+cmake --build build/ --target all
 
-# execute the `build` phase in verbose mode
-cmake --build build/ --verbose
+# build all binary targets in verbose mode (except for tests)
+cmake --build build/ --target all --verbose
 
-# execute the `build` phase after the `clean` phase
-cmake --build build/ --clean-first
+# execute the `compile` phase after the `clean` phase
+cmake --build build/ --target all --clean-first
 
-# execute the `build` phase after the `clean` phase in verbose
-cmake --build build/ --clean-first --verbose
+# execute the `compile` phase after the `clean` phase in verbose
+cmake --build build/ --target all --clean-first --verbose
 ```
 
-Use the following commands to **execute the `test` phase** of the *Build Lifecycle* (only available if the *Test Generator Module* has been activated):
+Commands to **execute the `test` build phase** of the *Build Lifecycle* (only available if the *Test Generator Module* has been activated):
 
 ```bash
-# execute the `test` phase (on Linux/MacOS)
-./bin/project-name_test
-
-# execute the `test` phase (on Windows)
-bin/project-name_test
+# build the test target
+cmake --build build/ --target project-name_test
 ```
 
-Use the following commands to **execute the `doc` phase** of the *Build Lifecycle* (only available if the *Doc Generator Module* has been activated):
+Commands to **execute the `doc` build phase** of the *Build Lifecycle* (only available if the *Doc Generator Module* has been activated):
 
 ```bash
-# execute the `doc` phase 
+# run the doc target
 cmake --build build/ --target doc
 ```
 
-Use the following commands to **execute the `install` phase** of the *Build Lifecycle* (only available if the *Export Generator Module* has been activated):
+Commands to **execute the `install` build phase** of the *Build Lifecycle* (only available if the *Export Generator Module* has been activated):
 
 ```bash
-# execute the `install` phase (on Linux/MacOS)
+# run the install target (on Linux/MacOS)
 sudo cmake --build build/ --target install
 
-# execute the `install` phase (on Windows)
+# run the install target (on Windows)
 cmake --build build/ --target install
 ```
 
-Use the following commands to **execute the `package binary` phase** of the *Build Lifecycle* (only available if the *Package Generator Module* has been activated):
+Commands to **execute the `package` build phase** of the *Build Lifecycle* (only available if the *Package Generator Module* has been activated):
 
 ```bash
-# execute the `package binary` phase (on Linux/MacOS)
-cmake --build . --target package && sleep 3s && rm -rfv bin/_CPack_Packages
+# run the package and package_source targets (on Linux/MacOS)
+cmake --build build/ --target package package_source && sleep 3s && rm -rfv bin/_CPack_Packages
 
-# execute the `package binary` phase (on Windows)
-cmake --build . --target package && timeout /t 3 > NUL && del /a /f /s /q bin/_CPack_Packages
+# run the package and package_source targets (on Windows)
+cmake --build build/ --target package package_source && timeout /t 3 > NUL && del /a /f /s /q bin/_CPack_Packages
+
+# run the package target (on Linux/MacOS)
+cmake --build build/ --target package && sleep 3s && rm -rfv bin/_CPack_Packages
+
+# run the package target (on Windows)
+cmake --build build/ --target package && timeout /t 3 > NUL && del /a /f /s /q bin/_CPack_Packages
+
+# run the package_source target (on Linux/MacOS)
+cmake --build build/ --target package_source && sleep 3s && rm -rfv bin/_CPack_Packages
+
+# run the package_source target (on Windows)
+cmake --build build/ --target package_source && timeout /t 3 > NUL && del /a /f /s /q bin/_CPack_Packages
 
 # a useful command for debugging during the package configuration step (on Linux/MacOS)
 cpack --debug --verbose --config build/CPackConfig.cmake && sleep 3s && rm -rfv bin/_CPack_Packages
@@ -634,24 +686,20 @@ cpack --debug --verbose --config build/CPackConfig.cmake && sleep 3s && rm -rfv 
 cpack --debug --verbose --config build/CPackConfig.cmake && timeout /t 3 > NUL && del /a /f /s /q bin/_CPack_Packages
 ```
 
-Use the following commands to **execute the `package source` phase** of the *Build Lifecycle* (only available if the *Package Generator Module* has been activated):
-
-```bash
-# execute the `package source` phase (on Linux/MacOS)
-cmake --build . --target package_source && sleep 3s && rm -rfv bin/_CPack_Packages
-
-# execute the `package source` phase (on Windows)
-cmake --build . --target package_source && timeout /t 3 > NUL && del /a /f /s /q bin/_CPack_Packages
-```
-
 Use the following commands to **execute the binary built** as executable:
 
 ```bash
-# execute the binary built as executable (on Linux/MacOS)
+# execute the main binary executable (on Linux/MacOS)
 ./bin/project-name
 
-# execute the binary built as executable (on Windows)
+# execute the main binary executable (on Windows)
 bin/project-name
+
+# execute the tests binary executable (on Linux/MacOS)
+./bin/project-name_test
+
+# execute the test binary executable (on Windows)
+bin/project-name_test
 ```
 
 ## 📂 Folder structure overview
@@ -663,7 +711,7 @@ This project has been set up with a specific file/folder structure in mind. The 
 | `.vscode/tasks.json` | Specific VS Code tasks configured to compile, clean, build, etc. |
 | `assets/` | Contains images, musics, maps and all resources needed for a game or a simulation project. |
 | `bin/` | Any libs that get compiled by the project and the output executables go here, also if you pack your project, the generated files go here. |
-| `build/` | Contains the CMake build tree. |
+| `build/` | Contains the CMake build-tree. |
 | `cmake/helpers/` | Contains some scripts and all generator modules used to generate the *Build Lifecycle*. |
 | `cmake/modules/` | Contains custom CMake modules. |
 | `cmake/project/` | Setting files for configuring the generator modules. |
@@ -675,7 +723,7 @@ This project has been set up with a specific file/folder structure in mind. The 
 | `resources/` | Contains images, musics, maps and all resources needed for the project (e.g for graphical user interfaces). |
 | `src/` | Source files (.cpp) and private/public header files (.h) of the project. |
 | `tests/` | Source files (.cpp) and header files (.h) for the unit testing framework [GTest](https://github.com/google/googletest). |
-| `clean-cmake.bat` | Utility script for Windows to remove all generated files in `build/`, `bin/` and `doc/` directories. |
+| `clean-cmake.bat` | Utility script for Windows to remove all generated files in `build/`, `bin/` and `doc/`. |
 | `clean-cmake.sh` | Utility script for Linux/MacOS to remove all generated files in `build/`, `bin/` and `doc/` directories. |
 | `CMakeLists.txt` | Main `CMakelists.txt` file of the project. |
 | `LICENSE.md` | License file for project (needs to be edited). |
