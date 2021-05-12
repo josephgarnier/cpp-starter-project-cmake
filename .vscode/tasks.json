@@ -67,7 +67,12 @@
 			"options": {
 				"cwd": "${workspaceFolder}/build"
 			},
-			"command": "sudo cmake --build . --target uninstall",
+			"linux": {
+				"command": "sudo cmake --build . --target uninstall"
+			},
+			"windows": {
+				"command": "cmake --build . --target uninstall"
+			},
 			"presentation": {
 				"reveal": "always",
 				"panel": "dedicated",
@@ -92,12 +97,12 @@
 			"problemMatcher": []
 		},
 		{
-			"label": "Build phase",
+			"label": "Compile phase",
 			"type": "shell",
 			"options": {
 				"cwd": "${workspaceFolder}/build"
 			},
-			"command": "cmake --build .",
+			"command": "cmake --build . --target all",
 			"group": {
 				"kind": "build",
 				"isDefault": true
@@ -111,12 +116,12 @@
 			"problemMatcher": []
 		},
 		{
-			"label": "Build phase verbose",
+			"label": "Compile phase verbose",
 			"type": "shell",
 			"options": {
 				"cwd": "${workspaceFolder}/build"
 			},
-			"command": "cmake --build . --verbose",
+			"command": "cmake --build . --target all --verbose",
 			"group": {
 				"kind": "build",
 				"isDefault": true
@@ -130,12 +135,16 @@
 			"problemMatcher": []
 		},
 		{
-			"label": "Build phase with Clean phase",
+			"label": "Compile phase with Clean phase",
 			"type": "shell",
 			"options": {
 				"cwd": "${workspaceFolder}/build"
 			},
-			"command": "cmake --build . --clean-first",
+			"command": "cmake --build . --target all --clean-first",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
 			"presentation": {
 				"reveal": "always",
 				"panel": "dedicated",
@@ -145,12 +154,16 @@
 			"problemMatcher": []
 		},
 		{
-			"label": "Build phase with Clean phase verbose",
+			"label": "Compile phase with Clean phase verbose",
 			"type": "shell",
 			"options": {
 				"cwd": "${workspaceFolder}/build"
 			},
-			"command": "cmake --build . --clean-first --verbose",
+			"command": "cmake --build . --target all --clean-first --verbose",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
 			"presentation": {
 				"reveal": "always",
 				"panel": "dedicated",
@@ -163,13 +176,12 @@
 			"label": "Test phase",
 			"type": "shell",
 			"options": {
-				"cwd": "${workspaceFolder}/bin"
+				"cwd": "${workspaceFolder}/build"
 			},
-			"linux": {
-				"command": "./project-name_test"
-			},
-			"windows": {
-				"command": "project-name_test"
+			"command": "cmake --build . --target project-name_test && ../bin/project-name_test",
+			"group": {
+				"kind": "build",
+				"isDefault": true
 			},
 			"presentation": {
 				"reveal": "always",
@@ -200,7 +212,12 @@
 			"options": {
 				"cwd": "${workspaceFolder}/build"
 			},
-			"command": "sudo cmake --build . --target install",
+			"linux": {
+				"command": "sudo cmake --build . --target install"
+			},
+			"windows": {
+				"command": "cmake --build . --target install"
+			},
 			"presentation": {
 				"reveal": "always",
 				"panel": "dedicated",
@@ -210,16 +227,16 @@
 			"problemMatcher": []
 		},
 		{
-			"label": "Package Binary phase",
+			"label": "Package phase",
 			"type": "shell",
 			"options": {
 				"cwd": "${workspaceFolder}/build"
 			},
 			"linux": {
-				"command": "cmake --build . --target package && sleep 3s && rm -rfv ../bin/_CPack_Packages"
+				"command": "cmake --build . --target package package_source && sleep 3s && rm -rfv ../bin/_CPack_Packages"
 			},
 			"windows": {
-				"command": "cmake --build . --target package && timeout /t 3 > NUL && del /a /f /s /q ../bin/_CPack_Packages"
+				"command": "cmake --build . --target package package_source && timeout /t 3 > NUL && del /a /f /s /q ../bin/_CPack_Packages"
 			},
 			"presentation": {
 				"reveal": "always",
@@ -230,27 +247,7 @@
 			"problemMatcher": []
 		},
 		{
-			"label": "Package Sources phase",
-			"type": "shell",
-			"options": {
-				"cwd": "${workspaceFolder}/build"
-			},
-			"linux": {
-				"command": "cmake --build . --target package_source && sleep 3s && rm -rfv ../bin/_CPack_Packages"
-			},
-			"windows": {
-				"command": "cmake --build . --target package_source && timeout /t 3 > NUL && del /a /f /s /q ../bin/_CPack_Packages"
-			},
-			"presentation": {
-				"reveal": "always",
-				"panel": "dedicated",
-				"focus": true,
-				"clear": true
-			},
-			"problemMatcher": []
-		},
-		{
-			"label": "Execute",
+			"label": "Execute main binary",
 			"type": "shell",
 			"options": {
 				"cwd": "${workspaceFolder}/bin"
