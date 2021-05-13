@@ -87,7 +87,7 @@ The following dependencies are **optional** because they will be **automatically
     rm -rfvI tests/*
     ```
 
-3. **Edit the basic settings.** Open the file `cmake/project/StandardOptions.txt` and edit the name of your project in the variable `PROJECT_NAME` and the type of the main binary build target in `BUILD_TARGET_TYPE` ("static", "shared", "header", for header-only library, or "exec).
+3. **Edit the basic settings.** Open the file `cmake/project/StandardOptions.txt` and edit the name of your project in the variable `PROJECT_NAME` and the type of the main binary build target in `MAIN_BINARY_TARGET_TYPE` ("static", "shared", "header", for header-only library, or "exec).
 
 4. **Add the dependencies**. If the project requires dependencies, add the libraries (.dll or .so) in the `lib/` directory and their header files in a sub-folder of the `include/` directory, or add the instructions to link external libaries at the end of the `cmake/project/DependenciesExternalOptions.cmake` file.
 
@@ -174,7 +174,7 @@ To use this module, **four options files** need to be configured. The **first fi
 
 - `BUILD_STANDARD_VERSION=[11|14|17 (default)|20|23]`: specifies the standard version for building binaries, "11" or "14" or "17" or "20" or 23, see [CMAKE_CXX_STANDARD](https://cmake.org/cmake/help/latest/variable/CMAKE_CXX_STANDARD.html);
 - `BUILD_TYPE=[(default) debug|release]`: specifies the type of configuration for the build-tree, "debug" or "release", see [CMAKE_BUILD_TYPE](https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html);
-- `BUILD_TARGET_TYPE=[static|shared|header|exec (default)]`: specifies the type of the main binary build target, "static" or "shared" or "header" (for header-only library) or as an "exec", see [TYPE](https://cmake.org/cmake/help/latest/prop_tgt/TYPE.html);
+- `MAIN_BINARY_TARGET_TYPE=[static|shared|header|exec (default)]`: specifies the type of the main binary build target, "static" or "shared" or "header" (for header-only library) or as an "exec", see [TYPE](https://cmake.org/cmake/help/latest/prop_tgt/TYPE.html);
 - `COMPILE_DEFINITIONS`: specifies a semicolon-separated list of preprocessor definitions (e.g -DFOO;-DBAR or FOO;BAR). Can be empty;
 - `PUBLIC_HEADERS_SEPARATED=[ON|OFF (default)]`: specifies whether public header files are separated from private header files (see below for more details);
 - `USE_PRECOMPILED_HEADER=[ON|OFF (default)]`: specifies whether a precompiled header file will be used or not;
@@ -686,7 +686,7 @@ cpack --debug --verbose --config build/CPackConfig.cmake && sleep 3s && rm -rfv 
 cpack --debug --verbose --config build/CPackConfig.cmake && timeout /t 3 > NUL && del /a /f /s /q bin/_CPack_Packages
 ```
 
-Use the following commands to **execute the binary built** as executable:
+Use the following commands to **execute the binaries built** as executable:
 
 ```bash
 # execute the main binary executable (on Linux/MacOS)
