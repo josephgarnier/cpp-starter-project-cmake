@@ -31,7 +31,7 @@ add_compile_options("$<$<STREQUAL:${PARAM_BUILD_TYPE},debug>:-Wduplicated-cond>"
 add_compile_options("$<$<STREQUAL:${PARAM_BUILD_TYPE},debug>:-Wduplicated-branches>") # warn if if / else branches have duplicated code
 add_compile_options("$<$<STREQUAL:${PARAM_BUILD_TYPE},debug>:-Wlogical-op>") # warn about logical operations being used where bitwise were probably wanted
 add_compile_options("$<$<STREQUAL:${PARAM_BUILD_TYPE},debug>:-Wnull-dereference>") # warn if a null dereference is detected
-add_compile_options("$<$<STREQUAL:${PARAM_BUILD_TYPE},debug>:-Wuseless-cast>") # warn if you perform a cast to the same type
+# add_compile_options("$<$<STREQUAL:${PARAM_BUILD_TYPE},debug>:-Wuseless-cast>") # warn if you perform a cast to the same type (bug with GTest)
 add_compile_options("$<$<STREQUAL:${PARAM_BUILD_TYPE},debug>:-Wdouble-promotion>") # warn if float is implicit promoted to double
 add_compile_options("$<$<STREQUAL:${PARAM_BUILD_TYPE},debug>:-Wformat=2>") # warn on security issues around functions that format output (ie printf)
 

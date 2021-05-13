@@ -35,7 +35,14 @@ target_compile_definitions("${${PROJECT_NAME}_TEST_TARGET_NAME}"
 message(STATUS "Add compile options to the target \"${${PROJECT_NAME}_TEST_TARGET_NAME}\"")
 target_compile_options("${${PROJECT_NAME}_TEST_TARGET_NAME}"
 	PRIVATE
-		""
+		"-O0;-g;-fprofile-arcs;-ftest-coverage"
+)
+
+# Add link options to the test target.
+message(STATUS "Add link options to the target \"${${PROJECT_NAME}_TEST_TARGET_NAME}\"")
+target_link_options("${${PROJECT_NAME}_TEST_TARGET_NAME}"
+	PRIVATE
+		"-O0;-g;-fprofile-arcs;-ftest-coverage"
 )
 
 
