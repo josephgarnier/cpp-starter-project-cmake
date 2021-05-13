@@ -198,69 +198,69 @@ message(STATUS "Targets will be build in \"${CMAKE_BUILD_TYPE}\" if a single-con
 
 #---- Add the build target. ----
 message("")
-set(${PROJECT_NAME}_BUILD_TARGET_IS_STATIC   off)
-set(${PROJECT_NAME}_BUILD_TARGET_IS_SHARED   off)
-set(${PROJECT_NAME}_BUILD_TARGET_IS_HEADER   off)
-set(${PROJECT_NAME}_BUILD_TARGET_IS_EXEC     off)
+set(${PROJECT_NAME}_MAIN_BIN_TARGET_IS_STATIC   off)
+set(${PROJECT_NAME}_MAIN_BIN_TARGET_IS_SHARED   off)
+set(${PROJECT_NAME}_MAIN_BIN_TARGET_IS_HEADER   off)
+set(${PROJECT_NAME}_MAIN_BIN_TARGET_IS_EXEC     off)
 if("${PARAM_MAIN_BINARY_TARGET_TYPE}" STREQUAL "static")
-	set(${PROJECT_NAME}_BUILD_TARGET_IS_STATIC   on)
-	set(${PROJECT_NAME}_BUILD_TARGET_NAME        "lib${PROJECT_NAME}")
-	message(STATUS "Add the static library target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\"")
-	add_library("${${PROJECT_NAME}_BUILD_TARGET_NAME}" STATIC)
-	add_library("${${PROJECT_NAME}_BUILD_TARGET_NAME}::${${PROJECT_NAME}_BUILD_TARGET_NAME}" ALIAS "${${PROJECT_NAME}_BUILD_TARGET_NAME}")
+	set(${PROJECT_NAME}_MAIN_BIN_TARGET_IS_STATIC   on)
+	set(${PROJECT_NAME}_MAIN_BIN_TARGET_NAME        "lib${PROJECT_NAME}")
+	message(STATUS "Add the static library target \"${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}\"")
+	add_library("${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}" STATIC)
+	add_library("${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}::${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}" ALIAS "${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}")
 elseif("${PARAM_MAIN_BINARY_TARGET_TYPE}" STREQUAL "shared")
-	set(${PROJECT_NAME}_BUILD_TARGET_IS_SHARED   on)
-	set(${PROJECT_NAME}_BUILD_TARGET_NAME        "lib${PROJECT_NAME}")
+	set(${PROJECT_NAME}_MAIN_BIN_TARGET_IS_SHARED   on)
+	set(${PROJECT_NAME}_MAIN_BIN_TARGET_NAME        "lib${PROJECT_NAME}")
 	# All libraries will be built shared unless the library was explicitly added as a static library.
 	set(BUILD_SHARED_LIBS on)
-	message(STATUS "Add the shared library target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\"")
-	add_library("${${PROJECT_NAME}_BUILD_TARGET_NAME}" SHARED)
-	add_library("${${PROJECT_NAME}_BUILD_TARGET_NAME}::${${PROJECT_NAME}_BUILD_TARGET_NAME}" ALIAS "${${PROJECT_NAME}_BUILD_TARGET_NAME}")
+	message(STATUS "Add the shared library target \"${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}\"")
+	add_library("${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}" SHARED)
+	add_library("${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}::${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}" ALIAS "${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}")
 elseif("${PARAM_MAIN_BINARY_TARGET_TYPE}" STREQUAL "header")
-	set(${PROJECT_NAME}_BUILD_TARGET_IS_HEADER   on)
-	set(${PROJECT_NAME}_BUILD_TARGET_NAME        "${PROJECT_NAME}")
-	message(STATUS "Add the header-only library target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\"")
-	add_library("${${PROJECT_NAME}_BUILD_TARGET_NAME}" INTERFACE)
-	add_library("${${PROJECT_NAME}_BUILD_TARGET_NAME}::${${PROJECT_NAME}_BUILD_TARGET_NAME}" ALIAS "${${PROJECT_NAME}_BUILD_TARGET_NAME}")
+	set(${PROJECT_NAME}_MAIN_BIN_TARGET_IS_HEADER   on)
+	set(${PROJECT_NAME}_MAIN_BIN_TARGET_NAME        "${PROJECT_NAME}")
+	message(STATUS "Add the header-only library target \"${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}\"")
+	add_library("${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}" INTERFACE)
+	add_library("${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}::${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}" ALIAS "${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}")
 elseif("${PARAM_MAIN_BINARY_TARGET_TYPE}" STREQUAL "exec")
-	set(${PROJECT_NAME}_BUILD_TARGET_IS_EXEC     on)
-	set(${PROJECT_NAME}_BUILD_TARGET_NAME        "${PROJECT_NAME}")
-	message(STATUS "Add the executable target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\"")
-	add_executable("${${PROJECT_NAME}_BUILD_TARGET_NAME}")
-	add_executable("${${PROJECT_NAME}_BUILD_TARGET_NAME}::${${PROJECT_NAME}_BUILD_TARGET_NAME}" ALIAS "${${PROJECT_NAME}_BUILD_TARGET_NAME}")
+	set(${PROJECT_NAME}_MAIN_BIN_TARGET_IS_EXEC     on)
+	set(${PROJECT_NAME}_MAIN_BIN_TARGET_NAME        "${PROJECT_NAME}")
+	message(STATUS "Add the executable target \"${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}\"")
+	add_executable("${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}")
+	add_executable("${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}::${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}" ALIAS "${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}")
 else()
 	message(FATAL_ERROR "Build target type must be \"static\" or \"shared\" or \"header\" or \"exec\"!")
 endif()
-message(STATUS "The build target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\" is now aliased as \"${${PROJECT_NAME}_BUILD_TARGET_NAME}::${${PROJECT_NAME}_BUILD_TARGET_NAME}\"")
+message(STATUS "The build target \"${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}\" is now aliased as \"${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}::${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}\"")
 
 
 #---- Add the compiler features, compile definitions and compile options to the build target. ----
 
 # Add compiler features to the build target.
-message(STATUS "Add compile features to the target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\"")
-target_compile_features("${${PROJECT_NAME}_BUILD_TARGET_NAME}"
+message(STATUS "Add compile features to the target \"${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}\"")
+target_compile_features("${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}"
 	PRIVATE
 		"cxx_std_${CMAKE_CXX_STANDARD}"
 )
 
 # Add compile definitions to the build target.
 set(${PROJECT_NAME}_COMPILE_DEFINITIONS "${PARAM_COMPILE_DEFINITIONS}")
-message(STATUS "Add compile definitions to the target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\"")
-target_compile_definitions("${${PROJECT_NAME}_BUILD_TARGET_NAME}"
+message(STATUS "Add compile definitions to the target \"${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}\"")
+target_compile_definitions("${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}"
 	PRIVATE
 		"${${PROJECT_NAME}_COMPILE_DEFINITIONS}"
 )
 
 # Add compile options to the build target.
-message(STATUS "Add compile options to the target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\"")
-target_compile_options("${${PROJECT_NAME}_BUILD_TARGET_NAME}"
+message(STATUS "Add compile options to the target \"${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}\"")
+target_compile_options("${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}"
 	PRIVATE
 		""
 )
 
 # Add link options to the build target.
-message(STATUS "Add link options to the target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\"")
-target_link_options("${${PROJECT_NAME}_BUILD_TARGET_NAME}"
+message(STATUS "Add link options to the target \"${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}\"")
+target_link_options("${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}"
 	PRIVATE
 		""
 )
@@ -313,8 +313,8 @@ message(STATUS "Found the following header files:")
 print(STATUS PATHS "${${PROJECT_NAME}_HEADER_PRIVATE_FILES}" "${${PROJECT_NAME}_HEADER_PUBLIC_FILES}" INDENT)
 
 # Add source and header files to the build target.
-message(STATUS "Add the found source and header files to the target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\"")
-target_sources("${${PROJECT_NAME}_BUILD_TARGET_NAME}"
+message(STATUS "Add the found source and header files to the target \"${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}\"")
+target_sources("${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}"
 	PRIVATE
 		"${${PROJECT_NAME}_SOURCE_SRC_FILES}"
 		"${${PROJECT_NAME}_HEADER_PRIVATE_FILES}"
@@ -337,8 +337,8 @@ if(${PARAM_USE_PRECOMPILED_HEADER})
 	elseif(NOT "${${PROJECT_NAME}_PRECOMPILED_HEADER_FILE}" MATCHES "${${PROJECT_NAME}_HEADER_PUBLIC_DIR}")
 		print(FATAL_ERROR "Precompiled header file \"@rp@\" is not in the header public directory!" "${${PROJECT_NAME}_PRECOMPILED_HEADER_FILE}")
 	else()
-		print(STATUS "Add the precompiled header file \"@rp@\" to the target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\":" "${${PROJECT_NAME}_PRECOMPILED_HEADER_FILE}")
-		target_precompile_headers("${${PROJECT_NAME}_BUILD_TARGET_NAME}"
+		print(STATUS "Add the precompiled header file \"@rp@\" to the target \"${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}\":" "${${PROJECT_NAME}_PRECOMPILED_HEADER_FILE}")
+		target_precompile_headers("${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}"
 			PRIVATE
 				"${${PROJECT_NAME}_PRECOMPILED_HEADER_FILE}"
 		)
@@ -352,8 +352,8 @@ endif()
 #---- Add the header directories to the build target. ----
 
 # Add header directories to incude directories of the build target.
-message(STATUS "Add the following header directories to include directories of the target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\":")
-target_include_directories("${${PROJECT_NAME}_BUILD_TARGET_NAME}"
+message(STATUS "Add the following header directories to include directories of the target \"${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}\":")
+target_include_directories("${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}"
 	# see https://cmake.org/cmake/help/latest/manual/cmake-buildsystem.7.html#build-specification-and-usage-requirements
 	# and https://stackoverflow.com/questions/26243169/cmake-target-include-directories-meaning-of-scope
 	# and https://cmake.org/pipermail/cmake/2017-October/066457.html.
@@ -390,15 +390,15 @@ message(STATUS "Found the following library header directories in \"include/\" d
 print(STATUS PATHS "${${PROJECT_NAME}_LIBRARY_HEADER_DIRS}" INDENT)
 
 # Link libraries to the build target.
-message(STATUS "Link libraries found to the target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\"")
-target_link_libraries("${${PROJECT_NAME}_BUILD_TARGET_NAME}"
+message(STATUS "Link libraries found to the target \"${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}\"")
+target_link_libraries("${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}"
 	PRIVATE
 		"${${PROJECT_NAME}_LIBRARY_FILES}"
 )
 
 # Add `include/` directory to incude directories of the build target.
-message(STATUS "Add \"include/\" directory to include-directories of the target \"${${PROJECT_NAME}_BUILD_TARGET_NAME}\"")
-target_include_directories("${${PROJECT_NAME}_BUILD_TARGET_NAME}"
+message(STATUS "Add \"include/\" directory to include-directories of the target \"${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}\"")
+target_include_directories("${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}"
 	PRIVATE
 		"${${PROJECT_NAME}_INCLUDE_DIR}"
 )
