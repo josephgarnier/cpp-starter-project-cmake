@@ -44,8 +44,6 @@ message(" - Export namespace: \"${PARAM_EXPORT_NAMESPACE}\"")
 message(" - Install directory: \"${PARAM_INSTALL_DIRECTORY}\"")
 message("Package Generator Module settings:")
 message(" - Enable this module: \"${PARAM_ENABLE_PACKAGE_MODULE}\"")
-message("Uninstall Generator Module settings:")
-message(" - Enable this module: \"${PARAM_ENABLE_UNINSTALL_MODULE}\"")
 
 
 

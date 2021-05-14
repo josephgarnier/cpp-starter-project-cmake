@@ -73,9 +73,6 @@ endif()
 #---- Package Generator Module options ----
 set(ENABLE_PACKAGE_MODULE_VAL         off)
 
-#---- Uninstall Generator Module options ----
-set(ENABLE_UNINSTALL_MODULE_VAL       off)
-
 #------------------------------------------------------------------------------
 # End of customize section.
 #------------------------------------------------------------------------------
@@ -121,9 +118,6 @@ set(INSTALL_DIRECTORY_DESC             "Directory used by install command, let e
 #---- Package Generator Module options ----
 set(ENABLE_PACKAGE_MODULE_DESC         "Specifies whether enable the Package Generator Module")
 
-#---- Uninstall Generator Module options ----
-set(ENABLE_UNINSTALL_MODULE_DESC       "Specifies whether enable the Uninstall Generator Module")
-
 
 set(PARAM_PROJECT_NAME                  "${PROJECT_NAME_VAL}"                CACHE   STRING     "${PROJECT_NAME_DESC}")
 set(PARAM_PROJECT_SUMMARY               "${PROJECT_SUMMARY_VAL}"             CACHE   STRING     "${PROJECT_SUMMARY_DESC}")
@@ -147,7 +141,6 @@ set(PARAM_ENABLE_EXPORT_MODULE          ${ENABLE_EXPORT_MODULE_VAL}          CAC
 set(PARAM_EXPORT_NAMESPACE              "${EXPORT_NAMESPACE_VAL}"            CACHE   STRING     "${EXPORT_NAMESPACE_DESC}")
 set(PARAM_INSTALL_DIRECTORY             "${INSTALL_DIRECTORY_VAL}"           CACHE   FILEPATH   "${INSTALL_DIRECTORY_DESC}")
 set(PARAM_ENABLE_PACKAGE_MODULE         ${ENABLE_PACKAGE_MODULE_VAL}         CACHE   BOOL       "${ENABLE_PACKAGE_MODULE_DESC}")
-set(PARAM_ENABLE_UNINSTALL_MODULE       ${ENABLE_UNINSTALL_MODULE_VAL}       CACHE   BOOL       "${ENABLE_UNINSTALL_MODULE_DESC}")
 
 #------------------------------------------------------------------------------
 # You don't need to edit this previous section.
