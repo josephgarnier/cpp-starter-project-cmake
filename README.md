@@ -304,14 +304,14 @@ message("")
 
 # Add Qt sources to target
 message(STATUS "Add Qt sources to target")
-target_sources("${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}"
+target_sources("${${PROJECT_NAME}_MAIN_BIN_TARGET}"
   PRIVATE
     "${RELATIVE_QOBJECT_SOURCE_FILES};${RELATIVE_MOC_HEADER_FILES};${RELATIVE_UI_SOURCE_FILES};${RELATIVE_RESSOURCE_SRCS}"
 )
 
 # Add Qt definitions to target
 message(STATUS "Add Qt definitions to target")
-target_compile_definitions("${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}"
+target_compile_definitions("${${PROJECT_NAME}_MAIN_BIN_TARGET}"
   PUBLIC
     "$<BUILD_INTERFACE:QT_USE_QSTRINGBUILDER;QT_SHAREDPOINTER_TRACK_POINTERS;QT_MESSAGELOGCONTEXT>"
     "$<INSTALL_INTERFACE:QT_USE_QSTRINGBUILDER;QT_SHAREDPOINTER_TRACK_POINTERS;QT_MESSAGELOGCONTEXT>"
@@ -319,16 +319,16 @@ target_compile_definitions("${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}"
 
 # Link Qt to target
 message(STATUS "Link Qt to target")
-target_link_libraries("${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}"
+target_link_libraries("${${PROJECT_NAME}_MAIN_BIN_TARGET}"
   PUBLIC
     "$<BUILD_INTERFACE:Qt5::Widgets;Qt5::Gui;Qt5::Core;Qt5::Svg;Qt5::Concurrent>"
     "$<INSTALL_INTERFACE:Qt5::Widgets;Qt5::Gui;Qt5::Core;Qt5::Svg;Qt5::Concurrent>"
 )
 
 # Set Qt as a position-independent target
-set_target_properties("${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}" PROPERTIES INTERFACE_POSITION_INDEPENDENT_CODE ON)
+set_target_properties("${${PROJECT_NAME}_MAIN_BIN_TARGET}" PROPERTIES INTERFACE_POSITION_INDEPENDENT_CODE ON)
 if(${${PROJECT_NAME}_MAIN_BIN_TARGET_IS_EXEC})
-  target_compile_options("${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}"
+  target_compile_options("${${PROJECT_NAME}_MAIN_BIN_TARGET}"
     PUBLIC
       "$<BUILD_INTERFACE:-fPIE>"
       "$<INSTALL_INTERFACE:-fPIE>"
@@ -336,7 +336,7 @@ if(${${PROJECT_NAME}_MAIN_BIN_TARGET_IS_EXEC})
       "-fPIE"
   )
 elseif(${${PROJECT_NAME}_MAIN_BIN_TARGET_IS_STATIC} OR ${${PROJECT_NAME}_MAIN_BIN_TARGET_IS_SHARED})
-  target_compile_options("${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}"
+  target_compile_options("${${PROJECT_NAME}_MAIN_BIN_TARGET}"
   PUBLIC
     "$<BUILD_INTERFACE:-fPIC>"
     "$<INSTALL_INTERFACE:-fPIC>"
@@ -351,7 +351,7 @@ if("${CMAKE_BUILD_TYPE}" STREQUAL "debug")
   message(STATUS "QtAssert enabled")
 else()
   message(STATUS "Add Qt assert definitions to target")
-  target_compile_definitions("${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}"
+  target_compile_definitions("${${PROJECT_NAME}_MAIN_BIN_TARGET}"
     PUBLIC
       "$<BUILD_INTERFACE:QT_NO_DEBUG>"
       "$<INSTALL_INTERFACE:QT_NO_DEBUG>"
@@ -408,8 +408,8 @@ else()
 endif()
 
 # Link Eigen3 to the main binary build target.
-message(STATUS "Link Eigen3 library to the target \"${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}\"")
-target_link_libraries("${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}"
+message(STATUS "Link Eigen3 library to the target \"${${PROJECT_NAME}_MAIN_BIN_TARGET}\"")
+target_link_libraries("${${PROJECT_NAME}_MAIN_BIN_TARGET}"
   PRIVATE
     "Eigen3::Eigen"
 )

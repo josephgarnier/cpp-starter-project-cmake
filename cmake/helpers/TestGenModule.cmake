@@ -91,11 +91,11 @@ print(STATUS PATHS "${${PROJECT_NAME}_TESTS_DIR}" INDENT)
 
 #---- Add the precompiled header, header directories and dependencies of the main bin target to the test bin target. ----
 message(STATUS "")
-message(STATUS "Copy of the usage requirements of the target to be tested \"${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}\" into the test target \"${${PROJECT_NAME}_TEST_TARGET_NAME}\"")
+message(STATUS "Copy of the usage requirements of the target to be tested \"${${PROJECT_NAME}_MAIN_BIN_TARGET}\" into the test target \"${${PROJECT_NAME}_TEST_TARGET_NAME}\"")
 
 # Copy the sources property.
 message(STATUS "Copy the sources property")
-get_target_property(main_bin_target_sources "${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}" SOURCES)
+get_target_property(main_bin_target_sources "${${PROJECT_NAME}_MAIN_BIN_TARGET}" SOURCES)
 string_manip(STRIP_INTERFACES main_bin_target_sources)
 target_sources("${${PROJECT_NAME}_TEST_TARGET_NAME}"
 	PRIVATE
@@ -106,7 +106,7 @@ target_sources("${${PROJECT_NAME}_TEST_TARGET_NAME}"
 # Copy the precompiled header file property.
 if(${PARAM_USE_PRECOMPILED_HEADER})
 	message(STATUS "Copy the precompiled header property")
-	get_target_property(main_bin_target_precompiled_header "${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}" PRECOMPILE_HEADERS)
+	get_target_property(main_bin_target_precompiled_header "${${PROJECT_NAME}_MAIN_BIN_TARGET}" PRECOMPILE_HEADERS)
 	string_manip(STRIP_INTERFACES main_bin_target_precompiled_header)
 	target_precompile_headers("${${PROJECT_NAME}_TEST_TARGET_NAME}"
 		PRIVATE
@@ -118,7 +118,7 @@ endif()
 
 # Copy the include directories property.
 message(STATUS "Copy the include directories property")
-get_target_property(main_bin_target_include_directories "${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}" INCLUDE_DIRECTORIES)
+get_target_property(main_bin_target_include_directories "${${PROJECT_NAME}_MAIN_BIN_TARGET}" INCLUDE_DIRECTORIES)
 string_manip(STRIP_INTERFACES main_bin_target_include_directories)
 target_include_directories("${${PROJECT_NAME}_TEST_TARGET_NAME}"
 	PRIVATE
@@ -127,13 +127,13 @@ target_include_directories("${${PROJECT_NAME}_TEST_TARGET_NAME}"
 
 # Copy the link libraries property.
 message(STATUS "Copy the link libraries property")
-get_target_property(main_bin_target_link_libraries "${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}" LINK_LIBRARIES)
+get_target_property(main_bin_target_link_libraries "${${PROJECT_NAME}_MAIN_BIN_TARGET}" LINK_LIBRARIES)
 string_manip(STRIP_INTERFACES main_bin_target_link_libraries)
 target_link_libraries("${${PROJECT_NAME}_TEST_TARGET_NAME}"
 	PRIVATE
 		"${main_bin_target_link_libraries}"
 )
-message(STATUS "Copy of the usage requirements of the target to be tested \"${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}\" into the test target \"${${PROJECT_NAME}_TEST_TARGET_NAME}\" - done")
+message(STATUS "Copy of the usage requirements of the target to be tested \"${${PROJECT_NAME}_MAIN_BIN_TARGET}\" into the test target \"${${PROJECT_NAME}_TEST_TARGET_NAME}\" - done")
 
 
 #---- Add GTest to the test target. ----
