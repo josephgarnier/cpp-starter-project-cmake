@@ -235,7 +235,6 @@ message(STATUS "The build target \"${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}\" is 
 
 
 #---- Add the compiler features, compile definitions and compile options to the build target. ----
-
 # Add compiler features to the build target.
 message(STATUS "Add compile features to the target \"${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}\"")
 target_compile_features("${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}"
@@ -323,7 +322,6 @@ target_sources("${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}"
 
 
 #---- Add the precompiled header file to the build target. ----
-
 # Check precompiled header file.
 if(NOT DEFINED ${PROJECT_NAME}_PRECOMPILED_HEADER_FILE)
 	message(FATAL_ERROR "${PROJECT_NAME}_PRECOMPILED_HEADER_FILE must be specified!")
@@ -350,7 +348,6 @@ endif()
 
 
 #---- Add the header directories to the build target. ----
-
 # Add header directories to incude directories of the build target.
 message(STATUS "Add the following header directories to include directories of the target \"${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}\":")
 target_include_directories("${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}"

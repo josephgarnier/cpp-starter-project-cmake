@@ -12,7 +12,6 @@ include(StringManip)
 
 
 #---- Add usage requirements. ----
-
 # Set output files, directories and names.
 if(DEFINED PARAM_INSTALL_DIRECTORY AND IS_DIRECTORY "${PARAM_INSTALL_DIRECTORY}")
 	set(CMAKE_INSTALL_PREFIX "${PARAM_INSTALL_DIRECTORY}")
