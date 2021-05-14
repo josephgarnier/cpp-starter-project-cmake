@@ -198,3 +198,6 @@ endmacro()
 
 # For printing system information (see https://cmake.org/cmake/help/latest/module/CMakePrintSystemInformation.html)
 #include(CMakePrintSystemInformation)
+
+# For printing a graph of dependencies of the targets (see https://cmake.org/cmake/help/latest/prop_gbl/GLOBAL_DEPENDS_DEBUG_MODE.html)
+#set_property(GLOBAL PROPERTY GLOBAL_DEPENDS_DEBUG_MODE 1)
