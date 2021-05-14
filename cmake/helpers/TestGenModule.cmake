@@ -16,7 +16,6 @@ add_executable("${${PROJECT_NAME}_TEST_TARGET_NAME}")
 
 
 #---- Add the compiler features, compile definitions and compile options to the test target. ----
-
 # Add compiler features to the test target.
 message(STATUS "Add compile features to the target \"${${PROJECT_NAME}_TEST_TARGET_NAME}\"")
 target_compile_features("${${PROJECT_NAME}_TEST_TARGET_NAME}"
@@ -76,31 +75,9 @@ target_sources("${${PROJECT_NAME}_TEST_TARGET_NAME}"
 		"${${PROJECT_NAME}_SOURCE_TESTS_FILES}"
 		"${${PROJECT_NAME}_HEADER_TESTS_FILES}"
 )
-message(STATUS "Add the source and header files to be tested to the target \"${${PROJECT_NAME}_TEST_TARGET_NAME}\"")
-target_sources("${${PROJECT_NAME}_TEST_TARGET_NAME}"
-	PRIVATE
-		# The main source file of the build target is excluded from the test target.
-		"$<FILTER:${${PROJECT_NAME}_SOURCE_SRC_FILES},EXCLUDE,${${PROJECT_NAME}_MAIN_SOURCE_FILE}>"
-		"${${PROJECT_NAME}_HEADER_PRIVATE_FILES}"
-		"${${PROJECT_NAME}_HEADER_PUBLIC_FILES}"
-)
-
-
-#---- Add the precompiled header file to the test target. ----
-message(STATUS "Check precompiled header file")
-if(${PARAM_USE_PRECOMPILED_HEADER})
-	message(STATUS "Add the precompiled header file to be tested to the target \"${${PROJECT_NAME}_TEST_TARGET_NAME}\"")
-	target_precompile_headers("${${PROJECT_NAME}_TEST_TARGET_NAME}"
-		PRIVATE
-			"${${PROJECT_NAME}_PRECOMPILED_HEADER_FILE}"
-	)
-else()
-	message(STATUS "Precompiled header file set off")
-endif()
 
 
 #---- Add the header directories to the test target. ----
-
 # Add header directories to incude directories of the test target.
 message(STATUS "Add the following header directories to include directories of the target \"${${PROJECT_NAME}_TEST_TARGET_NAME}\":")
 target_include_directories("${${PROJECT_NAME}_TEST_TARGET_NAME}"
@@ -108,17 +85,58 @@ target_include_directories("${${PROJECT_NAME}_TEST_TARGET_NAME}"
 		"${${PROJECT_NAME}_TESTS_DIR}"
 )
 print(STATUS PATHS "${${PROJECT_NAME}_TESTS_DIR}" INDENT)
-message(STATUS "Add the header directories to be tested to include directories of the target \"${${PROJECT_NAME}_TEST_TARGET_NAME}\":")
+
+
+#---- Add the precompiled header, header directories and dependencies of the main bin target to the test bin target. ----
+message(STATUS "")
+message(STATUS "Copy of the usage requirements of the target to be tested \"${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}\" into the test target \"${${PROJECT_NAME}_TEST_TARGET_NAME}\"")
+
+# Copy the sources property.
+message(STATUS "Copy the sources property")
+get_target_property(main_bin_target_sources "${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}" SOURCES)
+string(GENEX_STRIP "${main_bin_target_sources}" main_bin_target_sources)
+target_sources("${${PROJECT_NAME}_TEST_TARGET_NAME}"
+	PRIVATE
+		# The main source file of the build target is excluded from the test target.
+		"$<FILTER:${main_bin_target_sources},EXCLUDE,${${PROJECT_NAME}_MAIN_SOURCE_FILE}>"
+)
+
+# Copy the precompiled header file property.
+if(${PARAM_USE_PRECOMPILED_HEADER})
+	message(STATUS "Copy the precompiled header property")
+	get_target_property(main_bin_target_precompiled_header "${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}" PRECOMPILE_HEADERS)
+	string(GENEX_STRIP "${main_bin_target_precompiled_header}" main_bin_target_precompiled_header)
+	target_precompile_headers("${${PROJECT_NAME}_TEST_TARGET_NAME}"
+		PRIVATE
+			"${main_bin_target_precompiled_header}"
+	)
+else()
+	message(STATUS "No precompiled header file to copy")
+endif()
+
+# Copy the include directories property.
+message(STATUS "Copy the include directories property")
+get_target_property(main_bin_target_include_directories "${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}" INCLUDE_DIRECTORIES)
+string(GENEX_STRIP "${main_bin_target_include_directories}" main_bin_target_include_directories)
 target_include_directories("${${PROJECT_NAME}_TEST_TARGET_NAME}"
 	PRIVATE
-		"$<$<BOOL:${${PROJECT_NAME}_HEADER_PRIVATE_DIR}>:${${PROJECT_NAME}_HEADER_PRIVATE_DIR}>"
-		"${${PROJECT_NAME}_HEADER_PUBLIC_DIR}"
-		"${${PROJECT_NAME}_INCLUDE_DIR}"
+		"${main_bin_target_include_directories}"
 )
+
+# Copy the link libraries property.
+message(STATUS "Copy the link libraries property")
+get_target_property(main_bin_target_link_libraries "${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}" LINK_LIBRARIES)
+string(GENEX_STRIP "${main_bin_target_link_libraries}" main_bin_target_link_libraries)
+target_link_libraries("${${PROJECT_NAME}_TEST_TARGET_NAME}"
+	PRIVATE
+		"${main_bin_target_link_libraries}"
+)
+message(STATUS "Copy of the usage requirements of the target to be tested \"${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}\" into the test target \"${${PROJECT_NAME}_TEST_TARGET_NAME}\" - done")
 
 
 #---- Add GTest to the test target. ----
 message("")
+message(STATUS "Add the test framework to the target \"${${PROJECT_NAME}_TEST_TARGET_NAME}\"")
 
 # Find GTest or auto-download it.
 message(STATUS "Find GTest")
