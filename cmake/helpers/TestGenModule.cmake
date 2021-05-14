@@ -8,6 +8,8 @@
 # -------------
 # See README file in the root directory of this source tree.
 
+include(StringManip)
+
 
 #---- Add the test target. ----
 set(${PROJECT_NAME}_TEST_TARGET_NAME "${PROJECT_NAME}_test")
@@ -94,7 +96,7 @@ message(STATUS "Copy of the usage requirements of the target to be tested \"${${
 # Copy the sources property.
 message(STATUS "Copy the sources property")
 get_target_property(main_bin_target_sources "${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}" SOURCES)
-string(GENEX_STRIP "${main_bin_target_sources}" main_bin_target_sources)
+string_manip(STRIP_INTERFACES main_bin_target_sources)
 target_sources("${${PROJECT_NAME}_TEST_TARGET_NAME}"
 	PRIVATE
 		# The main source file of the build target is excluded from the test target.
@@ -105,7 +107,7 @@ target_sources("${${PROJECT_NAME}_TEST_TARGET_NAME}"
 if(${PARAM_USE_PRECOMPILED_HEADER})
 	message(STATUS "Copy the precompiled header property")
 	get_target_property(main_bin_target_precompiled_header "${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}" PRECOMPILE_HEADERS)
-	string(GENEX_STRIP "${main_bin_target_precompiled_header}" main_bin_target_precompiled_header)
+	string_manip(STRIP_INTERFACES main_bin_target_precompiled_header)
 	target_precompile_headers("${${PROJECT_NAME}_TEST_TARGET_NAME}"
 		PRIVATE
 			"${main_bin_target_precompiled_header}"
@@ -117,7 +119,7 @@ endif()
 # Copy the include directories property.
 message(STATUS "Copy the include directories property")
 get_target_property(main_bin_target_include_directories "${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}" INCLUDE_DIRECTORIES)
-string(GENEX_STRIP "${main_bin_target_include_directories}" main_bin_target_include_directories)
+string_manip(STRIP_INTERFACES main_bin_target_include_directories)
 target_include_directories("${${PROJECT_NAME}_TEST_TARGET_NAME}"
 	PRIVATE
 		"${main_bin_target_include_directories}"
@@ -126,7 +128,7 @@ target_include_directories("${${PROJECT_NAME}_TEST_TARGET_NAME}"
 # Copy the link libraries property.
 message(STATUS "Copy the link libraries property")
 get_target_property(main_bin_target_link_libraries "${${PROJECT_NAME}_MAIN_BIN_TARGET_NAME}" LINK_LIBRARIES)
-string(GENEX_STRIP "${main_bin_target_link_libraries}" main_bin_target_link_libraries)
+string_manip(STRIP_INTERFACES main_bin_target_link_libraries)
 target_link_libraries("${${PROJECT_NAME}_TEST_TARGET_NAME}"
 	PRIVATE
 		"${main_bin_target_link_libraries}"
