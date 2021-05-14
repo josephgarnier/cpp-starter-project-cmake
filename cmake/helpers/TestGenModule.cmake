@@ -14,7 +14,7 @@ include(StringManip)
 #---- Add the test target. ----
 set(${PROJECT_NAME}_TEST_BIN_TARGET "${PROJECT_NAME}_test")
 message(STATUS "Add the test target \"${${PROJECT_NAME}_TEST_BIN_TARGET}\"")
-add_executable("${${PROJECT_NAME}_TEST_BIN_TARGET}")
+add_executable("${${PROJECT_NAME}_TEST_BIN_TARGET}" EXCLUDE_FROM_ALL)
 
 
 #---- Add the compiler features, compile definitions and compile options to the test target. ----
@@ -165,7 +165,11 @@ if(NOT GTEST_FOUND)
 		LOG_OUTPUT_ON_FAILURE on
 		USES_TERMINAL_DOWNLOAD on
 	)
-	FetchContent_MakeAvailable(googletest)
+	FetchContent_GetProperties(googletest)
+	if(NOT ${googletest_POPULATED})
+		FetchContent_Populate(googletest)
+		add_subdirectory(${googletest_SOURCE_DIR} ${googletest_BINARY_DIR} EXCLUDE_FROM_ALL)
+	endif()
 else()
 	message(STATUS "GTest found")
 endif()
