@@ -17,6 +17,7 @@ Synopsis
     string_manip(`SPLIT`_ <string> <output_var>)
     string_manip(`TRANSFORM`_ <string_list_var> START_CASE [OUTPUT_VARIABLE <output_var>])
     string_manip(`TRANSFORM`_ <string_var> START_CASE [OUTPUT_VARIABLE <output_var>])
+    string_manip(`STRIP_INTERFACES`_ <string_var> [OUTPUT_VARIABLE <output_var>])
 
 Usage
 ^^^^^
@@ -46,6 +47,13 @@ case, storing the result in-place or in the specified ``<output_var>``.
 Transform the string ``<string_var>`` into start case then store de result in
 place or in the specified ``<output_var>``.
 
+.. code-block:: cmake
+
+  string_manip(STRIP_INTERFACES <string_var> [OUTPUT_VARIABLE <output_var>])
+
+Strip BUILD_INTERFACE and INSTALL_INTERFACE generator expressions from the input
+<string_var> and store the result in place or in the specified <output_var>.
+
 #]=======================================================================]
 include_guard()
 
@@ -55,7 +63,7 @@ cmake_minimum_required (VERSION 3.16)
 # Public function of this module.
 function(string_manip)
 	set(options START_CASE)
-	set(one_value_args TRANSFORM OUTPUT_VARIABLE)
+	set(one_value_args TRANSFORM STRIP_INTERFACES OUTPUT_VARIABLE)
 	set(multi_value_args SPLIT)
 	cmake_parse_arguments(SM "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
 	
@@ -72,6 +80,8 @@ function(string_manip)
 		else()
 			_string_manip_transform_string_list()
 		endif()
+	elseif(DEFINED SM_STRIP_INTERFACES)
+		_string_manip_strip_interfaces()
 	else()
 		message(FATAL_ERROR "Operation argument is missing")
 	endif()
@@ -153,5 +163,25 @@ macro(_string_manip_transform_string_var)
 		set(${SM_TRANSFORM} "${formated_word}" PARENT_SCOPE)
 	else()
 		set(${SM_OUTPUT_VARIABLE} "${formated_word}" PARENT_SCOPE)
+	endif()
+endmacro()
+
+#------------------------------------------------------------------------------
+# Internal usage.
+macro(_string_manip_strip_interfaces)
+	if(DEFINED SM_UNPARSED_ARGUMENTS)
+		message(FATAL_ERROR "Unrecognized arguments: \"${SM_UNPARSED_ARGUMENTS}\"")
+	endif()
+	if(NOT DEFINED SM_STRIP_INTERFACES)
+		message(FATAL_ERROR "STRIP_INTERFACES argument is missing")
+	endif()
+
+	set(regex ";?\\$<BUILD_INTERFACE:[^>]+>|;?\\$<INSTALL_INTERFACE:[^>]+>")
+	string(REGEX REPLACE "${regex}" "" string_striped "${${SM_STRIP_INTERFACES}}")
+
+	if(NOT DEFINED SM_OUTPUT_VARIABLE)
+		set(${SM_STRIP_INTERFACES} "${string_striped}" PARENT_SCOPE)
+	else()
+		set(${SM_OUTPUT_VARIABLE} "${string_striped}" PARENT_SCOPE)
 	endif()
 endmacro()
