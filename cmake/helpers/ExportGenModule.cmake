@@ -12,6 +12,28 @@ include(StringManip)
 include(Print)
 
 
+#---- Create the header file with macros for exporting. ----
+# The macros for exporting are not generated for executable binary target.
+if(NOT ${${PROJECT_NAME}_MAIN_BIN_TARGET_IS_EXEC})
+	# Set output files, directories and names.
+	set(${PROJECT_NAME}_EXPORT_MACRO_BASE_NAME     "${PROJECT_NAME}")
+	string(MAKE_C_IDENTIFIER "${${PROJECT_NAME}_EXPORT_MACRO_BASE_NAME}" ${PROJECT_NAME}_EXPORT_MACRO_BASE_NAME)
+	string(TOUPPER "${${PROJECT_NAME}_EXPORT_MACRO_BASE_NAME}" ${PROJECT_NAME}_EXPORT_MACRO_BASE_NAME)
+	set(${PROJECT_NAME}_INCLUDE_GUARD_NAME         "${${PROJECT_NAME}_EXPORT_MACRO_BASE_NAME}_EXPORT_H")
+	set(${PROJECT_NAME}_EXPORT_MACRO_HEADER_FILE   "${${PROJECT_NAME}_HEADER_PUBLIC_DIR}/${PROJECT_NAME}_export.h")
+
+	# Generate the export macros in an header file.
+	include(GenerateExportHeader)
+	generate_export_header("${${PROJECT_NAME}_MAIN_BIN_TARGET}"
+		BASE_NAME "${${PROJECT_NAME}_EXPORT_MACRO_BASE_NAME}"
+		EXPORT_FILE_NAME  "${${PROJECT_NAME}_EXPORT_MACRO_HEADER_FILE}"
+		INCLUDE_GUARD_NAME "${${PROJECT_NAME}_INCLUDE_GUARD_NAME}"
+		DEFINE_NO_DEPRECATED
+	)
+	print(STATUS "Header file with export macros generated: @rp@" "${${PROJECT_NAME}_EXPORT_MACRO_HEADER_FILE}")
+	message("")
+endif()
+
 #---- Add usage requirements. ----
 # Set output files, directories and names.
 if(DEFINED PARAM_INSTALL_DIRECTORY AND IS_DIRECTORY "${PARAM_INSTALL_DIRECTORY}")
@@ -118,13 +140,14 @@ message("")
 message(STATUS "Export the target \"${${PROJECT_NAME}_MAIN_BIN_TARGET}\" from the build-tree")
 list(APPEND CMAKE_MESSAGE_INDENT "  ")
 
-# Generate the export script `Targets.cmake` for importing the build target coming from the build-tree,
+# Set output files, directories and names.
 set(${PROJECT_NAME}_EXPORT_NAME               "${PROJECT_NAME}Targets")
 string_manip(TRANSFORM ${PROJECT_NAME}_EXPORT_NAME START_CASE)
 set(${PROJECT_NAME}_EXPORT_NAMESPACE          "${PARAM_EXPORT_NAMESPACE}")
 set(${PROJECT_NAME}_EXPORT_CONFIG_FILE_NAME   "${${PROJECT_NAME}_EXPORT_NAME}.cmake")
 set_target_properties("${${PROJECT_NAME}_MAIN_BIN_TARGET}" PROPERTIES EXPORT_NAME "${${PROJECT_NAME}_EXPORT_NAME}")
 
+# Generate the export script `Targets.cmake` for importing the build target coming from the build-tree.
 export(TARGETS "${${PROJECT_NAME}_MAIN_BIN_TARGET}"
 	FILE "${${PROJECT_NAME}_BUILD_DIR}/${${PROJECT_NAME}_EXPORT_CONFIG_FILE_NAME}"
 	NAMESPACE "${${PROJECT_NAME}_EXPORT_NAMESPACE}::"
