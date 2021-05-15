@@ -562,10 +562,6 @@ find_dependency(Eigen3 REQUIRED NO_MODULE)
 
 </details>
 
-
-METTRE EXEMPLE POUR IMPORTER
-
-
 If after configuring this module you do not wish to activate any others, go directly to the next section.
 
 ### 7. *Package Generator Module* settings
