@@ -25,27 +25,27 @@ Usage
 .. _SPLIT:
 .. code-block:: cmake
 
-  string_manip(SPLIT <string> <output_var>)
+  string_manip(SPLIT <string> <output_list_var>)
 
-Split the string ``<string>`` into a list of strings wherever special char
-occurs or a uppercase char follow a lowercase char. This list is returned in 
-``<output_var>``. In case where no special char is found, the input string is
-returned.
+Split the string ``<string>`` into a list of strings wherever non-alphanumeric
+character (in using the CMake string(MAKE_C_IDENTIFIER) function) or a uppercase
+character is detected. This list is returned in ``<output_list_var>`` as a list.
+In case where no special char is found, the input string is returned as a list.
 
 .. _TRANSFORM:
 .. code-block:: cmake
 
-  string_manip(TRANSFORM <string_list_var> START_CASE [OUTPUT_VARIABLE <output_var>])
+  string_manip(TRANSFORM <string_list_var> START_CASE [OUTPUT_VARIABLE <output_list_var>])
 
 Transform each element of the list of strings ``<string_list_var>`` into start
-case, storing the result in-place or in the specified ``<output_var>``.
+case, storing the result in-place or in the specified ``<output_list_var>`` as a list.
 
 .. code-block:: cmake
 
   string_manip(TRANSFORM <string_var> START_CASE [OUTPUT_VARIABLE <output_var>])
 
-Transform the string ``<string_var>`` into start case then store de result in
-place or in the specified ``<output_var>``.
+Split and transform the string ``<string_var>`` into start case then store de result in
+place or in the specified ``<output_var>`` as a string.
 
 .. code-block:: cmake
 
@@ -99,9 +99,10 @@ macro(_string_manip_split)
 	endif()
 
 	list(GET SM_SPLIT 0 string_to_split)
-	string(REGEX MATCHALL "([A-Za-z][a-z]*)" string_list "${string_to_split}")
-	list(GET SM_SPLIT 1 output_var)
-	set(${output_var} "${string_list}" PARENT_SCOPE)
+	string(MAKE_C_IDENTIFIER "${string_to_split}" string_to_split)
+	string(REGEX MATCHALL "[^_][^|A-Z|_]*" string_list "${string_to_split}")
+	list(GET SM_SPLIT 1 output_list_var)
+	set(${output_list_var} "${string_list}" PARENT_SCOPE)
 endmacro()
 
 #------------------------------------------------------------------------------
