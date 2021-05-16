@@ -14,8 +14,8 @@ Synopsis
 ^^^^^^^^
 .. parsed-literal::
 
-    string_manip(`SPLIT`_ <string> <output_var>)
-    string_manip(`TRANSFORM`_ <string_list_var> START_CASE [OUTPUT_VARIABLE <output_var>])
+    string_manip(`SPLIT`_ <string> <output_list_var>)
+    string_manip(`TRANSFORM`_ <string_list_var> START_CASE [OUTPUT_VARIABLE <output_list_var>])
     string_manip(`TRANSFORM`_ <string_var> START_CASE [OUTPUT_VARIABLE <output_var>])
     string_manip(`STRIP_INTERFACES`_ <string_var> [OUTPUT_VARIABLE <output_var>])
 

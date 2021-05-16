@@ -14,18 +14,18 @@ Synopsis
 ^^^^^^^^
 .. parsed-literal::
 
-    directory(`SCAN`_ <output_var> [LIST_DIRECTORIES <on|off>] RELATIVE <on|off> ROOT_DIR <directory_path> <INCLUDE_REGEX|EXCLUDE_REGEX> <regular_expression>)
-    directory(`SCAN_DIRS`_ <output_var> RECURSE <on|off> RELATIVE <on|off> ROOT_DIR <directory_path> <INCLUDE_REGEX|EXCLUDE_REGEX> <regular_expression>)
+    directory(`SCAN`_ <output_list_var> [LIST_DIRECTORIES <on|off>] RELATIVE <on|off> ROOT_DIR <directory_path> <INCLUDE_REGEX|EXCLUDE_REGEX> <regular_expression>)
+    directory(`SCAN_DIRS`_ <output_list_var> RECURSE <on|off> RELATIVE <on|off> ROOT_DIR <directory_path> <INCLUDE_REGEX|EXCLUDE_REGEX> <regular_expression>)
 
 Usage
 ^^^^^
 .. _SCAN:
 .. code-block:: cmake
 
-  directory(SCAN <output_var> [LIST_DIRECTORIES <on|off>] RELATIVE <on|off> ROOT_DIR <directory_path> <INCLUDE_REGEX|EXCLUDE_REGEX> <regular_expression>)
+  directory(SCAN <output_list_var> [LIST_DIRECTORIES <on|off>] RELATIVE <on|off> ROOT_DIR <directory_path> <INCLUDE_REGEX|EXCLUDE_REGEX> <regular_expression>)
 
 Recursively generate a list of all files that match the ``<regular_expressions>``
-from the ROOT_DIR and store it into ``<output_var>``. The results will be
+from the ROOT_DIR and store it into ``<output_list_var>`` as a list. The results will be
 returned as absolute paths to the given path ``<directory_path>`` if RELATIVE
 flag is set to off, else as relative path to ROOT_DIR. By default the function
 also add directories to result list. Setting LIST_DIRECTORIES to off removes
@@ -34,10 +34,10 @@ directories to result list.
 .. _SCAN_DIRS:
 .. code-block:: cmake
 
-  directory(SCAN_DIRS <output_var> RECURSE <on|off> RELATIVE <on|off> ROOT_DIR <directory_path> <INCLUDE_REGEX|EXCLUDE_REGEX> <regular_expression>)
+  directory(SCAN_DIRS <output_list_var> RECURSE <on|off> RELATIVE <on|off> ROOT_DIR <directory_path> <INCLUDE_REGEX|EXCLUDE_REGEX> <regular_expression>)
 
 Generate a list of all directories that match the ``<regular_expressions>``
-from the ROOT_DIR and store it into ``<output_var>``. The results will be
+from the ROOT_DIR and store it into ``<output_list_var>`` as a list. The results will be
 returned as absolute paths to the given path ``<directory_path>`` if RELATIVE 
 flag is set to off, else as relative path to ROOT_DIR. If RECURSE is set to on, the function will traverse all the subdirectories from ROOT_DIR.
 

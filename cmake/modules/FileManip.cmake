@@ -14,45 +14,45 @@ Synopsis
 ^^^^^^^^
 .. parsed-literal::
 
-    file_manip(`RELATIVE_PATH`_ <file_list_var> BASE_DIR <directory_path> [OUTPUT_VARIABLE <output_var>])
-    file_manip(`ABSOLUTE_PATH`_ <file_list_var> BASE_DIR <directory_path> [OUTPUT_VARIABLE <output_var>])
-    file_manip(`STRIP_PATH`_ <file_list_var> BASE_DIR <directory_path> [OUTPUT_VARIABLE <output_var>])
-    file_manip(`GET_COMPONENT`_ <file_list>... MODE <mode> OUTPUT_VARIABLE <output_var>)
+    file_manip(`RELATIVE_PATH`_ <file_list_var> BASE_DIR <directory_path> [OUTPUT_VARIABLE <output_list_var>])
+    file_manip(`ABSOLUTE_PATH`_ <file_list_var> BASE_DIR <directory_path> [OUTPUT_VARIABLE <output_list_var>])
+    file_manip(`STRIP_PATH`_ <file_list_var> BASE_DIR <directory_path> [OUTPUT_VARIABLE <output_list_var>])
+    file_manip(`GET_COMPONENT`_ <file_list>... MODE <mode> OUTPUT_VARIABLE <output_list_var>)
 
 Usage
 ^^^^^
 .. _RELATIVE_PATH:
 .. code-block:: cmake
 
-  file_manip(RELATIVE_PATH <file_list_var> BASE_DIR <directory_path> [OUTPUT_VARIABLE <output_var>])
+  file_manip(RELATIVE_PATH <file_list_var> BASE_DIR <directory_path> [OUTPUT_VARIABLE <output_list_var>])
 
 Compute the relative path from a ``<directory_path>`` for each files in the
 list of input path ``<file_list_var>`` and store the result in-place or in
-the specified ``<output_var>``.
+the specified ``<output_list_var>`` as a list.
 
 .. _ABSOLUTE_PATH:
 .. code-block:: cmake
 
-  file_manip(ABSOLUTE_PATH <file_list_var> BASE_DIR <directory_path> [OUTPUT_VARIABLE <output_var>])
+  file_manip(ABSOLUTE_PATH <file_list_var> BASE_DIR <directory_path> [OUTPUT_VARIABLE <output_list_var>])
 
 Compute the absolute path from a ``<directory_path>`` for each files in the
 list of input path ``<file_list_var>`` and store the result in-place or in
-the specified ``<output_var>``.
+the specified ``<output_list_var>`` as a list.
 
 .. _STRIP_PATH:
 .. code-block:: cmake
 
-  file_manip(STRIP_PATH <file_list_var> BASE_DIR <directory_path> [OUTPUT_VARIABLE <output_var>])
+  file_manip(STRIP_PATH <file_list_var> BASE_DIR <directory_path> [OUTPUT_VARIABLE <output_list_var>])
 
 Strip the <directory_path>`` prefix of each file in ``<file_list_var>`` and
-store the result in-place or in the specified ``<output_var>``.
+store the result in-place or in the specified ``<output_list_var>`` as a list.
 
 .. _GET_COMPONENT:
 .. code-block:: cmake
 
-  file_manip(GET_COMPONENT <file_list>... MODE <mode> OUTPUT_VARIABLE <output_var>)
+  file_manip(GET_COMPONENT <file_list>... MODE <mode> OUTPUT_VARIABLE <output_list_var>)
 
-Sets in the specified ``<output_var>`` to a component of file of ``<file_list>``
+Sets as a list in the specified ``<output_list_var>`` a component of file of ``<file_list>``
 , where ``<mode>`` is one of:
 
 ::
