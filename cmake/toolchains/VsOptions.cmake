@@ -50,7 +50,7 @@ string(REGEX REPLACE "/RTC(su|[1su])" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAG
 # Optimizations options.
 # @see https://docs.microsoft.com/en-us/cpp/build/reference/compiler-options-listed-by-category?view=msvc-160#optimization
 #add_compile_options("$<$<CONFIG:DEBUG>:/Od>") # disables optimization (disable below options to use it)
-add_compile_options("$<$<CONFIG:DEBUG>:/O2>") # creates fast code
+#add_compile_options("$<$<CONFIG:DEBUG>:/O2>") # creates fast code (incompatible with /RTC, disable it to use this option)
 add_compile_options("$<$<CONFIG:DEBUG>:/Ob2>") # controls inline expansion
 add_compile_options("$<$<CONFIG:DEBUG>:/Oi>") # generates intrinsic functions
 add_compile_options("$<$<CONFIG:DEBUG>:/Oy>") # omits frame pointer (x86 only)
