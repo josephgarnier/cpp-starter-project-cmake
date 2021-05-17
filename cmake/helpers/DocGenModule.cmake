@@ -56,10 +56,6 @@ doxygen_add_docs(doc
 message(STATUS "Doc target added")
 print(STATUS "Doxygen config-file generated: @rp@" "${${PROJECT_NAME}_BUILD_DIR}/Doxyfile.doc")
 
-# Add doc target in a folder for IDE project generation.
-get_cmake_property(target_folder PREDEFINED_TARGETS_FOLDER)
-set_target_properties(doc PROPERTIES FOLDER "${target_folder}")
-	
 # Add the generated documentation files to the `clean` target.
 message(STATUS "Add the doc files to the clean target")
 set_property(DIRECTORY "${${PROJECT_NAME}_PROJECT_DIR}"

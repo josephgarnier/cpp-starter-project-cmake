@@ -307,10 +307,6 @@ if(NOT TARGET uninstall)
 		COMMENT "Uninstall the project..."
 		VERBATIM
 	)
-
-	# Add uninstall target in a folder for IDE project generation.
-	get_cmake_property(target_folder PREDEFINED_TARGETS_FOLDER)
-	set_target_properties(uninstall PROPERTIES FOLDER "${target_folder}")
 else()
 	message(STATUS "Uninstall target already exists, don't need to generate it again")
 endif()

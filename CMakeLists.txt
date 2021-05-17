@@ -193,6 +193,11 @@ else()
 endif()
 message(STATUS "Targets will be build in \"${CMAKE_BUILD_TYPE}\" if a single-configuration generator is used")
 
+# Defines the organization of the targets into directories for IDE project.
+message(STATUS "Defines the organization of targets into directories.")
+set(CMAKE_FOLDER "PredefinedTargets")
+set_property(GLOBAL PROPERTY USE_FOLDERS on)
+set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "${CMAKE_FOLDER}")
 
 
 #---- Add the main binary build target. ----
@@ -236,6 +241,8 @@ else()
 endif()
 message(STATUS "The target \"${${PROJECT_NAME}_MAIN_BIN_TARGET}\" is now aliased as \"${${PROJECT_NAME}_MAIN_BIN_TARGET}::${${PROJECT_NAME}_MAIN_BIN_TARGET}\"")
 
+# Add the main binary build target in a folder for IDE project.
+set_target_properties("${${PROJECT_NAME}_MAIN_BIN_TARGET}" PROPERTIES FOLDER "")
 
 
 #---- Add the compiler features, compile definitions and compile options to the main binary build target. ----

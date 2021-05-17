@@ -16,6 +16,8 @@ set(${PROJECT_NAME}_TEST_BIN_TARGET "${PROJECT_NAME}_test")
 message(STATUS "Add the test target \"${${PROJECT_NAME}_TEST_BIN_TARGET}\"")
 add_executable("${${PROJECT_NAME}_TEST_BIN_TARGET}" EXCLUDE_FROM_ALL)
 
+# Add the test binary build target in a folder for IDE project.
+set_target_properties("${${PROJECT_NAME}_TEST_BIN_TARGET}" PROPERTIES FOLDER "")
 
 
 #---- Add the compiler features, compile definitions and compile options to the test binary build target. ----
@@ -175,7 +177,8 @@ else()
 	message(STATUS "GTest found")
 endif()
 
-# Add GTest compile definitions to the test target.
+# Add the GTest targets in a folder for IDE project.
+set_target_properties("gtest" "gtest_main" "gmock" "gmock_main" PROPERTIES FOLDER "${CMAKE_FOLDER}/GTest")
 
 # Add GTest compile definitions to the test binary build target.
 message(STATUS "Add GTest compile definitions to the target \"${${PROJECT_NAME}_TEST_BIN_TARGET}\"")
