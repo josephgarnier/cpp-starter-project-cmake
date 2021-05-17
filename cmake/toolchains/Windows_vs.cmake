@@ -40,10 +40,5 @@ set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE BOTH)
 set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE BOTH)
 
-# Settings of directories organisation.
-set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "CMakeTargets")
-set(CMAKE_FOLDER "")
-
-# Compile flags.
+# Compiler flags.
 include("${CMAKE_CURRENT_LIST_DIR}/VsOptions.cmake")
