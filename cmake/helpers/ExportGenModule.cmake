@@ -13,7 +13,7 @@ include(Print)
 
 
 #---- Create the header file with macros for exporting. ----
-# The macros for exporting are not generated for executable binary target.
+# Generate the macro header file only for library build targets.
 if(NOT ${${PROJECT_NAME}_MAIN_BIN_TARGET_IS_EXEC})
 	# Set output files, directories and names.
 	set(${PROJECT_NAME}_EXPORT_MACRO_BASE_NAME     "${PROJECT_NAME}")
@@ -85,7 +85,7 @@ file_manip(ABSOLUTE_PATH ${PROJECT_NAME}_INSTALL_LIBRARY_FILES
 	BASE_DIR "${${PROJECT_NAME}_INSTALL_RELATIVE_LIBRARY_DIR}"
 )
 
-# Add usage requirements to the build target for an import from the build-tree (BUILD_INTERFACE) or install-tree (INSTALL_INTERFACE).
+# Add usage requirements to the main binary build target for an import from the build-tree (BUILD_INTERFACE) or the install-tree (INSTALL_INTERFACE).
 message(STATUS "Add usage requirements to the target \"${${PROJECT_NAME}_MAIN_BIN_TARGET}\" for importing")
 
 target_compile_features("${${PROJECT_NAME}_MAIN_BIN_TARGET}"
@@ -117,11 +117,11 @@ if(${PARAM_USE_PRECOMPILED_HEADER})
 endif()
 target_include_directories("${${PROJECT_NAME}_MAIN_BIN_TARGET}"
 	PUBLIC
-		# For consummer within the build (header directory of the build target).
+		# For consummer within the current taget (header directory of the main binary build target).
 		"$<BUILD_INTERFACE:${${PROJECT_NAME}_HEADER_PUBLIC_DIR}>"
 		# For consummer within the build (header directory of the libraries).
 		"$<BUILD_INTERFACE:${${PROJECT_NAME}_INCLUDE_DIR}>"
-		# For consummer outside the build who import the target after installation.
+		# For consummer outside the build who import the current target after installation.
 		"$<INSTALL_INTERFACE:${${PROJECT_NAME}_INSTALL_RELATIVE_INCLUDE_DIR}>"
 )
 target_link_libraries("${${PROJECT_NAME}_MAIN_BIN_TARGET}"
@@ -146,7 +146,7 @@ set(${PROJECT_NAME}_EXPORT_NAMESPACE          "${PARAM_EXPORT_NAMESPACE}")
 set(${PROJECT_NAME}_EXPORT_CONFIG_FILE_NAME   "${${PROJECT_NAME}_EXPORT_NAME}.cmake")
 set_target_properties("${${PROJECT_NAME}_MAIN_BIN_TARGET}" PROPERTIES EXPORT_NAME "${${PROJECT_NAME}_EXPORT_NAME}")
 
-# Generate the export script `Targets.cmake` for importing the build target coming from the build-tree.
+# Generate the export script `Targets.cmake` for importing the main binary build target coming from the build-tree.
 export(TARGETS "${${PROJECT_NAME}_MAIN_BIN_TARGET}"
 	FILE "${${PROJECT_NAME}_BUILD_DIR}/${${PROJECT_NAME}_EXPORT_CONFIG_FILE_NAME}"
 	NAMESPACE "${${PROJECT_NAME}_EXPORT_NAMESPACE}::"
@@ -207,7 +207,7 @@ install(FILES ${${PROJECT_NAME}_LIBRARY_FILES}
 install(DIRECTORY "${${PROJECT_NAME}_RESOURCES_DIR}"
 	DESTINATION "${${PROJECT_NAME}_INSTALL_RELATIVE_DATAROOT_DIR}"
 )
-# Generate the export script `Targets.cmake` for importing the build target coming from the install-tree, and its install rules.
+# Generate the export script `Targets.cmake` for importing the main binary build target coming from the install-tree, and its install rules.
 install(EXPORT "${${PROJECT_NAME}_EXPORT_NAME}"
 	NAMESPACE "${${PROJECT_NAME}_EXPORT_NAMESPACE}::"
 	DESTINATION "${${PROJECT_NAME}_INSTALL_RELATIVE_DATAROOT_DIR}/cmake"
@@ -299,9 +299,9 @@ if(NOT TARGET uninstall)
 	unset(LOCAL_INSTALL_RELATIVE_LIBRARY_DIR)
 	print(STATUS "Uninstall script generated: @rp@" "${${PROJECT_NAME}_UNINSTALL_SCRIPT_FILE}")
 	
-	# Add `cmake --build build/ --target uninstall` command.
-	message(STATUS "Add the uninstall command")
-	add_custom_target(uninstall
+	# Add the uninstall target.
+	message(STATUS "Add the uninstall target")
+	add_custom_target("uninstall"
 		COMMAND ${CMAKE_COMMAND} -P "${${PROJECT_NAME}_UNINSTALL_SCRIPT_FILE}"
 		WORKING_DIRECTORY "${${PROJECT_NAME}_BUILD_DIR}"
 		COMMENT "Uninstall the project..."

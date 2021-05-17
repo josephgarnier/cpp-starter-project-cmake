@@ -45,15 +45,15 @@ message(STATUS "Add doc options")
 include(DocOptions)
 set(DOXYGEN_OUTPUT_DIRECTORY   "${${PROJECT_NAME}_DOC_DIR}")
 
-# Generate a Doxygen config-file and add the doc command.
-message(STATUS "Adding a target for generating documentation with Doxygen")
+# Generate a Doxygen config-file and add the doc target.
+message(STATUS "Adding the doc target for generating documentation with Doxygen")
 doxygen_add_docs(doc
 	"${${PROJECT_NAME}_SRC_DIR};${${PROJECT_NAME}_INCLUDE_DIR}/${PROJECT_NAME}"
 	ALL
 	WORKING_DIRECTORY "${${PROJECT_NAME}_DOC_DIR}"
 	COMMENT "Generating documentation with Doxygen"
 )
-message(STATUS "Doc command added")
+message(STATUS "Doc target added")
 print(STATUS "Doxygen config-file generated: @rp@" "${${PROJECT_NAME}_BUILD_DIR}/Doxyfile.doc")
 
 # Add doc target in a folder for IDE project generation.

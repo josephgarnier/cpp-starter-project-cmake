@@ -11,35 +11,36 @@
 include(StringManip)
 
 
-#---- Add the test target. ----
+#---- Add the test binary build target. ----
 set(${PROJECT_NAME}_TEST_BIN_TARGET "${PROJECT_NAME}_test")
 message(STATUS "Add the test target \"${${PROJECT_NAME}_TEST_BIN_TARGET}\"")
 add_executable("${${PROJECT_NAME}_TEST_BIN_TARGET}" EXCLUDE_FROM_ALL)
 
 
-#---- Add the compiler features, compile definitions and compile options to the test target. ----
-# Add compiler features to the test target.
+
+#---- Add the compiler features, compile definitions and compile options to the test binary build target. ----
+# Add compiler features to the test binary build target.
 message(STATUS "Add compile features to the target \"${${PROJECT_NAME}_TEST_BIN_TARGET}\"")
 target_compile_features("${${PROJECT_NAME}_TEST_BIN_TARGET}"
 	PRIVATE
 		"cxx_std_${CMAKE_CXX_STANDARD}"
 )
 
-# Add compile definitions to the test target.
+# Add compile definitions to the test binary build target.
 message(STATUS "Add compile definitions to the target \"${${PROJECT_NAME}_TEST_BIN_TARGET}\"")
 target_compile_definitions("${${PROJECT_NAME}_TEST_BIN_TARGET}"
 	PRIVATE
 		"${${PROJECT_NAME}_COMPILE_DEFINITIONS}"
 )
 
-# Add compile options to the test target.
+# Add compile options to the test binary build target.
 message(STATUS "Add compile options to the target \"${${PROJECT_NAME}_TEST_BIN_TARGET}\"")
 target_compile_options("${${PROJECT_NAME}_TEST_BIN_TARGET}"
 	PRIVATE
 		"-O0;-g;-fprofile-arcs;-ftest-coverage"
 )
 
-# Add link options to the test target.
+# Add link options to the test binary build target.
 message(STATUS "Add link options to the target \"${${PROJECT_NAME}_TEST_BIN_TARGET}\"")
 target_link_options("${${PROJECT_NAME}_TEST_BIN_TARGET}"
 	PRIVATE
@@ -47,7 +48,7 @@ target_link_options("${${PROJECT_NAME}_TEST_BIN_TARGET}"
 )
 
 
-#---- Add source and header files to the test target. ----
+#---- Add source and header files to the test binary build target. ----
 message(STATUS "Check source and header files")
 
 set(${PROJECT_NAME}_SOURCE_TESTS_FILES "")
@@ -70,7 +71,7 @@ print(STATUS PATHS "${${PROJECT_NAME}_SOURCE_TESTS_FILES}" INDENT)
 message(STATUS "Found the following header files:")
 print(STATUS PATHS "${${PROJECT_NAME}_HEADER_TESTS_FILES}" INDENT)
 
-# Add source and header files to the test target.
+# Add source and header files to the test binary build target.
 message(STATUS "Add the found source and header files to the target \"${${PROJECT_NAME}_TEST_BIN_TARGET}\"")
 target_sources("${${PROJECT_NAME}_TEST_BIN_TARGET}"
 	PRIVATE
@@ -79,8 +80,8 @@ target_sources("${${PROJECT_NAME}_TEST_BIN_TARGET}"
 )
 
 
-#---- Add the header directories to the test target. ----
-# Add header directories to incude directories of the test target.
+#---- Add the header directories to the test binary build target. ----
+# Add header directories to incude directories of the test binary build target.
 message(STATUS "Add the following header directories to include directories of the target \"${${PROJECT_NAME}_TEST_BIN_TARGET}\":")
 target_include_directories("${${PROJECT_NAME}_TEST_BIN_TARGET}"
 	PRIVATE
@@ -89,7 +90,7 @@ target_include_directories("${${PROJECT_NAME}_TEST_BIN_TARGET}"
 print(STATUS PATHS "${${PROJECT_NAME}_TESTS_DIR}" INDENT)
 
 
-#---- Add the precompiled header, header directories and dependencies of the main bin target to the test bin target. ----
+#---- Add the precompiled header, header directories and dependencies of the main binary build target to the test binary build target. ----
 message(STATUS "")
 message(STATUS "Copy of the usage requirements of the target to be tested \"${${PROJECT_NAME}_MAIN_BIN_TARGET}\" into the test target \"${${PROJECT_NAME}_TEST_BIN_TARGET}\"")
 
@@ -99,7 +100,7 @@ get_target_property(main_bin_target_sources "${${PROJECT_NAME}_MAIN_BIN_TARGET}"
 string_manip(STRIP_INTERFACES main_bin_target_sources)
 target_sources("${${PROJECT_NAME}_TEST_BIN_TARGET}"
 	PRIVATE
-		# The main source file of the build target is excluded from the test target.
+		# The main source file of the main binary build target is excluded from the test binary build target.
 		"$<FILTER:${main_bin_target_sources},EXCLUDE,${${PROJECT_NAME}_MAIN_SOURCE_FILE}>"
 )
 
@@ -136,7 +137,7 @@ target_link_libraries("${${PROJECT_NAME}_TEST_BIN_TARGET}"
 message(STATUS "Copy of the usage requirements of the target to be tested \"${${PROJECT_NAME}_MAIN_BIN_TARGET}\" into the test target \"${${PROJECT_NAME}_TEST_BIN_TARGET}\" - done")
 
 
-#---- Add GTest to the test target. ----
+#---- Add GTest to the test binary build target. ----
 message("")
 message(STATUS "Add the test framework to the target \"${${PROJECT_NAME}_TEST_BIN_TARGET}\"")
 
@@ -175,13 +176,15 @@ else()
 endif()
 
 # Add GTest compile definitions to the test target.
+
+# Add GTest compile definitions to the test binary build target.
 message(STATUS "Add GTest compile definitions to the target \"${${PROJECT_NAME}_TEST_BIN_TARGET}\"")
 target_compile_definitions("${${PROJECT_NAME}_TEST_BIN_TARGET}"
 	PRIVATE
 		"GTEST_HAS_PTHREAD=0;GTEST_CREATE_SHARED_LIBRARY=1;GTEST_LINKED_AS_SHARED_LIBRARY=1"
 )
 
-# Link GTest to the test target.
+# Link GTest to the test binary build target.
 message(STATUS "Link GTest library to the target \"${${PROJECT_NAME}_TEST_BIN_TARGET}\"")
 target_link_libraries("${${PROJECT_NAME}_TEST_BIN_TARGET}"
 	PRIVATE
@@ -189,7 +192,7 @@ target_link_libraries("${${PROJECT_NAME}_TEST_BIN_TARGET}"
 )
 
 # Automatically add tests by querying the compiled test executable for available tests
-message(STATUS "Discover and add tests to the target \"${${PROJECT_NAME}_TEST_BIN_TARGET}\"")
+message(STATUS "Discover and add tests to the target \"${${PROJECT_NAME}_TEST_BIN_TARGET}.\"")
 gtest_discover_tests("${${PROJECT_NAME}_TEST_BIN_TARGET}"
 	WORKING_DIRECTORY "${${PROJECT_NAME}_TESTS_DIR}"
 )

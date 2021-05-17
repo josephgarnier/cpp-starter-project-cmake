@@ -444,7 +444,7 @@ To use this module, only **one option in a single file** has to be set. Open the
 
 - `ENABLE_TEST_MODULE=[ON|OFF (default)]`: specifies whether enable the Test Generator Module.
 
-Then, write all your tests (source and header files) in `tests/`. The module will automatically detect these files and add theme to the test binary build target. There are several strategies for linking test files to the files to be tested, each with their advantages and disadvantages. Here, the one that has been chosen is to add all the source and header files of the main binary build target to the test executable. The disadvantage is that the project has to be built twice, but on one hand this reduces the dependencies between the main target and the test target, and on the other hand, the test configuration is much less complex to write.
+Then, write all your tests (source and header files) in `tests/`. The module will automatically detect these files and add them to the test binary build target. There are several strategies for linking test files to the files to be tested, each with their advantages and disadvantages. Here, the one that has been chosen is to add all the source and header files of the main binary build target to the test binary build target. The disadvantage is that the project has to be built twice, but on one hand this reduces the dependencies between the main binary build target and the test binary build target, and on the other hand, the test configuration is much less complex to write.
 
 If after configuring this module you do not wish to activate any others, go directly to the next section.
 
@@ -666,7 +666,7 @@ cmake --build build/ --target all --clean-first --verbose
 Commands to **execute the `test` build phase** of the *Build Lifecycle* (only available if the *Test Generator Module* has been activated):
 
 ```bash
-# build the test target and execute the tests binary executable
+# build the test binary target and execute the tests binary executable
 cmake --build build/ --target project-name_test && ../bin/project-name_test
 ```
 
