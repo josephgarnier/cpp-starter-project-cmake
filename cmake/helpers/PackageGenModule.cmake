@@ -38,9 +38,9 @@ configure_file(
 print(STATUS "Package generator config-file generated: @rp@" "${${PROJECT_NAME}_PACKAGE_GENERATOR_CONFIG_FILE}")
 set(CPACK_PROJECT_CONFIG_FILE "${${PROJECT_NAME}_PACKAGE_GENERATOR_CONFIG_FILE}")
 
-# Add the generated package files to `cmake --build . --target clean` command
+# Add the generated package files to the `clean` target
 # (must be called before CPack because this one change the variables listed here).
-message(STATUS "Add the package files to clean command")
+message(STATUS "Add the package files to clean target")
 set_property(DIRECTORY "${${PROJECT_NAME}_PROJECT_DIR}"
 	APPEND
 	PROPERTY ADDITIONAL_CLEAN_FILES

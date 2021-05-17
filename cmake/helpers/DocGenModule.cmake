@@ -60,8 +60,8 @@ print(STATUS "Doxygen config-file generated: @rp@" "${${PROJECT_NAME}_BUILD_DIR}
 get_cmake_property(target_folder PREDEFINED_TARGETS_FOLDER)
 set_target_properties(doc PROPERTIES FOLDER "${target_folder}")
 	
-# Add the generated documentation files to `cmake --build . --target clean` command.
-message(STATUS "Add the doc files to the clean command")
+# Add the generated documentation files to the `clean` target.
+message(STATUS "Add the doc files to the clean target")
 set_property(DIRECTORY "${${PROJECT_NAME}_PROJECT_DIR}"
 	APPEND
 	PROPERTY ADDITIONAL_CLEAN_FILES

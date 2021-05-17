@@ -113,7 +113,7 @@ set(ENABLE_DOC_MODULE_DESC             "Specifies whether enable the Doc Generat
 #---- Export Generator Module options ----
 set(ENABLE_EXPORT_MODULE_DESC          "Specifies whether enable the Export Generator Module")
 set(EXPORT_NAMESPACE_DESC              "Name to prepend to the target name when it is written to the import file, see https://cmake.org/cmake/help/latest/command/install.html#export")
-set(INSTALL_DIRECTORY_DESC             "Directory used by install command, let empty to use the default value, see https://cmake.org/cmake/help/latest/variable/CMAKE_INSTALL_PREFIX.html")
+set(INSTALL_DIRECTORY_DESC             "Directory used by install target, let empty to use the default value, see https://cmake.org/cmake/help/latest/variable/CMAKE_INSTALL_PREFIX.html")
 
 #---- Package Generator Module options ----
 set(ENABLE_PACKAGE_MODULE_DESC         "Specifies whether enable the Package Generator Module")
