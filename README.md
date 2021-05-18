@@ -385,7 +385,7 @@ endif()
 message(STATUS "Find Eigen3 package")
 include(FetchContent)
 find_package(Eigen3 NO_MODULE)
-if(NOT EIGEN3_FOUND)
+if(NOT ${EIGEN3_FOUND})
   message(STATUS "Eigen3 not found, it will be auto-downloaded in the build-tree")
   set(FETCHCONTENT_QUIET off)
   FetchContent_Declare(

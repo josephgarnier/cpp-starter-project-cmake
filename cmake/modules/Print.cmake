@@ -142,7 +142,7 @@ macro(_substitute_directives)
 		# `message_head` is what has already been parsed, `message_cursor` is what is
 		# currently parsed () and `message_tail` is what will be parsed.
 		string(FIND "${message_tail}" "@" pos_first)
-		if(pos_first EQUAL -1)
+		if(${pos_first} EQUAL -1)
 			break()
 		endif()
 		string(SUBSTRING "${message_tail}" 0 ${pos_first} message_cursor)
@@ -151,7 +151,7 @@ macro(_substitute_directives)
 		string(APPEND message_head "${message_cursor}")
 		
 		string(FIND "${message_tail}" "@" pos_second)
-		if(pos_second EQUAL -1)
+		if(${pos_second} EQUAL -1)
 			break()
 		endif()
 		string(SUBSTRING "${message_tail}" 0 ${pos_second} message_cursor)

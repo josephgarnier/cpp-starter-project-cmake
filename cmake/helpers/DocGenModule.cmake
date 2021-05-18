@@ -12,7 +12,7 @@
 message(STATUS "Find Doxygen")
 include(FetchContent)
 find_package(Doxygen)
-if(NOT DOXYGEN_FOUND)
+if(NOT ${DOXYGEN_FOUND})
 	message(STATUS "Doxygen not found, it will be auto-downloaded in the build-tree")
 	set(FETCHCONTENT_QUIET off)
 	FetchContent_Declare(
