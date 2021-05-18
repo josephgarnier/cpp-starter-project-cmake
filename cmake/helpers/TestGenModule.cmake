@@ -99,12 +99,14 @@ message(STATUS "Copy of the usage requirements of the target to be tested \"${${
 # Copy the sources property.
 message(STATUS "Copy the sources property")
 get_target_property(main_bin_target_sources "${${PROJECT_NAME}_MAIN_BIN_TARGET}" SOURCES)
-string_manip(STRIP_INTERFACES main_bin_target_sources)
-target_sources("${${PROJECT_NAME}_TEST_BIN_TARGET}"
-	PRIVATE
-		# The main source file of the main binary build target is excluded from the test binary build target.
-		"$<FILTER:${main_bin_target_sources},EXCLUDE,${${PROJECT_NAME}_MAIN_SOURCE_FILE}>"
-)
+if(main_bin_target_sources)
+	string_manip(STRIP_INTERFACES main_bin_target_sources)
+	target_sources("${${PROJECT_NAME}_TEST_BIN_TARGET}"
+		PRIVATE
+			# The main source file of the main binary build target is excluded from the test binary build target.
+			"$<FILTER:${main_bin_target_sources},EXCLUDE,${${PROJECT_NAME}_MAIN_SOURCE_FILE}>"
+	)
+endif()
 
 # Copy the precompiled header file property.
 if(${PARAM_USE_PRECOMPILED_HEADER})
@@ -122,20 +124,24 @@ endif()
 # Copy the include directories property.
 message(STATUS "Copy the include directories property")
 get_target_property(main_bin_target_include_directories "${${PROJECT_NAME}_MAIN_BIN_TARGET}" INCLUDE_DIRECTORIES)
-string_manip(STRIP_INTERFACES main_bin_target_include_directories)
-target_include_directories("${${PROJECT_NAME}_TEST_BIN_TARGET}"
-	PRIVATE
-		"${main_bin_target_include_directories}"
-)
+if(main_bin_target_include_directories)
+	string_manip(STRIP_INTERFACES main_bin_target_include_directories)
+	target_include_directories("${${PROJECT_NAME}_TEST_BIN_TARGET}"
+		PRIVATE
+			"${main_bin_target_include_directories}"
+	)
+endif()
 
 # Copy the link libraries property.
 message(STATUS "Copy the link libraries property")
 get_target_property(main_bin_target_link_libraries "${${PROJECT_NAME}_MAIN_BIN_TARGET}" LINK_LIBRARIES)
-string_manip(STRIP_INTERFACES main_bin_target_link_libraries)
-target_link_libraries("${${PROJECT_NAME}_TEST_BIN_TARGET}"
-	PRIVATE
-		"${main_bin_target_link_libraries}"
-)
+if(main_bin_target_link_libraries)
+	string_manip(STRIP_INTERFACES main_bin_target_link_libraries)
+	target_link_libraries("${${PROJECT_NAME}_TEST_BIN_TARGET}"
+		PRIVATE
+			"${main_bin_target_link_libraries}"
+	)
+endif()
 message(STATUS "Copy of the usage requirements of the target to be tested \"${${PROJECT_NAME}_MAIN_BIN_TARGET}\" into the test target \"${${PROJECT_NAME}_TEST_BIN_TARGET}\" - done")
 
 
