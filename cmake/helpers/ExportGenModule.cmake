@@ -140,10 +140,10 @@ message(STATUS "Export the target \"${${PROJECT_NAME}_MAIN_BIN_TARGET}\" from th
 list(APPEND CMAKE_MESSAGE_INDENT "  ")
 
 # Set output files, directories and names.
-set(${PROJECT_NAME}_EXPORT_NAME               "${PROJECT_NAME}Targets")
+set(${PROJECT_NAME}_EXPORT_NAME               "${PROJECT_NAME}")
 string_manip(SPLIT_TRANSFORM ${PROJECT_NAME}_EXPORT_NAME START_CASE)
 set(${PROJECT_NAME}_EXPORT_NAMESPACE          "${PARAM_EXPORT_NAMESPACE}")
-set(${PROJECT_NAME}_EXPORT_CONFIG_FILE_NAME   "${${PROJECT_NAME}_EXPORT_NAME}.cmake")
+set(${PROJECT_NAME}_EXPORT_CONFIG_FILE_NAME   "${${PROJECT_NAME}_EXPORT_NAME}Targets.cmake")
 set_target_properties("${${PROJECT_NAME}_MAIN_BIN_TARGET}" PROPERTIES EXPORT_NAME "${${PROJECT_NAME}_EXPORT_NAME}")
 
 # Generate the export script `Targets.cmake` for importing the main binary build target coming from the build-tree.
