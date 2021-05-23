@@ -193,7 +193,7 @@ endmacro()
 # Some usefull cmake functions
 #------------------------------------------------------------------------------
 
-# For printing properties and variables (see https://cmake.org/cmake/help/latest/module/CMakePrintHelpers.html
+# For printing properties and variables (@see https://cmake.org/cmake/help/latest/module/CMakePrintHelpers.html
 # and https://cmake.org/cmake/help/latest/manual/cmake-properties.7.html)
 #cmake_print_properties([TARGETS target1 ..  targetN]
 #	[SOURCES source1 .. sourceN]
@@ -203,8 +203,11 @@ endmacro()
 #	PROPERTIES prop1 .. propN )
 #cmake_print_variables(var1 var2 ..  varN)
 
-# For printing system information (see https://cmake.org/cmake/help/latest/module/CMakePrintSystemInformation.html)
+# For printing system information (@see https://cmake.org/cmake/help/latest/module/CMakePrintSystemInformation.html)
 #include(CMakePrintSystemInformation)
 
-# For printing a graph of dependencies of the targets (see https://cmake.org/cmake/help/latest/prop_gbl/GLOBAL_DEPENDS_DEBUG_MODE.html)
+# For printing a graph of dependencies of the targets (@see https://cmake.org/cmake/help/latest/prop_gbl/GLOBAL_DEPENDS_DEBUG_MODE.html)
 #set_property(GLOBAL PROPERTY GLOBAL_DEPENDS_DEBUG_MODE 1)
+
+# For testing generator expressions (@see https://cmake.org/cmake/help/latest/manual/cmake-generator-expressions.7.html#debugging)
+#file(GENERATE OUTPUT debug.txt CONTENT "$<...>")
