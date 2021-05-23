@@ -33,6 +33,7 @@ if(NOT ${${PROJECT_NAME}_MAIN_BIN_TARGET_IS_EXEC})
 	message("")
 endif()
 
+
 #---- Add usage requirements. ----
 # Set output files, directories and names.
 if(DEFINED PARAM_INSTALL_DIRECTORY AND IS_DIRECTORY "${PARAM_INSTALL_DIRECTORY}")
@@ -118,7 +119,7 @@ endif()
 target_include_directories("${${PROJECT_NAME}_MAIN_BIN_TARGET}"
 	PUBLIC
 		# For consummer within the current taget (header directory of the main binary build target).
-		"$<BUILD_INTERFACE:${${PROJECT_NAME}_HEADER_PUBLIC_DIR}>"
+		"$<BUILD_INTERFACE:$<FILTER:${${PROJECT_NAME}_HEADER_PUBLIC_DIR},EXCLUDE,${${PROJECT_NAME}_INCLUDE_DIR}.*>>" # exclude all subdirectories from `include/`
 		# For consummer within the build (header directory of the libraries).
 		"$<BUILD_INTERFACE:${${PROJECT_NAME}_INCLUDE_DIR}>"
 		# For consummer outside the build who import the current target after installation.
