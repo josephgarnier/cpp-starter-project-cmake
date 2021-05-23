@@ -330,6 +330,12 @@ target_sources("${${PROJECT_NAME}_MAIN_BIN_TARGET}"
 		"${${PROJECT_NAME}_HEADER_PRIVATE_FILES}"
 		"${${PROJECT_NAME}_HEADER_PUBLIC_FILES}"
 )
+source_group(TREE "${${PROJECT_NAME}_PROJECT_DIR}"
+	FILES
+		${${PROJECT_NAME}_SOURCE_SRC_FILES}
+		${${PROJECT_NAME}_HEADER_PRIVATE_FILES}
+		${${PROJECT_NAME}_HEADER_PUBLIC_FILES}
+)
 
 
 #---- Add the precompiled header file to the main binary build target. ----
@@ -481,13 +487,10 @@ endif()
 
 
 
-#------------------------------------------------------------------------------
-# 8. The Uninstall Generator Module
-#------------------------------------------------------------------------------
-if(${PARAM_ENABLE_UNINSTALL_MODULE})
-	message("")
-	message("")
-	message("== 8. Execution of the Uninstall Generator Module ==")
-	include(UninstallGenModule)
-endif()
-message("\n===== End project ${PROJECT_NAME} building =====\n")
+message("")
+message("===== End of Build Lifecycle ${PROJECT_NAME} generation =====")
+message("")
+
+
+
+

@@ -80,6 +80,11 @@ target_sources("${${PROJECT_NAME}_TEST_BIN_TARGET}"
 		"${${PROJECT_NAME}_SOURCE_TESTS_FILES}"
 		"${${PROJECT_NAME}_HEADER_TESTS_FILES}"
 )
+source_group(TREE "${${PROJECT_NAME}_PROJECT_DIR}"
+	FILES
+		${${PROJECT_NAME}_SOURCE_TESTS_FILES}
+		${${PROJECT_NAME}_HEADER_TESTS_FILES}
+)
 
 
 #---- Add the header directories to the test binary build target. ----
@@ -105,6 +110,10 @@ if(main_bin_target_sources)
 		PRIVATE
 			# The main source file of the main binary build target is excluded from the test binary build target.
 			"$<FILTER:${main_bin_target_sources},EXCLUDE,${${PROJECT_NAME}_MAIN_SOURCE_FILE}>"
+	)
+	source_group(TREE "${${PROJECT_NAME}_PROJECT_DIR}"
+		FILES
+			$<FILTER:${main_bin_target_sources},EXCLUDE,${${PROJECT_NAME}_MAIN_SOURCE_FILE}>
 	)
 endif()
 
