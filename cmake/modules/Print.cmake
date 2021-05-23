@@ -44,7 +44,7 @@ Conversion specifier is one of:
 
   print([<mode>] PATHS <file_list>... [INDENT])
 
-Record each file ``<file_list>`` in the log after having computed their relative
+Record each file of the list of ``<file_list>`` in the log after having computed their relative
 path to ``PRINT_BASE_DIR``. The message is indented if INDENT is set. This
 command is inspired by `message()` from CMake.
 The optional ``<mode>`` keyword determines the type of message like in CMake

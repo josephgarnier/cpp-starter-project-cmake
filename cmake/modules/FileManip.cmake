@@ -52,7 +52,7 @@ store the result in-place or in the specified ``<output_list_var>`` as a list.
 
   file_manip(GET_COMPONENT <file_list>... MODE <mode> OUTPUT_VARIABLE <output_list_var>)
 
-Sets as a list in the specified ``<output_list_var>`` a component of file of ``<file_list>``
+Sets as a list in the specified ``<output_list_var>`` a component of file in the list of ``<file_list>``
 , where ``<mode>`` is one of:
 
 ::
