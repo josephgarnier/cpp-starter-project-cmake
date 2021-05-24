@@ -65,7 +65,7 @@ file_manip(ABSOLUTE_PATH ${PROJECT_NAME}_INSTALL_HEADER_FILES
 	BASE_DIR "${${PROJECT_NAME}_INSTALL_RELATIVE_INCLUDE_DIR}/${PROJECT_NAME}"
 )
 
-# Create a list of precompiled header files for INSTALL_INTERFACE of `target_precompile_headers()`
+# Create a precompiled header file for INSTALL_INTERFACE of `target_precompile_headers()`
 # command.
 if(${PARAM_USE_PRECOMPILED_HEADER})
 	set(${PROJECT_NAME}_INSTALL_PRECOMPILED_HEADER_FILE "${${PROJECT_NAME}_PRECOMPILED_HEADER_FILE}")
@@ -73,7 +73,7 @@ if(${PARAM_USE_PRECOMPILED_HEADER})
 		BASE_DIR "${${PROJECT_NAME}_HEADER_PUBLIC_DIR}"
 	)
 	file_manip(ABSOLUTE_PATH ${PROJECT_NAME}_INSTALL_PRECOMPILED_HEADER_FILE
-		BASE_DIR "${${PROJECT_NAME}_INSTALL_RELATIVE_INCLUDE_DIR}/${PROJECT_NAME}"
+		BASE_DIR "\${_IMPORT_PREFIX}/${${PROJECT_NAME}_INSTALL_RELATIVE_INCLUDE_DIR}/${PROJECT_NAME}"  # Bug fix, because for some unknown reason the prefix is not added by export command.
 	)
 endif()
 
@@ -83,7 +83,7 @@ file_manip(STRIP_PATH ${PROJECT_NAME}_INSTALL_LIBRARY_FILES
 	BASE_DIR "${${PROJECT_NAME}_LIB_DIR}"
 )
 file_manip(ABSOLUTE_PATH ${PROJECT_NAME}_INSTALL_LIBRARY_FILES
-	BASE_DIR "${${PROJECT_NAME}_INSTALL_RELATIVE_LIBRARY_DIR}"
+	BASE_DIR "\${_IMPORT_PREFIX}/${${PROJECT_NAME}_INSTALL_RELATIVE_LIBRARY_DIR}" # Bug fix, because for some unknown reason the prefix is not added by export command.
 )
 
 # Add usage requirements to the main binary build target for an import from the build-tree (BUILD_INTERFACE) or the install-tree (INSTALL_INTERFACE).
