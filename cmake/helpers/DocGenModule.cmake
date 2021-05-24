@@ -15,8 +15,7 @@ find_package(Doxygen)
 if(NOT ${DOXYGEN_FOUND})
 	message(STATUS "Doxygen not found, it will be auto-downloaded in the build-tree")
 	set(FETCHCONTENT_QUIET off)
-	FetchContent_Declare(
-		doxygen
+	FetchContent_Declare(doxygen
 		GIT_REPOSITORY https://github.com/doxygen/doxygen.git
 		GIT_TAG master
 		GIT_PROGRESS on

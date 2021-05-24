@@ -162,11 +162,10 @@ message(STATUS "Add the test framework to the target \"${${PROJECT_NAME}_TEST_BI
 message(STATUS "Find GTest")
 include(FetchContent)
 find_package(GTest)
-if(NOT ${GTEST_FOUND})
+if(NOT ${GTest_FOUND})
 	message(STATUS "GTest not found, it will be auto-downloaded in the build-tree")
 	set(FETCHCONTENT_QUIET off)
-	FetchContent_Declare(
-		googletest
+	FetchContent_Declare(googletest
 		GIT_REPOSITORY https://github.com/google/googletest.git
 		GIT_TAG master
 		GIT_PROGRESS on
