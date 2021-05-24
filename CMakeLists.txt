@@ -82,11 +82,10 @@ message(STATUS "Project declared with the name \"${PROJECT_NAME}\" and in the ve
 
 
 #---- Check project structure. ----
-message(STATUS "Checking project structure")
-set(${PROJECT_NAME}_PROJECT_DIR                 "${CMAKE_SOURCE_DIR}")
+set(${PROJECT_NAME}_PROJECT_DIR                 "${CMAKE_CURRENT_SOURCE_DIR}")
 set(${PROJECT_NAME}_ASSETS_DIR                  "${${PROJECT_NAME}_PROJECT_DIR}/assets")
 set(${PROJECT_NAME}_BIN_DIR                     "${${PROJECT_NAME}_PROJECT_DIR}/bin")
-set(${PROJECT_NAME}_BUILD_DIR                   "${CMAKE_BINARY_DIR}")
+set(${PROJECT_NAME}_BUILD_DIR                   "${CMAKE_CURRENT_BINARY_DIR}")
 set(${PROJECT_NAME}_CMAKE_DIR                   "${${PROJECT_NAME}_PROJECT_DIR}/cmake")
 set(${PROJECT_NAME}_CMAKE_HELPERS_DIR           "${${PROJECT_NAME}_CMAKE_DIR}/helpers")
 set(${PROJECT_NAME}_CMAKE_MODULES_DIR           "${${PROJECT_NAME}_CMAKE_DIR}/modules")
