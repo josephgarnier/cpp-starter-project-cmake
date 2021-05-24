@@ -132,6 +132,8 @@ if(NOT "${${PROJECT_NAME}_BUILD_DIR}" STREQUAL "${${PROJECT_NAME}_PROJECT_DIR}/b
 	message(FATAL_ERROR "The build directory \"${${PROJECT_NAME}_BUILD_DIR}\" is not under the project directory!")
 endif()
 
+message(STATUS "Source-tree directory is set to \"${${PROJECT_NAME}_PROJECT_DIR}\"")
+message(STATUS "Build-tree directory is set to \"${${PROJECT_NAME}_BUILD_DIR}\"")
 message(STATUS "Checking project structure - done")
 
 
@@ -485,7 +487,7 @@ endif()
 
 
 message("")
-message("===== End of Build Lifecycle ${PROJECT_NAME} generation =====")
+message("===== End of Build Lifecycle \"${PROJECT_NAME}\" generation =====")
 message("")
 
 

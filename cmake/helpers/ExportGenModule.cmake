@@ -38,10 +38,8 @@ endif()
 # Set output files, directories and names.
 if(DEFINED PARAM_INSTALL_DIRECTORY AND IS_DIRECTORY "${PARAM_INSTALL_DIRECTORY}")
 	set(CMAKE_INSTALL_PREFIX "${PARAM_INSTALL_DIRECTORY}")
-	message(STATUS "Set the install directory to \"${CMAKE_INSTALL_PREFIX}\"")
-else()
-	message(STATUS "No install directory set or it doesn't exists. The default path \"${CMAKE_INSTALL_PREFIX}\" will be used")
 endif()
+message(STATUS "Install-tree directory is set to \"${CMAKE_INSTALL_PREFIX}\"")
 print(STATUS "Install script will be generated in \"@rp@\"" "${${PROJECT_NAME}_BUILD_DIR}/cmake_install.cmake")
 include(GNUInstallDirs)
 set(${PROJECT_NAME}_INSTALL_REALTIVE_BIN_DIR        "${CMAKE_INSTALL_BINDIR}")                        # in absolute: <CMAKE_INSTALL_PREFIX>/bin
