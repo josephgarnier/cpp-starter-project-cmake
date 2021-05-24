@@ -128,11 +128,9 @@ foreach(folder IN ITEMS ${${PROJECT_NAME}_PROJECT_DIRS})
 	endif()
 endforeach()
 
-# Build path should be in /build directory.
-get_filename_component(build_directory "${${PROJECT_NAME}_BUILD_DIR}" DIRECTORY)
-if((NOT "${${PROJECT_NAME}_BUILD_DIR}" STREQUAL "${${PROJECT_NAME}_PROJECT_DIR}/build")
-	AND (NOT "${build_directory}" STREQUAL "${${PROJECT_NAME}_PROJECT_DIR}/build"))
-	message(FATAL_ERROR "\"${${PROJECT_NAME}_BUILD_DIR}\" is not under the \"build\" directory!")
+# Build path must be in the `build/` directory.
+if(NOT "${${PROJECT_NAME}_BUILD_DIR}" STREQUAL "${${PROJECT_NAME}_PROJECT_DIR}/build")
+	message(FATAL_ERROR "The build directory \"${${PROJECT_NAME}_BUILD_DIR}\" is not under the project directory!")
 endif()
 
 message(STATUS "Checking project structure - done")
