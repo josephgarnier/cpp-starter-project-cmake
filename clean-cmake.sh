@@ -14,11 +14,11 @@ declare -r BUILD_DIR="${WORKSPACE_DIR}/build"
 declare -r SOLUTION_DIR="${BUILD_DIR}"
 
 if [[ -d "${SOLUTION_DIR}" ]]; then
-	cmake --build "${SOLUTION_DIR}" --target clean --verbose
+	cmake --build "${SOLUTION_DIR}" --target clean
 
 	# Remove solution in build directory, excepted gitignore file.
 	shopt -s extglob
-	eval "rm -rfv \"${SOLUTION_DIR}\"/{,..?,.[!(.|gitignore)]}*"    
+	eval "rm -rf \"${SOLUTION_DIR}\"/{,..?,.[!(.|gitignore)]}*"    
 	shopt -u extglob
 fi
 
