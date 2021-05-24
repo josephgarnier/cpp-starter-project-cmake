@@ -192,7 +192,7 @@ The first is to put all header files in `src/` and none in `include/`. In this c
 
 Except for personal convenience, the consequence of choosing a policy will only be visible if you enable the *Export Generator Module*. Indeed, only public header files will be exported outside the project to be made accessible for import by other projects (see the dedicated section for more details).
 
-Finally, when you set `PUBLIC_HEADERS_SEPARATED` to `on`, the header files can still included in the source files (. cpp) in two different ways to allow a greater flexibility: either by prefixing the paths with the project name, e.g. `#include "project-name/include1.h"`, or without prefixing, e.g. `#include "include1.h"`. This is possible because the three directories, `src/`, `include/` and `include/<project-name>`, are added to the main binary build target with the command `target_include_directories()`.
+Finally, when you set `PUBLIC_HEADERS_SEPARATED` to `on`, the header files can still included in the source files (.cpp) in two different ways to allow a greater flexibility: either by prefixing the paths with the project name, e.g. `#include "project-name/include1.h"`, or without prefixing, e.g. `#include "include1.h"`. This is possible because the three directories, `src/`, `include/` and `include/<project-name>`, are added to the main binary build target with the command `target_include_directories()`.
 
 The `TOOLCHAIN_FILE` option allows you to provide to the generator a path to a file that configures a [toolchain](https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html). For CMake, a toolchain is a set of all the necessary tools required to drive the binaries building: the working environment, the CMake executable, the make tool and compilers, and the debugger. This feature offered by CMake is very useful for cross compiling. By default, the project comes with four toolchain files, located in the `cmake/toolchains` folder. If needed, you can add your own by following the [documentation provided by CMake](https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html).
 
@@ -491,7 +491,7 @@ else()
 endif()
 
 find_package(ProjectName REQUIRED)
-target_link_libraries("MyOtherProject"
+target_link_libraries("${${PROJECT_NAME}_MAIN_BIN_TARGET}"
   PUBLIC
     "$<BUILD_INTERFACE:MyProject::ProjectName>"
     "$<INSTALL_INTERFACE:MyProject::ProjectName>"
