@@ -34,7 +34,7 @@ if(NOT ${${PROJECT_NAME}_MAIN_BIN_TARGET_IS_EXEC})
 endif()
 
 
-#---- Add usage requirements. ----
+#---- Add usage requirements for Build-Tree and Install-Tree. ----
 # Set output files, directories and names.
 if(DEFINED PARAM_INSTALL_DIRECTORY AND IS_DIRECTORY "${PARAM_INSTALL_DIRECTORY}")
 	set(CMAKE_INSTALL_PREFIX "${PARAM_INSTALL_DIRECTORY}")
@@ -131,9 +131,9 @@ target_link_libraries("${${PROJECT_NAME}_MAIN_BIN_TARGET}"
 
 
 #---- Exporting from the Build-Tree. ----
-# See: https://gitlab.kitware.com/cmake/community/-/wikis/doc/tutorials/Exporting-and-Importing-Targets.
-# See: https://cmake.org/cmake/help/latest/command/export.html
-# See: https://cmake.org/cmake/help/latest/guide/importing-exporting/#exporting-targets-from-the-build-tree
+# @see: https://gitlab.kitware.com/cmake/community/-/wikis/doc/tutorials/Exporting-and-Importing-Targets.
+# @see: https://cmake.org/cmake/help/latest/command/export.html
+# @see: https://cmake.org/cmake/help/latest/guide/importing-exporting/#exporting-targets-from-the-build-tree
 message("")
 message(STATUS "Export the target \"${${PROJECT_NAME}_MAIN_BIN_TARGET}\" from the build-tree")
 list(APPEND CMAKE_MESSAGE_INDENT "  ")
@@ -156,9 +156,9 @@ message(STATUS "The target \"${${PROJECT_NAME}_MAIN_BIN_TARGET}\" of the build-t
 
 
 #---- Exporting from the Install-Tree. ----
-# See: https://gitlab.kitware.com/cmake/community/-/wikis/doc/tutorials/Exporting-and-Importing-Targets.
-# See: https://cmake.org/cmake/help/latest/command/install.html#installing-exports
-# See: https://cmake.org/cmake/help/latest/guide/importing-exporting/#exporting-targets
+# @see: https://gitlab.kitware.com/cmake/community/-/wikis/doc/tutorials/Exporting-and-Importing-Targets.
+# @see: https://cmake.org/cmake/help/latest/command/install.html#installing-exports
+# @see: https://cmake.org/cmake/help/latest/guide/importing-exporting/#exporting-targets
 message("")
 message(STATUS "Export the target \"${${PROJECT_NAME}_MAIN_BIN_TARGET}\" from the install-tree")
 list(APPEND CMAKE_MESSAGE_INDENT "  ")
@@ -218,10 +218,10 @@ message(STATUS "The target \"${${PROJECT_NAME}_MAIN_BIN_TARGET}\" of the install
 
 
 #---- Create the package configuration files for the `find_package()` command. ----
-# See https://cmake.org/cmake/help/latest/module/CMakePackageConfigHelpers.html
-# See https://cmake.org/cmake/help/latest/guide/importing-exporting/#creating-a-package-configuration-file
-# See https://cmake.org/cmake/help/latest/command/find_package.html#full-signature-and-config-mode
-# See https://cmake.org/cmake/help/latest/manual/cmake-packages.7.html
+# @see https://cmake.org/cmake/help/latest/module/CMakePackageConfigHelpers.html
+# @see https://cmake.org/cmake/help/latest/guide/importing-exporting/#creating-a-package-configuration-file
+# @see https://cmake.org/cmake/help/latest/command/find_package.html#full-signature-and-config-mode
+# @see https://cmake.org/cmake/help/latest/manual/cmake-packages.7.html
 message("")
 message(STATUS "Make the target \"${${PROJECT_NAME}_MAIN_BIN_TARGET}\" foundable with the find_package() command")
 list(APPEND CMAKE_MESSAGE_INDENT "  ")
@@ -256,7 +256,7 @@ write_basic_package_version_file(
 print(STATUS "Export version-file generated: @rp@" "${${PROJECT_NAME}_PACKAGE_VERSION_FILE}")
 
 # Store the current build directory in the CMake user package registry.
-# See https://cmake.org/cmake/help/latest/manual/cmake-packages.7.html#user-package-registry
+# @see https://cmake.org/cmake/help/latest/manual/cmake-packages.7.html#user-package-registry
 message(STATUS "Store the build directory in the user package registry")
 export(PACKAGE "${${PROJECT_NAME}_PACKAGE_NAME}")
 
@@ -269,6 +269,26 @@ install(FILES
 )
 list(POP_BACK CMAKE_MESSAGE_INDENT)
 message(STATUS "The target \"${${PROJECT_NAME}_MAIN_BIN_TARGET}\" can now be imported with the find_package() command")
+
+
+#---- Exporting from the Source-Tree. ----
+message("")
+message(STATUS "Export the target \"${${PROJECT_NAME}_MAIN_BIN_TARGET}\" from the source-tree")
+list(APPEND CMAKE_MESSAGE_INDENT "  ")
+
+# Alias the main binary build target to be included with `add_subdirectory()` command.
+if(${${PROJECT_NAME}_MAIN_BIN_TARGET_IS_EXEC})
+	add_executable("${${PROJECT_NAME}_EXPORT_NAMESPACE}::${${PROJECT_NAME}_EXPORT_NAME}" ALIAS "${${PROJECT_NAME}_MAIN_BIN_TARGET}")
+elseif(${${PROJECT_NAME}_MAIN_BIN_TARGET_IS_STATIC}
+	OR ${${PROJECT_NAME}_MAIN_BIN_TARGET_IS_SHARED}
+	OR ${${PROJECT_NAME}_MAIN_BIN_TARGET_IS_HEADER})
+	add_library("${${PROJECT_NAME}_EXPORT_NAMESPACE}::${${PROJECT_NAME}_EXPORT_NAME}" ALIAS "${${PROJECT_NAME}_MAIN_BIN_TARGET}")
+else()
+	message(FATAL_ERROR "A binary build target type must be \"static\" or \"shared\" or \"header\" or \"exec\"!")
+endif()
+message(STATUS "The target \"${${PROJECT_NAME}_MAIN_BIN_TARGET}\" is now aliased as \"${${PROJECT_NAME}_EXPORT_NAMESPACE}::${${PROJECT_NAME}_EXPORT_NAME}\"")
+list(POP_BACK CMAKE_MESSAGE_INDENT)
+message(STATUS "The target \"${${PROJECT_NAME}_MAIN_BIN_TARGET}\" of the source-tree is now importable")
 
 
 #---- Generate the uninstall target. ----
