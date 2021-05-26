@@ -182,11 +182,21 @@ macro(_debug_dump_project_variables)
 
 	get_cmake_property(variable_names VARIABLES)
 	list(SORT variable_names)
+	
+	message("")
+	message("-----")
+	list(APPEND CMAKE_MESSAGE_INDENT " ")
+	message("Variables for PROJECT ${PROJECT_NAME}:")
+	list(APPEND CMAKE_MESSAGE_INDENT "  ")
 	foreach (variable_name IN ITEMS ${variable_names})
 		if("${variable_name}" MATCHES "${PROJECT_NAME}_")
-			message(STATUS "${variable_name}= ${${variable_name}}")
+			message("${variable_name} = \"${${variable_name}}\"")
 		endif()
 	endforeach()
+	list(POP_BACK CMAKE_MESSAGE_INDENT)
+	list(POP_BACK CMAKE_MESSAGE_INDENT)
+	message("-----")
+	message("")
 endmacro()
 
 #------------------------------------------------------------------------------
