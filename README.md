@@ -87,7 +87,7 @@ The following dependencies are **optional** because they will be **automatically
     rm -rfvI tests/*
     ```
 
-3. **Edit the basic settings.** Open the file `cmake/project/StandardOptions.txt` and edit the name of your project in the variable `PROJECT_NAME` and the type of the main binary build target in `MAIN_BINARY_TARGET_TYPE` ("static", "shared", "header", for header-only library, or "exec).
+3. **Edit the basic settings.** Open the file `cmake/project/StandardOptions.txt` and edit the name of your project in the variable `PROJECT_NAME` and the type of the main binary build target in `MAIN_BINARY_TARGET_TYPE` ("static", "shared", "header", for header-only library, or "exec). Then set `PUBLIC_HEADERS_SEPARATED` to off and `USE_PRECOMPILED_HEADER` to off.
 
 4. **Add the dependencies**. If the project requires dependencies, add the libraries (.dll or .so) in the `lib/` directory and their header files in a sub-folder of the `include/` directory, or add the instructions to link external libaries at the end of the `cmake/project/DependenciesExternalOptions.cmake` file.
 
