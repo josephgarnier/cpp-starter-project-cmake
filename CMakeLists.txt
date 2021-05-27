@@ -362,7 +362,7 @@ endif()
 # Add header directories to incude directories of the main binary build target.
 message(STATUS "Add the following header directories to include directories of the target \"${${PROJECT_NAME}_MAIN_BIN_TARGET}\":")
 target_include_directories("${${PROJECT_NAME}_MAIN_BIN_TARGET}"
-	# see https://cmake.org/cmake/help/latest/manual/cmake-buildsystem.7.html#build-specification-and-usage-requirements
+	# @see https://cmake.org/cmake/help/latest/manual/cmake-buildsystem.7.html#build-specification-and-usage-requirements
 	# and https://stackoverflow.com/questions/26243169/cmake-target-include-directories-meaning-of-scope
 	# and https://cmake.org/pipermail/cmake/2017-October/066457.html.
 	# If PRIVATE is specified for a certain option/property, then that option/property will only impact

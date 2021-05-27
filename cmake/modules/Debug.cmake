@@ -139,10 +139,12 @@ macro(_debug_dump_target_properties)
 		message(FATAL_ERROR "There is no target named \"${DB_DUMP_TARGET_PROPERTIES}\"")
 	endif()
 
+	# Get all propreties that cmake supports
 	execute_process(COMMAND
 		${CMAKE_COMMAND} --help-property-list
 		OUTPUT_VARIABLE properties_names
 	)
+
 	# Convert command output into a CMake list.
 	string(REGEX REPLACE ";" "\\\\;" properties_names "${properties_names}")
 	string(REGEX REPLACE "\n" ";" properties_names "${properties_names}")
@@ -150,7 +152,7 @@ macro(_debug_dump_target_properties)
 	list(FILTER properties_names EXCLUDE REGEX "^LOCATION$|^LOCATION_|_LOCATION$")
 	list(REMOVE_DUPLICATES properties_names)
 	list(SORT properties_names)
-	
+
 	message("")
 	message("-----")
 	list(APPEND CMAKE_MESSAGE_INDENT " ")
@@ -158,8 +160,8 @@ macro(_debug_dump_target_properties)
 	list(APPEND CMAKE_MESSAGE_INDENT "  ")
 	foreach (propertie_name IN ITEMS ${properties_names})
 		string(REPLACE "<CONFIG>" "${CMAKE_BUILD_TYPE}" propertie_name ${propertie_name})
-		get_property(propertie_value TARGET "${DB_DUMP_TARGET_PROPERTIES}" PROPERTY "${propertie_name}" SET)
-		if(${propertie_value})
+		get_property(propertie_set TARGET "${DB_DUMP_TARGET_PROPERTIES}" PROPERTY "${propertie_name}" SET)
+		if(${propertie_set})
 			get_target_property(propertie_value "${DB_DUMP_TARGET_PROPERTIES}" "${propertie_name}")
 			message("${DB_DUMP_TARGET_PROPERTIES}.${propertie_name} = \"${propertie_value}\"")
 		endif()

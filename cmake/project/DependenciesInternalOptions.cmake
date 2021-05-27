@@ -11,9 +11,9 @@
 include(Directory)
 include(FileManip)
 
-
-# Note: set the list of absolute paths to libraries (.so and .dll) that are
-# inside `lib/` directory. By default, the function use a glob function.
+# Note: set the list of absolute paths to libraries (.lib and .dll.a and .a
+# and .dll and .so) that are inside `lib/` directory. By default, the function
+# use a glob function.
 set(${PROJECT_NAME}_LIBRARY_FILES "")
 directory(SCAN ${PROJECT_NAME}_LIBRARY_FILES
 	LIST_DIRECTORIES off
