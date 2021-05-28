@@ -184,9 +184,9 @@ message(STATUS "Standard version set to \"${CMAKE_CXX_STANDARD}\" for all target
 
 # Set type of configuration for the build-tree.
 if(("${PARAM_BUILD_TYPE}" STREQUAL "release"))
-	set(CMAKE_BUILD_TYPE "Release")
+	set(CMAKE_BUILD_TYPE "RELEASE")
 elseif("${PARAM_BUILD_TYPE}" STREQUAL "debug")
-	set(CMAKE_BUILD_TYPE "Debug")
+	set(CMAKE_BUILD_TYPE "DEBUG")
 else()
 	message(FATAL_ERROR "PARAM_BUILD_TYPE should be \"debug\" or \"release\"!")
 endif()
