@@ -214,11 +214,11 @@ elseif("${PARAM_MAIN_BINARY_TARGET_TYPE}" STREQUAL "shared")
 	set(${PROJECT_NAME}_MAIN_BIN_TARGET_IS_SHARED   on)
 	set(${PROJECT_NAME}_MAIN_BIN_TARGET             "lib${PROJECT_NAME}")
 	# All libraries will be built shared unless the library was explicitly added as a static library.
-	set(BUILD_SHARED_LIBS on)
+	set(BUILD_SHARED_LIBS                           on)
 	message(STATUS "Hide all exported symbols by default")
-	set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS off)
-	set(CMAKE_CXX_VISIBILITY_PRESET "hidden")
-	set(CMAKE_VISIBILITY_INLINES_HIDDEN on)
+	set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS            off)
+	set(CMAKE_CXX_VISIBILITY_PRESET                 "hidden")
+	set(CMAKE_VISIBILITY_INLINES_HIDDEN             on)
 	message(STATUS "Add the main shared library build target \"${${PROJECT_NAME}_MAIN_BIN_TARGET}\"")
 	add_library("${${PROJECT_NAME}_MAIN_BIN_TARGET}" SHARED)
 elseif("${PARAM_MAIN_BINARY_TARGET_TYPE}" STREQUAL "header")
@@ -377,12 +377,12 @@ target_include_directories("${${PROJECT_NAME}_MAIN_BIN_TARGET}"
 print(STATUS PATHS "${${PROJECT_NAME}_HEADER_PUBLIC_DIR}" "${${PROJECT_NAME}_HEADER_PRIVATE_DIR}" INDENT)
 
 
-#---- Add internal dependencies to the main binary build target. ----
+#---- Add imported internal dependencies to the main binary build target. ----
 message("")
-message(STATUS "Adding internal dependencies")
+message(STATUS "Adding imported internal dependencies")
 include(DependenciesInternalOptions)
 
-# Check library files and header library files.
+# Check imported internal library files and their header files.
 if(NOT DEFINED ${PROJECT_NAME}_LIBRARY_FILES)
 	message(FATAL_ERROR "${PROJECT_NAME}_LIBRARY_FILES must be specified!")
 endif()
@@ -410,14 +410,14 @@ target_include_directories("${${PROJECT_NAME}_MAIN_BIN_TARGET}"
 	PRIVATE
 		"${${PROJECT_NAME}_INCLUDE_DIR}"
 )
-message(STATUS "Adding internal dependencies - done")
+message(STATUS "Adding imported internal dependencies - done")
 
 
-#---- Add external dependencies to the main binary build target. ----
+#---- Add imported external dependencies to the main binary build target. ----
 message("")
-message(STATUS "Adding external dependencies")
+message(STATUS "Adding imported external dependencies")
 include(DependenciesExternalOptions)
-message(STATUS "Adding external dependencies - done")
+message(STATUS "Adding imported external dependencies - done")
 
 
 
