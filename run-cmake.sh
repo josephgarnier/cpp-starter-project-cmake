@@ -14,7 +14,7 @@ declare -r BUILD_DIR="${WORKSPACE_DIR}/build"
 declare -r CMAKE_DIR="${WORKSPACE_DIR}/cmake"
 declare -r SOLUTION_DIR="${BUILD_DIR}"
 
-cmake --verbose --log-level=TRACE -S "${WORKSPACE_DIR}" -B "${SOLUTION_DIR}" -C "${CMAKE_DIR}/project/StandardOptions.txt"
+cmake --log-level=TRACE -S "${WORKSPACE_DIR}" -B "${SOLUTION_DIR}" -C "${CMAKE_DIR}/project/StandardOptions.txt"
 
 if [[ "${?}" -eq 0 ]]; then
 	echo -e "\nThe solution was successfully generated!"

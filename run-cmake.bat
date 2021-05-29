@@ -16,7 +16,7 @@ set "BUILD_DIR=%WORKSPACE_DIR%\build"
 set "CMAKE_DIR=%WORKSPACE_DIR%\cmake"
 set "SOLUTION_DIR=%BUILD_DIR%"
 
-cmake --verbose --log-level=TRACE -S "%WORKSPACE_DIR%" -B "%SOLUTION_DIR%" -C "%CMAKE_DIR%\project\StandardOptions.txt"
+cmake --log-level=TRACE -S "%WORKSPACE_DIR%" -B "%SOLUTION_DIR%" -C "%CMAKE_DIR%\project\StandardOptions.txt"
 if %errorlevel%==0 (
 	echo.The solution was successfully generated!
 )
