@@ -10,7 +10,7 @@
 
 # See /cmake/project/StandardOptions.txt for a list of options.
 
-cmake_minimum_required(VERSION 3.16 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.20 FATAL_ERROR)
 
 message("===============================================================")
 message("    Build Lifecycle generator for \"${PARAM_PROJECT_NAME}\"    ")

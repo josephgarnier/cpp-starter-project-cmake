@@ -62,7 +62,7 @@ This starter ships with all you might need to get up and running blazing fast wi
 This project is only a template and you are free to use the compiler and versions of your choice. However, you will need at least the following (install guides are provided on the respective websites):
 
 - **C++ compiler** - e.g [GCC](https://gcc.gnu.org/), [Clang C++](https://clang.llvm.org/cxx_status.html) or [Visual Studio](https://visualstudio.microsoft.com).
-- **CMake v3.16+** - can be found [here](https://cmake.org/).
+- **CMake v3.20+** - can be found [here](https://cmake.org/).
 
 The following dependencies are **optional** because they will be **automatically downloaded** by CMake if they can't be found:
 

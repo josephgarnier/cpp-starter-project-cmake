@@ -8,7 +8,7 @@
 
 Directory
 ---------
-Operations to manipule directories. It requires CMake 3.16 or newer.
+Operations to manipule directories. It requires CMake 3.20 or newer.
 
 Synopsis
 ^^^^^^^^
@@ -65,7 +65,7 @@ than one result.
 #]=======================================================================]
 include_guard()
 
-cmake_minimum_required (VERSION 3.16)
+cmake_minimum_required (VERSION 3.20)
 
 #------------------------------------------------------------------------------
 # Public function of this module.

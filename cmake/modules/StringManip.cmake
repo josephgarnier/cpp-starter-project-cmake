@@ -8,7 +8,7 @@
 
 StringManip
 -----------
-Operations on strings. It requires CMake 3.16 or newer.
+Operations on strings. It requires CMake 3.20 or newer.
 
 Synopsis
 ^^^^^^^^
@@ -58,7 +58,7 @@ Strip BUILD_INTERFACE and INSTALL_INTERFACE generator expressions from the input
 #]=======================================================================]
 include_guard()
 
-cmake_minimum_required (VERSION 3.16)
+cmake_minimum_required (VERSION 3.20)
 
 #------------------------------------------------------------------------------
 # Public function of this module.

@@ -8,7 +8,7 @@
 
 Debug
 -----
-Operations for helping with debug. It requires CMake 3.16 or newer.
+Operations for helping with debug. It requires CMake 3.20 or newer.
 
 Synopsis
 ^^^^^^^^
@@ -55,7 +55,7 @@ by ${PROJECT_NAME}.
 #]=======================================================================]
 include_guard()
 
-cmake_minimum_required (VERSION 3.16)
+cmake_minimum_required (VERSION 3.20)
 include(CMakePrintHelpers)
 
 #------------------------------------------------------------------------------

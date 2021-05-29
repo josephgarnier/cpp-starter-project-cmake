@@ -8,7 +8,7 @@
 
 Dependency
 ---------
-Operations to manipule dependencies. It requires CMake 3.16 or newer.
+Operations to manipule dependencies. It requires CMake 3.20 or newer.
 
 Synopsis
 ^^^^^^^^
@@ -42,7 +42,7 @@ the variable ``INCLUDE_DIR`` must give where the files are.
 #]=======================================================================]
 include_guard()
 
-cmake_minimum_required (VERSION 3.16)
+cmake_minimum_required (VERSION 3.20)
 include(Directory)
 
 #------------------------------------------------------------------------------

@@ -8,7 +8,7 @@
 
 Print
 ---------
-Log a message. It requires CMake 3.16 or newer.
+Log a message. It requires CMake 3.20 or newer.
 
 Synopsis
 ^^^^^^^^
@@ -53,7 +53,7 @@ The optional ``<mode>`` keyword determines the type of message like in CMake
 #]=======================================================================]
 include_guard()
 
-cmake_minimum_required (VERSION 3.16)
+cmake_minimum_required (VERSION 3.20)
 
 # Global variables
 set(PRINT_BASE_DIR "${CMAKE_SOURCE_DIR}")
