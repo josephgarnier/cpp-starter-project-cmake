@@ -410,14 +410,14 @@ target_include_directories("${${PROJECT_NAME}_MAIN_BIN_TARGET}"
 	PRIVATE
 		"${${PROJECT_NAME}_INCLUDE_DIR}"
 )
-message(STATUS "Adding imported internal dependencies - done")
+message(STATUS "Importing and linking internal dependencies - done")
 
 
-#---- Add imported external dependencies to the main binary build target. ----
+#---- Import and link external dependencies to the main binary build target. ----
 message("")
-message(STATUS "Adding imported external dependencies")
+message(STATUS "Importing and linking external dependencies")
 include(DependenciesExternalOptions)
-message(STATUS "Adding imported external dependencies - done")
+message(STATUS "Importing and linking external dependencies - done")
 
 
 

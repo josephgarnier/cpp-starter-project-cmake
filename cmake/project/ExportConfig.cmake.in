@@ -17,7 +17,7 @@ check_required_components(@PROJECT_NAME@)
 
 
 #------------------------------------------------------------------------------
-# Declare here all requirements upstream dependencies.
+# Declare here all requirements upstream external dependencies.
 #------------------------------------------------------------------------------
 
 

@@ -505,7 +505,7 @@ Fortunately, the configuration of this export mechanism has been greatly [simpli
 
 ```cmake
 #------------------------------------------------------
-# Declare here all requirements upstream dependencies.
+# Declare here all requirements upstream external dependencies.
 #------------------------------------------------------
 if(DEFINED ENV{Qt5_DIR}) 
   set(Qt5_DIR "$ENV{Qt5_DIR}")
