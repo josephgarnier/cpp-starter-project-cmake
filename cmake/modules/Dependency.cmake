@@ -14,20 +14,20 @@ Synopsis
 ^^^^^^^^
 .. parsed-literal::
 
-    dependency(`IMPORT`_ <lib_name> <STATIC|SHARED> [RELEASE <raw_filename>] [DEBUG <raw_filename>] ROOT_DIR <directory_path> INCLUDE_DIR <directory_path>)
+    dependency(`IMPORT`_ <lib_name> <STATIC|SHARED> [RELEASE_NAME <raw_filename>] [DEBUG_NAME <raw_filename>] ROOT_DIR <directory_path> INCLUDE_DIR <directory_path>)
 
 Usage
 ^^^^^
 .. _IMPORT:
 .. code-block:: cmake
 
-  dependency(IMPORT <lib_name> <STATIC|SHARED> [RELEASE <raw_filename>] [DEBUG <raw_filename>] ROOT_DIR <directory_path> INCLUDE_DIR <directory_path>)
+  dependency(IMPORT <lib_name> <STATIC|SHARED> [RELEASE_NAME <raw_filename>] [DEBUG_NAME <raw_filename>] ROOT_DIR <directory_path> INCLUDE_DIR <directory_path>)
 
 Find and creates an imported library target called ``<lib_name>``. This command embed
 the behavior of ``find_library()`` and ``add_library(IMPORTED)``. First, it recursively
-find the ``RELEASE`` and ``DEBUG`` library files in the given path ``ROOT_DIR`` from
-their raw filenames ``<raw_filename>``. ``RELEASE`` and ``DEBUG`` are facultative but
-at least one has to be given, they define what configurtion type (in ``CMAKE_CONFIGURATION_TYPES``
+find the possible filenames for ``RELEASE_NAME`` and ``DEBUG_NAME`` library files in the given path
+``ROOT_DIR`` from their raw filenames ``<raw_filename>``. ``RELEASE_NAME`` and ``DEBUG_NAME`` are facultative
+but at least one has to be given, they define what configurtion types (in ``CMAKE_CONFIGURATION_TYPES``
 cmake variable) will be supported by the library (see https://cmake.org/cmake/help/latest/variable/CMAKE_CONFIGURATION_TYPES.html).
 The ``<raw_filename>`` given should be a library file name without any numeric character
 (for versions), any special character and any suffixes (e.g. .so). The command will loop
@@ -49,9 +49,9 @@ include(Directory)
 #------------------------------------------------------------------------------
 # Public function of this module.
 function(dependency)
-	set(options SHARED STATIC)
-	set(one_value_args IMPORT RELEASE DEBUG ROOT_DIR INCLUDE_DIR)
-	set(multi_value_args "")
+	set(options SHARED STATIC BUILD_TREE INSTALL_TREE SET APPEND)
+	set(one_value_args IMPORT RELEASE_NAME DEBUG_NAME ROOT_DIR INCLUDE_DIR EXPORT OUTPUT_FILE INCLUDE_DIRECTORIES IMPORTED_LOCATION CONFIGURATION)
+	set(multi_value_args PUBLIC)
 	cmake_parse_arguments(DEP "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
 	
 	if(DEFINED DEP_UNPARSED_ARGUMENTS)
@@ -78,15 +78,15 @@ macro(_dependency_import)
 	if(${DEP_SHARED} AND ${DEP_STATIC})
 		message(FATAL_ERROR "SHARED|STATIC cannot be used together!")
 	endif()
-	if((NOT DEFINED DEP_RELEASE)
-		AND (NOT DEFINED DEP_DEBUG))
-		message(FATAL_ERROR "RELEASE|DEBUG argument is missing!")
+	if((NOT DEFINED DEP_RELEASE_NAME)
+		AND (NOT DEFINED DEP_DEBUG_NAME))
+		message(FATAL_ERROR "RELEASE_NAME|DEBUG_NAME argument is missing!")
 	endif()
-	if("RELEASE" IN_LIST DEP_KEYWORDS_MISSING_VALUES)
-		message(FATAL_ERROR "RELEASE need a value!")
+	if("RELEASE_NAME" IN_LIST DEP_KEYWORDS_MISSING_VALUES)
+		message(FATAL_ERROR "RELEASE_NAME need a value!")
 	endif()
-	if("DEBUG" IN_LIST DEP_KEYWORDS_MISSING_VALUES)
-		message(FATAL_ERROR "DEBUG need a value!")
+	if("DEBUG_NAME" IN_LIST DEP_KEYWORDS_MISSING_VALUES)
+		message(FATAL_ERROR "DEBUG_NAME need a value!")
 	endif()
 	if(NOT DEFINED DEP_ROOT_DIR)
 		message(FATAL_ERROR "ROOT_DIR argument is missing or need a value!")
@@ -107,16 +107,16 @@ macro(_dependency_import)
 	set_target_properties("${DEP_IMPORT}" PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${DEP_INCLUDE_DIR}") # For usage from source-tree.
 	set_target_properties("${DEP_IMPORT}" PROPERTIES INTERFACE_INCLUDE_DIRECTORIES_BUILD "") # Custom property for usage from build-tree.
 	set_target_properties("${DEP_IMPORT}" PROPERTIES INTERFACE_INCLUDE_DIRECTORIES_INSTALL "") # Custom property for usage from install-tree.
-	if(DEFINED DEP_RELEASE)
+	if(DEFINED DEP_RELEASE_NAME)
 		# Get the library file for release.
 		directory(FIND_LIB lib_release
-			NAME "${DEP_RELEASE}"
+			NAME "${DEP_RELEASE_NAME}"
 			"${library_type}"
 			RELATIVE off
 			ROOT_DIR "${DEP_ROOT_DIR}"
 		)
 		if(NOT lib_release)
-			message(FATAL_ERROR "The release library \"${DEP_RELEASE}\" was not found!")
+			message(FATAL_ERROR "The release library \"${DEP_RELEASE_NAME}\" was not found!")
 		endif()
 		# Add library properties for release.
 		get_filename_component(lib_release_name "${lib_release}" NAME)
@@ -130,16 +130,16 @@ macro(_dependency_import)
 		set_property(TARGET "${DEP_IMPORT}" APPEND PROPERTY IMPORTED_CONFIGURATIONS "RELEASE")
 	endif()
 
-	if(DEFINED DEP_DEBUG)
+	if(DEFINED DEP_DEBUG_NAME)
 		# Get the library file for debug.
 		directory(FIND_LIB lib_debug
-			NAME "${DEP_DEBUG}"
+			NAME "${DEP_DEBUG_NAME}"
 			"${library_type}"
 			RELATIVE off
 			ROOT_DIR "${DEP_ROOT_DIR}"
 		)
 		if(NOT lib_debug)
-			message(FATAL_ERROR "The debug library \"${DEP_DEBUG}\" was not found!")
+			message(FATAL_ERROR "The debug library \"${DEP_DEBUG_NAME}\" was not found!")
 		endif()
 		# Add library properties for debug.
 		get_filename_component(lib_debug_name "${lib_debug}" NAME)
