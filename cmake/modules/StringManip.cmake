@@ -17,6 +17,7 @@ Synopsis
     string_manip(`SPLIT`_ <string> <output_list_var>)
     string_manip(`TRANSFORM`_ <string_var> <ACTION> [OUTPUT_VARIABLE <output_var>])
     string_manip(`STRIP_INTERFACES`_ <string_var> [OUTPUT_VARIABLE <output_var>])
+    string_manip(`EXTRACT_INTERFACE`_ <string_var> <BUILD|INSTALL> [OUTPUT_VARIABLE <output_var>])
 
 Usage
 ^^^^^
@@ -53,7 +54,15 @@ the specified ``<output_var>`` as a string. ``<ACTION>`` is one of:
   string_manip(STRIP_INTERFACES <string_var> [OUTPUT_VARIABLE <output_var>])
 
 Strip BUILD_INTERFACE and INSTALL_INTERFACE generator expressions from the input
-<string_var> and store the result in place or in the specified <output_var>.
+``<string_var>`` and store the result in place or in the specified ``<output_var>``.
+
+.. _EXTRACT_INTERFACE:
+.. code-block:: cmake
+
+  string_manip(EXTRACT_INTERFACE <string_var> <BUILD|INSTALL> [OUTPUT_VARIABLE <output_var>])
+
+Extract the content in BUILD_INTERFACE or INSTALL_INTERFACE generator expressions from the input
+``<string_var>`` and store the result as a string in place or in the specified ``<output_var>``.
 
 #]=======================================================================]
 include_guard()
@@ -63,8 +72,8 @@ cmake_minimum_required (VERSION 3.20)
 #------------------------------------------------------------------------------
 # Public function of this module.
 function(string_manip)
-	set(options START_CASE C_IDENTIFIER_UPPER)
-	set(one_value_args SPLIT_TRANSFORM STRIP_INTERFACES OUTPUT_VARIABLE)
+	set(options START_CASE C_IDENTIFIER_UPPER BUILD INSTALL)
+	set(one_value_args SPLIT_TRANSFORM STRIP_INTERFACES OUTPUT_VARIABLE EXTRACT_INTERFACE)
 	set(multi_value_args SPLIT)
 	cmake_parse_arguments(SM "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
 	
@@ -84,6 +93,8 @@ function(string_manip)
 		endif()
 	elseif(DEFINED SM_STRIP_INTERFACES)
 		_string_manip_strip_interfaces()
+	elseif(DEFINED SM_EXTRACT_INTERFACE)
+		_string_manip_extract_interface()
 	else()
 		message(FATAL_ERROR "Operation argument is missing")
 	endif()
@@ -192,6 +203,56 @@ macro(_string_manip_strip_interfaces)
 		set(${SM_STRIP_INTERFACES} "${string_striped}" PARENT_SCOPE)
 	else()
 		set(${SM_OUTPUT_VARIABLE} "${string_striped}" PARENT_SCOPE)
+	endif()
+endmacro()
+
+#------------------------------------------------------------------------------
+# Internal usage.
+macro(_string_manip_extract_interface)
+	if(NOT DEFINED SM_EXTRACT_INTERFACE)
+		message(FATAL_ERROR "EXTRACT_INTERFACE arguments is missing or need a value!")
+	endif()
+	if((NOT ${SM_BUILD})
+		AND (NOT ${SM_INSTALL}))
+		message(FATAL_ERROR "BUILD|INSTALL arguments is missing!")
+	endif()
+	if(${SM_BUILD} AND ${SM_INSTALL})
+		message(FATAL_ERROR "BUILD|INSTALL cannot be used together!")
+	endif()
+
+	set(string_getted "")
+	if(${SM_BUILD})
+		string(REGEX MATCHALL "\\$<BUILD_INTERFACE:[^>]+>+" matches "${${SM_EXTRACT_INTERFACE}}")
+		set(matches_stripped "")
+		foreach(match IN ITEMS ${matches})
+			string(REPLACE "$<BUILD_INTERFACE:" "" match "${match}")
+			# Remove the last character ">".
+			string(LENGTH "${match}" match_size)
+			math(EXPR match_size "${match_size}-1")
+			string(SUBSTRING "${match}" 0 ${match_size} match)
+			list(APPEND matches_stripped "${match}")
+		endforeach()
+		list(JOIN matches_stripped ";" string_getted)
+	elseif(${SM_INSTALL})
+		string(REGEX MATCHALL "\\$<INSTALL_INTERFACE:[^>]+>+" matches "${${SM_EXTRACT_INTERFACE}}")
+		set(matches_stripped "")
+		foreach(match IN ITEMS ${matches})
+			string(REPLACE "$<INSTALL_INTERFACE:" "" match "${match}")
+			# Remove the last character ">".
+			string(LENGTH "${match}" match_size)
+			math(EXPR match_size "${match_size}-1")
+			string(SUBSTRING "${match}" 0 ${match_size} match)
+			list(APPEND matches_stripped "${match}")
+		endforeach()
+		list(JOIN matches_stripped ";" string_getted)
+	else()
+		message(FATAL_ERROR "Wrong interface type!")
+	endif()
+
+	if(NOT DEFINED SM_OUTPUT_VARIABLE)
+		set(${SM_EXTRACT_INTERFACE} "${string_getted}" PARENT_SCOPE)
+	else()
+		set(${SM_OUTPUT_VARIABLE} "${string_getted}" PARENT_SCOPE)
 	endif()
 endmacro()
 
