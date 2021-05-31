@@ -377,9 +377,9 @@ target_include_directories("${${PROJECT_NAME}_MAIN_BIN_TARGET}"
 print(STATUS PATHS "${${PROJECT_NAME}_HEADER_PUBLIC_DIR}" "${${PROJECT_NAME}_HEADER_PRIVATE_DIR}" INDENT)
 
 
-#---- Add imported internal dependencies to the main binary build target. ----
+#---- Importing and linking internal dependencies to the main binary build target. ----
 message("")
-message(STATUS "Adding imported internal dependencies")
+message(STATUS "Importing and linking internal dependencies")
 include(DependenciesInternalOptions)
 
 # Check imported internal library files and their header files.

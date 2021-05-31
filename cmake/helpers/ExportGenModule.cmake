@@ -135,24 +135,26 @@ target_link_libraries("${${PROJECT_NAME}_MAIN_BIN_TARGET}"
 # @see: https://cmake.org/cmake/help/latest/command/export.html
 # @see: https://cmake.org/cmake/help/latest/guide/importing-exporting/#exporting-targets-from-the-build-tree
 message("")
-message(STATUS "Export the target \"${${PROJECT_NAME}_MAIN_BIN_TARGET}\" from the build-tree")
+message(STATUS "Export all targets from the build-tree")
 list(APPEND CMAKE_MESSAGE_INDENT "  ")
 
 # Set output files, directories and names.
-set(${PROJECT_NAME}_EXPORT_NAME               "${PROJECT_NAME}")
+set(${PROJECT_NAME}_EXPORT_NAME                     "${PROJECT_NAME}")
 string_manip(SPLIT_TRANSFORM ${PROJECT_NAME}_EXPORT_NAME START_CASE)
-set(${PROJECT_NAME}_EXPORT_NAMESPACE          "${PARAM_EXPORT_NAMESPACE}")
-set(${PROJECT_NAME}_EXPORT_CONFIG_FILE_NAME   "${${PROJECT_NAME}_EXPORT_NAME}Targets.cmake")
+set(${PROJECT_NAME}_EXPORT_NAMESPACE                "${PARAM_EXPORT_NAMESPACE}")
+set(${PROJECT_NAME}_EXPORT_FILE_NAME         "${${PROJECT_NAME}_EXPORT_NAME}Targets.cmake")
 set_target_properties("${${PROJECT_NAME}_MAIN_BIN_TARGET}" PROPERTIES EXPORT_NAME "${${PROJECT_NAME}_EXPORT_NAME}")
 
 # Generate the export script `Targets.cmake` for importing the main binary build target coming from the build-tree.
+# Generate the export script `Targets.cmake` for importing of the main binary build target from the build-tree.
 export(TARGETS "${${PROJECT_NAME}_MAIN_BIN_TARGET}"
-	FILE "${${PROJECT_NAME}_BUILD_DIR}/${${PROJECT_NAME}_EXPORT_CONFIG_FILE_NAME}"
 	NAMESPACE "${${PROJECT_NAME}_EXPORT_NAMESPACE}::"
+	APPEND
+	FILE "${${PROJECT_NAME}_BUILD_DIR}/${${PROJECT_NAME}_EXPORT_FILE_NAME}"
 )
-print(STATUS "Export script for the build-tree generated: @rp@" "${${PROJECT_NAME}_BUILD_DIR}/${${PROJECT_NAME}_EXPORT_CONFIG_FILE_NAME}")
+print(STATUS "Export script for the target \"${${PROJECT_NAME}_MAIN_BIN_TARGET}\" generated: @rp@" "${${PROJECT_NAME}_BUILD_DIR}/${${PROJECT_NAME}_EXPORT_FILE_NAME}")
 list(POP_BACK CMAKE_MESSAGE_INDENT)
-message(STATUS "The target \"${${PROJECT_NAME}_MAIN_BIN_TARGET}\" of the build-tree is now importable")
+message(STATUS "All targets are now importables from the build-tree")
 
 
 #---- Exporting from the Install-Tree. ----
@@ -160,7 +162,7 @@ message(STATUS "The target \"${${PROJECT_NAME}_MAIN_BIN_TARGET}\" of the build-t
 # @see: https://cmake.org/cmake/help/latest/command/install.html#installing-exports
 # @see: https://cmake.org/cmake/help/latest/guide/importing-exporting/#exporting-targets
 message("")
-message(STATUS "Export the target \"${${PROJECT_NAME}_MAIN_BIN_TARGET}\" from the install-tree")
+message(STATUS "Export all targets from the install-tree")
 list(APPEND CMAKE_MESSAGE_INDENT "  ")
 
 # Generate the install-tree and the install rules.
@@ -170,7 +172,8 @@ message(STATUS "Generate the install-tree and the install rules")
 install(DIRECTORY "${${PROJECT_NAME}_ASSETS_DIR}"
 	DESTINATION "${${PROJECT_NAME}_INSTALL_RELATIVE_DATAROOT_DIR}"
 )
-# Rule for the binary in `bin/`
+
+# Rule for all binaries in `bin/`
 install(TARGETS "${${PROJECT_NAME}_MAIN_BIN_TARGET}"
 	EXPORT "${${PROJECT_NAME}_EXPORT_NAME}"
 	ARCHIVE DESTINATION "${${PROJECT_NAME}_INSTALL_RELATIVE_LIBRARY_DIR}"
@@ -178,19 +181,23 @@ install(TARGETS "${${PROJECT_NAME}_MAIN_BIN_TARGET}"
 	RUNTIME DESTINATION "${${PROJECT_NAME}_INSTALL_REALTIVE_BIN_DIR}"
 	PUBLIC_HEADER DESTINATION "${${PROJECT_NAME}_INSTALL_RELATIVE_INCLUDE_DIR}"
 )
+
 # Rule for config in `config/`.
 install(DIRECTORY "${${PROJECT_NAME}_CONFIG_DIR}"
 	DESTINATION "${${PROJECT_NAME}_INSTALL_RELATIVE_DATAROOT_DIR}"
 )
+
 # Rule for doc in `doc/`.
 install(DIRECTORY "${${PROJECT_NAME}_DOC_DIR}/"
 	DESTINATION "${${PROJECT_NAME}_INSTALL_RELATIVE_DOC_DIR}"
 )
+
 # Rule for public header files in `include/<project-name>` or `src/`.
 install(DIRECTORY "${${PROJECT_NAME}_HEADER_PUBLIC_DIR}/"
 	DESTINATION "${${PROJECT_NAME}_INSTALL_RELATIVE_INCLUDE_DIR}/${PROJECT_NAME}"
 	FILES_MATCHING REGEX ".*[.]h$|.*[.]hpp$|.*[.]hxx$|.*[.]inl$"
 )
+
 # Rule for library header files in `include/<...>`
 foreach(directory IN ITEMS ${${PROJECT_NAME}_LIBRARY_HEADER_DIRS})
 	install(DIRECTORY "${directory}"
@@ -198,23 +205,25 @@ foreach(directory IN ITEMS ${${PROJECT_NAME}_LIBRARY_HEADER_DIRS})
 		FILES_MATCHING REGEX ".*[.]h$|.*[.]hpp$|.*[.]hxx$|.*[.]inl$"
 	)
 endforeach()
+
 # Rule for externals libraries in `lib/`.
 install(FILES ${${PROJECT_NAME}_LIBRARY_FILES}
 	DESTINATION "${${PROJECT_NAME}_INSTALL_RELATIVE_LIBRARY_DIR}"
 )
+
 # Rule for externals resources in `resources/`.
 install(DIRECTORY "${${PROJECT_NAME}_RESOURCES_DIR}"
 	DESTINATION "${${PROJECT_NAME}_INSTALL_RELATIVE_DATAROOT_DIR}"
 )
-# Generate the export script `Targets.cmake` for importing the main binary build target coming from the install-tree, and its install rules.
+
 install(EXPORT "${${PROJECT_NAME}_EXPORT_NAME}"
 	NAMESPACE "${${PROJECT_NAME}_EXPORT_NAMESPACE}::"
 	DESTINATION "${${PROJECT_NAME}_INSTALL_RELATIVE_DATAROOT_DIR}/cmake"
-	FILE "${${PROJECT_NAME}_EXPORT_CONFIG_FILE_NAME}"
+	FILE "${${PROJECT_NAME}_EXPORT_FILE_NAME}"
 )
-print(STATUS "Export script for the install-tree generated: @rp@" "${${PROJECT_NAME}_BUILD_DIR}/CMakeFiles/Export/${${PROJECT_NAME}_INSTALL_RELATIVE_DATAROOT_DIR}/cmake/${${PROJECT_NAME}_EXPORT_CONFIG_FILE_NAME}")
+print(STATUS "Export script for the target \"${${PROJECT_NAME}_MAIN_BIN_TARGET}\" generated: @rp@" "${${PROJECT_NAME}_BUILD_DIR}/CMakeFiles/Export/${${PROJECT_NAME}_INSTALL_RELATIVE_DATAROOT_DIR}/cmake/${${PROJECT_NAME}_EXPORT_FILE_NAME}")
 list(POP_BACK CMAKE_MESSAGE_INDENT)
-message(STATUS "The target \"${${PROJECT_NAME}_MAIN_BIN_TARGET}\" of the install-tree is now importable")
+message(STATUS "All targets are now importable from the install-tree")
 
 
 #---- Create the package configuration files for the `find_package()` command. ----
@@ -235,8 +244,8 @@ set(${PROJECT_NAME}_PACKAGE_CONFIG_FILE            "${${PROJECT_NAME}_BUILD_DIR}
 set(${PROJECT_NAME}_PACKAGE_VERSION_FILE           "${${PROJECT_NAME}_BUILD_DIR}/${${PROJECT_NAME}_PACKAGE_NAME}ConfigVersion.cmake")
 
 # Generate a package config-file.
-set(LOCAL_MAIN_BIN_TARGET           "${${PROJECT_NAME}_MAIN_BIN_TARGET}")
-set(LOCAL_EXPORT_CONFIG_FILE_NAME   "${${PROJECT_NAME}_EXPORT_CONFIG_FILE_NAME}")
+set(LOCAL_MAIN_BIN_TARGET                 "${${PROJECT_NAME}_MAIN_BIN_TARGET}")
+set(LOCAL_EXPORT_FILE_NAME                "${${PROJECT_NAME}_EXPORT_FILE_NAME}")
 configure_package_config_file(
 	"${${PROJECT_NAME}_PACKAGE_TEMPLATE_CONFIG_FILE}"
 	"${${PROJECT_NAME}_PACKAGE_CONFIG_FILE}"
@@ -244,7 +253,7 @@ configure_package_config_file(
 	INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}"
 )
 unset(LOCAL_MAIN_BIN_TARGET)
-unset(LOCAL_EXPORT_CONFIG_FILE_NAME)
+unset(LOCAL_EXPORT_FILE_NAME)
 print(STATUS "Export config-file generated: @rp@" "${${PROJECT_NAME}_PACKAGE_CONFIG_FILE}")
 
 # Generate a package version-file.
