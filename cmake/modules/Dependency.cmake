@@ -68,18 +68,18 @@ endfunction()
 # Internal usage.
 macro(_dependency_import)
 	if(NOT DEFINED DEP_IMPORT)
-		message(FATAL_ERROR "IMPORT arguments is missing or need a value!")
+		message(FATAL_ERROR "IMPORT argument is missing or need a value!")
 	endif()
 	if((NOT ${DEP_SHARED})
 		AND (NOT ${DEP_STATIC}))
-		message(FATAL_ERROR "SHARED|STATIC arguments is missing!")
+		message(FATAL_ERROR "SHARED|STATIC argument is missing!")
 	endif()
 	if(${DEP_SHARED} AND ${DEP_STATIC})
 		message(FATAL_ERROR "SHARED|STATIC cannot be used together!")
 	endif()
 	if((NOT DEFINED DEP_RELEASE)
 		AND (NOT DEFINED DEP_DEBUG))
-		message(FATAL_ERROR "RELEASE|DEBUG arguments is missing!")
+		message(FATAL_ERROR "RELEASE|DEBUG argument is missing!")
 	endif()
 	if("RELEASE" IN_LIST DEP_KEYWORDS_MISSING_VALUES)
 		message(FATAL_ERROR "RELEASE need a value!")
@@ -88,10 +88,10 @@ macro(_dependency_import)
 		message(FATAL_ERROR "DEBUG need a value!")
 	endif()
 	if(NOT DEFINED DEP_ROOT_DIR)
-		message(FATAL_ERROR "ROOT_DIR arguments is missing or need a value!")
+		message(FATAL_ERROR "ROOT_DIR argument is missing or need a value!")
 	endif()
 	if(NOT DEFINED DEP_INCLUDE_DIR)
-		message(FATAL_ERROR "INCLUDE_DIR arguments is missing or need a value!")
+		message(FATAL_ERROR "INCLUDE_DIR argument is missing or need a value!")
 	endif()
 	
 	if(${DEP_SHARED})
@@ -103,7 +103,9 @@ macro(_dependency_import)
 	endif()
 
 	add_library("${DEP_IMPORT}" "${library_type}" IMPORTED)
-	set_target_properties("${DEP_IMPORT}" PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${DEP_INCLUDE_DIR}")
+	set_target_properties("${DEP_IMPORT}" PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${DEP_INCLUDE_DIR}") # For usage from source-tree.
+	set_target_properties("${DEP_IMPORT}" PROPERTIES INTERFACE_INCLUDE_DIRECTORIES_BUILD "") # Custom property for usage from build-tree.
+	set_target_properties("${DEP_IMPORT}" PROPERTIES INTERFACE_INCLUDE_DIRECTORIES_INSTALL "") # Custom property for usage from install-tree.
 	if(DEFINED DEP_RELEASE)
 		# Get the library file for release.
 		directory(FIND_LIB lib_release
@@ -118,9 +120,11 @@ macro(_dependency_import)
 		# Add library properties for release.
 		get_filename_component(lib_release_name "${lib_release}" NAME)
 		set_target_properties("${DEP_IMPORT}" PROPERTIES
-			IMPORTED_LOCATION "${lib_release}" # Only for ".dll" and ".a" and ".so".
-			IMPORTED_IMPLIB "" # Only for ".lib" and ".dll.a" (not used).
-			IMPORTED_SONAME "${lib_release_name}"
+			IMPORTED_LOCATION_RELEASE "${lib_release}" # Only for ".dll" and ".a" and ".so". For usage from source-tree.
+			IMPORTED_LOCATION_BUILD_RELEASE "" # Custom property for usage from build-tree.
+			IMPORTED_LOCATION_INSTALL_RELEASE "" # Custom property for usage from install-tree.
+			IMPORTED_IMPLIB_RELEASE "" # Only for ".lib" and ".dll.a" (not used).
+			IMPORTED_SONAME_RELEASE "${lib_release_name}"
 		)
 		set_property(TARGET "${DEP_IMPORT}" APPEND PROPERTY IMPORTED_CONFIGURATIONS "RELEASE")
 	endif()
@@ -139,8 +143,10 @@ macro(_dependency_import)
 		# Add library properties for debug.
 		get_filename_component(lib_debug_name "${lib_debug}" NAME)
 		set_target_properties("${DEP_IMPORT}" PROPERTIES
-			IMPORTED_LOCATION_DEBUG "${lib_debug}" # Only for ".dll" and ".a" and ".so".
-			IMPORTED_IMPLIB "" # Only for ".lib" and ".dll.a" (not used).
+			IMPORTED_LOCATION_DEBUG "${lib_debug}" # Only for ".dll" and ".a" and ".so". For usage from source-tree.
+			IMPORTED_LOCATION_BUILD_DEBUG "" # Custom property for usage from build-tree.
+			IMPORTED_LOCATION_INSTALL_DEBUG "" # Custom property for usage from install-tree.
+			IMPORTED_IMPLIB_DEBUG "" # Only for ".lib" and ".dll.a" (not used).
 			IMPORTED_SONAME_DEBUG "${lib_debug_name}"
 		)
 		set_property(TARGET "${DEP_IMPORT}" APPEND PROPERTY IMPORTED_CONFIGURATIONS "DEBUG")
