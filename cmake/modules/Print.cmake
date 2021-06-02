@@ -15,7 +15,8 @@ Synopsis
 .. parsed-literal::
 
     `print`_([<mode>] "message with format text" <argument>...)
-    `print`_([<mode>] PATHS <file_list>... INDENT)
+    `print`_([<mode>] PATHS <file_list>... [INDENT])
+    `print`_([<mode>] LISTS <string_list>... [INDENT])
 
 Usage
 ^^^^^
@@ -39,14 +40,24 @@ Conversion specifier is one of:
  @ap@ = The given path will be convert into an absolute path
  @rp@ = The given path will be convert into an relative path to `PRINT_BASE_DIR`
 
- .. _print:
+.. _print:
 .. code-block:: cmake
 
   print([<mode>] PATHS <file_list>... [INDENT])
 
-Record each file of the list of ``<file_list>`` in the log after having computed their relative
-path to ``PRINT_BASE_DIR``. The message is indented if INDENT is set. This
-command is inspired by `message()` from CMake.
+Record each file of the list of ``<file_list>`` in the log after having computed
+their relative path to ``PRINT_BASE_DIR``. The message is indented if ``INDENT``
+is set. This command is inspired by `message()` from CMake.
+The optional ``<mode>`` keyword determines the type of message like in CMake
+(see https://cmake.org/cmake/help/latest/command/message.html#general-messages).
+
+.. _print:
+.. code-block:: cmake
+
+  print([<mode>] LISTS <string_list>... [INDENT])
+
+Record each string of the list of ``<file_list>`` in the log. The message is indented
+if ``INDENT`` is set. This command is inspired by `message()` from CMake.
 The optional ``<mode>`` keyword determines the type of message like in CMake
 (see https://cmake.org/cmake/help/latest/command/message.html#general-messages).
 
@@ -63,7 +74,7 @@ set(PRINT_BASE_DIR "${CMAKE_SOURCE_DIR}")
 function(print)
 	set(options FATAL_ERROR SEND_ERROR WARNING AUTHOR_WARNING DEPRECATION NOTICE STATUS VERBOSE DEBUG TRACE INDENT)
 	set(one_value_args "")
-	set(multi_value_args PATHS)
+	set(multi_value_args PATHS LISTS)
 	cmake_parse_arguments(PRT "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
 	
 	# Parse arguments. The macro `_print_message()` can't use the result of
@@ -79,6 +90,8 @@ function(print)
 
 	if((DEFINED PRT_PATHS) OR ("PATHS" IN_LIST PRT_KEYWORDS_MISSING_VALUES))
 		_print_paths()
+	elseif((DEFINED PRT_LISTS) OR ("LISTS" IN_LIST PRT_KEYWORDS_MISSING_VALUES))
+		_print_lists()
 	else()
 		_print_message()
 	endif()
@@ -209,6 +222,43 @@ macro(_print_paths)
 		list(APPEND relative_path_list "${relative_path}")
 	endforeach()
 	list(JOIN relative_path_list " ; " formated_message)
+	set(message "${formated_message}")
+
+	if(${PRT_INDENT})
+		list(APPEND CMAKE_MESSAGE_INDENT "  ")
+	endif()
+	message("${mode}" "${message}")
+	if(${PRT_INDENT})
+		list(POP_BACK CMAKE_MESSAGE_INDENT)
+	endif()
+endmacro()
+
+#------------------------------------------------------------------------------
+# Internal usage.
+macro(_print_lists)
+	if(DEFINED PRT_UNPARSED_ARGUMENTS)
+		message(FATAL_ERROR "Unrecognized arguments: \"${PRT_UNPARSED_ARGUMENTS}\"")
+	endif()
+	if((NOT DEFINED PRT_LISTS)
+		AND (NOT "LISTS" IN_LIST PRT_KEYWORDS_MISSING_VALUES))
+		message(FATAL_ERROR "LISTS arguments is missing")
+	endif()
+	
+	set(mode "")
+	set(message "")
+	
+	# If the first of PRT_ARGV (index 0) is a mode from "options", set the
+	# mode var.
+	if("${PRT_ARGV0}" IN_LIST options)
+		set(mode "${PRT_ARGV0}")
+	endif()
+	
+	# Format the lists
+	set(formated_message "")
+	foreach(string IN ITEMS ${PRT_LISTS})
+		list(APPEND formated_message "${string}")
+	endforeach()
+	list(JOIN formated_message " ; " formated_message)
 	set(message "${formated_message}")
 
 	if(${PRT_INDENT})
