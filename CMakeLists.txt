@@ -383,25 +383,26 @@ message(STATUS "Importing and linking internal dependencies")
 include(DependenciesInternalOptions)
 
 # Check imported internal library files and their header files.
-if(NOT DEFINED ${PROJECT_NAME}_LIBRARY_FILES)
-	message(FATAL_ERROR "${PROJECT_NAME}_LIBRARY_FILES must be specified!")
+if(NOT DEFINED ${PROJECT_NAME}_IMPORTED_INTERNAL_LIBRARIES)
+	message(FATAL_ERROR "${PROJECT_NAME}_IMPORTED_INTERNAL_LIBRARIES must be specified!")
 endif()
-if(NOT DEFINED ${PROJECT_NAME}_LIBRARY_HEADER_DIRS)
-	message(FATAL_ERROR "${PROJECT_NAME}_LIBRARY_HEADER_DIRS must be specified!")
-endif()
-if("${${PROJECT_NAME}_INCLUDE_DIR}/${PROJECT_NAME}" IN_LIST ${PROJECT_NAME}_LIBRARY_HEADER_DIRS)
-	print(FATAL_ERROR "@rp@ must be excluded!" "${${PROJECT_NAME}_INCLUDE_DIR}/${PROJECT_NAME}")
-endif()
-message(STATUS "Found the following library files in \"lib/\" directory:")
-print(STATUS PATHS "${${PROJECT_NAME}_LIBRARY_FILES}" INDENT)
-message(STATUS "Found the following library header directories in \"include/\" directory:")
-print(STATUS PATHS "${${PROJECT_NAME}_LIBRARY_HEADER_DIRS}" INDENT)
+foreach(imported_library IN ITEMS ${${PROJECT_NAME}_IMPORTED_INTERNAL_LIBRARIES})
+	if(NOT TARGET "${imported_library}")
+		message(FATAL_ERROR "Library \"${imported_library}\" has not been imported!")
+	endif()
+	get_target_property(imported_library_header_dir "${imported_library}" INTERFACE_INCLUDE_DIRECTORIES)
+	if(NOT EXISTS "${imported_library_header_dir}")
+		message(FATAL_ERROR "Header directory of imported internal library \"${imported_library}\" cannot be found!")
+	endif()
+endforeach()
+message(STATUS "Found the following imported internal library targets:")
+message(STATUS "${${PROJECT_NAME}_IMPORTED_INTERNAL_LIBRARIES}")
 
-# Link libraries to the main binary build target.
-message(STATUS "Link libraries found to the target \"${${PROJECT_NAME}_MAIN_BIN_TARGET}\"")
+# Link imported internal libraries targets to the main binary build target.
+message(STATUS "Link imported internal library targets found to the target \"${${PROJECT_NAME}_MAIN_BIN_TARGET}\"")
 target_link_libraries("${${PROJECT_NAME}_MAIN_BIN_TARGET}"
 	PRIVATE
-		"${${PROJECT_NAME}_LIBRARY_FILES}"
+		"${${PROJECT_NAME}_IMPORTED_INTERNAL_LIBRARIES}"
 )
 
 # Add `include/` directory to incude directories of the main binary build target.

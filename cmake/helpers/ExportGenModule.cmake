@@ -75,14 +75,37 @@ if(${PARAM_USE_PRECOMPILED_HEADER})
 	)
 endif()
 
-# Create a list of library files for INSTALL_INTERFACE of `target_link_libraries()`.
-set(${PROJECT_NAME}_INSTALL_LIBRARY_FILES "${${PROJECT_NAME}_LIBRARY_FILES}")
-file_manip(STRIP_PATH ${PROJECT_NAME}_INSTALL_LIBRARY_FILES
-	BASE_DIR "${${PROJECT_NAME}_LIB_DIR}"
-)
-file_manip(ABSOLUTE_PATH ${PROJECT_NAME}_INSTALL_LIBRARY_FILES
-	BASE_DIR "\${_IMPORT_PREFIX}/${${PROJECT_NAME}_INSTALL_RELATIVE_LIBRARY_DIR}" # Bug fix, because for some unknown reason the prefix is not added by export command.
-)
+# Add usage requirements to imported internal library targets for an import from the build-tree (BUILD_INTERFACE) or the install-tree (INSTALL_INTERFACE).
+message(STATUS "Add usage requirements to imported internal libraries for transitive importing")
+set(${PROJECT_NAME}_IMPORTED_INTERNAL_LIBRARY_FILES "")
+set(${PROJECT_NAME}_IMPORTED_INTERNAL_LIBRARY_HEADER_DIRS "")
+foreach(imported_library IN ITEMS ${${PROJECT_NAME}_IMPORTED_INTERNAL_LIBRARIES})
+	get_target_property(header_dir "${imported_library}" INTERFACE_INCLUDE_DIRECTORIES)
+	list(APPEND ${PROJECT_NAME}_IMPORTED_INTERNAL_LIBRARY_HEADER_DIRS "${header_dir}")
+	dependency(INCLUDE_DIRECTORIES "${imported_library}" SET
+		PUBLIC
+			"$<BUILD_INTERFACE:${${PROJECT_NAME}_INCLUDE_DIR}>"
+			"$<INSTALL_INTERFACE:${${PROJECT_NAME}_INSTALL_RELATIVE_INCLUDE_DIR}>"
+	)
+	# Usage requirements for each supported configuration type (in other words each supported build type).
+	get_target_property(library_supported_config_types "${imported_library}" IMPORTED_CONFIGURATIONS)
+	foreach(config_type IN ITEMS ${library_supported_config_types})
+		get_target_property(library_file "${imported_library}" IMPORTED_LOCATION_${config_type})
+		set(install_library_file "${library_file}")
+		file_manip(STRIP_PATH install_library_file
+			BASE_DIR "${${PROJECT_NAME}_LIB_DIR}"
+		)
+		file_manip(ABSOLUTE_PATH install_library_file
+			BASE_DIR "${${PROJECT_NAME}_INSTALL_RELATIVE_LIBRARY_DIR}"
+		)
+		dependency(IMPORTED_LOCATION "${imported_library}" CONFIGURATION "${config_type}"
+			PUBLIC
+				"$<BUILD_INTERFACE:${library_file}>"
+				"$<INSTALL_INTERFACE:${install_library_file}>"
+		)
+		list(APPEND ${PROJECT_NAME}_IMPORTED_INTERNAL_LIBRARY_FILES "${library_file}")
+	endforeach()
+endforeach()
 
 # Add usage requirements to the main binary build target for an import from the build-tree (BUILD_INTERFACE) or the install-tree (INSTALL_INTERFACE).
 message(STATUS "Add usage requirements to the target \"${${PROJECT_NAME}_MAIN_BIN_TARGET}\" for importing")
@@ -125,8 +148,8 @@ target_include_directories("${${PROJECT_NAME}_MAIN_BIN_TARGET}"
 )
 target_link_libraries("${${PROJECT_NAME}_MAIN_BIN_TARGET}"
 	PUBLIC
-		"$<BUILD_INTERFACE:${${PROJECT_NAME}_LIBRARY_FILES}>"
-		"$<INSTALL_INTERFACE:${${PROJECT_NAME}_INSTALL_LIBRARY_FILES}>"
+		"$<BUILD_INTERFACE:${${PROJECT_NAME}_IMPORTED_INTERNAL_LIBRARIES}>"
+		"$<INSTALL_INTERFACE:${${PROJECT_NAME}_IMPORTED_INTERNAL_LIBRARIES}>"
 )
 
 
@@ -144,12 +167,21 @@ string_manip(SPLIT_TRANSFORM ${PROJECT_NAME}_EXPORT_NAME START_CASE)
 set(${PROJECT_NAME}_EXPORT_NAMESPACE                "${PARAM_EXPORT_NAMESPACE}")
 set(${PROJECT_NAME}_EXPORT_FILE_NAME         "${${PROJECT_NAME}_EXPORT_NAME}Targets.cmake")
 set_target_properties("${${PROJECT_NAME}_MAIN_BIN_TARGET}" PROPERTIES EXPORT_NAME "${${PROJECT_NAME}_EXPORT_NAME}")
+set(${PROJECT_NAME}_EXPORT_INTERNAL_DEP_FILE_NAME   "DependenciesInternalTargets.cmake")
 
-# Generate the export script `Targets.cmake` for importing the main binary build target coming from the build-tree.
+# Generate the export script `DependenciesIternalTargets.cmake` for importing of the imported internal libraries targets from the build-tree.
+foreach(imported_library IN ITEMS ${${PROJECT_NAME}_IMPORTED_INTERNAL_LIBRARIES})
+	dependency(EXPORT "${imported_library}"
+		BUILD_TREE
+		APPEND
+		OUTPUT_FILE "${${PROJECT_NAME}_EXPORT_INTERNAL_DEP_FILE_NAME}"
+	)
+endforeach()
+print(STATUS "Export script for the imported internal libraries targets generated: @rp@" "${${PROJECT_NAME}_BUILD_DIR}/${${PROJECT_NAME}_EXPORT_INTERNAL_DEP_FILE_NAME}")
+
 # Generate the export script `Targets.cmake` for importing of the main binary build target from the build-tree.
 export(TARGETS "${${PROJECT_NAME}_MAIN_BIN_TARGET}"
 	NAMESPACE "${${PROJECT_NAME}_EXPORT_NAMESPACE}::"
-	APPEND
 	FILE "${${PROJECT_NAME}_BUILD_DIR}/${${PROJECT_NAME}_EXPORT_FILE_NAME}"
 )
 print(STATUS "Export script for the target \"${${PROJECT_NAME}_MAIN_BIN_TARGET}\" generated: @rp@" "${${PROJECT_NAME}_BUILD_DIR}/${${PROJECT_NAME}_EXPORT_FILE_NAME}")
@@ -198,16 +230,16 @@ install(DIRECTORY "${${PROJECT_NAME}_HEADER_PUBLIC_DIR}/"
 	FILES_MATCHING REGEX ".*[.]h$|.*[.]hpp$|.*[.]hxx$|.*[.]inl$"
 )
 
-# Rule for library header files in `include/<...>`
-foreach(directory IN ITEMS ${${PROJECT_NAME}_LIBRARY_HEADER_DIRS})
-	install(DIRECTORY "${directory}"
+# Rule for imported internal library header files in `include/<...>`
+foreach(imported_directory IN ITEMS ${${PROJECT_NAME}_IMPORTED_INTERNAL_LIBRARY_HEADER_DIRS})
+	install(DIRECTORY "${imported_directory}"
 		DESTINATION "${${PROJECT_NAME}_INSTALL_RELATIVE_INCLUDE_DIR}"
 		FILES_MATCHING REGEX ".*[.]h$|.*[.]hpp$|.*[.]hxx$|.*[.]inl$"
 	)
 endforeach()
 
-# Rule for externals libraries in `lib/`.
-install(FILES ${${PROJECT_NAME}_LIBRARY_FILES}
+# Rule for imported internal library files in `lib/`.
+install(FILES ${${PROJECT_NAME}_IMPORTED_INTERNAL_LIBRARY_FILES}
 	DESTINATION "${${PROJECT_NAME}_INSTALL_RELATIVE_LIBRARY_DIR}"
 )
 
@@ -216,6 +248,17 @@ install(DIRECTORY "${${PROJECT_NAME}_RESOURCES_DIR}"
 	DESTINATION "${${PROJECT_NAME}_INSTALL_RELATIVE_DATAROOT_DIR}"
 )
 
+# Generate the export script `DependenciesIternalTargets.cmake` and its install rules for importing of the imported internal libraries targets from the install-tree.
+foreach(imported_library IN ITEMS ${${PROJECT_NAME}_IMPORTED_INTERNAL_LIBRARIES})
+	dependency(EXPORT "${imported_library}"
+		INSTALL_TREE
+		APPEND
+		OUTPUT_FILE "${${PROJECT_NAME}_INSTALL_RELATIVE_DATAROOT_DIR}/cmake/${${PROJECT_NAME}_EXPORT_INTERNAL_DEP_FILE_NAME}"
+	)
+endforeach()
+print(STATUS "Export script for the imported internal libraries targets generated: @rp@" "${${PROJECT_NAME}_BUILD_DIR}/CMakeFiles/Export/${${PROJECT_NAME}_INSTALL_RELATIVE_DATAROOT_DIR}/cmake/${${PROJECT_NAME}_EXPORT_INTERNAL_DEP_FILE_NAME}")
+
+# Generate the export script `Targets.cmake` from all `install(TARGETS)` and its install rules for importing of the main binary build target from the install-tree.
 install(EXPORT "${${PROJECT_NAME}_EXPORT_NAME}"
 	NAMESPACE "${${PROJECT_NAME}_EXPORT_NAMESPACE}::"
 	DESTINATION "${${PROJECT_NAME}_INSTALL_RELATIVE_DATAROOT_DIR}/cmake"
@@ -246,6 +289,7 @@ set(${PROJECT_NAME}_PACKAGE_VERSION_FILE           "${${PROJECT_NAME}_BUILD_DIR}
 # Generate a package config-file.
 set(LOCAL_MAIN_BIN_TARGET                 "${${PROJECT_NAME}_MAIN_BIN_TARGET}")
 set(LOCAL_EXPORT_FILE_NAME                "${${PROJECT_NAME}_EXPORT_FILE_NAME}")
+set(LOCAL_EXPORT_INTERNAL_DEP_FILE_NAME   "${${PROJECT_NAME}_EXPORT_INTERNAL_DEP_FILE_NAME}")
 configure_package_config_file(
 	"${${PROJECT_NAME}_PACKAGE_TEMPLATE_CONFIG_FILE}"
 	"${${PROJECT_NAME}_PACKAGE_CONFIG_FILE}"
@@ -254,6 +298,7 @@ configure_package_config_file(
 )
 unset(LOCAL_MAIN_BIN_TARGET)
 unset(LOCAL_EXPORT_FILE_NAME)
+unset(LOCAL_EXPORT_INTERNAL_DEP_FILE_NAME)
 print(STATUS "Export config-file generated: @rp@" "${${PROJECT_NAME}_PACKAGE_CONFIG_FILE}")
 
 # Generate a package version-file.
