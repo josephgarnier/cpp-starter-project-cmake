@@ -33,15 +33,18 @@ find the possible filenames for ``RELEASE_NAME`` and ``DEBUG_NAME`` library file
 but at least one has to be given, they define what configurtion types (in ``CMAKE_CONFIGURATION_TYPES``
 cmake variable) will be supported by the library (see https://cmake.org/cmake/help/latest/variable/CMAKE_CONFIGURATION_TYPES.html).
 The ``<raw_filename>`` given should be a library file name without any numeric character
-(for versions), any special character and any suffixes (e.g. .so). The command will loop
-over all file in ``ROOT_DIR`` and try to do a matching between the ``<raw_filename>``
-and each filename found striped from their numeric and special character and their
-suffix based on the plateform and the kind of library ``STATIC`` or ``SHARED``
-(eg. .lib and .dll.a for static on Windows, .a for static on Unix, .dll for shared on
-Windows, .so for shared on Linux). An error message occured if there is more than one
-result or if no file is found. Secondly, when research is successful the `add_library(IMPORTED)``
-CMake function is called and all target properties are filled. To fill in the include
-header files, the variable ``INCLUDE_DIR`` must give where the files are.
+(for versions), any special character, any prefixes (e.g. lib) and any suffixes (e.g. .so)
+that are platform dependent. The command will loop over all file in ``ROOT_DIR`` and
+try to do a matching between the ``<raw_filename>`` in format ``<CMAKE_STATIC_LIBRARY_PREFIX|
+CMAKE_SHARED_LIBRARY_PREFIX><raw_filename><verions-numbers><CMAKE_STATIC_LIBRARY_SUFFIX|
+CMAKE_SHARED_LIBRARY_SUFFIX>`` and each filename found striped from their numeric and
+special character version and their suffix and their prefix based on the plateform and
+the kind of library ``STATIC`` or ``SHARED`` (eg. .lib and .dll.a for static on
+Windows, .a for static on Unix, .dll for shared on Windows, .so for shared on Linux).
+An error message occured if there is more than one result or if no file is found.
+Secondly, when research is successful the `add_library(IMPORTED)`` CMake function is
+called and all target properties are filled. To fill in the include header files,
+the variable ``INCLUDE_DIR`` must give where the files are.
 
 .. _EXPORT:
 .. code-block:: cmake

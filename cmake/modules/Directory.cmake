@@ -51,16 +51,18 @@ function will traverse all the subdirectories from ROOT_DIR.
 Recursively find a library in the given path ``ROOT_DIR`` from its raw filename
 ``NAME``. If the library is found the result path is stored in the variable
 ``<output_var>``. The results will be returned as absolute paths if ``RELATIVE ``
-flag is set to off, else as relative path to ROOT_DIR. If nothing is found,
+flag is set to off, else as relative path to ``ROOT_DIR``. If nothing is found,
 the result will be <output_var>-NOTFOUND.
 The name given to the NAME option should be a library file name without any
-numeric character (for versions), any special character and any suffixes
-(e.g. .so). The command will loop over all file in ROOT_DIR and try to do a matching
-between the NAME and each file name striped from their numeric and special character
-and their suffix based on the plateform and the kind of library ``STATIC`` or ``SHARED``
-(eg. .lib and .dll.a for static on Windows, .a for static on Unix, .dll for shared
-on Windows, .so for shared on Linux). An error message occured if there is more
-than one result.
+numeric character (for versions), any special character, any prefixes (e.g. lib)
+and any suffixes (e.g. .so). The command will loop over all file in ``ROOT_DIR`` and
+try to do a matching between the ``NAME`` in format ``<CMAKE_STATIC_LIBRARY_PREFIX|
+CMAKE_SHARED_LIBRARY_PREFIX><raw_filename><verions-numbers><CMAKE_STATIC_LIBRARY_SUFFIX|
+CMAKE_SHARED_LIBRARY_SUFFIX>`` and each filename found striped from their numeric and
+special character version and their suffix and their prefix based on the plateform and
+the kind of library ``STATIC`` or ``SHARED`` (eg. .lib and .dll.a for static on
+Windows, .a for static on Unix, .dll for shared on Windows, .so for shared on Linux).
+An error message occured if there is more than one result or if no file is found.
 
 #]=======================================================================]
 include_guard()
@@ -215,8 +217,10 @@ macro(_directory_find_lib)
 	endif()
 
 	if(DEFINED DIR_SHARED)
+		set(library_prefix "${CMAKE_SHARED_LIBRARY_PREFIX}")
 		set(library_suffix "${CMAKE_SHARED_LIBRARY_SUFFIX}")
 	elseif(DEFINED DIR_STATIC)
+		set(library_prefix "${CMAKE_STATIC_LIBRARY_PREFIX}")
 		set(library_suffix "${CMAKE_STATIC_LIBRARY_SUFFIX}")
 	else()
 		message(FATAL_ERROR "Wrong library suffix!")
@@ -224,7 +228,7 @@ macro(_directory_find_lib)
 
 	foreach(file IN ITEMS ${file_list})
 		get_filename_component(file_name "${file}" NAME)
-		if(NOT ("${file_name}" MATCHES "^[^a-zA-Z]*${DIR_NAME}[^a-zA-Z]*\\${library_suffix}$"))
+		if(NOT ("${file_name}" MATCHES "^[^a-zA-Z]*(\\${library_prefix})?${DIR_NAME}[^a-zA-Z]*\\${library_suffix}$"))
 			list(REMOVE_ITEM file_list "${file}")
 		endif()
 	endforeach()
