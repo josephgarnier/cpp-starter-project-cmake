@@ -115,13 +115,13 @@ macro(_debug_dump_properties)
 
 	execute_process(COMMAND
 		${CMAKE_COMMAND} --help-property-list
-		OUTPUT_VARIABLE properties_names
+		OUTPUT_VARIABLE propertie_names
 	)
 	# Convert command output into a CMake list.
-	string(REGEX REPLACE ";" "\\\\;" properties_names "${properties_names}")
-	string(REGEX REPLACE "\n" ";" properties_names "${properties_names}")
-	list(SORT properties_names)
-	foreach (propertie_name IN ITEMS ${properties_names})
+	string(REGEX REPLACE ";" "\\\\;" propertie_names "${propertie_names}")
+	string(REGEX REPLACE "\n" ";" propertie_names "${propertie_names}")
+	list(SORT propertie_names)
+	foreach (propertie_name IN ITEMS ${propertie_names})
 		message(STATUS "${propertie_name}")
 	endforeach()
 endmacro()
@@ -142,15 +142,15 @@ macro(_debug_dump_target_properties)
 	# Get all propreties that cmake supports
 	execute_process(COMMAND
 		${CMAKE_COMMAND} --help-property-list
-		OUTPUT_VARIABLE properties_names
+		OUTPUT_VARIABLE propertie_names
 	)
 
 	# Convert command output into a CMake list.
-	string(REGEX REPLACE ";" "\\\\;" properties_names "${properties_names}")
-	string(REGEX REPLACE "\n" ";" properties_names "${properties_names}")
+	string(REGEX REPLACE ";" "\\\\;" propertie_names "${propertie_names}")
+	string(REGEX REPLACE "\n" ";" propertie_names "${propertie_names}")
 	
 	# Add custom properties used in this project.
-	list(APPEND properties_names
+	list(APPEND propertie_names
 		"INTERFACE_INCLUDE_DIRECTORIES_BUILD"
 		"INTERFACE_INCLUDE_DIRECTORIES_INSTALL"
 		"IMPORTED_LOCATION_BUILD_<CONFIG>"
@@ -158,27 +158,27 @@ macro(_debug_dump_target_properties)
 	)
 	
 	# Substitute "_<CONFIG>"" for each variable by the real configuration types (RELEASE and DEBUG).
-	set(config_dependent_properties_names ${properties_names})
-	list(FILTER config_dependent_properties_names INCLUDE REGEX "_<CONFIG>$")
-	list(FILTER properties_names EXCLUDE REGEX "_<CONFIG>$")
-	foreach(propertie_name IN ITEMS ${config_dependent_properties_names})
+	set(config_dependent_propertie_names ${propertie_names})
+	list(FILTER config_dependent_propertie_names INCLUDE REGEX "_<CONFIG>$")
+	list(FILTER propertie_names EXCLUDE REGEX "_<CONFIG>$")
+	foreach(propertie_name IN ITEMS ${config_dependent_propertie_names})
 		string(REPLACE "<CONFIG>" "DEBUG" propertie_name_debug ${propertie_name})
-		list(APPEND properties_names "${propertie_name_debug}")
+		list(APPEND propertie_names "${propertie_name_debug}")
 		string(REPLACE "<CONFIG>" "RELEASE" propertie_name_release ${propertie_name})
-		list(APPEND properties_names "${propertie_name_release}")
+		list(APPEND propertie_names "${propertie_name_release}")
 	endforeach()
 
 	# Fix https://stackoverflow.com/questions/32197663/how-can-i-remove-the-the-location-property-may-not-be-read-from-target-error-i
-	list(FILTER properties_names EXCLUDE REGEX "^LOCATION$|^LOCATION_|_LOCATION$")
-	list(REMOVE_DUPLICATES properties_names)
-	list(SORT properties_names)
+	list(FILTER propertie_names EXCLUDE REGEX "^LOCATION$|^LOCATION_|_LOCATION$")
+	list(REMOVE_DUPLICATES propertie_names)
+	list(SORT propertie_names)
 
 	message("")
 	message("-----")
 	list(APPEND CMAKE_MESSAGE_INDENT " ")
 	message("Properties for TARGET ${DB_DUMP_TARGET_PROPERTIES}:")
 	list(APPEND CMAKE_MESSAGE_INDENT "  ")
-	foreach(propertie_name IN ITEMS ${properties_names})
+	foreach(propertie_name IN ITEMS ${propertie_names})
 		get_property(propertie_set TARGET "${DB_DUMP_TARGET_PROPERTIES}" PROPERTY "${propertie_name}" SET)
 		if(${propertie_set})
 			get_target_property(propertie_value "${DB_DUMP_TARGET_PROPERTIES}" "${propertie_name}")
