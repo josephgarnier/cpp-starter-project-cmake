@@ -100,9 +100,6 @@ endfunction()
 #------------------------------------------------------------------------------
 # Internal usage.
 macro(_file_manip_relative_path)
-	if(DEFINED FM_UNPARSED_ARGUMENTS)
-		message(FATAL_ERROR "Unrecognized arguments: \"${FM_UNPARSED_ARGUMENTS}\"")
-	endif()
 	if(NOT DEFINED FM_RELATIVE_PATH)
 		message(FATAL_ERROR "RELATIVE_PATH arguments is missing")
 	endif()
@@ -126,9 +123,6 @@ endmacro()
 #------------------------------------------------------------------------------
 # Internal usage.
 macro(_file_manip_absolute_path)
-	if(DEFINED FM_UNPARSED_ARGUMENTS)
-		message(FATAL_ERROR "Unrecognized arguments: \"${FM_UNPARSED_ARGUMENTS}\"")
-	endif()
 	if(NOT DEFINED FM_ABSOLUTE_PATH)
 		message(FATAL_ERROR "ABSOLUTE_PATH arguments is missing")
 	endif()
@@ -152,9 +146,6 @@ endmacro()
 #------------------------------------------------------------------------------
 # Internal usage.
 macro(_file_manip_strip_path)
-	if(DEFINED FM_UNPARSED_ARGUMENTS)
-		message(FATAL_ERROR "Unrecognized arguments: \"${FM_UNPARSED_ARGUMENTS}\"")
-	endif()
 	if(NOT DEFINED FM_STRIP_PATH)
 		message(FATAL_ERROR "STRIP_PATH arguments is missing")
 	endif()
@@ -178,9 +169,6 @@ endmacro()
 #------------------------------------------------------------------------------
 # Internal usage.
 macro(_file_manip_get_component_directory)
-	if(DEFINED FM_UNPARSED_ARGUMENTS)
-		message(FATAL_ERROR "Unrecognized arguments: \"${FM_UNPARSED_ARGUMENTS}\"")
-	endif()
 	if((NOT DEFINED FM_GET_COMPONENT)
 		AND (NOT "GET_COMPONENT" IN_LIST FM_KEYWORDS_MISSING_VALUES))
 		message(FATAL_ERROR "GET_COMPONENT arguments is missing")
@@ -204,9 +192,6 @@ endmacro()
 #------------------------------------------------------------------------------
 # Internal usage.
 macro(_file_manip_get_component_name)
-	if(DEFINED FM_UNPARSED_ARGUMENTS)
-		message(FATAL_ERROR "Unrecognized arguments: \"${FM_UNPARSED_ARGUMENTS}\"")
-	endif()
 	if((NOT DEFINED FM_GET_COMPONENT)
 		AND (NOT "GET_COMPONENT" IN_LIST FM_KEYWORDS_MISSING_VALUES))
 		message(FATAL_ERROR "GET_COMPONENT arguments is missing")

@@ -86,9 +86,6 @@ endfunction()
 #------------------------------------------------------------------------------
 # Internal usage.
 macro(_debug_dump_variables)
-	if(DEFINED DB_UNPARSED_ARGUMENTS)
-		message(FATAL_ERROR "Unrecognized arguments: \"${DB_UNPARSED_ARGUMENTS}\"")
-	endif()
 	if(NOT ${DB_DUMP_VARIABLES})
 		message(FATAL_ERROR "DUMP_VARIABLES arguments is missing")
 	endif()
@@ -106,9 +103,6 @@ endmacro()
 #------------------------------------------------------------------------------
 # Internal usage.
 macro(_debug_dump_properties)
-	if(DEFINED DB_UNPARSED_ARGUMENTS)
-		message(FATAL_ERROR "Unrecognized arguments: \"${DB_UNPARSED_ARGUMENTS}\"")
-	endif()
 	if(NOT ${DB_DUMP_PROPERTIES})
 		message(FATAL_ERROR "DUMP_PROPERTIES arguments is missing")
 	endif()
@@ -129,9 +123,6 @@ endmacro()
 #------------------------------------------------------------------------------
 # Internal usage.
 macro(_debug_dump_target_properties)
-	if(DEFINED DB_UNPARSED_ARGUMENTS)
-		message(FATAL_ERROR "Unrecognized arguments: \"${DB_UNPARSED_ARGUMENTS}\"")
-	endif()
 	if(NOT DEFINED DB_DUMP_TARGET_PROPERTIES)
 		message(FATAL_ERROR "DB_DUMP_TARGET_PROPERTIES arguments is missing")
 	endif()
@@ -194,9 +185,6 @@ endmacro()
 #------------------------------------------------------------------------------
 # Internal usage.
 macro(_debug_dump_project_variables)
-	if(DEFINED DB_UNPARSED_ARGUMENTS)
-		message(FATAL_ERROR "Unrecognized arguments: \"${DB_UNPARSED_ARGUMENTS}\"")
-	endif()
 	if(NOT ${DB_DUMP_PROJECT_VARIABLES})
 		message(FATAL_ERROR "DUMP_PROJECT_VARIABLES arguments is missing")
 	endif()

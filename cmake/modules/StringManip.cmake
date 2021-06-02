@@ -103,9 +103,6 @@ endfunction()
 #------------------------------------------------------------------------------
 # Internal usage.
 macro(_string_manip_split)
-	if(DEFINED SM_UNPARSED_ARGUMENTS)
-		message(FATAL_ERROR "Unrecognized arguments: \"${SM_UNPARSED_ARGUMENTS}\"")
-	endif()
 	list(LENGTH SM_SPLIT nb_args)
 	if(NOT ${nb_args} EQUAL 2)
 		message(FATAL_ERROR "SPLIT argument is missing or wrong")
@@ -121,9 +118,6 @@ endmacro()
 #------------------------------------------------------------------------------
 # Internal usage.
 macro(_string_manip_split_transform_identifier_upper)
-	if(DEFINED SM_UNPARSED_ARGUMENTS)
-		message(FATAL_ERROR "Unrecognized arguments: \"${SM_UNPARSED_ARGUMENTS}\"")
-	endif()
 	if(NOT DEFINED SM_SPLIT_TRANSFORM)
 		message(FATAL_ERROR "TRANSFORM arguments is missing")
 	endif()
@@ -158,9 +152,6 @@ endmacro()
 #------------------------------------------------------------------------------
 # Internal usage.
 macro(_string_manip_split_transform_start_case)
-	if(DEFINED SM_UNPARSED_ARGUMENTS)
-		message(FATAL_ERROR "Unrecognized arguments: \"${SM_UNPARSED_ARGUMENTS}\"")
-	endif()
 	if(NOT DEFINED SM_SPLIT_TRANSFORM)
 		message(FATAL_ERROR "TRANSFORM arguments is missing")
 	endif()
@@ -189,9 +180,6 @@ endmacro()
 #------------------------------------------------------------------------------
 # Internal usage.
 macro(_string_manip_strip_interfaces)
-	if(DEFINED SM_UNPARSED_ARGUMENTS)
-		message(FATAL_ERROR "Unrecognized arguments: \"${SM_UNPARSED_ARGUMENTS}\"")
-	endif()
 	if(NOT DEFINED SM_STRIP_INTERFACES)
 		message(FATAL_ERROR "STRIP_INTERFACES argument is missing")
 	endif()
