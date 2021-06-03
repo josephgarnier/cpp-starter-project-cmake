@@ -173,7 +173,7 @@ macro(_dependency_import)
 			message(FATAL_ERROR "The release library \"${DEP_RELEASE_NAME}\" was not found!")
 		endif()
 		# Add library properties for release.
-		get_filename_component(lib_release_name "${lib_release}" NAME)
+		cmake_path(GET lib_release FILENAME lib_release_name)
 		set_target_properties("${DEP_IMPORT}" PROPERTIES
 			IMPORTED_LOCATION_RELEASE "${lib_release}" # Only for ".dll" and ".a" and ".so". For usage from source-tree.
 			IMPORTED_LOCATION_BUILD_RELEASE "" # Custom property for usage from build-tree.
@@ -196,7 +196,7 @@ macro(_dependency_import)
 			message(FATAL_ERROR "The debug library \"${DEP_DEBUG_NAME}\" was not found!")
 		endif()
 		# Add library properties for debug.
-		get_filename_component(lib_debug_name "${lib_debug}" NAME)
+		cmake_path(GET lib_debug FILENAME lib_debug_name)
 		set_target_properties("${DEP_IMPORT}" PROPERTIES
 			IMPORTED_LOCATION_DEBUG "${lib_debug}" # Only for ".dll" and ".a" and ".so". For usage from source-tree.
 			IMPORTED_LOCATION_BUILD_DEBUG "" # Custom property for usage from build-tree.

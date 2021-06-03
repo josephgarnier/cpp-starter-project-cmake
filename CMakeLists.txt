@@ -394,7 +394,7 @@ foreach(imported_library IN ITEMS ${${PROJECT_NAME}_IMPORTED_INTERNAL_LIBRARIES}
 	endif()
 endforeach()
 message(STATUS "Found the following imported internal library targets:")
-print(STATUS LISTS "${${PROJECT_NAME}_IMPORTED_INTERNAL_LIBRARIES}" "A" "B" "C;D;E" INDENT)
+print(STATUS LISTS "${${PROJECT_NAME}_IMPORTED_INTERNAL_LIBRARIES}" INDENT)
 
 # Link imported internal libraries targets to the main binary build target.
 message(STATUS "Link imported internal library targets found to the target \"${${PROJECT_NAME}_MAIN_BIN_TARGET}\"")

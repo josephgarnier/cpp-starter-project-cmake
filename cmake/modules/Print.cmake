@@ -180,7 +180,7 @@ macro(_substitute_directives)
 		endif()
 		
 		if("${directive_to_substitute}" STREQUAL "@ap@")
-			get_filename_component(message_arg "${message_arg}" ABSOLUTE BASE_DIR "${PRINT_BASE_DIR}")
+			file(REAL_PATH "${message_arg}" message_arg BASE_DIRECTORY "${PRINT_BASE_DIR}")
 			set(directive_to_substitute "${message_arg}")
 		elseif("${directive_to_substitute}" STREQUAL "@rp@")
 			file(RELATIVE_PATH message_arg "${PRINT_BASE_DIR}" "${message_arg}")

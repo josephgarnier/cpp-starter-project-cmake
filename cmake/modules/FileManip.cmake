@@ -132,7 +132,7 @@ macro(_file_manip_absolute_path)
 	
 	set(absolute_path_list "")
 	foreach(file IN ITEMS ${${FM_ABSOLUTE_PATH}})
-		get_filename_component(absolute_path "${file}" ABSOLUTE BASE_DIR "${FM_BASE_DIR}")
+		file(REAL_PATH "${file}" absolute_path BASE_DIRECTORY "${FM_BASE_DIR}")
 		list(APPEND absolute_path_list ${absolute_path})
 	endforeach()
 	
@@ -182,7 +182,7 @@ macro(_file_manip_get_component_directory)
 	
 	set(directorty_path_list "")
 	foreach(file IN ITEMS ${FM_GET_COMPONENT})
-		get_filename_component(directory_path "${file}" DIRECTORY)
+		cmake_path(GET file PARENT_PATH directory_path)
 		list(APPEND directorty_path_list "${directory_path}")
 	endforeach()
 	
@@ -205,7 +205,7 @@ macro(_file_manip_get_component_name)
 	
 	set(file_name_list "")
 	foreach(file IN ITEMS ${FM_GET_COMPONENT})
-		get_filename_component(file_name "${file}" NAME)
+		cmake_path(FILENAME file PARENT_PATH file_name)
 		list(APPEND file_name_list "${file_name}")
 	endforeach()
 	

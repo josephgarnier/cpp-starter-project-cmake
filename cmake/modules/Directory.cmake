@@ -227,7 +227,7 @@ macro(_directory_find_lib)
 	endif()
 
 	foreach(file IN ITEMS ${file_list})
-		get_filename_component(file_name "${file}" NAME)
+		cmake_path(GET file FILENAME file_name)
 		if(NOT ("${file_name}" MATCHES "^[^a-zA-Z]*(\\${library_prefix})?${DIR_NAME}[^a-zA-Z]*\\${library_suffix}$"))
 			list(REMOVE_ITEM file_list "${file}")
 		endif()
