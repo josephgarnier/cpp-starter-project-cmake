@@ -49,10 +49,13 @@ set(${PROJECT_NAME}_INSTALL_RELATIVE_INCLUDE_DIR    "${CMAKE_INSTALL_INCLUDEDIR}
 set(${PROJECT_NAME}_INSTALL_RELATIVE_LIBRARY_DIR    "${CMAKE_INSTALL_LIBDIR}/${PROJECT_NAME}")        # in absolute: <CMAKE_INSTALL_PREFIX>/lib/<project-name>
 
 # Set the RPATH, see https://gitlab.kitware.com/cmake/community/-/wikis/doc/cmake/RPATH-handling
-set(CMAKE_SKIP_BUILD_RPATH              off) # Include RPATHs in the build-tree.
-set(CMAKE_BUILD_WITH_INSTALL_RPATH      off) # Don't use the install RPATH already (but later on when installing)
-set(CMAKE_INSTALL_RPATH_USE_LINK_PATH   on) # Add paths to linker search and installed rpath.
-set(CMAKE_INSTALL_RPATH                 "${${PROJECT_NAME}_INSTALL_RELATIVE_LIBRARY_DIR}") # The rpath to use for installed targets.
+set_target_properties("${${PROJECT_NAME}_MAIN_BIN_TARGET}" PROPERTIES
+	SKIP_BUILD_RPATH off # Include RPATHs in the build-tree.
+	BUILD_WITH_INSTALL_RPATH off # Don't use the install RPATH already (but later on when installing)
+	BUILD_RPATH "${${PROJECT_NAME}_LIB_DIR}" # The RPATH to use in the build-tree.
+	INSTALL_RPATH_USE_LINK_PATH on # Add paths to linker search and installed rpath.
+	INSTALL_RPATH "${${PROJECT_NAME}_INSTALL_RELATIVE_LIBRARY_DIR}" # The RPATH to use in the install-tree.
+)
 
 # Create a list of header files for INSTALL_INTERFACE of `target_sources()` command.
 set(${PROJECT_NAME}_INSTALL_HEADER_FILES "${${PROJECT_NAME}_HEADER_PUBLIC_FILES}")
