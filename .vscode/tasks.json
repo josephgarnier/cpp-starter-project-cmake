@@ -213,7 +213,7 @@
 				"cwd": "${workspaceFolder}/build"
 			},
 			"linux": {
-				"command": "sudo cmake --build . --target install"
+				"command": "cmake --build . --target install"
 			},
 			"windows": {
 				"command": "cmake --build . --target install"
