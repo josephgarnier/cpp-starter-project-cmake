@@ -230,153 +230,218 @@ dependency(IMPORT "<my-library-name>"
 list(APPEND ${PROJECT_NAME}_IMPORTED_INTERNAL_LIBRARIES "<my-library-name>")
 ```
 
-The `<raw-filename>` must be a library filename without any version numbers, any special character, any prefixes (e.g. lib) and any suffixes (e.g. .so) that are platform dependent. The command use a fuzzy regular expression in this format to find a library: `<`[CMAKE_STATIC_LIBRARY_PREFIX](https://cmake.org/cmake/help/latest/variable/CMAKE_STATIC_LIBRARY_PREFIX.html)`|`[CMAKE_SHARED_LIBRARY_PREFIX](https://cmake.org/cmake/help/latest/variable/CMAKE_SHARED_LIBRARY_PREFIX.html)`><raw_filename><version-numbers><`[CMAKE_STATIC_LIBRARY_SUFFIX](https://cmake.org/cmake/help/latest/variable/CMAKE_STATIC_LIBRARY_SUFFIX.html)`|`[CMAKE_SHARED_LIBRARY_SUFFIX](https://cmake.org/cmake/help/latest/variable/CMAKE_SHARED_LIBRARY_SUFFIX.html)`>`. **Prefix and version numbers are optional** in the library filename. Furthermore, the options `RELEASE_NAME` and `DEBUG_NAME` are optional but at least one of them must be specified. Finally,you have to choose what type of library build you want to use with the option `SHARED` or `STATIC`.
+The `<raw-filename>` must be a library filename without any version numbers, any special character, any prefixes (e.g. lib) and any suffixes (e.g. .so) that are platform dependent. The command use a fuzzy regular expression in this format to find a library: `<`[CMAKE_STATIC_LIBRARY_PREFIX](https://cmake.org/cmake/help/latest/variable/CMAKE_STATIC_LIBRARY_PREFIX.html)`|`[CMAKE_SHARED_LIBRARY_PREFIX](https://cmake.org/cmake/help/latest/variable/CMAKE_SHARED_LIBRARY_PREFIX.html)`><raw_filename><version-numbers><`[CMAKE_STATIC_LIBRARY_SUFFIX](https://cmake.org/cmake/help/latest/variable/CMAKE_STATIC_LIBRARY_SUFFIX.html)`|`[CMAKE_SHARED_LIBRARY_SUFFIX](https://cmake.org/cmake/help/latest/variable/CMAKE_SHARED_LIBRARY_SUFFIX.html)`>`. **Prefix and version numbers are optional** in the library filename, but if they are actually present, the format must be: `<prefix><library-name><.|_|-|><version-numbers><suffix>`. Furthermore, the options `RELEASE_NAME` and `DEBUG_NAME` are optional but at least one of them must be specified. Finally,you have to choose what type of library build you want to use with the option `SHARED` or `STATIC`.
 
 **Setting these variables is optional**. Indeed, by default, and to simplify the use of CMake, all the internal libraries that are in `lib/` will be automatically linked to the main binary build target, with their header files that are in the subdirectories of `include/` (for linux workers, don't forget to create a link to each library in `lib/` for the [soname policy](https://en.wikipedia.org/wiki/Soname)). If you don't want to use this feature, just initialize both variables to empty or let the lib directory empty.
 
-The **fourth and last file to configure** concerns the **external dependencies** to be imported and linked to the main binary build target. Open the file `cmake/project/DependenciesExternalOptions.cmake` and put the **instructions necessary to import and link the external libaries** to the main binary build target after the message *Import and link external libraries from here*. Here are two examples of library import.
+The **fourth and last file to configure** concerns the **external dependencies** to be imported and linked to the main binary build target. Open the file `cmake/project/DependenciesExternalOptions.cmake` and put the **instructions necessary to import and link the external libaries** to the main binary build target after the message *Import and link external libraries from here*. Here are three examples of library import.
 
 <details>
-<summary>Link Qt</summary>
+<summary>Link Qt (with auto-moc method)</summary>
 
 ```cmake
 #------------------------------------------------------
 # Import and link external libraries from here.
 #------------------------------------------------------
-message("** Include Qt **")
-if(DEFINED ENV{Qt5_DIR})
+
+#---- Import and link Qt. ----
+message(STATUS "Import and link Qt")
+if(DEFINED ENV{Qt5_DIR}) 
   set(Qt5_DIR "$ENV{Qt5_DIR}")
+elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
+  set(Qt5_DIR "C:/Qt/5.15.2/mingw81_64/lib/cmake")
+elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
+  set(Qt5_DIR "/opt/Qt/5.15.2/gcc_64/lib/cmake")
+elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin")
+  set(Qt5_DIR "/opt/Qt/5.15.2/gcc_64/lib/cmake")
+endif()
+if(DEFINED ENV{CMAKE_PREFIX_PATH}) 
+  set(CMAKE_PREFIX_PATH "$ENV{CMAKE_PREFIX_PATH}")
 else()
-  set(Qt5_DIR "/opt/Qt/5.15.1/gcc_64/lib/cmake/Qt5")
-endif()
-find_package(Qt5 COMPONENTS Widgets Gui Core Svg Concurrent REQUIRED)
-find_package(Qt5CoreMacrosCustom REQUIRED)
-find_package(Qt5WidgetsMacrosCustom REQUIRED)
-
-if (${Qt5Widgets_VERSION} VERSION_LESS 5.15.1
-  OR ${Qt5Gui_VERSION} VERSION_LESS 5.15.1
-  OR ${Qt5Core_VERSION} VERSION_LESS 5.15.1
-  OR ${Qt5Svg_VERSION} VERSION_LESS 5.15.1
-  OR ${Qt5Concurrent_VERSION} VERSION_LESS 5.15.1)
-    message(FATAL_ERROR "Minimum supported Qt5 version is 5.15.1!")
+  set(CMAKE_PREFIX_PATH "${Qt5_DIR}")
 endif()
 
-set(QOBJECT_SOURCE_FILES "${${PROJECT_NAME}_SRC_DIR}/myQObject.cpp")
-set(QOBJECT_HEADER_FILES "${${PROJECT_NAME}_SRC_DIR}/myQObject.h")
-set(UI_FILES "")
-set(RESSOURCE_FILES "")
-
-qt5_wrap_cpp(MOC_HEADER_FILES ${QOBJECT_HEADER_FILES})
-qt5_wrap_ui_custom(UI_SOURCE_FILES ${UI_FILES})
-qt5_add_resources_custom(RESSOURCE_SRCS ${RESSOURCE_FILES})
-
-set(RELATIVE_QOBJECT_SOURCE_FILES "")
-file_manip(RELATIVE_PATH QOBJECT_SOURCE_FILES BASE_DIR "${${PROJECT_NAME}_PROJECT_DIR}" OUTPUT_VARIABLE RELATIVE_QOBJECT_SOURCE_FILES)
-set(RELATIVE_QOBJECT_HEADER_FILES "")
-file_manip(RELATIVE_PATH QOBJECT_HEADER_FILES BASE_DIR "${${PROJECT_NAME}_PROJECT_DIR}" OUTPUT_VARIABLE RELATIVE_QOBJECT_HEADER_FILES)
-set(RELATIVE_MOC_HEADER_FILES "")
-file_manip(RELATIVE_PATH MOC_HEADER_FILES BASE_DIR "${${PROJECT_NAME}_PROJECT_DIR}" OUTPUT_VARIABLE RELATIVE_MOC_HEADER_FILES)
-set(RELATIVE_UI_FILES "")
-file_manip(RELATIVE_PATH UI_FILES BASE_DIR "${${PROJECT_NAME}_PROJECT_DIR}" OUTPUT_VARIABLE RELATIVE_UI_FILES)
-set(RELATIVE_UI_SOURCE_FILES "")
-file_manip(RELATIVE_PATH UI_SOURCE_FILES BASE_DIR "${${PROJECT_NAME}_PROJECT_DIR}" OUTPUT_VARIABLE RELATIVE_UI_SOURCE_FILES)
-set(RELATIVE_RESSOURCE_FILES "")
-file_manip(RELATIVE_PATH RESSOURCE_FILES BASE_DIR "${${PROJECT_NAME}_PROJECT_DIR}" OUTPUT_VARIABLE RELATIVE_RESSOURCE_FILES)
-set(RELATIVE_RESSOURCE_SRCS "")
-file_manip(RELATIVE_PATH RESSOURCE_SRCS BASE_DIR "${${PROJECT_NAME}_PROJECT_DIR}" OUTPUT_VARIABLE RELATIVE_RESSOURCE_SRCS)
-
-message(STATUS "QObject sources found:")
-foreach(file IN ITEMS ${RELATIVE_QOBJECT_SOURCE_FILES})
-  message("    ${file}")
-endforeach()
-
-message(STATUS "QObject headers found:")
-foreach(file IN ITEMS ${RELATIVE_QOBJECT_HEADER_FILES})
-  message("    ${file}")
-endforeach()
-
-message(STATUS "QObject moc found:")
-foreach(file IN ITEMS ${RELATIVE_MOC_HEADER_FILES})
-  message("    ${file}")
-endforeach()
-
-message(STATUS "UI files found:")
-foreach(file IN ITEMS ${RELATIVE_UI_FILES})
-  message("    ${file}")
-endforeach()
-
-message(STATUS "UI sources found:")
-foreach(file IN ITEMS ${RELATIVE_UI_SOURCE_FILES})
-  message("    ${file}")
-endforeach()
-
-message(STATUS "Ressources files found:")
-foreach(file IN ITEMS ${RELATIVE_RESSOURCE_FILES})
-  message("    ${file}")
-endforeach()
-
-message(STATUS "Ressources sources found:")
-foreach(file IN ITEMS ${RELATIVE_RESSOURCE_SRCS})
-  message("    ${file}")
-endforeach()
-message("")
-
-# Add Qt sources to target
-message(STATUS "Add Qt sources to target")
-target_sources("${${PROJECT_NAME}_MAIN_BIN_TARGET}"
-  PRIVATE
-    "${RELATIVE_QOBJECT_SOURCE_FILES};${RELATIVE_MOC_HEADER_FILES};${RELATIVE_UI_SOURCE_FILES};${RELATIVE_RESSOURCE_SRCS}"
+# See https://cmake.org/cmake/help/latest/manual/cmake-properties.7.html for their documentations.
+set_target_properties("${${PROJECT_NAME}_MAIN_BIN_TARGET}" PROPERTIES
+  AUTOGEN_ORIGIN_DEPENDS on
+  AUTOMOC on
+  AUTOMOC_COMPILER_PREDEFINES on
+  AUTOMOC_MACRO_NAMES "${CMAKE_AUTOMOC_MACRO_NAMES}"
+  AUTOMOC_PATH_PREFIX on
+  AUTORCC on
+  AUTOUIC on
+  AUTOUIC_SEARCH_PATHS "${${PROJECT_NAME}_SRC_DIR}/gui"
 )
 
-# Add Qt definitions to target
-message(STATUS "Add Qt definitions to target")
+find_package(Qt5 COMPONENTS Widgets Gui Core Svg Concurrent REQUIRED)
+
+if (${Qt5Widgets_VERSION} VERSION_LESS 5.15.2
+  OR ${Qt5Gui_VERSION} VERSION_LESS 5.15.2
+  OR ${Qt5Core_VERSION} VERSION_LESS 5.15.2
+  OR ${Qt5Svg_VERSION} VERSION_LESS 5.15.2
+  OR ${Qt5Concurrent_VERSION} VERSION_LESS 5.15.2)
+    message(FATAL_ERROR "Minimum supported Qt5 version is 5.15.2!")
+endif()
+
+# Add Qt definitions to the main binary build target.
+message(STATUS "Add Qt definitions to the target \"${${PROJECT_NAME}_MAIN_BIN_TARGET}\"")
 target_compile_definitions("${${PROJECT_NAME}_MAIN_BIN_TARGET}"
   PUBLIC
     "$<BUILD_INTERFACE:QT_USE_QSTRINGBUILDER;QT_SHAREDPOINTER_TRACK_POINTERS;QT_MESSAGELOGCONTEXT>"
     "$<INSTALL_INTERFACE:QT_USE_QSTRINGBUILDER;QT_SHAREDPOINTER_TRACK_POINTERS;QT_MESSAGELOGCONTEXT>"
 )
+# Add Qt assert definitions to the main binary build target only for debug.
+target_compile_definitions("${${PROJECT_NAME}_MAIN_BIN_TARGET}"
+  PUBLIC
+    "$<BUILD_INTERFACE:$<$<NOT:$<STREQUAL:${CMAKE_BUILD_TYPE},DEBUG>>:QT_NO_DEBUG>>"
+    "$<INSTALL_INTERFACE:$<$<NOT:$<STREQUAL:${CMAKE_BUILD_TYPE},DEBUG>>:QT_NO_DEBUG>>"
+)
 
-# Link Qt to target
-message(STATUS "Link Qt to target")
+# Link Qt to the main binary build target.
+message(STATUS "Link Qt to the target \"${${PROJECT_NAME}_MAIN_BIN_TARGET}\"")
 target_link_libraries("${${PROJECT_NAME}_MAIN_BIN_TARGET}"
   PUBLIC
     "$<BUILD_INTERFACE:Qt5::Widgets;Qt5::Gui;Qt5::Core;Qt5::Svg;Qt5::Concurrent>"
     "$<INSTALL_INTERFACE:Qt5::Widgets;Qt5::Gui;Qt5::Core;Qt5::Svg;Qt5::Concurrent>"
 )
 
-# Set Qt as a position-independent target
+# Set Qt as a position-independent target.
 set_target_properties("${${PROJECT_NAME}_MAIN_BIN_TARGET}" PROPERTIES INTERFACE_POSITION_INDEPENDENT_CODE ON)
-if(${${PROJECT_NAME}_MAIN_BIN_TARGET_IS_EXEC})
-  target_compile_options("${${PROJECT_NAME}_MAIN_BIN_TARGET}"
-    PUBLIC
-      "$<BUILD_INTERFACE:-fPIE>"
-      "$<INSTALL_INTERFACE:-fPIE>"
-    PRIVATE
-      "-fPIE"
-  )
-elseif(${${PROJECT_NAME}_MAIN_BIN_TARGET_IS_STATIC} OR ${${PROJECT_NAME}_MAIN_BIN_TARGET_IS_SHARED})
-  target_compile_options("${${PROJECT_NAME}_MAIN_BIN_TARGET}"
+target_compile_options("${${PROJECT_NAME}_MAIN_BIN_TARGET}"
   PUBLIC
-    "$<BUILD_INTERFACE:-fPIC>"
-    "$<INSTALL_INTERFACE:-fPIC>"
+    "$<BUILD_INTERFACE:$<IF:$<STREQUAL:$<TARGET_PROPERTY:TYPE>,EXECUTABLE>,-fPIE,-fPIC>>"
+    "$<INSTALL_INTERFACE:$<IF:$<STREQUAL:$<TARGET_PROPERTY:TYPE>,EXECUTABLE>,-fPIE,-fPIC>>"
   PRIVATE
-    "-fPIC"
-  )
+    "$<IF:$<STREQUAL:$<TARGET_PROPERTY:TYPE>,EXECUTABLE>,-fPIE,-fPIC>"
+)
+
+message(STATUS "Import and link Qt - done")
+```
+
+</details>
+
+<details>
+<summary>Link Qt (with macro method)</summary>
+
+```cmake
+#------------------------------------------------------
+# Import and link external libraries from here.
+#------------------------------------------------------
+
+#---- Import and link Qt. ----
+message(STATUS "Import and link Qt")
+if(DEFINED ENV{Qt5_DIR}) 
+  set(Qt5_DIR "$ENV{Qt5_DIR}")
+elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
+  set(Qt5_DIR "C:/Qt/5.15.2/mingw81_64/lib/cmake")
+elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
+  set(Qt5_DIR "/opt/Qt/5.15.2/gcc_64/lib/cmake")
+elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin")
+  set(Qt5_DIR "/opt/Qt/5.15.2/gcc_64/lib/cmake")
+endif()
+if(DEFINED ENV{CMAKE_PREFIX_PATH}) 
+  set(CMAKE_PREFIX_PATH "$ENV{CMAKE_PREFIX_PATH}")
+else()
+  set(CMAKE_PREFIX_PATH "${Qt5_DIR}")
 endif()
 
-# Add Qt assert definitions to target if needed (these instructions are optional,
-# they are only a way to easily enable or disable asserts from the file `cmake/project/StandardOptions.txt`.
-if("${CMAKE_BUILD_TYPE}" STREQUAL "debug")
-  message(STATUS "QtAssert enabled")
-else()
-  message(STATUS "Add Qt assert definitions to target")
-  target_compile_definitions("${${PROJECT_NAME}_MAIN_BIN_TARGET}"
-    PUBLIC
-      "$<BUILD_INTERFACE:QT_NO_DEBUG>"
-      "$<INSTALL_INTERFACE:QT_NO_DEBUG>"
-  )
-  message(STATUS "QtAssert disabled")
+find_package(Qt5 COMPONENTS Widgets Gui Core Svg Concurrent REQUIRED)
+
+if (${Qt5Widgets_VERSION} VERSION_LESS 5.15.2
+  OR ${Qt5Gui_VERSION} VERSION_LESS 5.15.2
+  OR ${Qt5Core_VERSION} VERSION_LESS 5.15.2
+  OR ${Qt5Svg_VERSION} VERSION_LESS 5.15.2
+  OR ${Qt5Concurrent_VERSION} VERSION_LESS 5.15.2)
+    message(FATAL_ERROR "Minimum supported Qt5 version is 5.15.2!")
 endif()
+
+set(QOBJECT_SOURCE_FILES
+  "${${PROJECT_NAME}_SRC_DIR}/myQObject.cpp"
+)
+set(QOBJECT_HEADER_FILES
+  "${${PROJECT_NAME}_SRC_DIR}/myQObject.h"
+)
+set(UI_FILES
+  "${${PROJECT_NAME}_SRC_DIR}/myGUI.ui"
+)
+set(RESSOURCE_FILES
+  "${${PROJECT_NAME}_RESOURCES_DIR}/myResources.qrc"
+)
+
+qt5_wrap_cpp(MOC_HEADER_FILES ${QOBJECT_HEADER_FILES} TARGET "${${PROJECT_NAME}_MAIN_BIN_TARGET}")
+qt5_wrap_ui(UI_SOURCE_FILES ${UI_FILES})
+qt5_add_resources(RESSOURCE_SOURCE_FILES ${RESSOURCE_FILES})
+
+message(STATUS "Found the following QObject source files:")
+print(STATUS PATHS "${QOBJECT_SOURCE_FILES}" INDENT)
+
+message(STATUS "Found the following QObject header files:")
+print(STATUS PATHS "${QOBJECT_HEADER_FILES}" INDENT)
+
+message(STATUS "Found the following moc header files:")
+print(STATUS PATHS "${MOC_HEADER_FILES}" INDENT)
+
+message(STATUS "Found the following UI files:")
+print(STATUS PATHS "${UI_FILES}" INDENT)
+
+message(STATUS "Found the following UI source files:")
+print(STATUS PATHS "${UI_SOURCE_FILES}" INDENT)
+
+message(STATUS "Found the following resources files:")
+print(STATUS PATHS "${RESSOURCE_FILES}" INDENT)
+
+message(STATUS "Found the following resources source files:")
+print(STATUS PATHS "${RESSOURCE_SOURCE_FILES}" INDENT)
+
+# Add Qt source and header files to the main binary build target.
+message(STATUS "Add the found Qt source and header files to the target \"${${PROJECT_NAME}_MAIN_BIN_TARGET}\"")
+target_sources("${${PROJECT_NAME}_MAIN_BIN_TARGET}"
+  PRIVATE
+    "${QOBJECT_SOURCE_FILES}"
+    "${MOC_HEADER_FILES}"
+    "${UI_SOURCE_FILES}"
+    "${RESSOURCE_SOURCE_FILES}"
+)
+source_group(TREE "${${PROJECT_NAME}_PROJECT_DIR}"
+  FILES
+    "${QOBJECT_SOURCE_FILES}"
+    "${MOC_HEADER_FILES}"
+    "${UI_SOURCE_FILES}"
+    "${RESSOURCE_SOURCE_FILES}"
+)
+
+# Add Qt definitions to the main binary build target.
+message(STATUS "Add Qt definitions to the target \"${${PROJECT_NAME}_MAIN_BIN_TARGET}\"")
+target_compile_definitions("${${PROJECT_NAME}_MAIN_BIN_TARGET}"
+  PUBLIC
+    "$<BUILD_INTERFACE:QT_USE_QSTRINGBUILDER;QT_SHAREDPOINTER_TRACK_POINTERS;QT_MESSAGELOGCONTEXT>"
+    "$<INSTALL_INTERFACE:QT_USE_QSTRINGBUILDER;QT_SHAREDPOINTER_TRACK_POINTERS;QT_MESSAGELOGCONTEXT>"
+)
+# Add Qt assert definitions to the main binary build target only for debug.
+target_compile_definitions("${${PROJECT_NAME}_MAIN_BIN_TARGET}"
+  PUBLIC
+    "$<BUILD_INTERFACE:$<$<NOT:$<STREQUAL:${CMAKE_BUILD_TYPE},DEBUG>>:QT_NO_DEBUG>>"
+    "$<INSTALL_INTERFACE:$<$<NOT:$<STREQUAL:${CMAKE_BUILD_TYPE},DEBUG>>:QT_NO_DEBUG>>"
+)
+
+# Link Qt to the main binary build target.
+message(STATUS "Link Qt to the target \"${${PROJECT_NAME}_MAIN_BIN_TARGET}\"")
+target_link_libraries("${${PROJECT_NAME}_MAIN_BIN_TARGET}"
+  PUBLIC
+    "$<BUILD_INTERFACE:Qt5::Widgets;Qt5::Gui;Qt5::Core;Qt5::Svg;Qt5::Concurrent>"
+    "$<INSTALL_INTERFACE:Qt5::Widgets;Qt5::Gui;Qt5::Core;Qt5::Svg;Qt5::Concurrent>"
+)
+
+# Set Qt as a position-independent target.
+set_target_properties("${${PROJECT_NAME}_MAIN_BIN_TARGET}" PROPERTIES INTERFACE_POSITION_INDEPENDENT_CODE ON)
+target_compile_options("${${PROJECT_NAME}_MAIN_BIN_TARGET}"
+  PUBLIC
+    "$<BUILD_INTERFACE:$<IF:$<STREQUAL:$<TARGET_PROPERTY:TYPE>,EXECUTABLE>,-fPIE,-fPIC>>"
+    "$<INSTALL_INTERFACE:$<IF:$<STREQUAL:$<TARGET_PROPERTY:TYPE>,EXECUTABLE>,-fPIE,-fPIC>>"
+  PRIVATE
+    "$<IF:$<STREQUAL:$<TARGET_PROPERTY:TYPE>,EXECUTABLE>,-fPIE,-fPIC>"
+)
+message(STATUS "Import and link Qt - done")
 ```
 
 </details>
@@ -389,7 +454,8 @@ endif()
 # Import and link external libraries from here.
 #------------------------------------------------------
 
-#---- Import Eigen3. ----
+#---- Import and link Eigen3. ----
+message(STATUS "Import and link Eigen3")
 if(DEFINED ENV{Eigen3_DIR}) 
   set(Eigen3_DIR "$ENV{Eigen3_DIR}")
 else()
@@ -431,6 +497,7 @@ target_link_libraries("${${PROJECT_NAME}_MAIN_BIN_TARGET}"
   PRIVATE
     "Eigen3::Eigen"
 )
+message(STATUS "Import and link Eigen3 - done")
 ```
 
 </details>
@@ -525,7 +592,7 @@ Fortunately, the configuration of this export mechanism has been greatly [simpli
 if(DEFINED ENV{Qt5_DIR}) 
   set(Qt5_DIR "$ENV{Qt5_DIR}")
 else()
-  set(Qt5_DIR "/opt/Qt/5.12.6/gcc_64/lib/cmake/Qt5")
+  set(Qt5_DIR "/opt/Qt/5.15.2/gcc_64/lib/cmake")
 endif()
 find_dependency(Qt5 COMPONENTS Widgets Gui Core Svg Concurrent REQUIRED)
 #------------------------------------------------------
@@ -569,7 +636,8 @@ Once the project is exported, **it can be imported into another project** as bel
 # Import and link external libraries from here.
 #------------------------------------------------------
 
-#---- Import <ProjectName>. ----
+#---- Import and link <ProjectName>. ----
+message(STATUS "Import and link <ProjectName>")
 if(DEFINED ENV{<ProjectName>_DIR}) 
   set(<ProjectName>_DIR "$ENV{<ProjectName>_DIR}")
 else()
@@ -589,6 +657,7 @@ target_link_libraries("${${PROJECT_NAME}_MAIN_BIN_TARGET}"
   PRIVATE
     "<Namespace>::<ProjectName>"
 )
+message(STATUS "Import and link <ProjectName> - done")
 ```
 
 </details>
@@ -600,7 +669,8 @@ target_link_libraries("${${PROJECT_NAME}_MAIN_BIN_TARGET}"
 # Import and link external libraries from here.
 #------------------------------------------------------
 
-#---- Import <ProjectName>. ----
+#---- Import and link <ProjectName>. ----
+message(STATUS "Import and link <ProjectName>")
 if(DEFINED ENV{<ProjectName>_DIR}) 
   set(<ProjectName>_DIR "$ENV{<ProjectName>_DIR}")
 else()
@@ -620,6 +690,7 @@ target_link_libraries("${${PROJECT_NAME}_MAIN_BIN_TARGET}"
   PRIVATE
     "<Namespace>::<ProjectName>"
 )
+message(STATUS "Import and link <ProjectName> - done")
 ```
 
 </details>
@@ -631,7 +702,8 @@ target_link_libraries("${${PROJECT_NAME}_MAIN_BIN_TARGET}"
 # Import and link external libraries from here.
 #------------------------------------------------------
 
-#---- Import <ProjectName>. ----
+#---- Import and link <ProjectName>. ----
+message(STATUS "Import and link <ProjectName>")
 if(DEFINED ENV{<ProjectName>_DIR}) 
   set(<ProjectName>_DIR "$ENV{<ProjectName>_DIR}")
 else()
@@ -674,6 +746,7 @@ target_link_libraries("${${PROJECT_NAME}_MAIN_BIN_TARGET}"
   PRIVATE
     "<Namespace>::<ProjectName>"
 )
+message(STATUS "Import and link <ProjectName> - done")
 ```
 
 </details>
