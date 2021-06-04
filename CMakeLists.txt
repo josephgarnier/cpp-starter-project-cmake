@@ -377,7 +377,7 @@ print(STATUS PATHS "${${PROJECT_NAME}_HEADER_PUBLIC_DIR}" "${${PROJECT_NAME}_HEA
 
 #---- Importing and linking internal dependencies to the main binary build target. ----
 message("")
-message(STATUS "Importing and linking internal dependencies")
+message(STATUS "Add internal dependencies")
 include(DependenciesInternalOptions)
 
 # Check imported internal library files and their header files.
@@ -409,14 +409,14 @@ target_include_directories("${${PROJECT_NAME}_MAIN_BIN_TARGET}"
 	PRIVATE
 		"${${PROJECT_NAME}_INCLUDE_DIR}"
 )
-message(STATUS "Importing and linking internal dependencies - done")
+message(STATUS "Add internal dependencies - done")
 
 
 #---- Import and link external dependencies to the main binary build target. ----
 message("")
-message(STATUS "Importing and linking external dependencies")
+message(STATUS "Add external dependencies")
 include(DependenciesExternalOptions)
-message(STATUS "Importing and linking external dependencies - done")
+message(STATUS "Add external dependencies - done")
 
 
 
