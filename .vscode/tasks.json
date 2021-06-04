@@ -68,7 +68,7 @@
 				"cwd": "${workspaceFolder}/build"
 			},
 			"linux": {
-				"command": "sudo cmake --build . --target uninstall"
+				"command": "cmake --build . --target uninstall"
 			},
 			"windows": {
 				"command": "cmake --build . --target uninstall"
