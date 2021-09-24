@@ -103,10 +103,7 @@
 				"cwd": "${workspaceFolder}/build"
 			},
 			"command": "cmake --build . --target all",
-			"group": {
-				"kind": "build",
-				"isDefault": true
-			},
+			"group": "build",
 			"presentation": {
 				"reveal": "always",
 				"panel": "dedicated",
@@ -122,10 +119,7 @@
 				"cwd": "${workspaceFolder}/build"
 			},
 			"command": "cmake --build . --target all --verbose",
-			"group": {
-				"kind": "build",
-				"isDefault": true
-			},
+			"group": "build",
 			"presentation": {
 				"reveal": "always",
 				"panel": "dedicated",
@@ -141,10 +135,7 @@
 				"cwd": "${workspaceFolder}/build"
 			},
 			"command": "cmake --build . --target all --clean-first",
-			"group": {
-				"kind": "build",
-				"isDefault": true
-			},
+			"group": "build",
 			"presentation": {
 				"reveal": "always",
 				"panel": "dedicated",
@@ -160,10 +151,7 @@
 				"cwd": "${workspaceFolder}/build"
 			},
 			"command": "cmake --build . --target all --clean-first --verbose",
-			"group": {
-				"kind": "build",
-				"isDefault": true
-			},
+			"group": "build",
 			"presentation": {
 				"reveal": "always",
 				"panel": "dedicated",
@@ -179,10 +167,7 @@
 				"cwd": "${workspaceFolder}/build"
 			},
 			"command": "cmake --build . --target project-name_test && ../bin/project-name_test",
-			"group": {
-				"kind": "build",
-				"isDefault": true
-			},
+			"group": "test",
 			"presentation": {
 				"reveal": "always",
 				"panel": "dedicated",
