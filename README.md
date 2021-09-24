@@ -109,7 +109,11 @@ This **concept of build phase does not exist in CMake**, it is a convenient way 
 
 In the image below, you can see an **overview of the *Build Lifecycle* proposed by default** with its sequence of the build phases, their composition and their interactions:
 
-[TODO IMAGE OVERVIEW]
+<div align="center">
+<figure>
+  <img src="https://i.imgur.com/Ov9nIip.png" alt="build lifecycle overview" width="100%"/>
+</figure>
+</div>
 
 Here is a description of what each build phase achieves (their associated targets and commands are described in the next section):
 
@@ -130,7 +134,11 @@ Each *Generator Module* has its own configuration parameters and can be disabled
 
 Here is **the dependency graph of the modules**, their configuration files and the cmake targets or command they generate:
 
-[TODO IMAGE WORKFLOW]
+<div align="center">
+<figure>
+  <img src="https://i.imgur.com/lbPIY6h.png" alt="modules dependency graph" width="100%"/>
+</figure>
+</div>
 
 The dashed lines indicate a dependency. Thus, for example, the *Package Generator Module* depends on the *Export Generator Module*.
 
@@ -186,7 +194,11 @@ To use this module, **four options files** need to be configured. The **first fi
 
 The `PUBLIC_HEADERS_SEPARATED` option is there to provide **support for the two common policies in C++ projects** shown below:
 
-[IMAGE]
+<div align="center">
+<figure>
+  <img src="https://i.imgur.com/Hma61CY.png" alt="policies" width="100%"/>
+</figure>
+</div>
 
 The first is to put all header files in `src/` and none in `include/`. In this case, `PUBLIC_HEADERS_SEPARATED` must be set to `off` and the header files will all be public. The second policy, when `PUBLIC_HEADERS_SEPARATED` is set to `on`, is to put only the private header files in `src/` and the public header files in a sub-folder of `include/` named like your project. Therefore, if you choose the second policy you must create a `include/<project-name>` directory.
 
