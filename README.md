@@ -111,7 +111,7 @@ In the image below, you can see an **overview of the *Build Lifecycle* proposed 
 
 <div align="center">
 <figure>
-  <img src="https://i.imgur.com/Ov9nIip.png" alt="build lifecycle overview" width="100%"/>
+  <img src="https://i.imgur.com/Ov9nIip.png" alt="build lifecycle overview" width="80%"/>
 </figure>
 </div>
 
@@ -136,7 +136,7 @@ Here is **the dependency graph of the modules**, their configuration files and t
 
 <div align="center">
 <figure>
-  <img src="https://i.imgur.com/lbPIY6h.png" alt="modules dependency graph" width="100%"/>
+  <img src="https://i.imgur.com/lbPIY6h.png" alt="modules dependency graph" width="45%"/>
 </figure>
 </div>
 
@@ -196,7 +196,7 @@ The `PUBLIC_HEADERS_SEPARATED` option is there to provide **support for the two 
 
 <div align="center">
 <figure>
-  <img src="https://i.imgur.com/Hma61CY.png" alt="policies" width="100%"/>
+  <img src="https://i.imgur.com/Hma61CY.png" alt="policies" width="50%"/>
 </figure>
 </div>
 
