@@ -32,7 +32,7 @@ else()
 endif()
 
 #---- Base Generator Module options ----
-set(BUILD_STANDARD_VERSION_VAL        "17")
+set(BUILD_STANDARD_VERSION_VAL        "20")
 set(BUILD_TYPE_VAL                    "debug")
 set(MAIN_BINARY_TARGET_TYPE_VAL       "exec")
 set(COMPILE_DEFINITIONS_VAL           "")
