@@ -26,12 +26,14 @@ Usage
 
   dependency(IMPORT <lib_name> <STATIC|SHARED> [RELEASE_NAME <raw_filename>] [DEBUG_NAME <raw_filename>] ROOT_DIR <directory_path> INCLUDE_DIR <directory_path>)
 
-Find and creates an imported library target called ``<lib_name>``. This command embed
-the behavior of ``find_library()`` and ``add_library(IMPORTED)``. First, it recursively
-find the possible filenames for ``RELEASE_NAME`` and ``DEBUG_NAME`` library files in the given path
-``ROOT_DIR`` from their raw filenames ``<raw_filename>``. ``RELEASE_NAME`` and ``DEBUG_NAME`` are facultative
-but at least one has to be given, they define what configurtion types (in ``CMAKE_CONFIGURATION_TYPES``
-cmake variable) will be supported by the library (see https://cmake.org/cmake/help/latest/variable/CMAKE_CONFIGURATION_TYPES.html).
+Find and creates an imported library target called ``<lib_name>``. This
+command incorporates the same behavior as ``find_library()`` and
+``add_library(IMPORTED)`` combined. First, it recursively find the possible
+filenames for ``RELEASE_NAME`` and ``DEBUG_NAME`` library files in the given path
+``ROOT_DIR`` from their raw filenames ``<raw_filename>``. ``RELEASE_NAME``
+and ``DEBUG_NAME`` are facultative but at least one has to be given, they
+define what configurtion types (in ``CMAKE_CONFIGURATION_TYPES`` cmake variable)
+will be supported by the library (see https://cmake.org/cmake/help/latest/variable/CMAKE_CONFIGURATION_TYPES.html).
 The ``<raw_filename>`` given should be a library file name without any numeric character
 (for versions), any special character, any prefixes (e.g. lib) and any suffixes (e.g. .so)
 that are platform dependent. The command will loop over all file in ``ROOT_DIR`` and
@@ -164,6 +166,7 @@ macro(_dependency_import)
 	if(DEFINED DEP_RELEASE_NAME)
 		# Get the library file for release.
 		directory(FIND_LIB lib_release
+			FIND_IMPLIB imp_lib_release
 			NAME "${DEP_RELEASE_NAME}"
 			"${library_type}"
 			RELATIVE off
@@ -172,13 +175,17 @@ macro(_dependency_import)
 		if(NOT lib_release)
 			message(FATAL_ERROR "The release library \"${DEP_RELEASE_NAME}\" was not found!")
 		endif()
+		if(WIN32 AND NOT imp_lib_release)
+			message(FATAL_ERROR "The release import library \"${DEP_RELEASE_NAME}\" was not found!")
+		endif()
+
 		# Add library properties for release.
 		cmake_path(GET lib_release FILENAME lib_release_name)
 		set_target_properties("${DEP_IMPORT}" PROPERTIES
-			IMPORTED_LOCATION_RELEASE "${lib_release}" # Only for ".dll" and ".a" and ".so". For usage from source-tree.
+			IMPORTED_LOCATION_RELEASE "${lib_release}" # Only for ".dll" and ".lib" and ".a" and ".so". For usage from source-tree.
 			IMPORTED_LOCATION_BUILD_RELEASE "" # Custom property for usage from build-tree.
 			IMPORTED_LOCATION_INSTALL_RELEASE "" # Custom property for usage from install-tree.
-			IMPORTED_IMPLIB_RELEASE "" # Only for ".lib" and ".dll.a" (not used).
+			IMPORTED_IMPLIB_RELEASE "${imp_lib_release}" # Only for ".lib" and ".dll.a" on DLL platforms.
 			IMPORTED_SONAME_RELEASE "${lib_release_name}"
 		)
 		set_property(TARGET "${DEP_IMPORT}" APPEND PROPERTY IMPORTED_CONFIGURATIONS "RELEASE")
@@ -187,6 +194,7 @@ macro(_dependency_import)
 	if(DEFINED DEP_DEBUG_NAME)
 		# Get the library file for debug.
 		directory(FIND_LIB lib_debug
+			FIND_IMPLIB imp_lib_debug
 			NAME "${DEP_DEBUG_NAME}"
 			"${library_type}"
 			RELATIVE off
@@ -195,13 +203,16 @@ macro(_dependency_import)
 		if(NOT lib_debug)
 			message(FATAL_ERROR "The debug library \"${DEP_DEBUG_NAME}\" was not found!")
 		endif()
+		if(WIN32 AND NOT imp_lib_debug)
+			message(FATAL_ERROR "The debug import library \"${DEP_DEBUG_NAME}\" was not found!")
+		endif()
 		# Add library properties for debug.
 		cmake_path(GET lib_debug FILENAME lib_debug_name)
 		set_target_properties("${DEP_IMPORT}" PROPERTIES
-			IMPORTED_LOCATION_DEBUG "${lib_debug}" # Only for ".dll" and ".a" and ".so". For usage from source-tree.
+			IMPORTED_LOCATION_DEBUG "${lib_debug}" # Only for ".dll" and ".lib" and ".a" and ".so". For usage from source-tree.
 			IMPORTED_LOCATION_BUILD_DEBUG "" # Custom property for usage from build-tree.
 			IMPORTED_LOCATION_INSTALL_DEBUG "" # Custom property for usage from install-tree.
-			IMPORTED_IMPLIB_DEBUG "" # Only for ".lib" and ".dll.a" (not used).
+			IMPORTED_IMPLIB_DEBUG "${imp_lib_debug}" # Only for ".lib" and ".dll.a" on DLL platforms.
 			IMPORTED_SONAME_DEBUG "${lib_debug_name}"
 		)
 		set_property(TARGET "${DEP_IMPORT}" APPEND PROPERTY IMPORTED_CONFIGURATIONS "DEBUG")

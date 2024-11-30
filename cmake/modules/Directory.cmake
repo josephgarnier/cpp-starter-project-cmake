@@ -43,25 +43,17 @@ returned as absolute paths to the given path ``<directory_path>`` if RELATIVE
 flag is set to off, else as relative path to ROOT_DIR. If RECURSE is set to on, the
 function will traverse all the subdirectories from ROOT_DIR.
 
-.. _SCAN_DIRS:
+.. _FIND_LIB:
 .. code-block:: cmake
 
-  directory(FIND_LIB <output_var> NAME <raw_filename> <STATIC|SHARED> RELATIVE <on|off> ROOT_DIR <directory_path>)
+  directory(FIND_LIB <output_var_lib> FIND_IMPLIB <output_var_implib> NAME <raw_filename> <STATIC|SHARED> RELATIVE <on|off> ROOT_DIR <directory_path>)
 
-Recursively find a library in the given path ``ROOT_DIR`` from its raw filename
-``NAME``. If the library is found the result path is stored in the variable
-``<output_var>``. The results will be returned as absolute paths if ``RELATIVE ``
-flag is set to off, else as relative path to ``ROOT_DIR``. If nothing is found,
-the result will be <output_var>-NOTFOUND.
-The name given to the NAME option should be a library file name without any
-numeric character (for versions), any special character, any prefixes (e.g. lib)
-and any suffixes (e.g. .so). The command will loop over all file in ``ROOT_DIR`` and
-try to do a matching between the ``NAME`` in format ``<CMAKE_STATIC_LIBRARY_PREFIX|
-CMAKE_SHARED_LIBRARY_PREFIX><raw_filename><verions-numbers><CMAKE_STATIC_LIBRARY_SUFFIX|
-CMAKE_SHARED_LIBRARY_SUFFIX>`` and each filename found striped from their numeric and
-special character version and their suffix and their prefix based on the plateform and
-the kind of library ``STATIC`` or ``SHARED`` (eg. .lib and .dll.a for static on
-Windows, .a for static on Unix, .dll for shared on Windows, .so for shared on Linux).
+Recursively try to find a library and its import library on DLL platforms in the given path ``ROOT_DIR`` from its raw filename ``NAME``. The behavior is similar to ``find_library()``, but more complete.
+
+If the library is found the result path is stored in the variable ``<output_var_lib>``. If the import library is found the result path is stored in the variable ``<output_var_implib>``. The results will be returned as absolute paths if ``RELATIVE `` flag is set to off, else as relative path to ``ROOT_DIR``. If nothing is found, the result will be <output_var_lib>-NOTFOUND and <output_var_implib>-NOTFOUND.
+
+The name given to the ``NAME`` option should be a library file name, including its version number, but without any special character, any prefixes (e.g. lib) and any suffixes (e.g. .so), that are platform-dependent. The command will loop over all files in ``ROOT_DIR`` and try to get a library filename that match ``[<CMAKE_STATIC_LIBRARY_PREFIX|CMAKE_SHARED_LIBRARY_PREFIX|CMAKE_FIND_LIBRARY_PREFIXES>]<raw_filename><CMAKE_STATIC_LIBRARY_SUFFIX|CMAKE_SHARED_LIBRARY_SUFFIX>`` and an import library filename that match ``[<CMAKE_STATIC_LIBRARY_PREFIX|CMAKE_SHARED_LIBRARY_PREFIX|CMAKE_FIND_LIBRARY_PREFIXES>]<raw_filename><CMAKE_FIND_LIBRARY_SUFFIXES>``. As noted, the prefix can be overwritten by ``CMAKE_FIND_LIBRARY_PREFIXES``.
+
 An error message occured if there is more than one result or if no file is found.
 
 #]=======================================================================]
@@ -73,7 +65,7 @@ cmake_minimum_required (VERSION 3.20)
 # Public function of this module.
 function(directory)
 	set(options SHARED STATIC)
-	set(one_value_args SCAN SCAN_DIRS LIST_DIRECTORIES RELATIVE ROOT_DIR INCLUDE_REGEX EXCLUDE_REGEX RECURSE FIND_LIB NAME)
+	set(one_value_args SCAN SCAN_DIRS LIST_DIRECTORIES RELATIVE ROOT_DIR INCLUDE_REGEX EXCLUDE_REGEX RECURSE FIND_LIB FIND_IMPLIB NAME)
 	set(multi_value_args "")
 	cmake_parse_arguments(DIR "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
 	
@@ -193,6 +185,9 @@ macro(_directory_find_lib)
 	if(NOT DEFINED DIR_FIND_LIB)
 		message(FATAL_ERROR "FIND_LIB arguments is missing or need a value!")
 	endif()
+	if(NOT DEFINED DIR_FIND_IMPLIB)
+		message(FATAL_ERROR "FIND_IMPLIB arguments is missing or need a value!")
+	endif()
 	if(NOT DEFINED DIR_NAME)
 		message(FATAL_ERROR "NAME arguments is missing or need a value!")
 	endif()
@@ -216,30 +211,50 @@ macro(_directory_find_lib)
 		file(GLOB_RECURSE file_list FOLLOW_SYMLINKS LIST_DIRECTORIES off CONFIGURE_DEPENDS "${DIR_ROOT_DIR}/*")
 	endif()
 
+	# Init prefixes and suffixes.
 	if(DEFINED DIR_SHARED)
-		set(library_prefix "${CMAKE_SHARED_LIBRARY_PREFIX}")
-		set(library_suffix "${CMAKE_SHARED_LIBRARY_SUFFIX}")
+		set(library_prefixes "${CMAKE_SHARED_LIBRARY_PREFIX}")
+		set(library_suffixes "${CMAKE_SHARED_LIBRARY_SUFFIX}")
 	elseif(DEFINED DIR_STATIC)
-		set(library_prefix "${CMAKE_STATIC_LIBRARY_PREFIX}")
-		set(library_suffix "${CMAKE_STATIC_LIBRARY_SUFFIX}")
+		set(library_prefixes "${CMAKE_STATIC_LIBRARY_PREFIX}")
+		set(library_suffixes "${CMAKE_STATIC_LIBRARY_SUFFIX}")
 	else()
 		message(FATAL_ERROR "Wrong library suffix!")
 	endif()
+	if(CMAKE_FIND_LIBRARY_PREFIXES)
+		list(JOIN CMAKE_FIND_LIBRARY_PREFIXES "|" library_prefixes)
+	endif()
+	set(import_library_prefixes "${library_prefixes}")
+	list(JOIN CMAKE_FIND_LIBRARY_SUFFIXES "|" import_library_suffixes)
 
+	# Build search regex.
+	set(library_regex "^(${library_prefixes})?${DIR_NAME}(${library_suffixes})$")
+	string(REGEX REPLACE [[(\.)]] [[\\\1]] library_regex "${library_regex}")
+	set(import_library_regex "^(${import_library_prefixes})?${DIR_NAME}(${import_library_suffixes})$")
+	string(REGEX REPLACE [[(\.)]] [[\\\1]] import_library_regex "${import_library_regex}")
+	
+	# Search lib and implib.
+	set(library_found_path "${DIR_FIND_LIB}-NOTFOUND")
+	set(import_library_found_path "${DIR_FIND_IMPLIB}-NOTFOUND")
 	foreach(file IN ITEMS ${file_list})
 		cmake_path(GET file FILENAME file_name)
-		if(NOT ("${file_name}" MATCHES "^[^a-zA-Z]*(\\${library_prefix})?${DIR_NAME}[^a-zA-Z]*\\${library_suffix}$"))
-			list(REMOVE_ITEM file_list "${file}")
+		if("${file_name}" MATCHES "${library_regex}")
+			# Found the library.
+			if("${library_found_path}" STREQUAL "${DIR_FIND_LIB}-NOTFOUND")
+				set(library_found_path "${file}")
+			else()
+				message(FATAL_ERROR "At least two matches with the library name \"${DIR_NAME}\"!")
+			endif()
+		elseif("${file_name}" MATCHES "${import_library_regex}")
+			# Found the import library.
+			if("${import_library_found_path}" STREQUAL "${DIR_FIND_IMPLIB}-NOTFOUND")
+				set(import_library_found_path "${file}")
+			else()
+				message(FATAL_ERROR "At least two matches with the import library name \"${DIR_NAME}\"!")
+			endif()
 		endif()
 	endforeach()
-	
-	set(library_found_path "${DIR_FIND_LIB}-NOTFOUND")
-	list(LENGTH file_list file_list_size)
-	if(${file_list_size} EQUAL 1)
-		set(library_found_path "${file_list}")
-	elseif(${file_list_size} GREATER 1)
-		message(FATAL_ERROR "At least two matches with the library name \"${DIR_NAME}\"!")
-	endif()
 
 	set(${DIR_FIND_LIB} "${library_found_path}" PARENT_SCOPE)
+	set(${DIR_FIND_IMPLIB} "${import_library_found_path}" PARENT_SCOPE)
 endmacro()

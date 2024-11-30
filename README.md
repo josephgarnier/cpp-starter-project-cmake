@@ -136,7 +136,7 @@ Here is **the dependency graph of the modules**, their configuration files and t
 
 <div align="center">
 <figure>
-  <img src="https://i.imgur.com/lbPIY6h.png" alt="modules dependency graph" width="45%"/>
+  <img src="https://i.imgur.com/lbPIY6h.png" alt="modules dependency graph" width="50%"/>
 </figure>
 </div>
 
@@ -212,7 +212,7 @@ In addition, each toolchain includes options for the compilers set by default in
 
 - `cmake/toolchains/ClangOptions.cmake` for the [Clang options](https://clang.llvm.org/docs/ClangCommandLineReference.html);
 - `cmake/toolchains/GccOptions.cmake` for the [GCC options](https://gcc.gnu.org/onlinedocs/gcc/Option-Summary.html);
-- `cmake/toolchains/VsOptions.cmake` for the [Visual Studio options](https://docs.microsoft.com/en-us/cpp/build/reference/compiler-options-listed-by-category);
+- `cmake/toolchains/MsvcOptions.cmake` for the [Visual Studio options](https://docs.microsoft.com/en-us/cpp/build/reference/compiler-options-listed-by-category);
 
 The **second file to configure** is the one that provides to the *Base Generator Module* the list of source and header files. Open the file `cmake/project/HeadersAndSourcesOptions.cmake` and edit each of the following variables as necessary:
 
@@ -234,15 +234,15 @@ The **third file to configure** concerns the **internal dependencies** to be imp
 #---- Import mylibname. ----
 dependency(IMPORT "<my-library-name>"
   SHARED
-  RELEASE_NAME "<release-raw-filename>" # Must be a filename wihtout its prefix, version numbers and suffix. Can be deleted.
-  DEBUG_NAME "<debug-raw-filename>" # Must be a filename wihtout its prefix, version numbers and suffix. Can be deleted.
+  RELEASE_NAME "<release-raw-filename>" # Must be a filename wihtout its prefix and suffix, which are platform-dependent. Can be deleted.
+  DEBUG_NAME "<debug-raw-filename>" # Must be a filename wihtout its prefix and suffix, which are platform-dependent. Can be deleted.
   ROOT_DIR "${${PROJECT_NAME}_LIB_DIR}"
-  INCLUDE_DIR "${${PROJECT_NAME}_INCLUDE_DIR}/<my-library-name>"
+  INCLUDE_DIR "${${PROJECT_NAME}_INCLUDE_DIR}[/<my-library-folder-name>]"
 )
 list(APPEND ${PROJECT_NAME}_IMPORTED_INTERNAL_LIBRARIES "<my-library-name>")
 ```
 
-The `<raw-filename>` must be a library filename without any version numbers, any special character, any prefixes (e.g. lib) and any suffixes (e.g. .so) that are platform dependent. The command use a fuzzy regular expression in this format to find a library: `<`[CMAKE_STATIC_LIBRARY_PREFIX](https://cmake.org/cmake/help/latest/variable/CMAKE_STATIC_LIBRARY_PREFIX.html)`|`[CMAKE_SHARED_LIBRARY_PREFIX](https://cmake.org/cmake/help/latest/variable/CMAKE_SHARED_LIBRARY_PREFIX.html)`><raw_filename><version-numbers><`[CMAKE_STATIC_LIBRARY_SUFFIX](https://cmake.org/cmake/help/latest/variable/CMAKE_STATIC_LIBRARY_SUFFIX.html)`|`[CMAKE_SHARED_LIBRARY_SUFFIX](https://cmake.org/cmake/help/latest/variable/CMAKE_SHARED_LIBRARY_SUFFIX.html)`>`. **Prefix and version numbers are optional** in the library filename, but if they are actually present, the format must be: `<prefix><library-name><.|_|-|><version-numbers><suffix>`. Furthermore, the options `RELEASE_NAME` and `DEBUG_NAME` are optional but at least one of them must be specified. Finally,you have to choose what type of library build you want to use with the option `SHARED` or `STATIC`.
+The `<raw-filename>` must be a library filename including its version number, but without any special character, any prefixes (e.g. lib) and any suffixes (e.g. .so), that are platform-dependent. The command use this fuzzy regular expression to find a library: `<[`[CMAKE_STATIC_LIBRARY_PREFIX](https://cmake.org/cmake/help/latest/variable/CMAKE_STATIC_LIBRARY_PREFIX.html)`|`[CMAKE_SHARED_LIBRARY_PREFIX](https://cmake.org/cmake/help/latest/variable/CMAKE_SHARED_LIBRARY_PREFIX.html)`|`[CMAKE_FIND_LIBRARY_PREFIXES](https://cmake.org/cmake/help/latest/variable/CMAKE_FIND_LIBRARY_PREFIXES.html)`]><raw_filename><`[CMAKE_STATIC_LIBRARY_SUFFIX](https://cmake.org/cmake/help/latest/variable/CMAKE_STATIC_LIBRARY_SUFFIX.html)`|`[CMAKE_SHARED_LIBRARY_SUFFIX](https://cmake.org/cmake/help/latest/variable/CMAKE_SHARED_LIBRARY_SUFFIX.html)`>`, and this fuzzy regular expression to find a import library: `<[`[CMAKE_STATIC_LIBRARY_PREFIX](https://cmake.org/cmake/help/latest/variable/CMAKE_STATIC_LIBRARY_PREFIX.html)`|`[CMAKE_SHARED_LIBRARY_PREFIX](https://cmake.org/cmake/help/latest/variable/CMAKE_SHARED_LIBRARY_PREFIX.html)`|`[CMAKE_FIND_LIBRARY_PREFIXES](https://cmake.org/cmake/help/latest/variable/CMAKE_FIND_LIBRARY_PREFIXES.html)`]><raw_filename><`[CMAKE_FIND_LIBRARY_SUFFIXES](https://cmake.org/cmake/help/latest/variable/CMAKE_FIND_LIBRARY_SUFFIXES.html)`>`. **The prefix is optional** in the library filename. Furthermore, the options `RELEASE_NAME` and `DEBUG_NAME` are optional but at least one of them must be specified. Finally, you have to choose what type of library build you want to use with the option `SHARED` or `STATIC`.
 
 **Setting these variables is optional**. Indeed, by default, and to simplify the use of CMake, all the internal libraries that are in `lib/` will be automatically linked to the main binary build target, with their header files that are in the subdirectories of `include/` (for linux workers, don't forget to create a link to each library in `lib/` for the [soname policy](https://en.wikipedia.org/wiki/Soname)). If you don't want to use this feature, just initialize both variables to empty or let the lib directory empty.
 
