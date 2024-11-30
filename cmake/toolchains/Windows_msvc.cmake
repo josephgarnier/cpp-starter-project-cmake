@@ -41,4 +41,4 @@ set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE BOTH)
 set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE BOTH)
 
 # Compiler flags.
-include("${CMAKE_CURRENT_LIST_DIR}/VsOptions.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/MsvcOptions.cmake")
