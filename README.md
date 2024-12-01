@@ -978,9 +978,7 @@ This project is maintained and developed by [Joseph Garnier](https://www.joseph-
 
 ## ©️ License
 
-<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Licence Creative Commons" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a>
-
-This work is licensed under the terms of a <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer" style="display:inline-block;">CC BY-NC-SA 4.0</a>.  See the [LICENSE.md](LICENSE.md) file for details.
+This work is licensed under the terms of a <a href="https://opensource.org/license/mit" target="_blank" rel="license noopener noreferrer" style="display:inline-block;">MIT</a>.  See the [LICENSE.md](LICENSE.md) file for details.
 
 ## 🍻 Acknowledgments
 
