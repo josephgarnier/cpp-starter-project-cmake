@@ -11,10 +11,13 @@
 </p>
 
 <p align="center">
-<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="CrCC BY-NC-SA 4.0" src="https://img.shields.io/badge/license-CC%20BY--NC--SA%204.0-brightgreen.svg"/></a> <img alt="plateform-windows-linux-mac" src="https://img.shields.io/badge/platform-windows%20%7C%20linux%20%7C%20mac-lightgrey.svg"/> <img alt="languages-cmake-c++" src="https://img.shields.io/badge/languages-CMake%20%7C%20C%2B%2B-blue.svg"/> <img alt="goal-progress-80" src="https://img.shields.io/badge/goal%20progress-80%25-orange.svg"/>
+<a rel="license" href="https://opensource.org/license/mit"><img alt="Static Badge" src="https://img.shields.io/badge/licence-MIT-brightgreen">
+</a> <img alt="Static Badge" src="https://img.shields.io/badge/plateform-Windows%20%7C%20Linux%20%7C%20Mac-lightgrey"> <img alt="Static Badge" src="https://img.shields.io/badge/language-C%2B%2B%20%7C%20CMake-blue"> <img alt="Static Badge" src="https://img.shields.io/badge/status-in_dev-orange">
 </p>
 
 This starter ships with all you might need to get up and running blazing fast with a modern C++ project using **modern CMake**, with a particular focus on good practices. It can be used as the basis for new projects on Windows, Linux and MacOS. And, it allows you to generate commands for **all phases of the development lifecycle** of modern C++ software: clean, build, test, code analysis, doc generation and deployment.
+
+⚠️ **The project is once again under active development**, to fix bugs, integrate new CMake features and add new functionalities. It's advisable to wait for the next release before updating. ⚠️
 
 ## 💠 Table of Contents <!-- omit in toc -->
 
@@ -61,13 +64,13 @@ This starter ships with all you might need to get up and running blazing fast wi
 
 This project is only a template and you are free to use the compiler and versions of your choice. However, you will need at least the following (install guides are provided on the respective websites):
 
-- **C++ compiler** - e.g [GCC](https://gcc.gnu.org/), [Clang C++](https://clang.llvm.org/cxx_status.html) or [Visual Studio](https://visualstudio.microsoft.com).
-- **CMake v3.20+** - can be found [here](https://cmake.org/).
+- **C++20 compiler** - e.g [GCC v15.2+](https://gcc.gnu.org/), [Clang C++ v19.1.3+](https://clang.llvm.org/cxx_status.html) or [Visual Studio](https://visualstudio.microsoft.com).
+- **CMake v3.27.6+** - can be found [here](https://cmake.org/).
 
 The following dependencies are **optional** because they will be **automatically downloaded** by CMake if they can't be found:
 
-- [Doxygen](http://www.doxygen.nl/) (used when `ENABLE_TEST_MODULE` option is set to `on`);
-- [GTest](https://github.com/google/googletest) (used when `ENABLE_DOC_MODULE` option is set to `on`).
+- [Doxygen v1.12+](http://www.doxygen.nl/) (used when `ENABLE_TEST_MODULE` option is set to `on`);
+- [GTest v1.15.2+](https://github.com/google/googletest) (used when `ENABLE_DOC_MODULE` option is set to `on`).
 
 ## 🚀 Getting started
 
