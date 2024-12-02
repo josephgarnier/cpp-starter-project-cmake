@@ -47,6 +47,7 @@ elseif("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Darwin")
 else()
 	message(FATAL_ERROR "Unsupported host system: ${CMAKE_HOST_SYSTEM_NAME}")
 endif()
+set(GENERATE_COMPILE_COMMANDS_VAL     on)
 
 #---- Test Generator Module options ----
 set(ENABLE_TEST_MODULE_VAL            off)
@@ -100,6 +101,7 @@ set(COMPILE_DEFINITIONS_DESC           "Specifies a semicolon-separated list of 
 set(PUBLIC_HEADERS_SEPARATED_DESC      "Specifies whether public header files are separated from private header files.")
 set(USE_PRECOMPILED_HEADER_DESC        "Specifies whether a precompiled header file will be used or not.")
 set(COMPILE_TOOLCHAIN_FILE_DESC        "Specifies a path to a toolchain file, see https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html")
+set(GENERATE_COMPILE_COMMANDS_DESC     "Specifies whether a compile_commands.json is generated or not .")
 
 #---- Test Generator Module options ----
 set(ENABLE_TEST_MODULE_DESC            "Specifies whether enable the Test Generator Module")
@@ -134,6 +136,7 @@ set(PARAM_COMPILE_DEFINITIONS           "${COMPILE_DEFINITIONS_VAL}"         CAC
 set(PARAM_PUBLIC_HEADERS_SEPARATED      ${PUBLIC_HEADERS_SEPARATED_VAL}      CACHE   BOOL       "${PUBLIC_HEADERS_SEPARATED_DESC}"      FORCE)
 set(PARAM_USE_PRECOMPILED_HEADER        ${USE_PRECOMPILED_HEADER_VAL}        CACHE   BOOL       "${USE_PRECOMPILED_HEADER_DESC}"        FORCE)
 set(CMAKE_TOOLCHAIN_FILE                "${COMPILE_TOOLCHAIN_FILE_VAL}"      CACHE   FILEPATH   "${COMPILE_TOOLCHAIN_FILE_DESC}"        FORCE)
+set(PARAM_GENERATE_COMPILE_COMMANDS     "${GENERATE_COMPILE_COMMANDS_VAL}"   CACHE   BOOL       "${GENERATE_COMPILE_COMMANDS_DESC}"     FORCE)
 set(PARAM_ENABLE_TEST_MODULE            ${ENABLE_TEST_MODULE_VAL}            CACHE   BOOL       "${ENABLE_TEST_MODULE_DESC}"            FORCE)
 set(PARAM_ENABLE_CODE_ANALYSIS_MODULE   ${ENABLE_CODE_ANALYSIS_MODULE_VAL}   CACHE   BOOL       "${ENABLE_CODE_ANALYSIS_MODULE_DESC}"   FORCE)
 set(PARAM_ENABLE_DOC_MODULE             ${ENABLE_DOC_MODULE_VAL}             CACHE   BOOL       "${ENABLE_DOC_MODULE_DESC}"             FORCE)

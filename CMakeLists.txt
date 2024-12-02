@@ -32,6 +32,7 @@ message(" - Compile definitions: \"${PARAM_COMPILE_DEFINITIONS}\"")
 message(" - Public headers separated: \"${PARAM_PUBLIC_HEADERS_SEPARATED}\"")
 message(" - Use precompiled header: \"${PARAM_USE_PRECOMPILED_HEADER}\"")
 message(" - Toolchain file used: \"${CMAKE_TOOLCHAIN_FILE}\"")
+message(" - Compile commands generated: \"${PARAM_GENERATE_COMPILE_COMMANDS}\"")
 message("Test Generator Module settings:")
 message(" - Enable this module: \"${PARAM_ENABLE_TEST_MODULE}\"")
 message("Code Analysis Generator Module settings:")
@@ -196,6 +197,8 @@ set(CMAKE_FOLDER "PredefinedTargets")
 set_property(GLOBAL PROPERTY USE_FOLDERS on)
 set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "${CMAKE_FOLDER}")
 
+# Set if compile command is exported
+set(CMAKE_EXPORT_COMPILE_COMMANDS "${PARAM_GENERATE_COMPILE_COMMANDS}")
 
 #---- Add the main binary build target. ----
 message("")
