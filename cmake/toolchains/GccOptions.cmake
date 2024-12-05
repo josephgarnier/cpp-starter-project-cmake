@@ -43,3 +43,11 @@ add_compile_options("$<$<STREQUAL:${PARAM_BUILD_TYPE},debug>:-ggdb3>") # additio
 # Optimization options.
 # @see https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
 add_compile_options("$<$<STREQUAL:${PARAM_BUILD_TYPE},debug>:-O1>") # optimize
+
+# C++ Language Options
+# @see https://gcc.gnu.org/onlinedocs/gcc/C_002b_002b-Dialect-Options.html
+add_compile_options("$<$<STREQUAL:${PARAM_BUILD_TYPE},debug>:-Wsuggest-override>") # warn if overriding virtual functions are not marked with the override keyword
+
+# Diagnostic Message Formatting Options
+# @see https://gcc.gnu.org/onlinedocs/gcc/Diagnostic-Message-Formatting-Options.html
+add_compile_options("$<$<STREQUAL:${PARAM_BUILD_TYPE},debug>:-fdiagnostics-color=always>") # use color in diagnostics
