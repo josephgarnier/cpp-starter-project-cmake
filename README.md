@@ -385,9 +385,9 @@ set(RESSOURCE_FILES
   "${${PROJECT_NAME}_RESOURCES_DIR}/myResources.qrc"
 )
 
-qt5_wrap_cpp(MOC_HEADER_FILES ${QOBJECT_HEADER_FILES} TARGET "${${PROJECT_NAME}_MAIN_BIN_TARGET}")
-qt5_wrap_ui(UI_SOURCE_FILES ${UI_FILES})
-qt5_add_resources(RESSOURCE_SOURCE_FILES ${RESSOURCE_FILES})
+qt6_wrap_cpp(MOC_HEADER_FILES ${QOBJECT_HEADER_FILES} TARGET "${${PROJECT_NAME}_MAIN_BIN_TARGET}")
+qt6_wrap_ui(UI_SOURCE_FILES ${UI_FILES})
+qt6_add_resources(RESSOURCE_SOURCE_FILES ${RESSOURCE_FILES})
 
 message(STATUS "Found the following QObject source files:")
 print(STATUS PATHS "${QOBJECT_SOURCE_FILES}" INDENT)
@@ -657,12 +657,12 @@ Fortunately, the configuration of this export mechanism has been greatly [simpli
 #------------------------------------------------------
 # Declare here all requirements upstream external dependencies.
 #------------------------------------------------------
-if(DEFINED ENV{Qt5_DIR}) 
-  set(Qt5_DIR "$ENV{Qt5_DIR}")
+if(DEFINED ENV{Qt6_DIR}) 
+  set(Qt6_DIR "$ENV{Qt6_DIR}")
 else()
-  set(Qt5_DIR "/opt/Qt/5.15.2/gcc_64/lib/cmake")
+  set(Qt6_DIR "/opt/Qt/6.8.0/gcc_64/lib/cmake")
 endif()
-find_dependency(Qt5 COMPONENTS Widgets Gui Core Svg Concurrent REQUIRED)
+find_dependency(Qt6 COMPONENTS Widgets Gui Core Svg Concurrent REQUIRED)
 #------------------------------------------------------
 # End of the declaration section.
 #------------------------------------------------------
