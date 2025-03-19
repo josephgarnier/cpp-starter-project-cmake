@@ -485,6 +485,7 @@ message(STATUS "Find Eigen3 package")
 find_package(Eigen3 NO_MODULE)
 if(NOT ${Eigen3_FOUND})
   message(STATUS "Eigen3 not found, it will be auto-downloaded in the build-tree")
+  message(STATUS "Fetching Eigen3...")
   include(FetchContent)
   set(FETCHCONTENT_QUIET off)
   FetchContent_Declare(eigen3
@@ -600,12 +601,13 @@ message(STATUS "Find spdlog package")
 find_package(spdlog NO_MODULE)
 if(NOT ${spdlog_FOUND})
 	message(STATUS "spdlog not found, it will be auto-downloaded in the build-tree")
+  message(STATUS "Fetching spdlog...")
 	include(FetchContent)
 	set(FETCHCONTENT_QUIET off)
 	FetchContent_Declare(
 		spdlog
 		GIT_REPOSITORY https://github.com/gabime/spdlog.git
-		GIT_TAG v1.15.0
+		GIT_TAG 8e56133 # v1.15.0
 		GIT_SHALLOW on
 		GIT_PROGRESS on
 		EXCLUDE_FROM_ALL
