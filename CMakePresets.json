@@ -1,0 +1,396 @@
+{
+  "version": 10,
+  "$schema": "https://cmake.org/cmake/help/latest/_downloads/3e2d73bff478d88a7de0de736ba5e361/schema.json",
+  "cmakeMinimumRequired": {
+    "major": 4,
+    "minor": 0,
+    "patch": 1
+  },
+  "configurePresets": [
+    {
+      "name": "Base",
+      "hidden": true,
+      "description": "Base preset with common options for final presets",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "installDir": "${sourceDir}/install/${presetName}",
+      "cacheVariables": {
+        "PARAM_PROJECT_NAME": "project-name",
+        "PARAM_PROJECT_SUMMARY": "description",
+        "PARAM_PROJECT_VENDOR_NAME": "your-name",
+        "PARAM_PROJECT_VENDOR_CONTACT": "contact",
+        "PARAM_PROJECT_VERSION_MAJOR": "0",
+        "PARAM_PROJECT_VERSION_MINOR": "0",
+        "PARAM_PROJECT_VERSION_PATCH": "0",
+        "PARAM_BUILD_STANDARD_VERSION": "20",
+        "PARAM_MAIN_BINARY_TARGET_TYPE": "exec",
+        "PARAM_COMPILE_DEFINITIONS": "",
+        "PARAM_PUBLIC_HEADERS_SEPARATED": "ON",
+        "PARAM_USE_PRECOMPILED_HEADER": "ON",
+        "PARAM_GENERATE_COMPILE_COMMANDS": "ON",
+        "PARAM_ENABLE_TEST_MODULE": "OFF",
+        "PARAM_ENABLE_CODE_ANALYSIS_MODULE": "OFF",
+        "PARAM_ENABLE_DOC_MODULE": "OFF",
+        "PARAM_ENABLE_EXPORT_MODULE": "OFF",
+        "PARAM_EXPORT_NAMESPACE": "MyProject",
+        "PARAM_INSTALL_DIRECTORY": "",
+        "PARAM_ENABLE_PACKAGE_MODULE": "OFF"
+      }
+    },
+    {
+      "name": "x64",
+      "hidden": true,
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
+      }
+    },
+    {
+      "name": "x86",
+      "hidden": true,
+      "architecture": {
+        "value": "x86",
+        "strategy": "external"
+      }
+    },
+    {
+      "name": "Debug",
+      "hidden": true,
+      "cacheVariables": {
+        "PARAM_BUILD_TYPE": "debug"
+      }
+    },
+    {
+      "name": "Release",
+      "hidden": true,
+      "cacheVariables": {
+        "PARAM_BUILD_TYPE": "release"
+      }
+    },
+    {
+      "name": "Win-MSVC",
+      "hidden": true,
+      "generator": "Visual Studio 16 2019",
+      "toolchainFile": "${sourceDir}/cmake/toolchains/Windows_msvc.cmake",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      },
+      "toolset": {
+        "value": "host=x64",
+        "strategy": "external"
+      }
+    },
+    {
+      "name": "Win-GCC",
+      "hidden": true,
+      "generator": "MinGW Makefiles",
+      "toolchainFile": "${sourceDir}/cmake/toolchains/Windows_gcc.cmake",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      },
+      "toolset": {
+        "value": "host=x64",
+        "strategy": "external"
+      }
+    },
+    {
+      "name": "Win-Clang",
+      "hidden": true,
+      "generator": "MinGW Makefiles",
+      "toolchainFile": "${sourceDir}/cmake/toolchains/Windows_clang.cmake",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      },
+      "toolset": {
+        "value": "host=x64",
+        "strategy": "external"
+      }
+    },
+    {
+      "name": "Linux-GCC",
+      "hidden": true,
+      "generator": "Unix Makefiles",
+      "toolchainFile": "${sourceDir}/cmake/toolchains/Linux_gcc.cmake",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      },
+      "toolset": {
+        "value": "host=x64",
+        "strategy": "external"
+      }
+    },
+    {
+      "name": "Linux-Clang",
+      "hidden": true,
+      "generator": "Unix Makefiles",
+      "toolchainFile": "${sourceDir}/cmake/toolchains/Linux_clang.cmake",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      },
+      "toolset": {
+        "value": "host=x64",
+        "strategy": "external"
+      }
+    },
+    {
+      "name": "Analyze",
+      "hidden": true,
+      "cacheVariables": {
+        "ENABLE_CODE_ANALYSIS": true
+      }
+    },
+    {
+      "name": "Coverage",
+      "hidden": true,
+      "cacheVariables": {
+        "BUILD_TOOLS": false,
+        "ENABLE_CODE_COVERAGE": true
+      }
+    },
+    {
+      "name": "x64-Release-Win-MSVC",
+      "description": "MSVC for x64 (Release) for Windows",
+      "inherits": [
+        "Base",
+        "x64",
+        "Release",
+        "Win-MSVC"
+      ]
+    },
+    {
+      "name": "x64-Debug-Win-MSVC",
+      "description": "MSVC for x64 (Debug) for Windows",
+      "inherits": [
+        "Base",
+        "x64",
+        "Debug",
+        "Win-MSVC"
+      ]
+    },
+    {
+      "name": "x64-Release-Win-GCC",
+      "description": "GCC for x64 (Release) for Windows",
+      "inherits": [
+        "Base",
+        "x64",
+        "Release",
+        "Win-GCC"
+      ]
+    },
+    {
+      "name": "x64-Debug-Win-GCC",
+      "description": "GCC for x64 (Debug) for Windows",
+      "inherits": [
+        "Base",
+        "x64",
+        "Debug",
+        "Win-GCC"
+      ]
+    },
+    {
+      "name": "x64-Release-Win-Clang",
+      "description": "Clang/LLVM for x64 (Release) for Windows",
+      "inherits": [
+        "Base",
+        "x64",
+        "Release",
+        "Win-Clang"
+      ]
+    },
+    {
+      "name": "x64-Debug-Win-Clang",
+      "description": "Clang/LLVM for x64 (Debug) for Windows",
+      "inherits": [
+        "Base",
+        "x64",
+        "Debug",
+        "Win-Clang"
+      ]
+    },
+    {
+      "name": "x64-Analyze-Win-MSVC",
+      "description": "MSVC for x64 (Debug) for Windows using /analyze",
+      "inherits": [
+        "Base",
+        "x64",
+        "Debug",
+        "Win-MSVC",
+        "Analyze"
+      ]
+    },
+    {
+      "name": "x64-Coverage-Win-MSVC",
+      "description": "MSVC for x64 (Debug) for Windows w/ Code Coverage",
+      "inherits": [
+        "Base",
+        "x64",
+        "Debug",
+        "Win-MSVC",
+        "Coverage"
+      ]
+    },
+    {
+      "name": "x64-Analyze-Win-Clang",
+      "description": "Clang/LLVM for x64 (Debug) for Windows using /analyze",
+      "inherits": [
+        "Base",
+        "x64",
+        "Debug",
+        "Win-Clang",
+        "Analyze"
+      ]
+    },
+    {
+      "name": "x64-Coverage-Win-Clang",
+      "description": "Clang/LLVM for x64 (Debug) for Windows w/ Code Coverage",
+      "inherits": [
+        "Base",
+        "x64",
+        "Debug",
+        "Win-Clang",
+        "Coverage"
+      ]
+    },
+    {
+      "name": "x64-Release-Linux-GCC",
+      "description": "GCC for x64 (Release) for Linux",
+      "inherits": [
+        "Base",
+        "x64",
+        "Release",
+        "Linux-GCC"
+      ]
+    },
+    {
+      "name": "x64-Debug-Linux-GCC",
+      "description": "GCC for x64 (Debug) for Linux",
+      "inherits": [
+        "Base",
+        "x64",
+        "Debug",
+        "Linux-GCC"
+      ]
+    },
+    {
+      "name": "x64-Release-Linux-Clang",
+      "description": "Clang/LLVM for x64 (Release) for Linux",
+      "inherits": [
+        "Base",
+        "x64",
+        "Release",
+        "Linux-Clang"
+      ]
+    },
+    {
+      "name": "x64-Debug-Linux-Clang",
+      "description": "Clang/LLVM for x64 (Debug) for Linux",
+      "inherits": [
+        "Base",
+        "x64",
+        "Debug",
+        "Linux-Clang"
+      ]
+    },
+    {
+      "name": "x64-Analyze-Linux-Clang",
+      "description": "Clang/LLVM for x64 (Debug) for Linux using /analyze",
+      "inherits": [
+        "Base",
+        "x64",
+        "Debug",
+        "Linux-Clang",
+        "Analyze"
+      ]
+    },
+    {
+      "name": "x64-Coverage-Linux-Clang",
+      "description": "Clang/LLVM for x64 (Debug) for Linux w/ Code Coverage",
+      "inherits": [
+        "Base",
+        "x64",
+        "Debug",
+        "Linux-Clang",
+        "Coverage"
+      ]
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "x64-Release-Win-MSVC",
+      "configurePreset": "x64-Release-Win-MSVC"
+    },
+    {
+      "name": "x64-Debug-Win-MSVC",
+      "configurePreset": "x64-Debug-Win-MSVC"
+    },
+    {
+      "name": "x64-Release-Win-GCC",
+      "configurePreset": "x64-Release-Win-GCC"
+    },
+    {
+      "name": "x64-Debug-Win-GCC",
+      "configurePreset": "x64-Debug-Win-GCC"
+    },
+    {
+      "name": "x64-Release-Win-Clang",
+      "configurePreset": "x64-Release-Win-Clang"
+    },
+    {
+      "name": "x64-Debug-Win-Clang",
+      "configurePreset": "x64-Debug-Win-Clang"
+    },
+    {
+      "name": "x64-Analyze-Win-MSVC",
+      "configurePreset": "x64-Analyze-Win-MSVC"
+    },
+    {
+      "name": "x64-Coverage-Win-MSVC",
+      "configurePreset": "x64-Coverage-Win-MSVC"
+    },
+    {
+      "name": "x64-Analyze-Win-Clang",
+      "configurePreset": "x64-Analyze-Win-Clang"
+    },
+    {
+      "name": "x64-Coverage-Win-Clang",
+      "configurePreset": "x64-Coverage-Win-Clang"
+    },
+    {
+      "name": "x64-Release-Linux-GCC",
+      "configurePreset": "x64-Release-Linux-GCC"
+    },
+    {
+      "name": "x64-Debug-Linux-GCC",
+      "configurePreset": "x64-Debug-Linux-GCC"
+    },
+    {
+      "name": "x64-Release-Linux-Clang",
+      "configurePreset": "x64-Release-Linux-Clang"
+    },
+    {
+      "name": "x64-Debug-Linux-Clang",
+      "configurePreset": "x64-Debug-Linux-Clang"
+    },
+    {
+      "name": "x64-Analyze-Linux-Clang",
+      "configurePreset": "x64-Analyze-Linux-Clang"
+    },
+    {
+      "name": "x64-Coverage-Linux-Clang",
+      "configurePreset": "x64-Coverage-Linux-Clang"
+    }
+  ],
+  "testPresets": [],
+  "packagePresets": [],
+  "workflowPresets": [],
+  "vendor": {}
+}

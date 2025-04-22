@@ -129,8 +129,8 @@ foreach(folder IN ITEMS ${${PROJECT_NAME}_PROJECT_DIRS})
 endforeach()
 
 # Build path must be in the `build/` directory.
-if(NOT "${${PROJECT_NAME}_BUILD_DIR}" STREQUAL "${${PROJECT_NAME}_PROJECT_DIR}/build")
-	message(FATAL_ERROR "The build directory \"${${PROJECT_NAME}_BUILD_DIR}\" is not under the project directory!")
+if(NOT "${${PROJECT_NAME}_BUILD_DIR}" MATCHES "${${PROJECT_NAME}_PROJECT_DIR}/build")
+	message(FATAL_ERROR "The build directory \"${${PROJECT_NAME}_BUILD_DIR}\" is not inside the project directory!")
 endif()
 
 message(STATUS "Source-tree directory is set to \"${${PROJECT_NAME}_PROJECT_DIR}\"")
