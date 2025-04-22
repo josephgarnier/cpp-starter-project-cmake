@@ -52,10 +52,10 @@
         "cwd": "${workspaceFolder}"
       },
       "linux": {
-        "command": "./clean-cmake.sh && sleep 3s && echo \"\" && ./run-cmake.sh"
+        "command": "./clean-cmake.sh && echo \"\" && ./run-cmake.sh"
       },
       "windows": {
-        "command": "clean-cmake.bat && timeout /t 3 > NUL && echo. && run-cmake.bat"
+        "command": "clean-cmake.bat && echo. && run-cmake.bat"
       },
       "presentation": {
         "echo": true,
