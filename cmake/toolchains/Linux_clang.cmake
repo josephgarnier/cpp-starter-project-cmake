@@ -9,10 +9,10 @@
 # See README file in the root directory of this source tree.
 
 # On unix use command `uname -s`, for windows write `Windows` OR use command `cmake --system-information`.
-set(CMAKE_SYSTEM_NAME Linux)
+set(CMAKE_SYSTEM_NAME "Linux")
 
 # On unix use command `uname -r`, for windows use command `cmake --system-information`.
-set(CMAKE_SYSTEM_VERSION 4.4.0-21-generic)
+set(CMAKE_SYSTEM_VERSION "4.4.0-21-generic")
 
 # @see https://cmake.org/cmake/help/latest/variable/CMAKE_SYSTEM.html.
 set(CMAKE_SYSTEM "${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_VERSION}")
