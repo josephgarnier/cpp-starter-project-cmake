@@ -45,14 +45,14 @@ message("   • Enabled                     : ${PARAM_ENABLE_PACKAGE_MODULE}")
 message("===============================================================")
 
 
-#------------------------------------------------------------------------------
-# 1. Setting up the build project environment in the build-tree
-#------------------------------------------------------------------------------
+###############################################################################
+### 1. Setting up the build project environment in the build-tree
+###############################################################################
 message("")
 message("")
 message("🧱 === [1] Build project Environment Setup ===")
 
-#---- Check project identifier ----
+####################### Check project identifier ##############################
 message(CHECK_START "Validating project identifier: ${PARAM_PROJECT_NAME}")
 if(NOT DEFINED PARAM_PROJECT_NAME)
 	message(FATAL_ERROR "PARAM_PROJECT_NAME must be specified!")
@@ -62,7 +62,7 @@ if("${PARAM_PROJECT_NAME}" MATCHES " ")
 endif()
 message(CHECK_PASS "done")
 
-#---- Declare project metadata ----
+####################### Declare project metadata ##############################
 set(PROJECT_NAME                    "${PARAM_PROJECT_NAME}")
 set(${PROJECT_NAME}_SUMMARY         "${PARAM_PROJECT_SUMMARY}")
 set(${PROJECT_NAME}_VENDOR_NAME     "${PARAM_PROJECT_VENDOR_NAME}")
@@ -77,7 +77,7 @@ project("${PARAM_PROJECT_NAME}"
 	HOMEPAGE_URL "${${PROJECT_NAME}_VENDOR_CONTACT}"
 	LANGUAGES CXX)
 
-#---- Check project structure ----
+####################### Check project structure ###############################
 message(CHECK_START "Defining and validating project structure")
 set(${PROJECT_NAME}_PROJECT_DIR             "${CMAKE_CURRENT_SOURCE_DIR}")
 set(${PROJECT_NAME}_ASSETS_DIR              "${${PROJECT_NAME}_PROJECT_DIR}/assets")
@@ -143,7 +143,7 @@ foreach(folder IN ITEMS ${${PROJECT_NAME}_PROJECT_DIRS})
 endforeach()
 message(CHECK_PASS "done")
 
-#---- Validating build directory location ----
+####################### Validating build directory location ###################
 # Build path must be in the `build/` directory.
 message(CHECK_START "Validating build directory location")
 if(NOT "${${PROJECT_NAME}_BUILD_DIR}" MATCHES "${${PROJECT_NAME}_PROJECT_DIR}/build")
@@ -159,17 +159,18 @@ message("   • Description   : ${${PROJECT_NAME}_SUMMARY}")
 message("   • Source-tree   : ${${PROJECT_NAME}_PROJECT_DIR}")
 message("   • Build-tree    : ${${PROJECT_NAME}_BUILD_DIR}")
 message("✅ Build project environment setup - completed")
+###############################################################################
 
 
-#------------------------------------------------------------------------------
-# 2. Build Step (add target "X")
-#------------------------------------------------------------------------------
+###############################################################################
+### 2. Build Step (add target "X")
+###############################################################################
 include(Print)
 message("")
 message("")
 message("🔧 === [2] Core Build Configuration ===")
 
-#---- Configuring system and architecture info ----
+####################### Configuring system and architecture info ##############
 message(CHECK_START "Detecting system architecture and build host")
 list(APPEND CMAKE_MESSAGE_INDENT "  ")
 
@@ -184,7 +185,7 @@ message(STATUS "System name set to: ${SYSTEM_NAME}")
 list(POP_BACK CMAKE_MESSAGE_INDENT)
 message(CHECK_PASS "done")
 
-#---- Setting up output directories ----
+####################### Setting up output directories #########################
 message(CHECK_START "Setting output directory")
 list(APPEND CMAKE_MESSAGE_INDENT "  ")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY           "${${PROJECT_NAME}_BIN_DIR}")
@@ -200,7 +201,7 @@ print(STATUS "Output directory set to: @rp@/" "${${PROJECT_NAME}_BIN_DIR}")
 list(POP_BACK CMAKE_MESSAGE_INDENT)
 message(CHECK_PASS "done")
 
-#---- Setting build standard version and build type for binary targets ----
+######### Setting build standard version and build type for binary targets ####
 message(CHECK_START "Applying build type and C++ standard")
 list(APPEND CMAKE_MESSAGE_INDENT "  ")
 if(("${PARAM_BUILD_STANDARD_VERSION}" STREQUAL "11")
@@ -226,7 +227,7 @@ message(STATUS "Build type set to: ${CMAKE_BUILD_TYPE}")
 list(POP_BACK CMAKE_MESSAGE_INDENT)
 message(CHECK_PASS "done")
 
-#---- Organizing IDE folders and generator settings ----
+####################### Organizing IDE folders and generator settings #########
 message(CHECK_START "Setting folder structure and generator for targets")
 list(APPEND CMAKE_MESSAGE_INDENT "  ")
 set(CMAKE_FOLDER "PredefinedTargets")
@@ -239,7 +240,7 @@ message(STATUS "Generate compile commands: ${CMAKE_EXPORT_COMPILE_COMMANDS}")
 list(POP_BACK CMAKE_MESSAGE_INDENT)
 message(CHECK_PASS "done")
 
-#---- Configuring the main binary target ----
+####################### Configuring the main binary target ####################
 message(CHECK_START "Configuring main binary target: ${${PROJECT_NAME}_MAIN_BIN_TARGET}")
 list(APPEND CMAKE_MESSAGE_INDENT "  ")
 
@@ -283,7 +284,7 @@ set_target_properties("${${PROJECT_NAME}_MAIN_BIN_TARGET}" PROPERTIES FOLDER "")
 list(POP_BACK CMAKE_MESSAGE_INDENT)
 message(CHECK_PASS "done")
 
-#---- Applying build settings to the main binary target ----
+####################### Applying build settings to the main binary target #####
 message(CHECK_START "Applying build settings")
 list(APPEND CMAKE_MESSAGE_INDENT "  ")
 
@@ -319,7 +320,8 @@ message(STATUS "No extra link options specified (empty)")
 list(POP_BACK CMAKE_MESSAGE_INDENT)
 message(CHECK_PASS "done")
 
-#---- Validating and assigning source and header file to the main binary target ----
+####################### Validating and assigning source and header file to the
+# main binary target ################
 message(CHECK_START "Collecting project source and header files")
 list(APPEND CMAKE_MESSAGE_INDENT "  ")
 
@@ -384,7 +386,7 @@ message(STATUS "Files organized in source groups")
 list(POP_BACK CMAKE_MESSAGE_INDENT)
 message(CHECK_PASS "done")
 
-#---- Precompiled header setup for the main binary target ----
+####################### Precompiled header setup for the main binary target ########
 message(CHECK_START "Configuring precompiled header")
 list(APPEND CMAKE_MESSAGE_INDENT "  ")
 if(NOT DEFINED ${PROJECT_NAME}_PRECOMPILED_HEADER_FILE)
@@ -410,7 +412,8 @@ endif()
 list(POP_BACK CMAKE_MESSAGE_INDENT)
 message(CHECK_PASS "done")
 
-#---- Adding header include directories to the main binary target ----
+####################### Adding header include directories to the main binary 
+# target ##########################################
 message(CHECK_START "Setting up include directories")
 list(APPEND CMAKE_MESSAGE_INDENT "  ")
 target_include_directories("${${PROJECT_NAME}_MAIN_BIN_TARGET}"
@@ -431,7 +434,8 @@ print(STATUS PATHS "${${PROJECT_NAME}_HEADER_PUBLIC_DIR}" "${${PROJECT_NAME}_HEA
 list(POP_BACK CMAKE_MESSAGE_INDENT)
 message(CHECK_PASS "done")
 
-#---- Importing and linking internal dependencies to the main binary target ----
+####################### Importing and linking internal dependencies to the main
+# binary target ##########################################
 message(CHECK_START "Linking internal dependencies")
 list(APPEND CMAKE_MESSAGE_INDENT "  ")
 include(DependenciesInternalOptions)
@@ -465,7 +469,8 @@ message(STATUS "Linked internal libraries")
 list(POP_BACK CMAKE_MESSAGE_INDENT)
 message(CHECK_PASS "done")
 
-#---- Importing and linking external dependencies to the main binary target ----
+####################### Importing and linking external dependencies to the main
+# binary target ##########################################
 message(CHECK_START "Linking external dependencies")
 list(APPEND CMAKE_MESSAGE_INDENT "  ")
 include(DependenciesExternalOptions)
@@ -486,64 +491,67 @@ message("   • Private headers directory: ${${PROJECT_NAME}_HEADER_PRIVATE_DIR}
 message("   • Internal libraries       : ${${PROJECT_NAME}_IMPORTED_INTERNAL_LIBRARIES}")
 message("   • External libraries       :")
 message("✅ Core build configuration - completed")
+###############################################################################
 
 
-#------------------------------------------------------------------------------
-# 3. Test Step (add target "X")
-#------------------------------------------------------------------------------
+###############################################################################
+### 3. Test Step (add target "X")
+###############################################################################
 if(${PARAM_ENABLE_TEST_MODULE})
 	message("")
 	message("")
 	message("🧪 === [3] Test Suite Configuration ===")
 	include(TestGenModule)
 endif()
+###############################################################################
 
 
-#------------------------------------------------------------------------------
-# 4. Code Analysis Step (add target "X")
-#------------------------------------------------------------------------------
+###############################################################################
+### 4. Code Analysis Step (add target "X")
+###############################################################################
 if(${PARAM_ENABLE_CODE_ANALYSIS_MODULE})
 	message("")
 	message("")
 	message("📊 === [4] Code Analysis Configuration ===")
 	include(CodeAnalysisGenModule)
 endif()
+###############################################################################
 
 
-#------------------------------------------------------------------------------
-# 5. Documentation Step (add target "X")
-#------------------------------------------------------------------------------
+###############################################################################
+### 5. Documentation Step (add target "X")
+###############################################################################
 if(${PARAM_ENABLE_DOC_MODULE})
 	message("")
 	message("")
 	message("📚 === [5] Documentation System Setup ===")
 	include(DocGenModule)
 endif()
+###############################################################################
 
 
-#------------------------------------------------------------------------------
-# 6. Export Step (add target "X")
-#------------------------------------------------------------------------------
+###############################################################################
+### 6. Export Step (add target "X")
+###############################################################################
 if(${PARAM_ENABLE_EXPORT_MODULE})
 	message("")
 	message("")
 	message("📤 === [6] Install Rules & Export Definitions ===")
 	include(ExportGenModule)
 endif()
+###############################################################################
 
 
-#------------------------------------------------------------------------------
-# 7. Packaging Step (add target "X")
-#------------------------------------------------------------------------------
+###############################################################################
+### 7. Packaging Step (add target "X")
+###############################################################################
 if(${PARAM_ENABLE_PACKAGE_MODULE})
 	message("")
 	message("")
 	message("📦 === [7] Packaging Specification & Artifact Output ===")
 	include(PackageGenModule)
 endif()
-
-
-# Ajouter un résumé avec notamment toutes les targets générées.
+###############################################################################
 
 
 message("")
