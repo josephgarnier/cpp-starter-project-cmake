@@ -8,19 +8,17 @@
 # -------------
 # See README file in the root directory of this source tree.
 
-# See /cmake/project/StandardOptions.txt for a list of options.
-
 cmake_minimum_required(VERSION 4.0.1 FATAL_ERROR)
 
-message("===============================================================")
-message("               🏗️  Build System Configuration                  ")
-message("                      of \"${PARAM_PROJECT_NAME}\"             ")
-message("===============================================================")
+message("=================================================================")
+message("               🏗️  Build System Configuration                    ")
+message("                      of \"${PARAM_PROJECT_NAME}\"               ")
+message("=================================================================")
 message("🔧 Project: \"${PARAM_PROJECT_NAME}\" | Version: ${PARAM_PROJECT_VERSION_MAJOR}.${PARAM_PROJECT_VERSION_MINOR}.${PARAM_PROJECT_VERSION_PATCH}")
 message("📄 Description: ${PARAM_PROJECT_SUMMARY}")
 message("👤 Author: ${PARAM_PROJECT_VENDOR_NAME} (${PARAM_PROJECT_VENDOR_CONTACT})")
 message("⚙️  Generator: ${CMAKE_GENERATOR}")
-message("---------------------------------------------------------------")
+message("-----------------------------------------------------------------")
 message("🔨 Build Step:")
 message("   • Standard Version            : ${PARAM_BUILD_STANDARD_VERSION}")
 message("   • Build Type                  : ${PARAM_BUILD_TYPE}")
@@ -42,15 +40,15 @@ message("   • Export Namespace            : ${PARAM_EXPORT_NAMESPACE}")
 message("   • Install Dir                 : ${PARAM_INSTALL_DIRECTORY}")
 message("📦 Packaging Step:")
 message("   • Enabled                     : ${PARAM_ENABLE_PACKAGE_MODULE}")
-message("===============================================================")
+message("=================================================================")
 
 
 ###############################################################################
-### 1. Setting up the build project environment in the build-tree
+### 1. Build system project setup
 ###############################################################################
 message("")
 message("")
-message("🧱 === [1] Build project Environment Setup ===")
+message("🧱 ========== [1] Build System Project Setup ================")
 
 ####################### Check project identifier ##############################
 message(CHECK_START "Validating project identifier: ${PARAM_PROJECT_NAME}")
@@ -158,17 +156,19 @@ message("   • Contact       : ${${PROJECT_NAME}_VENDOR_CONTACT}")
 message("   • Description   : ${${PROJECT_NAME}_SUMMARY}")
 message("   • Source-tree   : ${${PROJECT_NAME}_PROJECT_DIR}")
 message("   • Build-tree    : ${${PROJECT_NAME}_BUILD_DIR}")
-message("✅ Build project environment setup - completed")
+message("✅ Build System Project Setup - Completed")
 ###############################################################################
 
 
 ###############################################################################
-### 2. Build Step (add target "X")
+### 2. Application binaries configuration (add app targets)
 ###############################################################################
-include(Print)
+include(FuncPrint)
 message("")
 message("")
-message("🔧 === [2] Core Build Configuration ===")
+message("🔧 ========== [2] Application Binaries Configuration =============")
+
+message(CHECK_START "[Global Configuration]")
 
 ####################### Configuring system and architecture info ##############
 message(CHECK_START "Detecting system architecture and build host")
@@ -202,7 +202,7 @@ list(POP_BACK CMAKE_MESSAGE_INDENT)
 message(CHECK_PASS "done")
 
 ######### Setting build standard version and build type for binary targets ####
-message(CHECK_START "Applying build type and C++ standard")
+message(CHECK_START "Setting C++ build environment")
 list(APPEND CMAKE_MESSAGE_INDENT "  ")
 if(("${PARAM_BUILD_STANDARD_VERSION}" STREQUAL "11")
 	OR ("${PARAM_BUILD_STANDARD_VERSION}" STREQUAL "14")
@@ -228,7 +228,7 @@ list(POP_BACK CMAKE_MESSAGE_INDENT)
 message(CHECK_PASS "done")
 
 ####################### Organizing IDE folders and generator settings #########
-message(CHECK_START "Setting folder structure and generator for targets")
+message(CHECK_START "Configuring generator and IDE options")
 list(APPEND CMAKE_MESSAGE_INDENT "  ")
 set(CMAKE_FOLDER "PredefinedTargets")
 set_property(GLOBAL PROPERTY USE_FOLDERS on)
@@ -500,7 +500,7 @@ message("✅ Core build configuration - completed")
 if(${PARAM_ENABLE_TEST_MODULE})
 	message("")
 	message("")
-	message("🧪 === [3] Test Suite Configuration ===")
+	message("🧪 ========== [3] Test Suite Configuration =======================")
 	include(TestGenModule)
 endif()
 ###############################################################################
@@ -512,7 +512,7 @@ endif()
 if(${PARAM_ENABLE_CODE_ANALYSIS_MODULE})
 	message("")
 	message("")
-	message("📊 === [4] Code Analysis Configuration ===")
+	message("📊 ========== [4] Code Analysis Configuration ====================")
 	include(CodeAnalysisGenModule)
 endif()
 ###############################################################################
@@ -524,7 +524,7 @@ endif()
 if(${PARAM_ENABLE_DOC_MODULE})
 	message("")
 	message("")
-	message("📚 === [5] Documentation System Setup ===")
+	message("📚 ========== [5] Documentation System Setup =====================")
 	include(DocGenModule)
 endif()
 ###############################################################################
@@ -536,7 +536,7 @@ endif()
 if(${PARAM_ENABLE_EXPORT_MODULE})
 	message("")
 	message("")
-	message("📤 === [6] Install Rules & Export Definitions ===")
+	message("📤 ========== [6] Install Rules & Export Definitions =============")
 	include(ExportGenModule)
 endif()
 ###############################################################################
@@ -548,7 +548,7 @@ endif()
 if(${PARAM_ENABLE_PACKAGE_MODULE})
 	message("")
 	message("")
-	message("📦 === [7] Packaging Specification & Artifact Output ===")
+	message("📦 ========== [7] Packaging Specification & Artifact Output ======")
 	include(PackageGenModule)
 endif()
 ###############################################################################
