@@ -93,8 +93,8 @@ scope of the following arguments. These one has to use the generator expressions
 include_guard()
 
 cmake_minimum_required (VERSION 3.20)
-include(Directory)
-include(StringManip)
+include(FuncDirectory)
+include(FuncStringManip)
 
 #------------------------------------------------------------------------------
 # Public function of this module.
