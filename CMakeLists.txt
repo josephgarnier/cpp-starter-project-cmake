@@ -141,6 +141,22 @@ foreach(folder IN ITEMS ${${PROJECT_NAME}_PROJECT_DIRS})
 endforeach()
 message(CHECK_PASS "done")
 
+####################### Import CMake functions and macros #####################
+
+# CMake macros
+include(CMakePackageConfigHelpers)
+include(FetchContent)
+include(GenerateExportHeader)
+include(GNUInstallDirs)
+
+# Local functions
+include(FuncDebug)
+include(FuncDependency)
+include(FuncDirectory)
+include(FuncFileManip)
+include(FuncPrint)
+include(FuncStringManip)
+
 ####################### Validating build directory location ###################
 # Build path must be in the `build/` directory.
 message(CHECK_START "Validating build directory location")
