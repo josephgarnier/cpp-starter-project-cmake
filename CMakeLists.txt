@@ -19,7 +19,7 @@ message("📄 Description: ${PARAM_PROJECT_SUMMARY}")
 message("👤 Author: ${PARAM_PROJECT_VENDOR_NAME} (${PARAM_PROJECT_VENDOR_CONTACT})")
 message("⚙️  Generator: ${CMAKE_GENERATOR}")
 message("-----------------------------------------------------------------")
-message("🔨 Build Step:")
+message("🔨 Application Rules Generator:")
 message("   • Standard Version            : ${PARAM_BUILD_STANDARD_VERSION}")
 message("   • Build Type                  : ${PARAM_BUILD_TYPE}")
 message("   • Target Type                 : ${PARAM_MAIN_BINARY_TARGET_TYPE}")
@@ -28,29 +28,29 @@ message("   • Public Headers Separated    : ${PARAM_PUBLIC_HEADERS_SEPARATED}"
 message("   • PCH Used                    : ${PARAM_USE_PRECOMPILED_HEADER}")
 message("   • Toolchain File              : ${CMAKE_TOOLCHAIN_FILE}")
 message("   • Generate Compile Commands   : ${PARAM_GENERATE_COMPILE_COMMANDS}")
-message("🧪 Test Step:")
+message("🧪 Test Rules Generator:")
 message("   • Enabled                     : ${PARAM_ENABLE_TEST_MODULE}")
-message("📊 Code Analysis Step:")
+message("📊 Code Analysis Rules Generator:")
 message("   • Enabled                     : ${PARAM_ENABLE_CODE_ANALYSIS_MODULE}")
-message("📚 Documentation Step:")
+message("📚 Documentation Rules Generator:")
 message("   • Enabled                     : ${PARAM_ENABLE_DOC_MODULE}")
-message("📤 Export Step:")
+message("📤 Export Rules Generator:")
 message("   • Enabled                     : ${PARAM_ENABLE_EXPORT_MODULE}")
 message("   • Export Namespace            : ${PARAM_EXPORT_NAMESPACE}")
 message("   • Install Dir                 : ${PARAM_INSTALL_DIRECTORY}")
-message("📦 Packaging Step:")
+message("📦 Packaging Rules Generator:")
 message("   • Enabled                     : ${PARAM_ENABLE_PACKAGE_MODULE}")
 message("=================================================================")
 
 
-###############################################################################
+################################################################################
 ### 1. Build system project setup
-###############################################################################
+################################################################################
 message("")
 message("")
 message("🧱 ========== [1] Build System Project Setup ================")
 
-####################### Check project identifier ##############################
+####################### Check the project identifier ##############################
 message(CHECK_START "Validating project identifier: ${PARAM_PROJECT_NAME}")
 if(NOT DEFINED PARAM_PROJECT_NAME)
 	message(FATAL_ERROR "PARAM_PROJECT_NAME must be specified!")
@@ -75,7 +75,7 @@ project("${PARAM_PROJECT_NAME}"
 	HOMEPAGE_URL "${${PROJECT_NAME}_VENDOR_CONTACT}"
 	LANGUAGES CXX)
 
-####################### Check project structure ###############################
+####################### Define and check project structure ####################
 message(CHECK_START "Defining and validating project structure")
 set(${PROJECT_NAME}_PROJECT_DIR             "${CMAKE_CURRENT_SOURCE_DIR}")
 set(${PROJECT_NAME}_ASSETS_DIR              "${${PROJECT_NAME}_PROJECT_DIR}/assets")
@@ -83,25 +83,11 @@ set(${PROJECT_NAME}_BIN_DIR                 "${${PROJECT_NAME}_PROJECT_DIR}/bin"
 set(${PROJECT_NAME}_BUILD_DIR               "${CMAKE_CURRENT_BINARY_DIR}")
 set(${PROJECT_NAME}_CMAKE_DIR               "${${PROJECT_NAME}_PROJECT_DIR}/cmake")
 set(${PROJECT_NAME}_CMAKE_MODULES_DIR       "${${PROJECT_NAME}_CMAKE_DIR}/modules")
-set(${PROJECT_NAME}_CMAKE_STEP_BUILD_DIR         "${${PROJECT_NAME}_CMAKE_DIR}/step_build")
-set(${PROJECT_NAME}_CMAKE_STEP_CLEAN_DIR         "${${PROJECT_NAME}_CMAKE_DIR}/step_clean")
-set(${PROJECT_NAME}_CMAKE_STEP_CODE_ANALYSIS_DIR "${${PROJECT_NAME}_CMAKE_DIR}/step_code_analysis")
-set(${PROJECT_NAME}_CMAKE_STEP_DOC_DIR           "${${PROJECT_NAME}_CMAKE_DIR}/step_doc")
-set(${PROJECT_NAME}_CMAKE_STEP_INSTALL_DIR       "${${PROJECT_NAME}_CMAKE_DIR}/step_install")
-set(${PROJECT_NAME}_CMAKE_STEP_PACKAGE_DIR       "${${PROJECT_NAME}_CMAKE_DIR}/step_package")
-set(${PROJECT_NAME}_CMAKE_STEP_TEST_DIR          "${${PROJECT_NAME}_CMAKE_DIR}/step_test")
-set(${PROJECT_NAME}_CMAKE_STEP_UNINSTALL_DIR     "${${PROJECT_NAME}_CMAKE_DIR}/step_uninstall")
+set(${PROJECT_NAME}_CMAKE_RULES_DIR       "${${PROJECT_NAME}_CMAKE_DIR}/rules")
 set(${PROJECT_NAME}_CMAKE_TOOLCHAINS_DIR         "${${PROJECT_NAME}_CMAKE_DIR}/toolchains")
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}"
 	"${${PROJECT_NAME}_CMAKE_MODULES_DIR}"
-	"${${PROJECT_NAME}_CMAKE_STEP_BUILD_DIR}"
-	"${${PROJECT_NAME}_CMAKE_STEP_CLEAN_DIR}"
-	"${${PROJECT_NAME}_CMAKE_STEP_CODE_ANALYSIS_DIR}"
-	"${${PROJECT_NAME}_CMAKE_STEP_DOC_DIR}"
-	"${${PROJECT_NAME}_CMAKE_STEP_INSTALL_DIR}"
-	"${${PROJECT_NAME}_CMAKE_STEP_PACKAGE_DIR}"
-	"${${PROJECT_NAME}_CMAKE_STEP_TEST_DIR}"
-	"${${PROJECT_NAME}_CMAKE_STEP_UNINSTALL_DIR}"
+	"${${PROJECT_NAME}_CMAKE_RULES_DIR}"
 	"${${PROJECT_NAME}_CMAKE_TOOLCHAINS_DIR}")
 set(${PROJECT_NAME}_CONFIG_DIR              "${${PROJECT_NAME}_PROJECT_DIR}/config")
 set(${PROJECT_NAME}_DOC_DIR                 "${${PROJECT_NAME}_PROJECT_DIR}/doc")
@@ -117,14 +103,7 @@ list(APPEND ${PROJECT_NAME}_PROJECT_DIRS
 	"${${PROJECT_NAME}_BUILD_DIR}"
 	"${${PROJECT_NAME}_CMAKE_DIR}"
 	"${${PROJECT_NAME}_CMAKE_MODULES_DIR}"
-	"${${PROJECT_NAME}_CMAKE_STEP_BUILD_DIR}"
-	"${${PROJECT_NAME}_CMAKE_STEP_CLEAN_DIR}"
-	"${${PROJECT_NAME}_CMAKE_STEP_CODE_ANALYSIS_DIR}"
-	"${${PROJECT_NAME}_CMAKE_STEP_DOC_DIR}"
-	"${${PROJECT_NAME}_CMAKE_STEP_INSTALL_DIR}"
-	"${${PROJECT_NAME}_CMAKE_STEP_PACKAGE_DIR}"
-	"${${PROJECT_NAME}_CMAKE_STEP_TEST_DIR}"
-	"${${PROJECT_NAME}_CMAKE_STEP_UNINSTALL_DIR}"
+	"${${PROJECT_NAME}_CMAKE_RULES_DIR}"
 	"${${PROJECT_NAME}_CMAKE_TOOLCHAINS_DIR}"
 	"${${PROJECT_NAME}_CONFIG_DIR}"
 	"${${PROJECT_NAME}_DOC_DIR}"
@@ -150,6 +129,7 @@ include(GenerateExportHeader)
 include(GNUInstallDirs)
 
 # Local functions
+include(BundleBinTarget)
 include(FuncDebug)
 include(FuncDependency)
 include(FuncDirectory)
@@ -157,7 +137,7 @@ include(FuncFileManip)
 include(FuncPrint)
 include(FuncStringManip)
 
-####################### Validating build directory location ###################
+####################### Validate build directory location ###################
 # Build path must be in the `build/` directory.
 message(CHECK_START "Validating build directory location")
 if(NOT "${${PROJECT_NAME}_BUILD_DIR}" MATCHES "${${PROJECT_NAME}_PROJECT_DIR}/build")
@@ -165,6 +145,8 @@ if(NOT "${${PROJECT_NAME}_BUILD_DIR}" MATCHES "${${PROJECT_NAME}_PROJECT_DIR}/bu
 endif()
 message(CHECK_PASS "done")
 
+####################### Step summary ##########################################
+message(STATUS "-----------------------------------------------------------------")
 message(STATUS "Step Summary:")
 message("   • Declared project \"${PROJECT_NAME}\" (v${${PROJECT_NAME}_VERSION})")
 message("   • Author        : ${${PROJECT_NAME}_VENDOR_NAME}")
@@ -177,16 +159,15 @@ message("✅ Build System Project Setup - Completed")
 
 
 ###############################################################################
-### 2. Application binaries configuration (add app targets)
+### 2. Application binaries configuration (add all app binary targets)
 ###############################################################################
-include(FuncPrint)
 message("")
 message("")
 message("🔧 ========== [2] Application Binaries Configuration =============")
 
 message(CHECK_START "[Global Configuration]")
 
-####################### Configuring system and architecture info ##############
+####################### Configure system and architecture info ##############
 message(CHECK_START "Detecting system architecture and build host")
 list(APPEND CMAKE_MESSAGE_INDENT "  ")
 
@@ -201,7 +182,7 @@ message(STATUS "System name set to: ${SYSTEM_NAME}")
 list(POP_BACK CMAKE_MESSAGE_INDENT)
 message(CHECK_PASS "done")
 
-####################### Setting up output directories #########################
+####################### Set up output directories #########################
 message(CHECK_START "Setting output directory")
 list(APPEND CMAKE_MESSAGE_INDENT "  ")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY           "${${PROJECT_NAME}_BIN_DIR}")
@@ -217,7 +198,7 @@ print(STATUS "Output directory set to: @rp@/" "${${PROJECT_NAME}_BIN_DIR}")
 list(POP_BACK CMAKE_MESSAGE_INDENT)
 message(CHECK_PASS "done")
 
-######### Setting build standard version and build type for binary targets ####
+######### Set C++ standard and build type for binary targets ##################
 message(CHECK_START "Setting C++ build environment")
 list(APPEND CMAKE_MESSAGE_INDENT "  ")
 if(("${PARAM_BUILD_STANDARD_VERSION}" STREQUAL "11")
@@ -243,7 +224,7 @@ message(STATUS "Build type set to: ${CMAKE_BUILD_TYPE}")
 list(POP_BACK CMAKE_MESSAGE_INDENT)
 message(CHECK_PASS "done")
 
-####################### Organizing IDE folders and generator settings #########
+####################### Organize IDE folders and configure generator settings #########
 message(CHECK_START "Configuring generator and IDE options")
 list(APPEND CMAKE_MESSAGE_INDENT "  ")
 set(CMAKE_FOLDER "PredefinedTargets")
@@ -259,13 +240,10 @@ message(CHECK_PASS "done")
 list(POP_BACK CMAKE_MESSAGE_INDENT)
 message(CHECK_PASS "done")
 
-####################### Configuring the main binary target ####################
+####################### Configure the main binary target ######################
 message(STATUS "-----------------------------------------------------------------")
-set(${PROJECT_NAME}_MAIN_BIN_TARGET "${PROJECT_NAME}")
 set(${PROJECT_NAME}_SUB_STEP_SUMMARY "")
-message(CHECK_START "[Target Configuration] ${${PROJECT_NAME}_MAIN_BIN_TARGET}")
 add_subdirectory(src)
-message(CHECK_PASS "done")
 
 ####################### Step summary ##########################################
 message(STATUS "-----------------------------------------------------------------")
@@ -274,7 +252,6 @@ message("   Global Configuration:")
 message("     • C++ standard             : C++${CMAKE_CXX_STANDARD}")
 message("     • Build type               : ${CMAKE_BUILD_TYPE}")
 message("     • Output directory         : ${${PROJECT_NAME}_BIN_DIR}")
-message("   Main Binary Target: ${${PROJECT_NAME}_MAIN_BIN_TARGET} (${PARAM_MAIN_BINARY_TARGET_TYPE})")
 message("${${PROJECT_NAME}_SUB_STEP_SUMMARY}")
 message("✅ Application Binaries Configuration - Completed")
 ###############################################################################
