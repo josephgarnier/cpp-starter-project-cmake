@@ -6,12 +6,12 @@
 * LICENSE file in the root directory of this source tree.
 ******************************************************************************/
 
-#include "project-name/include1.h"
-#include "project-name/include2.h"
-#include "source1.h"
-#include "sub1/sub1.h"
-#include "sub2/sub2.h"
 #include "project-name/project-name_pch.h"
+#include "project-name/include_1.h"
+#include "project-name/include_2.h"
+#include "source_1.h"
+#include "sub_1/source_sub_1.h"
+#include "sub_2/source_sub_2.h"
 
 int main() {
 	std::cout << "Main: Hello, World!" << std::endl;

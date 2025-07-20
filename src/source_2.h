@@ -6,11 +6,11 @@
 * LICENSE file in the root directory of this source tree.
 ******************************************************************************/
 
-#include "source2.h"
+#include "source_3.h"
 
-class Source1
+class Source2
 {
 public:
-	Source1() noexcept; // Default constructor
-	virtual ~Source1() noexcept; // Destructor
+	Source2() noexcept; // Default constructor
+	virtual ~Source2() noexcept; // Destructor
 };
