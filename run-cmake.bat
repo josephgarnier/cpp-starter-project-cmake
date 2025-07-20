@@ -12,14 +12,11 @@ rem See README file in the root directory of this source tree.
 setlocal EnableDelayedExpansion
 
 set "WORKSPACE_DIR=%cd%"
-set "BUILD_DIR=%WORKSPACE_DIR%\build"
-set "CMAKE_DIR=%WORKSPACE_DIR%\cmake"
-set "SOLUTION_DIR=%BUILD_DIR%"
 
 cmake --log-level=TRACE -S "%WORKSPACE_DIR%" --preset "x64-Release-Win-GCC"
 
-rem Instead use this command to debug your CMakeLists, and comment the previous one.
-rem cmake --debug-output --trace-expand --log-level=TRACE -S "%WORKSPACE_DIR%" --preset "x64-Release-Win-GCC"
+rem To debug your CMakeLists.txt, use the command below and comment the previous one
+rem cmake --debug-output --trace-expand --log-level=TRACE -S "%WORKSPACE_DIR%" --preset "x64-Release-Win-GCC" --trace-redirect=output.log
 
 if %errorlevel%==0 (
 	echo.The solution was successfully generated!

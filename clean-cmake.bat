@@ -12,8 +12,8 @@ rem See README file in the root directory of this source tree.
 setlocal EnableDelayedExpansion
 
 set "WORKSPACE_DIR=%cd%"
-set "BUILD_DIR=%WORKSPACE_DIR%\build"
-set "SOLUTION_DIR=%BUILD_DIR%"
+set "BUILD_DIR=%WORKSPACE_DIR%\build\x64-Release-Win-GCC"
+set "SOLUTION_DIR=%WORKSPACE_DIR%\build"
 
 if EXIST %SOLUTION_DIR% (
 	cmake --build %SOLUTION_DIR% --target clean

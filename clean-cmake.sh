@@ -10,8 +10,8 @@
 
 #!/bin/bash
 readonly WORKSPACE_DIR=$(pwd)
-declare -r BUILD_DIR="${WORKSPACE_DIR}/build"
-declare -r SOLUTION_DIR="${BUILD_DIR}"
+declare -r BUILD_DIR="${WORKSPACE_DIR}/build/x64-Release-Win-GCC"
+declare -r SOLUTION_DIR="${WORKSPACE_DIR}/build"
 
 if [[ -d "${SOLUTION_DIR}" ]]; then
 	cmake --build "${SOLUTION_DIR}" --target clean
