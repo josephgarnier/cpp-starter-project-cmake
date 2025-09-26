@@ -5,6 +5,7 @@
   "tasks": [
     {
       "label": "Project: Clean",
+      "detail": "Clean bin, build and doc directories",
       "type": "shell",
       "options": {
         "cwd": "${workspaceFolder}"
@@ -27,6 +28,7 @@
     },
     {
       "label": "Project: Generate",
+      "detail": "Configure and generate the CMake project",
       "type": "shell",
       "options": {
         "cwd": "${workspaceFolder}"
@@ -49,6 +51,7 @@
     },
     {
       "label": "Project: Clean and Generate",
+      "detail": "Clean, configure and generate the CMake project",
       "type": "shell",
       "options": {
         "cwd": "${workspaceFolder}"
@@ -71,16 +74,17 @@
     },
     {
       "label": "CMake: Uninstall",
-      "type": "shell",
+      "detail": "Uninstall exported files",
+      "type": "cmake",
       "options": {
         "cwd": "${workspaceFolder}/build"
       },
-      "linux": {
-        "command": "cmake --build . --target uninstall"
-      },
-      "windows": {
-        "command": "cmake --build . --target uninstall"
-      },
+      "command": "build",
+      "targets": [
+        "uninstall"
+      ],
+      "preset": "${command:cmake.activeBuildPresetName}",
+      "group": "build",
       "presentation": {
         "echo": true,
         "reveal": "always",
@@ -93,11 +97,13 @@
     },
     {
       "label": "CMake: Clean",
-      "type": "shell",
+      "detail": "Clean bin, build and doc directories",
+      "type": "cmake",
       "options": {
         "cwd": "${workspaceFolder}/build"
       },
-      "command": "cmake --build . --target clean",
+      "command": "clean",
+      "preset": "${command:cmake.activeBuildPresetName}",
       "presentation": {
         "echo": true,
         "reveal": "always",
@@ -109,12 +115,17 @@
       "problemMatcher": []
     },
     {
-      "label": "CMake: Compile",
-      "type": "shell",
+      "label": "CMake: Build all",
+      "detail": "Build CMake default targets (all)",
+      "type": "cmake",
       "options": {
         "cwd": "${workspaceFolder}/build"
       },
-      "command": "cmake --build . --target all",
+      "command": "build",
+      "targets": [
+        "all"
+      ],
+      "preset": "${command:cmake.activeBuildPresetName}",
       "group": {
         "kind": "build",
         "isDefault": true
@@ -130,48 +141,17 @@
       "problemMatcher": []
     },
     {
-      "label": "CMake: Compile (verbose)",
-      "type": "shell",
+      "label": "CMake: Clean and Rebuild all",
+      "detail": "Clean and rebuild CMake default targets (all)",
+      "type": "cmake",
       "options": {
         "cwd": "${workspaceFolder}/build"
       },
-      "command": "cmake --build . --target all --verbose",
-      "group": "build",
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": true,
-        "panel": "dedicated",
-        "showReuseMessage": false,
-        "clear": true
-      },
-      "problemMatcher": []
-    },
-    {
-      "label": "CMake: Compile with Clean",
-      "type": "shell",
-      "options": {
-        "cwd": "${workspaceFolder}/build"
-      },
-      "command": "cmake --build . --target all --clean-first",
-      "group": "build",
-      "presentation": {
-        "echo": true,
-        "reveal": "always",
-        "focus": true,
-        "panel": "dedicated",
-        "showReuseMessage": false,
-        "clear": true
-      },
-      "problemMatcher": []
-    },
-    {
-      "label": "CMake: Compile with Clean (verbose)",
-      "type": "shell",
-      "options": {
-        "cwd": "${workspaceFolder}/build"
-      },
-      "command": "cmake --build . --target all --clean-first --verbose",
+      "command": "cleanRebuild",
+      "targets": [
+        "all"
+      ],
+      "preset": "${command:cmake.activeBuildPresetName}",
       "group": "build",
       "presentation": {
         "echo": true,
@@ -185,12 +165,17 @@
     },
     {
       "label": "CMake: Test",
-      "type": "shell",
+      "detail": "Run tests",
+      "type": "cmake",
       "options": {
         "cwd": "${workspaceFolder}/build"
       },
-      "command": "cmake --build . --target project-name_test && ../bin/project-name_test",
-      "group": "test",
+      "command": "test",
+      "preset": "${command:cmake.activeTestPresetName}",
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
       "presentation": {
         "echo": true,
         "reveal": "always",
@@ -203,11 +188,17 @@
     },
     {
       "label": "CMake: Doc",
-      "type": "shell",
+      "detail": "Generate product doc",
+      "type": "cmake",
       "options": {
         "cwd": "${workspaceFolder}/build"
       },
-      "command": "cmake --build . --target doc",
+      "command": "build",
+      "targets": [
+        "doc"
+      ],
+      "preset": "${command:cmake.activeBuildPresetName}",
+      "group": "build",
       "presentation": {
         "echo": true,
         "reveal": "always",
@@ -220,16 +211,13 @@
     },
     {
       "label": "CMake: Install",
-      "type": "shell",
+      "detail": "Install exportable files",
+      "type": "cmake",
       "options": {
         "cwd": "${workspaceFolder}/build"
       },
-      "linux": {
-        "command": "cmake --build . --target install"
-      },
-      "windows": {
-        "command": "cmake --build . --target install"
-      },
+      "command": "install",
+      "preset": "${command:cmake.activeBuildPresetName}",
       "presentation": {
         "echo": true,
         "reveal": "always",
@@ -242,15 +230,16 @@
     },
     {
       "label": "CMake: Package",
+      "detail": "Generate binary installers and source packages",
       "type": "shell",
       "options": {
         "cwd": "${workspaceFolder}/build"
       },
       "linux": {
-        "command": "cmake --build . --target package package_source && sleep 3s && rm -rfv ../bin/_CPack_Packages"
+        "command": "cmake --build --preset \"x64-Release-Win-GCC\" --target package package_source && sleep 3s && rm -rfv ./bin/_CPack_Packages"
       },
       "windows": {
-        "command": "cmake --build . --target package package_source && timeout /t 3 > NUL && del /a /f /s /q ../bin/_CPack_Packages"
+        "command": "cmake --build --preset \"x64-Release-Win-GCC\" --target package package_source && timeout /t 3 > NUL && del /a /f /s /q ./bin/_CPack_Packages"
       },
       "presentation": {
         "echo": true,
@@ -264,6 +253,7 @@
     },
     {
       "label": "CMake: Execute",
+      "detail": "Run the built executable",
       "type": "shell",
       "options": {
         "cwd": "${workspaceFolder}/bin"
@@ -286,6 +276,25 @@
       "dependsOn": [
         "CMake: Compile"
       ]
+    },
+    {
+      "label": "CMake: Workflow",
+      "detail": "Build default targets (all) and run tests",
+      "type": "cmake",
+      "options": {
+        "cwd": "${workspaceFolder}/build"
+      },
+      "command": "workflow",
+      "preset": "${command:cmake.activeWorkflowPresetName}",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "dedicated",
+        "showReuseMessage": false,
+        "clear": true
+      },
+      "problemMatcher": []
     }
   ]
 }
