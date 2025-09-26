@@ -17,16 +17,13 @@ set(CMAKE_SYSTEM_VERSION "10.0")
 # @see https://cmake.org/cmake/help/latest/variable/CMAKE_SYSTEM.html.
 set(CMAKE_SYSTEM "${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_VERSION}")
 
-# @see https://cmake.org/cmake/help/latest/variable/CMAKE_GENERATOR_PLATFORM.html.
-set(CMAKE_GENERATOR_PLATFORM "x64")
-
-# Write "cl" in a terminal.
-set(triple 19)
+# Write `g++ -v` in a terminal.
+set(triple x86_64-w64-mingw32)
 
 # Specify the cross compiler.
-set(CMAKE_C_COMPILER cl)
+set(CMAKE_C_COMPILER gcc)
 set(CMAKE_C_COMPILER_TARGET ${triple})
-set(CMAKE_CXX_COMPILER cl)
+set(CMAKE_CXX_COMPILER g++)
 set(CMAKE_CXX_COMPILER_TARGET ${triple})
 
 # Where is the target environment.
@@ -41,4 +38,4 @@ set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE BOTH)
 set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE BOTH)
 
 # Compiler flags.
-include("${CMAKE_CURRENT_LIST_DIR}/MsvcOptions.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/compiler/gcc.cmake")

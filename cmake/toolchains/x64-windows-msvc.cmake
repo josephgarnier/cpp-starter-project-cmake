@@ -8,22 +8,25 @@
 # -------------
 # See README file in the root directory of this source tree.
 
-# On unix use command `uname -s`, for windows write `Windows` OR use command `cmake --system-information`
-set(CMAKE_SYSTEM_NAME "Linux")
+# On unix use command `uname -s`, for windows write `Windows` OR use command `cmake --system-information`.
+set(CMAKE_SYSTEM_NAME "Windows")
 
-# On unix use command `uname -r`, for windows use command `cmake --system-information`
-set(CMAKE_SYSTEM_VERSION "4.4.0-21-generic")
+# On unix use command `uname -r`, for windows use command `cmake --system-information`.
+set(CMAKE_SYSTEM_VERSION "10.0")
 
-# @see https://cmake.org/cmake/help/latest/variable/CMAKE_SYSTEM.html
+# @see https://cmake.org/cmake/help/latest/variable/CMAKE_SYSTEM.html.
 set(CMAKE_SYSTEM "${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_VERSION}")
 
-# Write `g++ -v` in a terminal.
-set(triple x86_64-linux-gnu)
+# @see https://cmake.org/cmake/help/latest/variable/CMAKE_GENERATOR_PLATFORM.html.
+set(CMAKE_GENERATOR_PLATFORM "x64")
+
+# Write "cl" in a terminal.
+set(triple 19)
 
 # Specify the cross compiler.
-set(CMAKE_C_COMPILER gcc)
+set(CMAKE_C_COMPILER cl)
 set(CMAKE_C_COMPILER_TARGET ${triple})
-set(CMAKE_CXX_COMPILER g++)
+set(CMAKE_CXX_COMPILER cl)
 set(CMAKE_CXX_COMPILER_TARGET ${triple})
 
 # Where is the target environment.
@@ -38,4 +41,4 @@ set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE BOTH)
 set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE BOTH)
 
 # Compiler flags.
-include("${CMAKE_CURRENT_LIST_DIR}/GccOptions.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/compiler/msvc.cmake")

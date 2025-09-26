@@ -38,4 +38,4 @@ set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE BOTH)
 set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE BOTH)
 
 # Compiler flags.
-include("${CMAKE_CURRENT_LIST_DIR}/ClangOptions.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/compiler/clang.cmake")

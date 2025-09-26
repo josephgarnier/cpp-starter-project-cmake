@@ -66,7 +66,7 @@
       "name": "Win-MSVC",
       "hidden": true,
       "generator": "Visual Studio 16 2019",
-      "toolchainFile": "${sourceDir}/cmake/toolchains/Windows_msvc.cmake",
+      "toolchainFile": "${sourceDir}/cmake/toolchains/x64-windows-msvc.cmake",
       "condition": {
         "type": "equals",
         "lhs": "${hostSystemName}",
@@ -81,7 +81,7 @@
       "name": "Win-GCC",
       "hidden": true,
       "generator": "MinGW Makefiles",
-      "toolchainFile": "${sourceDir}/cmake/toolchains/Windows_gcc.cmake",
+      "toolchainFile": "${sourceDir}/cmake/toolchains/x64-windows-mingw32-gcc.cmake",
       "condition": {
         "type": "equals",
         "lhs": "${hostSystemName}",
@@ -96,7 +96,7 @@
       "name": "Win-Clang",
       "hidden": true,
       "generator": "MinGW Makefiles",
-      "toolchainFile": "${sourceDir}/cmake/toolchains/Windows_clang.cmake",
+      "toolchainFile": "${sourceDir}/cmake/toolchains/x64-windows-mingw32-clang.cmake",
       "condition": {
         "type": "equals",
         "lhs": "${hostSystemName}",
@@ -111,7 +111,7 @@
       "name": "Linux-GCC",
       "hidden": true,
       "generator": "Unix Makefiles",
-      "toolchainFile": "${sourceDir}/cmake/toolchains/Linux_gcc.cmake",
+      "toolchainFile": "${sourceDir}/cmake/toolchains/x64-linux_gcc.cmake",
       "condition": {
         "type": "equals",
         "lhs": "${hostSystemName}",
@@ -126,7 +126,7 @@
       "name": "Linux-Clang",
       "hidden": true,
       "generator": "Unix Makefiles",
-      "toolchainFile": "${sourceDir}/cmake/toolchains/Linux_clang.cmake",
+      "toolchainFile": "${sourceDir}/cmake/toolchains/x64-linux-clang.cmake",
       "condition": {
         "type": "equals",
         "lhs": "${hostSystemName}",
