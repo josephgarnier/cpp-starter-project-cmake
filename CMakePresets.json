@@ -385,8 +385,110 @@
       "configurePreset": "x64-Coverage-Linux-Clang"
     }
   ],
-  "testPresets": [],
+  "testPresets": [
+    {
+      "name": "Test",
+      "hidden": true,
+      "output": {
+        "shortProgress": true,
+        "verbosity": "default",
+        "outputOnFailure": true
+      },
+      "execution": {
+        "jobs": 16,
+        "stopOnFailure": true
+      }
+    },
+    {
+      "name": "x64-Release-Win-MSVC",
+      "configurePreset": "x64-Release-Win-MSVC",
+      "inherits": [
+        "Test"
+      ]
+    },
+    {
+      "name": "x64-Debug-Win-MSVC",
+      "configurePreset": "x64-Debug-Win-MSVC",
+      "inherits": [
+        "Test"
+      ]
+    },
+    {
+      "name": "x64-Release-Win-GCC",
+      "configurePreset": "x64-Release-Win-GCC",
+      "inherits": [
+        "Test"
+      ]
+    },
+    {
+      "name": "x64-Debug-Win-GCC",
+      "configurePreset": "x64-Debug-Win-GCC",
+      "inherits": [
+        "Test"
+      ]
+    },
+    {
+      "name": "x64-Release-Win-Clang",
+      "configurePreset": "x64-Release-Win-Clang",
+      "inherits": [
+        "Test"
+      ]
+    },
+    {
+      "name": "x64-Debug-Win-Clang",
+      "configurePreset": "x64-Debug-Win-Clang",
+      "inherits": [
+        "Test"
+      ]
+    },
+    {
+      "name": "x64-Release-Linux-GCC",
+      "configurePreset": "x64-Release-Linux-GCC",
+      "inherits": [
+        "Test"
+      ]
+    },
+    {
+      "name": "x64-Debug-Linux-GCC",
+      "configurePreset": "x64-Debug-Linux-GCC",
+      "inherits": [
+        "Test"
+      ]
+    },
+    {
+      "name": "x64-Release-Linux-Clang",
+      "configurePreset": "x64-Release-Linux-Clang",
+      "inherits": [
+        "Test"
+      ]
+    },
+    {
+      "name": "x64-Debug-Linux-Clang",
+      "configurePreset": "x64-Debug-Linux-Clang",
+      "inherits": [
+        "Test"
+      ]
+    }
+  ],
   "packagePresets": [],
-  "workflowPresets": [],
+  "workflowPresets": [
+    {
+      "name": "x64-Release-Win-GCC",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "x64-Release-Win-GCC"
+        },
+        {
+          "type": "build",
+          "name": "x64-Release-Win-GCC"
+        },
+        {
+          "type": "test",
+          "name": "x64-Release-Win-GCC"
+        }
+      ]
+    }
+  ],
   "vendor": {}
 }
