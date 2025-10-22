@@ -8,7 +8,7 @@
 # -------------
 # See README file in the root directory of this source tree.
 
-include(StringManip)
+include(FuncStringManip)
 
 
 #---- Add the test binary build target. ----
@@ -163,7 +163,6 @@ message(STATUS "Find GTest")
 find_package(GTest)
 if(NOT ${GTest_FOUND})
 	message(STATUS "GTest not found, it will be auto-downloaded in the build-tree")
-	include(FetchContent)
 	set(FETCHCONTENT_QUIET off)
 	FetchContent_Declare(googletest
 		GIT_REPOSITORY https://github.com/google/googletest.git

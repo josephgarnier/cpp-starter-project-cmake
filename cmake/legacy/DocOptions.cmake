@@ -9,6 +9,12 @@
 # See README file in the root directory of this source tree.
 
 
+# @see https://cmake.org/cmake/help/latest/module/FindDoxygen.html
+# @see https://www.doxygen.nl/manual/config.html
+
+# Warning: don't edit DOXYGEN_OUTPUT_DIRECTORY and DOXYGEN_INPUT
+# to keep default values or you will get an error.
+
 #------------------------------------------------------------------------------
-# Import and link external libraries from here.
+# Declare your Doxygen options from here.
 #------------------------------------------------------------------------------

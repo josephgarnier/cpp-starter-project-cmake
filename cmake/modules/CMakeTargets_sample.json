@@ -1,0 +1,111 @@
+{
+  "$schema": "schema.json",
+  "$id": "schema.json",
+  "targets": {
+    "src": {
+      "name": "fruit-salad",
+      "type": "executable",
+      "build": {
+        "compileFeatures": ["cxx_std_20", "cxx_thread_local", "cxx_trailing_return_types"],
+        "compileDefinitions": ["DEFINE_ONE=1", "DEFINE_TWO=2", "OPTION_1"],
+        "compileOptions": ["-Wall", "-Wextra"],
+        "linkOptions": ["-s", "-z"]
+      },
+      "mainFile": "src/main.cpp",
+      "pchFile": "include/fruit_salad_pch.h",
+      "headerPolicy": {
+        "mode": "split",
+        "includeDir": "include"
+      },
+      "dependencies": {
+        "AppleLib": {
+          "rulesFile": "generic",
+          "packageLocation": {
+            "windows": "C:/Program Files/libs/apple/1.15.0",
+            "unix": "/opt/apple/1.15.0",
+            "macos": "/opt/apple/1.15.0"
+          },
+          "minVersion": "1.15.0",
+          "fetchInfo": {
+            "autodownload": true,
+            "kind": "git",
+            "repository": "https://github.com/lib/apple.git",
+            "tag": "1234567"
+          },
+          "optional": false,
+          "configuration": {
+            "compileFeatures": ["cxx_std_20"],
+            "compileDefinitions": ["DEFINE_ONE=1"],
+            "compileOptions": ["-Wall"],
+            "linkOptions": ["-s"]
+          }
+        },
+        "BananaLib": {
+          "rulesFile": "RulesBananaLib.cmake",
+          "minVersion": "4",
+          "fetchInfo": {
+            "autodownload": false
+          },
+          "optional": true
+        },
+        "CarrotLib": {
+          "rulesFile": "RulesCarrotLib.cmake",
+          "fetchInfo": {
+            "autodownload": true,
+            "kind": "svn",
+            "repository": "svn://svn.carrot.lib.org/links/trunk",
+            "revision": "1234567"
+          }
+        },
+        "OrangeLib": {
+          "rulesFile": "RulesOrangeLib.cmake",
+          "fetchInfo": {
+            "autodownload": true,
+            "kind": "mercurial",
+            "repository": "https://hg.example.com/RulesOrangeLib",
+            "tag": "1234567"
+          }
+        },
+        "PineappleLib": {
+          "rulesFile": "RulesPineappleLib.cmake",
+          "fetchInfo": {
+            "autodownload": true,
+            "kind": "url",
+            "repository": "https://example.com/PineappleLib.zip",
+            "hash": "1234567"
+          }
+        }
+      }
+    },
+    "src/apple": {
+      "name": "apple",
+      "type": "staticLib",
+      "build": {
+        "compileFeatures": [],
+        "compileDefinitions": [],
+        "compileOptions": [],
+        "linkOptions": []
+      },
+      "mainFile": "src/apple/main.cpp",
+      "headerPolicy": {
+        "mode": "merged"
+      },
+      "dependencies": {}
+    },
+    "src/banana": {
+      "name": "banana",
+      "type": "staticLib",
+      "build": {
+        "compileFeatures": [],
+        "compileDefinitions": [],
+        "compileOptions": [],
+        "linkOptions": []
+      },
+      "mainFile": "src/banana/main.cpp",
+      "headerPolicy": {
+        "mode": "merged"
+      },
+      "dependencies": {}
+    }
+  }
+}

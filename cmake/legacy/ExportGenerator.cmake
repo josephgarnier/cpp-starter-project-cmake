@@ -8,9 +8,6 @@
 # -------------
 # See README file in the root directory of this source tree.
 
-include(StringManip)
-include(Print)
-
 
 #---- Create the header file with macros for exporting. ----
 # Generate the macro header file only for library build targets.
@@ -22,7 +19,6 @@ if(NOT ${${PROJECT_NAME}_MAIN_BIN_TARGET_IS_EXEC})
 	set(${PROJECT_NAME}_EXPORT_MACRO_HEADER_FILE   "${${PROJECT_NAME}_HEADER_PUBLIC_DIR}/${PROJECT_NAME}_export.h")
 
 	# Generate the export macros in an header file.
-	include(GenerateExportHeader)
 	generate_export_header("${${PROJECT_NAME}_MAIN_BIN_TARGET}"
 		BASE_NAME "${${PROJECT_NAME}_EXPORT_MACRO_BASE_NAME}"
 		EXPORT_FILE_NAME  "${${PROJECT_NAME}_EXPORT_MACRO_HEADER_FILE}"
@@ -41,7 +37,6 @@ if(DEFINED PARAM_INSTALL_DIRECTORY AND IS_DIRECTORY "${PARAM_INSTALL_DIRECTORY}"
 endif()
 message(STATUS "Install-tree directory is set to \"${CMAKE_INSTALL_PREFIX}\"")
 print(STATUS "Install script will be generated in \"@rp@\"" "${${PROJECT_NAME}_BUILD_DIR}/cmake_install.cmake")
-include(GNUInstallDirs)
 set(${PROJECT_NAME}_INSTALL_REALTIVE_BIN_DIR        "${CMAKE_INSTALL_BINDIR}")                        # in absolute: <CMAKE_INSTALL_PREFIX>/bin
 set(${PROJECT_NAME}_INSTALL_RELATIVE_DATAROOT_DIR   "${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}")   # in absolute: <CMAKE_INSTALL_PREFIX>/share/<project-name>
 set(${PROJECT_NAME}_INSTALL_RELATIVE_DOC_DIR        "${CMAKE_INSTALL_DOCDIR}")                        # in absolute: <CMAKE_INSTALL_PREFIX>/share/doc/<project-name>
@@ -280,8 +275,6 @@ message(STATUS "All targets are now importable from the install-tree")
 message("")
 message(STATUS "Make the target \"${${PROJECT_NAME}_MAIN_BIN_TARGET}\" foundable with the find_package() command")
 list(APPEND CMAKE_MESSAGE_INDENT "  ")
-
-include(CMakePackageConfigHelpers)
 
 # Set output files, directories and names.
 set(${PROJECT_NAME}_PACKAGE_NAME                   "${${PROJECT_NAME}_EXPORT_NAME}")
