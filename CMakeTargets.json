@@ -1,0 +1,51 @@
+{
+  "$schema": "cmake/modules/schema.json",
+  "$id": "schema.json",
+  "targets": {
+    "src": {
+      "name": "my-main-bin",
+      "type": "executable",
+      "build": {
+        "compileFeatures": ["cxx_std_20", "cxx_thread_local", "cxx_trailing_return_types"],
+        "compileDefinitions": ["DEFINE_ONE=1", "DEFINE_TWO=2", "OPTION_1"],
+        "compileOptions": ["-Wall", "-Wextra"],
+        "linkOptions": ["-s", "-z"]
+      },
+      "mainFile": "src/main.cpp",
+      "pchFile": "include/project-name/project-name_pch.h",
+      "headerPolicy": {
+        "mode": "split",
+        "includeDir": "include/project-name"
+      },
+      "dependencies": {
+        "spdlog": {
+          "rulesFile": "generic",
+          "packageLocation": {
+            "windows": "D:/Documents/Software_Libraries/spdlog/1.15.0",
+            "unix": "/opt/spdlog/1.15.0",
+            "macos": "/opt/spdlog/1.15.0"
+          },
+          "minVersion": "1.15.0",
+          "fetchInfo": {
+            "autodownload": true,
+            "kind": "git",
+            "repository": "https://github.com/gabime/spdlog.git",
+            "tag": "8e56133"
+          },
+          "optional": false,
+          "configuration": {
+            "compileFeatures": ["cxx_std_20"],
+            "compileDefinitions": ["DEFINE_ONE=1"],
+            "compileOptions": ["-Wall"],
+            "linkOptions": ["-s"]
+          }
+        },
+        "Qt6": {
+          "rulesFile": "cmake/rules/RulesLibQt.cmake",
+          "minVersion": "4",
+          "optional": true
+        }
+      }
+    }
+  }
+}

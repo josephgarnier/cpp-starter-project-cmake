@@ -12,7 +12,7 @@
       "hidden": true,
       "description": "Base preset with common options for final presets",
       "binaryDir": "${sourceDir}/build/${presetName}",
-      "installDir": "${sourceDir}/install/${presetName}",
+      "installDir": "${sourceDir}/build/install/${presetName}",
       "cacheVariables": {
         "PARAM_PROJECT_NAME": "project-name",
         "PARAM_PROJECT_SUMMARY": "description",
@@ -52,14 +52,14 @@
       "name": "Debug",
       "hidden": true,
       "cacheVariables": {
-        "PARAM_BUILD_TYPE": "debug"
+        "CMAKE_BUILD_TYPE": "Debug"
       }
     },
     {
       "name": "Release",
       "hidden": true,
       "cacheVariables": {
-        "PARAM_BUILD_TYPE": "release"
+        "CMAKE_BUILD_TYPE": "Release"
       }
     },
     {

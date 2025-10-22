@@ -1,0 +1,576 @@
+# Copyright 2025-present, Joseph Garnier
+# All rights reserved.
+#
+# This source code is licensed under the license found in the
+# LICENSE file in the root directory of this source tree.
+
+#------------------------------------------------------------------------------
+# Validate a project name. To be valid, a project name must:
+#   - Not be empty
+#   - Not contain spaces
+#
+# Signature:
+#   validate_project_name(<output-result-var>
+#                          <out-err-msg-var>
+#                          <error-on-fail>
+#                          <input-value>)
+#
+# Parameters:
+#   output-result-var: Variable to store the validation result ("on" or "off").
+#   out-err-msg-var: Variable to store the error message.
+#   error-on-fail: Whether to fail if the validation fails - "on" to trigger a
+#                  fatal error; "off" to continue.
+#   input-value: The project name to validate.
+#
+# Returns:
+#   output-result-var: The validation result.
+#   out-err-msg-var: The error message.
+#
+# Errors:
+#   If the value to check is invalid and ``<error-on-fail>`` is "on".
+#
+# Exemple:
+#   validate_project_name(is_valid err_msg on "MyProject")
+#------------------------------------------------------------------------------
+function(validate_project_name output_result_var out_err_msg_var error_on_fail input_value)
+  if("${output_result_var}" STREQUAL "")
+    message(FATAL_ERROR "output_result_var argument is missing!")
+  endif()
+  if("${out_err_msg_var}" STREQUAL "")
+    message(FATAL_ERROR "out_err_msg_var argument is missing!")
+  endif()
+  if(NOT "${error_on_fail}" MATCHES "^(on|off)$")
+    message(FATAL_ERROR "error_on_fail must be 'on' or 'off'")
+  endif()
+
+  set(${output_result_var} on)
+  set(${out_err_msg_var} "")
+
+  # Check validity
+  if("${input_value}" STREQUAL "")
+    set(${output_result_var} off)
+    set(${out_err_msg_var} "Project name cannot be empty!")
+  elseif("${input_value}" MATCHES " ")
+    set(${output_result_var} off)
+    set(${out_err_msg_var} "Project name '${input_value}' cannot contain spaces!")
+  endif()
+
+  if(NOT ${output_result_var} AND ${error_on_fail})
+    message(FATAL_ERROR "${${out_err_msg_var}}")
+  endif()
+
+  return(PROPAGATE "${output_result_var}" "${out_err_msg_var}")
+endfunction()
+
+#------------------------------------------------------------------------------
+# Validate cxx standard version. To be valid, a cxx standard version must:
+#   - Not be empty
+#   - Be 11, 14, 17, 20, 23 or 26
+#
+# Signature:
+#   validate_cxx_standard_version(<output-result-var>
+#                                  <out-err-msg-var>
+#                                  <error-on-fail>
+#                                  <input-value>)
+#
+# Parameters:
+#   output-result-var: Variable to store the validation result ("on" or "off").
+#   out-err-msg-var: Variable to store the error message.
+#   error-on-fail: Whether to fail if the validation fails - "on" to trigger a
+#                  fatal error; "off" to continue.
+#   input-value: The cxx standard version to validate.
+#
+# Returns:
+#   output-result-var: The validation result.
+#   out-err-msg-var: The error message.
+#
+# Errors:
+#   If the value to check is invalid and ``<error-on-fail>`` is "on".
+#
+# Exemple:
+#   validate_cxx_standard_version(is_valid err_msg on "${CMAKE_CXX_STANDARD}")
+#------------------------------------------------------------------------------
+function(validate_cxx_standard_version output_result_var out_err_msg_var error_on_fail input_value)
+  if("${output_result_var}" STREQUAL "")
+    message(FATAL_ERROR "output_result_var argument is missing!")
+  endif()
+  if("${out_err_msg_var}" STREQUAL "")
+    message(FATAL_ERROR "out_err_msg_var argument is missing!")
+  endif()
+  if(NOT "${error_on_fail}" MATCHES "^(on|off)$")
+    message(FATAL_ERROR "error_on_fail must be 'on' or 'off'")
+  endif()
+
+  set(${output_result_var} on)
+  set(${out_err_msg_var} "")
+
+  # Check validity
+  if("${input_value}" STREQUAL "")
+    set(${output_result_var} off)
+    set(${out_err_msg_var} "C++ standard version cannot be empty!")
+  elseif(NOT "${input_value}" MATCHES "^(11|14|17|20|23|26)$")
+    set(${output_result_var} off)
+    set(${out_err_msg_var} "C++ standard version '${input_value}' is invalid: it must be 11, 14, 17, 20, 23 or 26!")
+  endif()
+
+  if(NOT ${output_result_var} AND ${error_on_fail})
+    message(FATAL_ERROR "${${out_err_msg_var}}")
+  endif()
+
+  return(PROPAGATE "${output_result_var}" "${out_err_msg_var}")
+endfunction()
+
+#------------------------------------------------------------------------------
+# Validate build type. To be valid, a build type must:
+#   - Not be empty
+#   - Be "Debug" or "Release"
+#
+# Signature:
+#   validate_build_type(<output-result-var>
+#                        <out-err-msg-var>
+#                        <error-on-fail>
+#                        <input-value>)
+#
+# Parameters:
+#   output-result-var: Variable to store the validation result ("on" or "off").
+#   out-err-msg-var: Variable to store the error message.
+#   error-on-fail: Whether to fail if the validation fails - "on" to trigger a
+#                  fatal error; "off" to continue.
+#   input-value: The build type to validate.
+#
+# Returns:
+#   output-result-var: The validation result.
+#   out-err-msg-var: The error message.
+#
+# Errors:
+#   If the value to check is invalid and ``<error-on-fail>`` is "on".
+#
+# Exemple:
+#   validate_build_type(is_valid err_msg on "${CMAKE_BUILD_TYPE}")
+#------------------------------------------------------------------------------
+function(validate_build_type output_result_var out_err_msg_var error_on_fail input_value)
+  if("${output_result_var}" STREQUAL "")
+    message(FATAL_ERROR "output_result_var argument is missing!")
+  endif()
+  if("${out_err_msg_var}" STREQUAL "")
+    message(FATAL_ERROR "out_err_msg_var argument is missing!")
+  endif()
+  if(NOT "${error_on_fail}" MATCHES "^(on|off)$")
+    message(FATAL_ERROR "error_on_fail must be 'on' or 'off'")
+  endif()
+
+  set(${output_result_var} on)
+  set(${out_err_msg_var} "")
+
+  # Check validity
+  if("${input_value}" STREQUAL "")
+    set(${output_result_var} off)
+    set(${out_err_msg_var} "Build type cannot be empty!")
+  elseif(NOT "${input_value}" MATCHES "^(Debug|Release)$")
+    set(${output_result_var} off)
+    set(${out_err_msg_var} "Build type '${input_value}' is invalid: it must be 'Debug' or 'Release'!")
+  endif()
+
+  if(NOT ${output_result_var} AND ${error_on_fail})
+    message(FATAL_ERROR "${${out_err_msg_var}}")
+  endif()
+
+  return(PROPAGATE "${output_result_var}" "${out_err_msg_var}")
+endfunction()
+
+#------------------------------------------------------------------------------
+# Validate a target name. To be valid, a target name must:
+#   - Not be empty
+#   - Not contain spaces
+#
+# Signature:
+#   validate_target_name(<output-result-var>
+#                         <out-err-msg-var>
+#                         <error-on-fail>
+#                         <input-value>)
+#
+# Parameters:
+#   output-result-var: Variable to store the validation result ("on" or "off").
+#   out-err-msg-var: Variable to store the error message.
+#   error-on-fail: Whether to fail if the validation fails - "on" to trigger a
+#                  fatal error; "off" to continue.
+#   input-value: The target name to validate.
+#
+# Returns:
+#   output-result-var: The validation result.
+#   out-err-msg-var: The error message.
+#
+# Errors:
+#   If the value to check is invalid and ``<error-on-fail>`` is "on".
+#
+# Exemple:
+#   validate_target_name(is_valid err_msg on "MyTarget")
+#------------------------------------------------------------------------------
+function(validate_target_name output_result_var out_err_msg_var error_on_fail input_value)
+  if("${output_result_var}" STREQUAL "")
+    message(FATAL_ERROR "output_result_var argument is missing!")
+  endif()
+  if("${out_err_msg_var}" STREQUAL "")
+    message(FATAL_ERROR "out_err_msg_var argument is missing!")
+  endif()
+  if(NOT "${error_on_fail}" MATCHES "^(on|off)$")
+    message(FATAL_ERROR "error_on_fail must be 'on' or 'off'")
+  endif()
+
+  set(${output_result_var} on)
+  set(${out_err_msg_var} "")
+
+  # Check validity
+  if("${input_value}" STREQUAL "")
+    set(${output_result_var} off)
+    set(${out_err_msg_var} "Target name cannot be empty!")
+  elseif("${input_value}" MATCHES " ")
+    set(${output_result_var} off)
+    set(${out_err_msg_var} "Target name '${input_value}' cannot contain spaces!")
+  endif()
+
+  if(NOT ${output_result_var} AND ${error_on_fail})
+    message(FATAL_ERROR "${${out_err_msg_var}}")
+  endif()
+
+  return(PROPAGATE "${output_result_var}" "${out_err_msg_var}")
+endfunction()
+
+#------------------------------------------------------------------------------
+# Validate a main file path. To be valid, a main file path must:
+#   - Not be empty
+#   - Exist on disk
+#
+# Signature:
+#   validate_main_file_path(<output-result-var>
+#                            <out-err-msg-var>
+#                            <error-on-fail>
+#                            <input-value>)
+#
+# Parameters:
+#   output-result-var: Variable to store the validation result ("on" or "off").
+#   out-err-msg-var: Variable to store the error message.
+#   error-on-fail: Whether to fail if the validation fails - "on" to trigger a
+#                  fatal error; "off" to continue.
+#   input-value: The main file path to validate.
+#
+# Returns:
+#   output-result-var: The validation result.
+#   out-err-msg-var: The error message.
+#
+# Errors:
+#   If the value to check is invalid and ``<error-on-fail>`` is "on".
+#
+# Exemple:
+#   validate_main_file_path(is_valid err_msg on "${CMAKE_CURRENT_SOURCE_DIR}/main.cpp")
+#------------------------------------------------------------------------------
+function(validate_main_file_path output_result_var out_err_msg_var error_on_fail input_value)
+  if("${output_result_var}" STREQUAL "")
+    message(FATAL_ERROR "output_result_var argument is missing!")
+  endif()
+  if("${out_err_msg_var}" STREQUAL "")
+    message(FATAL_ERROR "out_err_msg_var argument is missing!")
+  endif()
+  if(NOT "${error_on_fail}" MATCHES "^(on|off)$")
+    message(FATAL_ERROR "error_on_fail must be 'on' or 'off'")
+  endif()
+
+  set(${output_result_var} on)
+  set(${out_err_msg_var} "")
+
+  # Check validity
+  if("${input_value}" STREQUAL "")
+    set(${output_result_var} off)
+    set(${out_err_msg_var} "Main file path cannot be empty!")
+  elseif(NOT EXISTS "${input_value}")
+    set(${output_result_var} off)
+    set(${out_err_msg_var} "Main file path '${input_value}' does not exist on disk!")
+  endif()
+
+  if(NOT ${output_result_var} AND ${error_on_fail})
+    message(FATAL_ERROR "${${out_err_msg_var}}")
+  endif()
+
+  return(PROPAGATE "${output_result_var}" "${out_err_msg_var}")
+endfunction()
+
+#------------------------------------------------------------------------------
+# Validate a PCH file path. To be valid, a PCH file path must:
+#   - Not be empty
+#   - Exist on disk
+#   - Be located in the public headers directory
+#
+# Signature:
+#   validate_pch_file_path(<output-result-var>
+#                           <out-err-msg-var>
+#                           <error-on-fail>
+#                           <public-header-dir>
+#                           <input-value>)
+#
+# Parameters:
+#   output-result-var: Variable to store the validation result ("on" or "off").
+#   out-err-msg-var: Variable to store the error message.
+#   error-on-fail: Whether to fail if the validation fails - "on" to trigger a
+#                  fatal error; "off" to continue.
+#   public-header-dir: The public headers directory root path.
+#   input-value: The PCH file path to validate.
+#
+# Returns:
+#   output-result-var: The validation result.
+#   out-err-msg-var: The error message.
+#
+# Errors:
+#   If the value to check is invalid and ``<error-on-fail>`` is "on".
+#
+# Exemple:
+#   validate_pch_file_path(is_valid err_msg on
+#                           "${CMAKE_CURRENT_SOURCE_DIR}"
+#                           "${CMAKE_CURRENT_SOURCE_DIR}/pch.h")
+#------------------------------------------------------------------------------
+function(validate_pch_file_path output_result_var out_err_msg_var error_on_fail public_header_dir input_value)
+  if("${output_result_var}" STREQUAL "")
+    message(FATAL_ERROR "output_result_var argument is missing!")
+  endif()
+  if("${out_err_msg_var}" STREQUAL "")
+    message(FATAL_ERROR "out_err_msg_var argument is missing!")
+  endif()
+  if(NOT "${error_on_fail}" MATCHES "^(on|off)$")
+    message(FATAL_ERROR "error_on_fail must be 'on' or 'off'")
+  endif()
+  if("${public_header_dir}" STREQUAL "")
+    message(FATAL_ERROR "public_header_dir argument is missing!")
+  endif()
+  if((NOT EXISTS "${public_header_dir}")
+    OR (NOT IS_DIRECTORY "${public_header_dir}"))
+      message(FATAL_ERROR "Given path: ${public_header_dir} does not refer to an existing path or directory on disk!")
+  endif()
+
+  set(${output_result_var} on)
+  set(${out_err_msg_var} "")
+
+  # Check validity
+  if("${input_value}" STREQUAL "")
+    set(${output_result_var} off)
+    set(${out_err_msg_var} "PCH file path cannot be empty!")
+  elseif(NOT EXISTS "${input_value}")
+    set(${output_result_var} off)
+    set(${out_err_msg_var} "PCH file path '${input_value}' does not exist on disk!")
+  elseif(NOT "${input_value}" MATCHES "^${public_header_dir}")
+    set(${output_result_var} off)
+    set(${out_err_msg_var} "PCH file '@rp@' is not located in the public header directory!" "${input_value}")
+  endif()
+
+  if(NOT ${output_result_var} AND ${error_on_fail})
+    print(FATAL_ERROR ${${out_err_msg_var}}) # don't add quote or Print() will fail
+  endif()
+
+  return(PROPAGATE "${output_result_var}" "${out_err_msg_var}")
+endfunction()
+
+#------------------------------------------------------------------------------
+# Validate a dependency name. To be valid, a dependency name must:
+#   - Not be empty
+#   - Not contain spaces
+#
+# Signature:
+#   validate_dep_name(<output-result-var>
+#                      <out-err-msg-var>
+#                      <error-on-fail>
+#                      <input-value>)
+#
+# Parameters:
+#   output-result-var: Variable to store the validation result ("on" or "off").
+#   out-err-msg-var: Variable to store the error message.
+#   error-on-fail: Whether to fail if the validation fails - "on" to trigger a
+#                  fatal error; "off" to continue.
+#   input-value: The depedency name to validate.
+#
+# Returns:
+#   output-result-var: The validation result.
+#   out-err-msg-var: The error message.
+#
+# Errors:
+#   If the value to check is invalid and ``<error-on-fail>`` is "on".
+#
+# Exemple:
+#   validate_dep_name(is_valid err_msg on "DependencyName")
+#------------------------------------------------------------------------------
+function(validate_dep_name output_result_var out_err_msg_var error_on_fail input_value)
+  if("${output_result_var}" STREQUAL "")
+    message(FATAL_ERROR "output_result_var argument is missing!")
+  endif()
+  if("${out_err_msg_var}" STREQUAL "")
+    message(FATAL_ERROR "out_err_msg_var argument is missing!")
+  endif()
+  if(NOT "${error_on_fail}" MATCHES "^(on|off)$")
+    message(FATAL_ERROR "error_on_fail must be 'on' or 'off'")
+  endif()
+
+  set(${output_result_var} on)
+  set(${out_err_msg_var} "")
+
+  # Check validity
+  if("${input_value}" STREQUAL "")
+    set(${output_result_var} off)
+    set(${out_err_msg_var} "Dependency name cannot be empty!")
+  elseif("${input_value}" MATCHES " ")
+    set(${output_result_var} off)
+    set(${out_err_msg_var} "Dependency name '${input_value}' cannot contain spaces!")
+  endif()
+
+  if(NOT ${output_result_var} AND ${error_on_fail})
+    message(FATAL_ERROR "${${out_err_msg_var}}")
+  endif()
+
+  return(PROPAGATE "${output_result_var}" "${out_err_msg_var}")
+endfunction()
+
+#------------------------------------------------------------------------------
+# Validate the dependency rules file path. To be valid, a dependency rules file
+# path must:
+#   - Not be empty
+#   - Exist on disk
+#   - Be located in the cmake rules files directory ``<cmake-rules-dir>``
+#
+# Signature:
+#   validate_dep_rules_file_path(<output-result-var>
+#                          <out-err-msg-var>
+#                          <error-on-fail>
+#                          <project-dir>
+#                          <cmake-rules-dir>
+#                          <input-value>)
+#
+# Parameters:
+#   output-result-var: Variable to store the validation result ("on" or "off").
+#   out-err-msg-var: Variable to store the error message.
+#   error-on-fail: Whether to fail if the validation fails - "on" to trigger a
+#                  fatal error; "off" to continue.
+#   project-dir: The project directory path.
+#   cmake-rules-dir: The cmake rules files directory path.
+#   input-value: The dependency rules relative file path to validate.
+#
+# Returns:
+#   output-result-var: The validation result.
+#   out-err-msg-var: The error message.
+#
+# Errors:
+#   If the value to check is invalid and ``<error-on-fail>`` is "on".
+#
+# Exemple:
+#   validate_dep_rules_file_path(is_valid err_msg on
+#                                 "${CMAKE_SOURCE_DIR}"
+#                                 "${CMAKE_SOURCE_DIR}/cmake/rules"
+#                                 "rules.cmake")
+#------------------------------------------------------------------------------
+function(validate_dep_rules_file_path output_result_var out_err_msg_var error_on_fail project_dir cmake_rules_dir input_value)
+  if("${output_result_var}" STREQUAL "")
+    message(FATAL_ERROR "output_result_var argument is missing!")
+  endif()
+  if("${out_err_msg_var}" STREQUAL "")
+    message(FATAL_ERROR "out_err_msg_var argument is missing!")
+  endif()
+  if(NOT "${error_on_fail}" MATCHES "^(on|off)$")
+    message(FATAL_ERROR "error_on_fail must be 'on' or 'off'")
+  endif()
+  if("${project_dir}" STREQUAL "")
+    message(FATAL_ERROR "project_dir argument is missing!")
+  endif()
+  if((NOT EXISTS "${project_dir}")
+    OR (NOT IS_DIRECTORY "${project_dir}"))
+      message(FATAL_ERROR "Given path: ${project_dir} does not refer to an existing path or directory on disk!")
+  endif()
+  if("${cmake_rules_dir}" STREQUAL "")
+    message(FATAL_ERROR "cmake_rules_dir argument is missing!")
+  endif()
+  if((NOT EXISTS "${cmake_rules_dir}")
+    OR (NOT IS_DIRECTORY "${cmake_rules_dir}"))
+      message(FATAL_ERROR "Given path: ${cmake_rules_dir} does not refer to an existing path or directory on disk!")
+  endif()
+
+  set(${output_result_var} on)
+  set(${out_err_msg_var} "")
+
+  # Check validity
+  set(absolute_rules_file_path "${project_dir}/${input_value}")
+  if("${input_value}" STREQUAL "")
+    set(${output_result_var} off)
+    set(${out_err_msg_var} "Dependency rules file path cannot be empty!")
+  elseif(NOT EXISTS "${absolute_rules_file_path}")
+    set(${output_result_var} off)
+    set(${out_err_msg_var} "Dependency rules file path '${input_value}' does not exist on disk!")
+  elseif(NOT "${absolute_rules_file_path}" MATCHES "^${cmake_rules_dir}")
+    set(${output_result_var} off)
+    set(${out_err_msg_var} "Dependency rules file '@rp@' is not located in the cmake/rules directory!" "${absolute_rules_file_path}")
+  endif()
+
+  if(NOT ${output_result_var} AND ${error_on_fail})
+    print(FATAL_ERROR ${${out_err_msg_var}}) # don't add quote or Print() will fail
+  endif()
+
+  return(PROPAGATE "${output_result_var}" "${out_err_msg_var}")
+endfunction()
+
+#------------------------------------------------------------------------------
+# Validate a dependency import status. To be valid, a dependency import status
+# variable must:
+#   - Be defined
+#   - Not be empty
+#   - Be a boolean with value of '1' (found) or '0' (not found)
+#
+# Signature:
+#   validate_dep_import_status(<output-result-var>
+#                          <out-err-msg-var>
+#                          <error-on-fail>
+#                          <input-value>)
+#
+# Parameters:
+#   output-result-var: Variable to store the validation result ("on" or "off").
+#   out-err-msg-var: Variable to store the error message.
+#   error-on-fail: Whether to fail if the validation fails - "on" to trigger a
+#                  fatal error; "off" to continue.
+#   input-var: The dependency import status variable to validate.
+#   context: The file path where the dependency import status variable is
+#            defined.
+#
+# Returns:
+#   output-result-var: The validation result.
+#   out-err-msg-var: The error message.
+#
+# Errors:
+#   If the value to check is invalid and ``<error-on-fail>`` is "on".
+#
+# Exemple:
+#   validate_dep_import_status(is_valid err_msg on "${spdlog_FOUND}")
+#------------------------------------------------------------------------------
+function(validate_dep_import_status output_result_var out_err_msg_var error_on_fail input_var context)
+  if("${output_result_var}" STREQUAL "")
+    message(FATAL_ERROR "output_result_var argument is missing!")
+  endif()
+  if("${out_err_msg_var}" STREQUAL "")
+    message(FATAL_ERROR "out_err_msg_var argument is missing!")
+  endif()
+  if(NOT "${error_on_fail}" MATCHES "^(on|off)$")
+    message(FATAL_ERROR "error_on_fail must be 'on' or 'off'")
+  endif()
+
+  set(${output_result_var} on)
+  set(${out_err_msg_var} "")
+
+  # Check validity
+  if(NOT DEFINED "${input_var}")
+    set(${output_result_var} off)
+    set(${out_err_msg_var} "The dependency import status variable '${input_var}' is undefined in ${context}. It must be '1' (found) or '0' (not found)!")
+  elseif("${${input_var}}" STREQUAL "")
+    set(${output_result_var} off)
+    set(${out_err_msg_var} "Dependency import status variable '${input_var}' in ${context} is not a boolean value!")
+  elseif(NOT "${${input_var}}" MATCHES "^(1|0)$")
+    set(${output_result_var} off)
+    set(${out_err_msg_var} "Dependency import status variable '${input_var}' with value '${${input_var}}' in ${context} is not a boolean with value '1' (found) or '0' (not found)!")
+  endif()
+
+  if(NOT ${output_result_var} AND ${error_on_fail})
+    print(FATAL_ERROR ${${out_err_msg_var}}) # don't add quote or Print() will fail
+  endif()
+
+  return(PROPAGATE "${output_result_var}" "${out_err_msg_var}")
+endfunction()
