@@ -17,6 +17,15 @@
 # Signature:
 #   print_target_status_summaries(<target-summary-var-suffix>)
 #
+# Parameters:
+#   target-summary-var-suffix: The variable name suffix used to locate each
+#                              target's status summary. Each summary must be
+#                              stored in a variable following the pattern
+#                              ``<target-name><target-summary-var-suffix>``.
+#
+# Globals read:
+#   <target-name><target-summary-var-suffix>
+#
 # Example:
 #   print_target_status_summaries("_STATUS_SUMMARY")
 #------------------------------------------------------------------------------

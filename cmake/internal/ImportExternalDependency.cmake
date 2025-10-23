@@ -52,13 +52,9 @@ function(import_external_dependency target_name config_target_dir_path config_de
     message(FATAL_ERROR "config_dep_name argument is missing!")
   endif()
 
-  # Set CURRENT_TARGET_NAME
+  # Set predefined variables for the CMake rules file
   set(CURRENT_TARGET_NAME "${target_name}")
-  
-  # Set DEP_NAME
   set(DEP_NAME "${config_dep_name}")
-
-  # Map dependency settings to CMake variables ``<dep-name>_...``
   _map_dep_settings_to_vars("${config_target_dir_path}" "${config_dep_name}")
   
   # Call the CMake rules file
