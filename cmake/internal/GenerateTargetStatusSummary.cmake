@@ -58,42 +58,42 @@ function(generate_target_status_summary target_name output_list_var)
 
   # Print "Target type"
   set(${output_list_var} "")
-  list(APPEND ${output_list_var} "⚙ Target type           : ${${target_name}_TYPE}")
+  list(APPEND ${output_list_var} "⚙ Target type         : ${${target_name}_TYPE}")
 
   # Print "Compile features"
   list(LENGTH ${target_name}_COMPILE_FEATURES nb_vals)
   if(${nb_vals} GREATER 0)
     list(JOIN ${target_name}_COMPILE_FEATURES ", " printable)
-    list(APPEND ${output_list_var} "⚙ Compile features      : ${printable}")
+    list(APPEND ${output_list_var} "⚙ Compile features    : ${printable}")
   else()
-    list(APPEND ${output_list_var} "⚙ Compile features      : (none)")
+    list(APPEND ${output_list_var} "⚙ Compile features    : (none)")
   endif()
 
   # Print "Compile definitions"
   list(LENGTH ${target_name}_COMPILE_DEFINITIONS nb_vals)
   if(${nb_vals} GREATER 0)
     list(JOIN ${target_name}_COMPILE_DEFINITIONS ", " printable)
-    list(APPEND ${output_list_var} "⚙ Compile definitions   : ${printable}")
+    list(APPEND ${output_list_var} "⚙ Compile definitions : ${printable}")
   else()
-    list(APPEND ${output_list_var} "⚙ Compile definitions   : (none)")
+    list(APPEND ${output_list_var} "⚙ Compile definitions : (none)")
   endif()
 
   # Print "Compile options"
   list(LENGTH ${target_name}_COMPILE_OPTIONS nb_vals)
   if(${nb_vals} GREATER 0)
     list(JOIN ${target_name}_COMPILE_OPTIONS ", " printable)
-    list(APPEND ${output_list_var} "⚙ Compile options       : ${printable}")
+    list(APPEND ${output_list_var} "⚙ Compile options     : ${printable}")
   else()
-    list(APPEND ${output_list_var} "⚙ Compile options       : (none)")
+    list(APPEND ${output_list_var} "⚙ Compile options     : (none)")
   endif()
 
   # Print "Link options"
   list(LENGTH ${target_name}_LINK_OPTIONS nb_vals)
   if(${nb_vals} GREATER 0)
     list(JOIN ${target_name}_LINK_OPTIONS ", " printable)
-    list(APPEND ${output_list_var} "⚙ Link options          : ${printable}")
+    list(APPEND ${output_list_var} "⚙ Link options        : ${printable}")
   else()
-    list(APPEND ${output_list_var} "⚙ Link options          : (none)")
+    list(APPEND ${output_list_var} "⚙ Link options        : (none)")
   endif()
 
   # Print "Sources"
@@ -105,9 +105,9 @@ function(generate_target_status_summary target_name output_list_var)
 
   # Print "PCH"
   if(NOT "${${target_name}_PCH_FILE}" STREQUAL "")
-    list(APPEND ${output_list_var} "⚙ PCH file       : ${${target_name}_PCH_FILE}")
+    list(APPEND ${output_list_var} "⚙ PCH file     : ${${target_name}_PCH_FILE}")
   else()
-    list(APPEND ${output_list_var} "⚙ PCH file       : (none)")
+    list(APPEND ${output_list_var} "⚙ PCH file     : (none)")
   endif()
 
   # Print "Include directories"
@@ -118,9 +118,9 @@ function(generate_target_status_summary target_name output_list_var)
   list(LENGTH include_directories nb_vals)
   if(${nb_vals} GREATER 0)
     list(JOIN include_directories ", " printable)
-    list(APPEND ${output_list_var} "⚙ Include dirs   : ${printable}")
+    list(APPEND ${output_list_var} "⚙ Include dirs : ${printable}")
   else()
-    list(APPEND ${output_list_var} "⚙ Include dirs   : (none)")
+    list(APPEND ${output_list_var} "⚙ Include dirs : (none)")
   endif()
 
   # Print "External dependencies"
