@@ -133,9 +133,12 @@ message(VERBOSE "Project structure validated")
 
 ####################### Import CMake functions and macros #####################
 # CMake extra commands
-include(Project)
-include(TargetDependency)
-include(UserInput)
+include(GenerateTargetStatusSummary)
+include(ImportExternalDependency)
+include(ImportInternalDependency)
+include(PrintTargetPropertiesSummary)
+include(PrintTargetStatusSummaries)
+include(ValidateUserInputs)
 
 # CMake modules
 include(CMakePackageConfigHelpers)
@@ -301,7 +304,7 @@ message(STATUS "• Source-tree           : ${${PROJECT_NAME}_PROJECT_DIR}")
 message(STATUS "• Build-tree            : ${${PROJECT_NAME}_BUILD_DIR}")
 message(STATUS "• Output directory      : ${${PROJECT_NAME}_BIN_DIR}")
 list(POP_BACK CMAKE_MESSAGE_INDENT)
-print_target_status_summaries()
+print_target_status_summaries("_STATUS_SUMMARY")
 message(STATUS "")
 message(STATUS "=================================================================")
 message(STATUS "✅ Buildsystem generation completed")

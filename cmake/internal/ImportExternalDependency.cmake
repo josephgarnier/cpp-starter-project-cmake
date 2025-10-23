@@ -5,22 +5,16 @@
 # LICENSE file in the root directory of this source tree.
 
 #------------------------------------------------------------------------------
-# Import and link an internal dependency to the requesting target
-function(import_internal_dependency)
-
-endfunction()
-
-#------------------------------------------------------------------------------
-# Find and link a dependency ``<dep-name>`` located outside the project to the
-# target ``<target-name>`` in using the CMake rules file defined in the
-# configuration associated to ``<config-target-dir-path>`` in
-# ``CMakeTargets.json``.
+# Finds and links an external dependency ``<dep-name>`` to the specified target
+# ``<target-name>`` using the CMake rules file defined in the configuration
+# associated with ``<config-target-dir-path>`` in ``CMakeTargets.json``.
 #
-# The function firstly maps dependency settings to CMake variables for
-# CMake rules files then calls the rules file defined in the JSON.
+# The function first maps dependency settings to CMake variables for use by
+# the rules file, then invokes the rules file specified in the JSON
+# configuration.
 #
-# A variable associated with a setting not declared in the JSON is set to "NOT
-# DEFINED". An error is raised if a required setting is not declared in the
+# Any variable corresponding to a setting not declared in the JSON is set to
+# "NOT DEFINED". An error is raised if a required setting is missing from the
 # JSON.
 #
 # Signature:
@@ -29,19 +23,19 @@ endfunction()
 #                               <config-dep-name>)
 #
 # Parameters:
-#   target-name: The target name to link.
-#   config-target-dir-path: The target directory path.
-#   dep-name: The dependency name to import and link.
+#   target-name: The target to link the dependency to.
+#   config-target-dir-path: The directory path of the target's configuration.
+#   dep-name: The name of the external dependency to import and link.
 #
 # Returns:
-#   <dep-name>_FOUND: A boolean value with 1 if the dependency is found;
-#                     0 otherwise.
+#   <dep-name>_FOUND: A boolean value set to 1 if the dependency is found,
+#                     or 0 otherwise.
 #
 # Errors:
-#   If the target does not exist.
-#   If a required setting is not declared in the JSON.
+#   If the specified target does not exist.
+#   If a required setting is missing from the JSON configuration.
 #
-# Exemple:
+# Example:
 #   import_external_dependency("fruit-salad" "src" "AppleLib")
 #------------------------------------------------------------------------------
 function(import_external_dependency target_name config_target_dir_path config_dep_name)
@@ -84,17 +78,18 @@ function(import_external_dependency target_name config_target_dir_path config_de
 endfunction()
 
 #------------------------------------------------------------------------------
-# [Internal usage]
-# Map settings of dependency ``<dep-name>`` defined in target
-# ``<config-target-dir-path>`` to CMake variables. Theses variables are in the
-# format ``<dep-name>_<SETTING_NAME>``.
+# [Internal use only]
+# Maps the settings of the dependency ``<dep-name>`` defined for the target
+# located at ``<config-target-dir-path>`` to CMake variables. These variables
+# follow the naming pattern ``<dep-name>_<SETTING_NAME>``.
 #
 # Signature:
 #   _map_dep_settings_to_vars(<config-target-dir-path> <config-dep-name>)
 #
 # Parameters:
-#   config-target-dir-path: The target directory path in configuration file.
-#   config-dep-name: The dependency name in configuration file.
+#   config-target-dir-path: The path to the target directory in the configuration
+#                           file.
+#   config-dep-name: The name of the dependency in the configuration file.
 #
 # Returns:
 #   <dep-name>_RULES_FILE
@@ -119,9 +114,10 @@ endfunction()
 #   <dep-name>_CONFIG_LINK_OPTIONS
 #
 # Erros:
-#   If no config found in CMakeTargets.json with the target directory path.
+#   If no configuration matching the target directory path is found in
+#   ``CMakeTargets.json``.
 #
-# Exemple:
+# Example:
 #   _map_dep_settings_to_vars("src" "AppleLib")
 #------------------------------------------------------------------------------
 function(_map_dep_settings_to_vars config_target_dir_path config_dep_name)
@@ -300,19 +296,19 @@ function(_map_dep_settings_to_vars config_target_dir_path config_dep_name)
 endfunction()
 
 #------------------------------------------------------------------------------
-# [Internal usage]
-# Unset a variable if its value ends with "-NOTFOUND".
+# [Internal use only]
+# Unsets the specified variable if its value ends with the suffix "-NOTFOUND".
 #
 # Signature:
 #   _unset_var_if_not_found(<var-name>)
 #
 # Parameters:
-#   var_name: The name of the variable to unset.
+#   var_name: The name of the variable to check and unset if necessary.
 #
 # Returns:
 #   None
 #
-# Exemple:
+# Example:
 #   _unset_var_if_not_found(TARGET_NAME)
 #------------------------------------------------------------------------------
 function(_unset_var_if_not_found var_name)

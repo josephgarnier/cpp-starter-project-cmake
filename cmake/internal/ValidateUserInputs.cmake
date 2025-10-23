@@ -5,31 +5,34 @@
 # LICENSE file in the root directory of this source tree.
 
 #------------------------------------------------------------------------------
-# Validate a project name. To be valid, a project name must:
+# Validates a project name. A valid project name must:
 #   - Not be empty
 #   - Not contain spaces
 #
 # Signature:
 #   validate_project_name(<output-result-var>
-#                          <out-err-msg-var>
-#                          <error-on-fail>
-#                          <input-value>)
+#                         <out-err-msg-var>
+#                         <error-on-fail>
+#                         <input-value>)
 #
 # Parameters:
-#   output-result-var: Variable to store the validation result ("on" or "off").
-#   out-err-msg-var: Variable to store the error message.
-#   error-on-fail: Whether to fail if the validation fails - "on" to trigger a
-#                  fatal error; "off" to continue.
+#   output-result-var: The variable in which to store the validation result
+#                      ("on" or "off").
+#   out-err-msg-var: The variable in which to store the error message, if any.
+#   error-on-fail: Controls whether the function raises a fatal error when
+#                  validation fails. Use "on" to trigger a fatal error, or
+#                  "off" to continue execution.
 #   input-value: The project name to validate.
 #
 # Returns:
-#   output-result-var: The validation result.
-#   out-err-msg-var: The error message.
+#   output-result-var: The validation result ("on" or "off").
+#   out-err-msg-var: The associated error message, if validation failed.
 #
 # Errors:
-#   If the value to check is invalid and ``<error-on-fail>`` is "on".
+#   If the provided project name is invalid and ``<error-on-fail>`` is set to
+#   "on".
 #
-# Exemple:
+# Example:
 #   validate_project_name(is_valid err_msg on "MyProject")
 #------------------------------------------------------------------------------
 function(validate_project_name output_result_var out_err_msg_var error_on_fail input_value)
@@ -63,31 +66,34 @@ function(validate_project_name output_result_var out_err_msg_var error_on_fail i
 endfunction()
 
 #------------------------------------------------------------------------------
-# Validate cxx standard version. To be valid, a cxx standard version must:
+# Validates cxx standard version. A valid cxx standard version must:
 #   - Not be empty
 #   - Be 11, 14, 17, 20, 23 or 26
 #
 # Signature:
 #   validate_cxx_standard_version(<output-result-var>
-#                                  <out-err-msg-var>
-#                                  <error-on-fail>
-#                                  <input-value>)
+#                                 <out-err-msg-var>
+#                                 <error-on-fail>
+#                                 <input-value>)
 #
 # Parameters:
-#   output-result-var: Variable to store the validation result ("on" or "off").
-#   out-err-msg-var: Variable to store the error message.
-#   error-on-fail: Whether to fail if the validation fails - "on" to trigger a
-#                  fatal error; "off" to continue.
+#   output-result-var: The variable in which to store the validation result
+#                      ("on" or "off").
+#   out-err-msg-var: The variable in which to store the error message, if any.
+#   error-on-fail: Controls whether the function raises a fatal error when
+#                  validation fails. Use "on" to trigger a fatal error, or
+#                  "off" to continue execution.
 #   input-value: The cxx standard version to validate.
 #
 # Returns:
-#   output-result-var: The validation result.
-#   out-err-msg-var: The error message.
+#   output-result-var: The validation result ("on" or "off").
+#   out-err-msg-var: The associated error message, if validation failed.
 #
 # Errors:
-#   If the value to check is invalid and ``<error-on-fail>`` is "on".
+#   If the provided cxx standard version is invalid and ``<error-on-fail>`` is
+#   set to "on".
 #
-# Exemple:
+# Example:
 #   validate_cxx_standard_version(is_valid err_msg on "${CMAKE_CXX_STANDARD}")
 #------------------------------------------------------------------------------
 function(validate_cxx_standard_version output_result_var out_err_msg_var error_on_fail input_value)
@@ -121,31 +127,34 @@ function(validate_cxx_standard_version output_result_var out_err_msg_var error_o
 endfunction()
 
 #------------------------------------------------------------------------------
-# Validate build type. To be valid, a build type must:
+# Validates a build type. A valid build type must:
 #   - Not be empty
 #   - Be "Debug" or "Release"
 #
 # Signature:
 #   validate_build_type(<output-result-var>
-#                        <out-err-msg-var>
-#                        <error-on-fail>
-#                        <input-value>)
+#                       <out-err-msg-var>
+#                       <error-on-fail>
+#                       <input-value>)
 #
 # Parameters:
-#   output-result-var: Variable to store the validation result ("on" or "off").
-#   out-err-msg-var: Variable to store the error message.
-#   error-on-fail: Whether to fail if the validation fails - "on" to trigger a
-#                  fatal error; "off" to continue.
+#   output-result-var: The variable in which to store the validation result
+#                      ("on" or "off").
+#   out-err-msg-var: The variable in which to store the error message, if any.
+#   error-on-fail: Controls whether the function raises a fatal error when
+#                  validation fails. Use "on" to trigger a fatal error, or
+#                  "off" to continue execution.
 #   input-value: The build type to validate.
 #
 # Returns:
-#   output-result-var: The validation result.
-#   out-err-msg-var: The error message.
+#   output-result-var: The validation result ("on" or "off").
+#   out-err-msg-var: The associated error message, if validation failed.
 #
 # Errors:
-#   If the value to check is invalid and ``<error-on-fail>`` is "on".
+#   If the provided build type is invalid and ``<error-on-fail>`` is set to
+#   "on".
 #
-# Exemple:
+# Example:
 #   validate_build_type(is_valid err_msg on "${CMAKE_BUILD_TYPE}")
 #------------------------------------------------------------------------------
 function(validate_build_type output_result_var out_err_msg_var error_on_fail input_value)
@@ -179,31 +188,34 @@ function(validate_build_type output_result_var out_err_msg_var error_on_fail inp
 endfunction()
 
 #------------------------------------------------------------------------------
-# Validate a target name. To be valid, a target name must:
+# Validates a target name. A valid target name must:
 #   - Not be empty
 #   - Not contain spaces
 #
 # Signature:
 #   validate_target_name(<output-result-var>
-#                         <out-err-msg-var>
-#                         <error-on-fail>
-#                         <input-value>)
+#                        <out-err-msg-var>
+#                        <error-on-fail>
+#                        <input-value>)
 #
 # Parameters:
-#   output-result-var: Variable to store the validation result ("on" or "off").
-#   out-err-msg-var: Variable to store the error message.
-#   error-on-fail: Whether to fail if the validation fails - "on" to trigger a
-#                  fatal error; "off" to continue.
+#   output-result-var: The variable in which to store the validation result
+#                      ("on" or "off").
+#   out-err-msg-var: The variable in which to store the error message, if any.
+#   error-on-fail: Controls whether the function raises a fatal error when
+#                  validation fails. Use "on" to trigger a fatal error, or
+#                  "off" to continue execution.
 #   input-value: The target name to validate.
 #
 # Returns:
-#   output-result-var: The validation result.
-#   out-err-msg-var: The error message.
+#   output-result-var: The validation result ("on" or "off").
+#   out-err-msg-var: The associated error message, if validation failed.
 #
 # Errors:
-#   If the value to check is invalid and ``<error-on-fail>`` is "on".
+#   If the provided target name is invalid and ``<error-on-fail>`` is set to
+#   "on".
 #
-# Exemple:
+# Example:
 #   validate_target_name(is_valid err_msg on "MyTarget")
 #------------------------------------------------------------------------------
 function(validate_target_name output_result_var out_err_msg_var error_on_fail input_value)
@@ -237,31 +249,34 @@ function(validate_target_name output_result_var out_err_msg_var error_on_fail in
 endfunction()
 
 #------------------------------------------------------------------------------
-# Validate a main file path. To be valid, a main file path must:
+# Validates a main file path. To be valid, a main file path must:
 #   - Not be empty
 #   - Exist on disk
 #
 # Signature:
 #   validate_main_file_path(<output-result-var>
-#                            <out-err-msg-var>
-#                            <error-on-fail>
-#                            <input-value>)
+#                           <out-err-msg-var>
+#                           <error-on-fail>
+#                           <input-value>)
 #
 # Parameters:
-#   output-result-var: Variable to store the validation result ("on" or "off").
-#   out-err-msg-var: Variable to store the error message.
-#   error-on-fail: Whether to fail if the validation fails - "on" to trigger a
-#                  fatal error; "off" to continue.
+#   output-result-var: The variable in which to store the validation result
+#                      ("on" or "off").
+#   out-err-msg-var: The variable in which to store the error message, if any.
+#   error-on-fail: Controls whether the function raises a fatal error when
+#                  validation fails. Use "on" to trigger a fatal error, or
+#                  "off" to continue execution.
 #   input-value: The main file path to validate.
 #
 # Returns:
-#   output-result-var: The validation result.
-#   out-err-msg-var: The error message.
+#   output-result-var: The validation result ("on" or "off").
+#   out-err-msg-var: The associated error message, if validation failed.
 #
 # Errors:
-#   If the value to check is invalid and ``<error-on-fail>`` is "on".
+#   If the provided main file path is invalid and ``<error-on-fail>`` is set to
+#   "on".
 #
-# Exemple:
+# Example:
 #   validate_main_file_path(is_valid err_msg on "${CMAKE_CURRENT_SOURCE_DIR}/main.cpp")
 #------------------------------------------------------------------------------
 function(validate_main_file_path output_result_var out_err_msg_var error_on_fail input_value)
@@ -295,37 +310,40 @@ function(validate_main_file_path output_result_var out_err_msg_var error_on_fail
 endfunction()
 
 #------------------------------------------------------------------------------
-# Validate a PCH file path. To be valid, a PCH file path must:
+# Validates a PCH file path. A valid PCH file path must:
 #   - Not be empty
 #   - Exist on disk
 #   - Be located in the public headers directory
 #
 # Signature:
 #   validate_pch_file_path(<output-result-var>
-#                           <out-err-msg-var>
-#                           <error-on-fail>
-#                           <public-header-dir>
-#                           <input-value>)
+#                          <out-err-msg-var>
+#                          <error-on-fail>
+#                          <public-header-dir>
+#                          <input-value>)
 #
 # Parameters:
-#   output-result-var: Variable to store the validation result ("on" or "off").
-#   out-err-msg-var: Variable to store the error message.
-#   error-on-fail: Whether to fail if the validation fails - "on" to trigger a
-#                  fatal error; "off" to continue.
+#   output-result-var: The variable in which to store the validation result
+#                      ("on" or "off").
+#   out-err-msg-var: The variable in which to store the error message, if any.
+#   error-on-fail: Controls whether the function raises a fatal error when
+#                  validation fails. Use "on" to trigger a fatal error, or
+#                  "off" to continue execution.
 #   public-header-dir: The public headers directory root path.
 #   input-value: The PCH file path to validate.
 #
 # Returns:
-#   output-result-var: The validation result.
-#   out-err-msg-var: The error message.
+#   output-result-var: The validation result ("on" or "off").
+#   out-err-msg-var: The associated error message, if validation failed.
 #
 # Errors:
-#   If the value to check is invalid and ``<error-on-fail>`` is "on".
+#   If the provided PCH file path is invalid and ``<error-on-fail>`` is set to
+#   "on".
 #
-# Exemple:
+# Example:
 #   validate_pch_file_path(is_valid err_msg on
-#                           "${CMAKE_CURRENT_SOURCE_DIR}"
-#                           "${CMAKE_CURRENT_SOURCE_DIR}/pch.h")
+#                          "${CMAKE_CURRENT_SOURCE_DIR}"
+#                          "${CMAKE_CURRENT_SOURCE_DIR}/pch.h")
 #------------------------------------------------------------------------------
 function(validate_pch_file_path output_result_var out_err_msg_var error_on_fail public_header_dir input_value)
   if("${output_result_var}" STREQUAL "")
@@ -368,31 +386,34 @@ function(validate_pch_file_path output_result_var out_err_msg_var error_on_fail 
 endfunction()
 
 #------------------------------------------------------------------------------
-# Validate a dependency name. To be valid, a dependency name must:
+# Validates a dependency name. A valid dependency name must:
 #   - Not be empty
 #   - Not contain spaces
 #
 # Signature:
 #   validate_dep_name(<output-result-var>
-#                      <out-err-msg-var>
-#                      <error-on-fail>
-#                      <input-value>)
+#                     <out-err-msg-var>
+#                     <error-on-fail>
+#                     <input-value>)
 #
 # Parameters:
-#   output-result-var: Variable to store the validation result ("on" or "off").
-#   out-err-msg-var: Variable to store the error message.
-#   error-on-fail: Whether to fail if the validation fails - "on" to trigger a
-#                  fatal error; "off" to continue.
+#   output-result-var: The variable in which to store the validation result
+#                      ("on" or "off").
+#   out-err-msg-var: The variable in which to store the error message, if any.
+#   error-on-fail: Controls whether the function raises a fatal error when
+#                  validation fails. Use "on" to trigger a fatal error, or
+#                  "off" to continue execution.
 #   input-value: The depedency name to validate.
 #
 # Returns:
-#   output-result-var: The validation result.
-#   out-err-msg-var: The error message.
+#   output-result-var: The validation result ("on" or "off").
+#   out-err-msg-var: The associated error message, if validation failed.
 #
 # Errors:
-#   If the value to check is invalid and ``<error-on-fail>`` is "on".
+#   If the provided dependency name is invalid and ``<error-on-fail>`` is set to
+#   "on".
 #
-# Exemple:
+# Example:
 #   validate_dep_name(is_valid err_msg on "DependencyName")
 #------------------------------------------------------------------------------
 function(validate_dep_name output_result_var out_err_msg_var error_on_fail input_value)
@@ -426,7 +447,7 @@ function(validate_dep_name output_result_var out_err_msg_var error_on_fail input
 endfunction()
 
 #------------------------------------------------------------------------------
-# Validate the dependency rules file path. To be valid, a dependency rules file
+# Validates the dependency rules file path. A valid dependency rules file
 # path must:
 #   - Not be empty
 #   - Exist on disk
@@ -434,33 +455,36 @@ endfunction()
 #
 # Signature:
 #   validate_dep_rules_file_path(<output-result-var>
-#                          <out-err-msg-var>
-#                          <error-on-fail>
-#                          <project-dir>
-#                          <cmake-rules-dir>
-#                          <input-value>)
+#                                <out-err-msg-var>
+#                                <error-on-fail>
+#                                <project-dir>
+#                                <cmake-rules-dir>
+#                                <input-value>)
 #
 # Parameters:
-#   output-result-var: Variable to store the validation result ("on" or "off").
-#   out-err-msg-var: Variable to store the error message.
-#   error-on-fail: Whether to fail if the validation fails - "on" to trigger a
-#                  fatal error; "off" to continue.
+#   output-result-var: The variable in which to store the validation result
+#                      ("on" or "off").
+#   out-err-msg-var: The variable in which to store the error message, if any.
+#   error-on-fail: Controls whether the function raises a fatal error when
+#                  validation fails. Use "on" to trigger a fatal error, or
+#                  "off" to continue execution.
 #   project-dir: The project directory path.
 #   cmake-rules-dir: The cmake rules files directory path.
 #   input-value: The dependency rules relative file path to validate.
 #
 # Returns:
-#   output-result-var: The validation result.
-#   out-err-msg-var: The error message.
+#   output-result-var: The validation result ("on" or "off").
+#   out-err-msg-var: The associated error message, if validation failed.
 #
 # Errors:
-#   If the value to check is invalid and ``<error-on-fail>`` is "on".
+#   If the provided dependency rules file path is invalid and ``<error-on-fail>``
+#   is set to "on".
 #
-# Exemple:
+# Example:
 #   validate_dep_rules_file_path(is_valid err_msg on
-#                                 "${CMAKE_SOURCE_DIR}"
-#                                 "${CMAKE_SOURCE_DIR}/cmake/rules"
-#                                 "rules.cmake")
+#                                "${CMAKE_SOURCE_DIR}"
+#                                "${CMAKE_SOURCE_DIR}/cmake/rules"
+#                                "rules.cmake")
 #------------------------------------------------------------------------------
 function(validate_dep_rules_file_path output_result_var out_err_msg_var error_on_fail project_dir cmake_rules_dir input_value)
   if("${output_result_var}" STREQUAL "")
@@ -511,35 +535,38 @@ function(validate_dep_rules_file_path output_result_var out_err_msg_var error_on
 endfunction()
 
 #------------------------------------------------------------------------------
-# Validate a dependency import status. To be valid, a dependency import status
-# variable must:
+# Validates a dependency import status variable. A valid dependency import
+# status variable must:
 #   - Be defined
 #   - Not be empty
 #   - Be a boolean with value of '1' (found) or '0' (not found)
 #
 # Signature:
 #   validate_dep_import_status(<output-result-var>
-#                          <out-err-msg-var>
-#                          <error-on-fail>
-#                          <input-value>)
+#                              <out-err-msg-var>
+#                              <error-on-fail>
+#                              <input-value>)
 #
 # Parameters:
-#   output-result-var: Variable to store the validation result ("on" or "off").
-#   out-err-msg-var: Variable to store the error message.
-#   error-on-fail: Whether to fail if the validation fails - "on" to trigger a
-#                  fatal error; "off" to continue.
+#   output-result-var: The variable in which to store the validation result
+#                      ("on" or "off").
+#   out-err-msg-var: The variable in which to store the error message, if any.
+#   error-on-fail: Controls whether the function raises a fatal error when
+#                  validation fails. Use "on" to trigger a fatal error, or
+#                  "off" to continue execution.
 #   input-var: The dependency import status variable to validate.
 #   context: The file path where the dependency import status variable is
 #            defined.
 #
 # Returns:
-#   output-result-var: The validation result.
-#   out-err-msg-var: The error message.
+#   output-result-var: The validation result ("on" or "off").
+#   out-err-msg-var: The associated error message, if validation failed.
 #
 # Errors:
-#   If the value to check is invalid and ``<error-on-fail>`` is "on".
+#   If the provided dependency import status variable is invalid and
+#   ``<error-on-fail>`` is set to "on".
 #
-# Exemple:
+# Example:
 #   validate_dep_import_status(is_valid err_msg on "${spdlog_FOUND}")
 #------------------------------------------------------------------------------
 function(validate_dep_import_status output_result_var out_err_msg_var error_on_fail input_var context)
