@@ -8,12 +8,13 @@
 # -------------
 # See README file in the root directory of this source tree.
 
-
-#---- Compiler options. ----
+###############################################################################
+### Compiler options
+###############################################################################
 # @see https://gcc.gnu.org/onlinedocs/gcc/Option-Summary.html
 # @see https://github.com/lefticus/cppbestpractices/blob/master/02-Use_the_Tools_Available.md
 
-# Warning options.
+####################### Warning options #######################################
 # @see https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html
 add_compile_options("$<$<STREQUAL:${PARAM_BUILD_TYPE},debug>:-Wall>") # enables all the warnings about constructions
 add_compile_options("$<$<STREQUAL:${PARAM_BUILD_TYPE},debug>:-Wextra>") # enables some extra warning flags
@@ -35,19 +36,19 @@ add_compile_options("$<$<STREQUAL:${PARAM_BUILD_TYPE},debug>:-Wnull-dereference>
 add_compile_options("$<$<STREQUAL:${PARAM_BUILD_TYPE},debug>:-Wdouble-promotion>") # warn if float is implicit promoted to double
 add_compile_options("$<$<STREQUAL:${PARAM_BUILD_TYPE},debug>:-Wformat=2>") # warn on security issues around functions that format output (ie printf)
 
-# Debugging options.
+####################### Debugging options #####################################
 # @see https://gcc.gnu.org/onlinedocs/gcc/Debugging-Options.html
 add_compile_options("$<$<STREQUAL:${PARAM_BUILD_TYPE},debug>:-g>") # produces debugging information
 add_compile_options("$<$<STREQUAL:${PARAM_BUILD_TYPE},debug>:-ggdb3>") # additional debugging info
 
-# Optimization options.
+####################### Optimization options ##################################
 # @see https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html
 add_compile_options("$<$<STREQUAL:${PARAM_BUILD_TYPE},debug>:-O1>") # optimize
 
-# C++ Language Options
+####################### C++ Language Options ##################################
 # @see https://gcc.gnu.org/onlinedocs/gcc/C_002b_002b-Dialect-Options.html
 add_compile_options("$<$<STREQUAL:${PARAM_BUILD_TYPE},debug>:-Wsuggest-override>") # warn if overriding virtual functions are not marked with the override keyword
 
-# Diagnostic Message Formatting Options
+####################### Diagnostic Message Formatting Options #################
 # @see https://gcc.gnu.org/onlinedocs/gcc/Diagnostic-Message-Formatting-Options.html
 add_compile_options("$<$<STREQUAL:${PARAM_BUILD_TYPE},debug>:-fdiagnostics-color=always>") # use color in diagnostics

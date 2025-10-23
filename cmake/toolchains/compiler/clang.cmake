@@ -8,12 +8,13 @@
 # -------------
 # See README file in the root directory of this source tree.
 
-
-#---- Compiler options. ----
+###############################################################################
+### Compiler options
+###############################################################################
 # @see https://clang.llvm.org/docs/ClangCommandLineReference.html
 # @see https://github.com/lefticus/cppbestpractices/blob/master/02-Use_the_Tools_Available.md
 
-# Diagnostic options.
+####################### Diagnostic options ####################################
 # @see https://clang.llvm.org/docs/DiagnosticsReference.html
 add_compile_options("$<$<STREQUAL:${PARAM_BUILD_TYPE},debug>:-Wall>") # enables all the warnings about constructions
 add_compile_options("$<$<STREQUAL:${PARAM_BUILD_TYPE},debug>:-Wextra>") # enables some extra warning flags
@@ -39,16 +40,16 @@ add_compile_options("$<$<STREQUAL:${PARAM_BUILD_TYPE},debug>:-Wdouble-promotion>
 add_compile_options("$<$<STREQUAL:${PARAM_BUILD_TYPE},debug>:-Wformat=2>") # warn on security issues around functions that format output (ie printf)
 #add_compile_options("$<$<STREQUAL:${PARAM_BUILD_TYPE},debug>:-Wlifetime>") # shows object lifetime issues (only special branch of Clang currently)
 
-# Debug information generation options.
+####################### Debug information generation options ##################
 # @see https://clang.llvm.org/docs/ClangCommandLineReference.html#debug-information-generation
 add_compile_options("$<$<STREQUAL:${PARAM_BUILD_TYPE},debug>:-g>") # produces debugging information
 add_compile_options("$<$<STREQUAL:${PARAM_BUILD_TYPE},debug>:-ggdb3>") # additional debugging info
 
-# Optimization level options.
+####################### Optimization level options ############################
 # @see https://clang.llvm.org/docs/ClangCommandLineReference.html#optimization-level
 add_compile_options("$<$<STREQUAL:${PARAM_BUILD_TYPE},debug>:-O1>") # optimize
 
-# Target-independent compilation options.
+####################### Target-independent compilation options ################
 # @see https://clang.llvm.org/docs/ClangCommandLineReference.html#target-independent-compilation-options
 add_compile_options("$<$<STREQUAL:${PARAM_BUILD_TYPE},debug>:-fdebug-macro>") # emit macro debug information
 add_compile_options("$<$<STREQUAL:${PARAM_BUILD_TYPE},debug>:-fstandalone-debug>") # emit full debug info for all types used by the program

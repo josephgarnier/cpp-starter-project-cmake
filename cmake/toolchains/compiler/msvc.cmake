@@ -8,12 +8,13 @@
 # -------------
 # See README file in the root directory of this source tree.
 
-
-#---- Compiler options. ----
+###############################################################################
+### Compiler options
+###############################################################################
 # @see https://docs.microsoft.com/en-us/cpp/build/reference/compiler-options-listed-by-category
 # @see https://github.com/lefticus/cppbestpractices/blob/master/02-Use_the_Tools_Available.md
 
-# General options.
+####################### General options #######################################
 add_compile_options("/Zm200") # specifies the precompiled header memory allocation limit
 add_compile_options("$<$<CONFIG:DEBUG>:/Zi>") # generates complete debugging information
 add_compile_options("$<$<CONFIG:DEBUG>:/MP>") # builds multiple source files concurrently
@@ -38,7 +39,7 @@ add_compile_options("$<$<CONFIG:DEBUG>:/w14905>") # wide string literal cast to 
 add_compile_options("$<$<CONFIG:DEBUG>:/w14906>") # string literal cast to 'LPWSTR'
 add_compile_options("$<$<CONFIG:DEBUG>:/w14928>") # illegal copy-initialization; more than one user-defined conversion has been implicitly applied
 
-# Code generation options.
+####################### Code generation options ###############################
 # @see https://docs.microsoft.com/en-us/cpp/build/reference/compiler-options-listed-by-category?view=msvc-160#code-generation
 add_compile_options("$<$<CONFIG:DEBUG>:/EHsc>") # specifies the model of exception handling
 add_compile_options("$<$<CONFIG:DEBUG>:/MDd>") # compiles to create a debug multithreaded DLL
@@ -47,7 +48,7 @@ add_compile_options("$<$<CONFIG:DEBUG>:/Qpar>") # enables automatic parallelizat
 add_compile_options("$<$<CONFIG:DEBUG>:/fp:fast>") # specifies floating-point behavior
 string(REGEX REPLACE "/RTC(su|[1su])" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}") # enables run-time error checking
 
-# Optimizations options.
+####################### Optimizations options #################################
 # @see https://docs.microsoft.com/en-us/cpp/build/reference/compiler-options-listed-by-category?view=msvc-160#optimization
 #add_compile_options("$<$<CONFIG:DEBUG>:/Od>") # disables optimization (disable below options to use it)
 #add_compile_options("$<$<CONFIG:DEBUG>:/O2>") # creates fast code (incompatible with /RTC, disable it to use this option)
@@ -57,7 +58,9 @@ add_compile_options("$<$<CONFIG:DEBUG>:/Oy>") # omits frame pointer (x86 only)
 add_compile_options("$<$<CONFIG:DEBUG>:/GL>") # enables whole program optimization (disable /ZI to use it)
 
 
-#---- Linker options. ----
+###############################################################################
+### Linker options
+###############################################################################
 # @see https://docs.microsoft.com/en-us/cpp/build/reference/linker-options
 # @see https://github.com/lefticus/cppbestpractices/blob/master/02-Use_the_Tools_Available.md
 add_compile_options("$<$<CONFIG:DEBUG>:/INCREMENTAL>") # enables incremental linking

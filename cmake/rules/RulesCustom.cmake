@@ -10,17 +10,18 @@
 
 
 # =============================================================================
-# Description :
+# Description:
 #   Custom rules file to find and link the dependency ``<DEP_NAME>`` to the target
-#   ``<CURRENT_TARGET_NAME>``. The final status must be set in ``<DEP_NAME>_FOUND``
-#   (1: found, 0: not found).
+#   ``<CURRENT_TARGET_NAME>``, configured with the setting ``rulesFile: generic``.
+#   The final status must be set in ``<DEP_NAME>_FOUND`` (1: found, 0: not found).
 #
-#   The list of target configuration settings can be accessed from the variables
-#   listed in "Predefined variables". The value of a variable associated with a
-#   setting not declared in the configuration JSON file is "NOT DEFINED".
+#   The list of target configuration settings is available through the variables
+#   listed under "Predefined variables". Variables corresponding to settings not
+#   declared in the configuration JSON file are "NOT DEFINED".
 #
 # Environment read:
-#   ENV{<DEP_NAME>}_DIR: The ``<PackageName>_DIR`` environment variable.
+#   ENV{<DEP_NAME>}_DIR: The environment variable ``<PackageName>_DIR`` specifying
+#                        the dependency directory.
 #
 # Globals read:
 #   CMAKE_SYSTEM_NAME: The name of the operating system.
@@ -57,10 +58,8 @@
 #   Link the dependency ``<DEP_NAME>`` to the target ``<CURRENT_TARGET_NAME>``.
 #
 # Required user-defined variables:
-#   <DEP_NAME>_FOUND: Must be set to indicate the final status "1" if dependency
-#                     is found, "0" if not found. The command find_package() can
-#                     initialize this variable.
-#
+#   <DEP_NAME>_FOUND: Must be set to "1" if the dependency was found, "0" otherwise.
+#                     This variable may be initialized by ``find_package()``.
 # =============================================================================
 
 # Set local dependency directory
@@ -77,27 +76,26 @@ elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin"
   set(${DEP_NAME}_DIR "${${DEP_NAME}_PACKAGE_LOC_MAC}")
 endif()
 
-# Set search paths for find_package() commands
+# Set search paths for find_package() command
 if(DEFINED ENV{CMAKE_PREFIX_PATH}) 
   set(CMAKE_PREFIX_PATH "$ENV{CMAKE_PREFIX_PATH}")
 else()
   set(CMAKE_PREFIX_PATH "${${DEP_NAME}_DIR}")
 endif()
 
-# Try to find the dependency in local and common directories
-# find_package("${DEP_NAME}" "${${DEP_NAME}_MIN_VERSION}" NO_MODULE QUIET)
-# if(${${DEP_NAME}_FOUND})
-#   message(FATAL_ERROR "${DEP_NAME} v${${DEP_NAME}_MIN_VERSION} not found locally!")
-# endif()
+# Searches for the dependency in local and common directories
+find_package("${DEP_NAME}" "${${DEP_NAME}_MIN_VERSION}" NO_MODULE QUIET)
+if(${${DEP_NAME}_FOUND})
+  message(FATAL_ERROR "${DEP_NAME} v${${DEP_NAME}_MIN_VERSION} not found locally!")
+endif()
+message(STATUS "${DEP_NAME} v${${DEP_NAME}_MIN_VERSION} found locally: ${${DEP_NAME}_CONFIG}")
 
-# message(STATUS "${DEP_NAME} v${${DEP_NAME}_MIN_VERSION} found locally: ${${DEP_NAME}_CONFIG}")
+######                            <YOUR CODE HERE>                       ######
+######   (remove or uncomment the code above and below is you need to)   ######
 
-#####   <YOUR CODE HERE>   #####
-#####   (remove or uncomment the code above and below is you need to)   #####
-
-# Link the dependency to the binary build target
-# message(STATUS "Link ${DEP_NAME} to the target '${CURRENT_TARGET_NAME}'")
-# target_link_libraries("${CURRENT_TARGET_NAME}"
-#   PRIVATE
-#     "${DEP_NAME}::${DEP_NAME}"
-# )
+# Links the dependency to the current built target ``CURRENT_TARGET_NAME``
+message(STATUS "Link ${DEP_NAME} to the target '${CURRENT_TARGET_NAME}'")
+target_link_libraries("${CURRENT_TARGET_NAME}"
+  PRIVATE
+    "${DEP_NAME}::${DEP_NAME}"
+)
