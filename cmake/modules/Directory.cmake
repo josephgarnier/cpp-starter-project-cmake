@@ -37,9 +37,9 @@ Usage
               ROOT_DIR <dir-path>
               <INCLUDE_REGEX|EXCLUDE_REGEX> <regular-expression>)
 
-  Recursively scans files and directories under ``ROOT_DIR``, applies an
-  optional filter based on ``INCLUDE_REGEX`` or ``EXCLUDE_REGEX``, and
-  stores the result in ``<output-list-var>``.
+  Recursively scan and collect all files and directories under ``ROOT_DIR``
+  that match the filter provided with either ``INCLUDE_REGEX`` or
+  ``EXCLUDE_REGEX``, and store the result in ``<output-list-var>``.
 
   Paths are returned as relative to ``ROOT_DIR`` if ``RELATIVE`` is ``on``,
   or as absolute paths if ``RELATIVE`` is ``off``.

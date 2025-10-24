@@ -1615,8 +1615,11 @@ endmacro()
 #------------------------------------------------------------------------------
 # Internal usage
 macro(_cmake_targets_file_print_configs)
+  if(NOT ${CTF_PRINT_CONFIGS})
+    message(FATAL_ERROR "PRINT_CONFIGS arguments is missing!")
+  endif()
   _assert_config_file_loaded()
-  
+
   get_property(target_paths GLOBAL PROPERTY "TARGETS_CONFIG_LIST")
   foreach(target_path IN ITEMS ${target_paths})
     set(CTF_PRINT_TARGET_CONFIG "${target_path}")

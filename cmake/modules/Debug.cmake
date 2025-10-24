@@ -16,10 +16,9 @@ Synopsis
 .. parsed-literal::
 
     debug(`DUMP_TARGETS`_ <root-dir>)
-    debug(`DUMP_VARIABLES`_ [EXCLUDE_REGEX <regular-expression>])
+    debug(`DUMP_VARIABLES`_ [<INCLUDE_REGEX|EXCLUDE_REGEX> <regular-expression>])
     debug(`DUMP_PROPERTIES`_ [])
     debug(`DUMP_TARGET_PROPERTIES`_ <target-name>)
-    debug(`DUMP_PROJECT_VARIABLES`_ <project-name>)
 
 Usage
 ^^^^^
@@ -46,20 +45,15 @@ Usage
     #   -- [doc] doc
 
 .. signature::
-  debug(DUMP_VARIABLES [EXCLUDE_REGEX <regular-expression>])
+  debug(DUMP_VARIABLES [<INCLUDE_REGEX|EXCLUDE_REGEX> <regular-expression>])
 
-  Disaply all CMake variables except those that match with the optional
-  ``<regular-expression>`` parameter.
+  Print the list of all currently defined CMake variables and their values,
+  useful for debugging and inspecting project scope variables. The output is
+  sorted alphabetically and contains no duplicates.
 
-  Display all defined CMake variables, optionally excluding those whose names
-  match a given regular expression.
-
-  This command retrieves all variables currently defined in the CMake
-  context and prints their names and values using :cmake:command:`message() <cmake:command:message()>`.
-  The output is sorted alphabetically and contains no duplicates.
-
-  If ``<regular-expression>`` is provided, any variable whose name matches the
-  given expression is omitted from the output.
+  If ``INCLUDE_REGEX`` is provided, only variables whose names match the given
+  regular expression are printed. If ``EXCLUDE_REGEX`` is provided, variables
+  whose names match the given expression are omitted from the output.
 
   Example usage:
 
@@ -73,9 +67,14 @@ Usage
     #   PROJECT_NAME=MyProject
     #   ...
 
-    debug(DUMP_VARIABLES
-      EXCLUDE_REGEX "^CMAKE_"
-    )
+    debug(DUMP_VARIABLES INCLUDE_REGEX "^PROJECT_")
+    # output is:
+    #   ...
+    #   PROJECT_IS_TOP_LEVEL=ON
+    #   PROJECT_NAME=MyProject
+    #   ...
+
+    debug(DUMP_VARIABLES EXCLUDE_REGEX "^CMAKE_")
     # output is:
     #   BUILD_SHARED_LIBS=ON
     #   PROJECT_NAME=MyProject
@@ -139,37 +138,6 @@ Usage
     #     my_library.INTERFACE_INCLUDE_DIRECTORIES = "include"
     #     ...
     #   -----
-    #
-
-.. signature::
-  debug(DUMP_PROJECT_VARIABLES <project-name>)
-
-  Display all global CMake variables related to the current project and
-  prefixed with ``<project-name>_``.
-
-  This command prints the values of all defined variables whose name starts
-  with the current ``<project-name>_``. This relies on the naming convention
-  that project-specific variables are prefixed with the project name followed
-  by an underscore.
-
-  This command is useful for debugging and inspecting variables that are
-  explicitly scoped to the project. It filters out unrelated variables
-  defined by CMake or third-party scripts.
-
-  Example usage:
-
-  .. code-block:: cmake
-
-    debug(DUMP_PROJECT_VARIABLES "my_project")
-    # output is:
-    #
-    #   -----
-    #   Variables for PROJECT my_project:
-    #     my_project_SOURCE_DIR = "/home/user/my_project/src"
-    #     my_project_BUILD_DIR = "/home/user/my_project/build"
-    #     ...
-    #   -----
-    #
 
 Additional commands
 ^^^^^^^^^^^^^^^^^^^
@@ -239,7 +207,7 @@ include(CMakePrintHelpers)
 # Public function of this module
 function(debug)
   set(options DUMP_VARIABLES DUMP_PROPERTIES)
-  set(one_value_args DUMP_TARGETS EXCLUDE_REGEX DUMP_TARGET_PROPERTIES DUMP_PROJECT_VARIABLES)
+  set(one_value_args DUMP_TARGETS INCLUDE_REGEX EXCLUDE_REGEX DUMP_TARGET_PROPERTIES)
   set(multi_value_args "")
   cmake_parse_arguments(DB "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
   
@@ -255,8 +223,6 @@ function(debug)
     _debug_dump_properties()
   elseif(DEFINED DB_DUMP_TARGET_PROPERTIES)
     _debug_dump_target_properties()
-  elseif(DEFINED DB_DUMP_PROJECT_VARIABLES)
-    _debug_dump_project_variables()
   else()
     message(FATAL_ERROR "The operation name or arguments are missing!")
   endif()
@@ -292,13 +258,24 @@ macro(_debug_dump_variables)
   if(NOT ${DB_DUMP_VARIABLES})
     message(FATAL_ERROR "DUMP_VARIABLES arguments is missing!")
   endif()
+  if("INCLUDE_REGEX" IN_LIST DB_KEYWORDS_MISSING_VALUES)
+    message(FATAL_ERROR "INCLUDE_REGEX argument is missing or need a value!")
+  endif()
+  if("EXCLUDE_REGEX" IN_LIST DB_KEYWORDS_MISSING_VALUES)
+    message(FATAL_ERROR "EXCLUDE_REGEX argument is missing or need a value!")
+  endif()
+  if((DEFINED DB_INCLUDE_REGEX)
+    AND (DEFINED DB_EXCLUDE_REGEX))
+    message(FATAL_ERROR "INCLUDE_REGEX|EXCLUDE_REGEX cannot be used together!")
+  endif()
 
   get_cmake_property(variable_names VARIABLES)
   list(SORT variable_names)
   list(REMOVE_DUPLICATES variable_names)
   foreach (variable_name IN ITEMS ${variable_names})
-    if((NOT DEFINED DB_EXCLUDE_REGEX)
-      OR (NOT "${variable_name}" MATCHES "${DB_EXCLUDE_REGEX}"))
+    if((NOT DEFINED DB_INCLUDE_REGEX AND NOT DEFINED DB_EXCLUDE_REGEX)
+      OR (DEFINED DB_INCLUDE_REGEX AND "${variable_name}" MATCHES "${DB_INCLUDE_REGEX}")
+      OR (DEFINED DB_EXCLUDE_REGEX AND NOT "${variable_name}" MATCHES "${DB_EXCLUDE_REGEX}"))
       message(STATUS "${variable_name}= ${${variable_name}}")
     endif()
   endforeach()
@@ -378,32 +355,6 @@ macro(_debug_dump_target_properties)
     if(${propertie_set})
       get_target_property(propertie_value "${DB_DUMP_TARGET_PROPERTIES}" "${propertie_name}")
       message("${DB_DUMP_TARGET_PROPERTIES}.${propertie_name} = \"${propertie_value}\"")
-    endif()
-  endforeach()
-  list(POP_BACK CMAKE_MESSAGE_INDENT)
-  list(POP_BACK CMAKE_MESSAGE_INDENT)
-  message("-----")
-  message("")
-endmacro()
-
-#------------------------------------------------------------------------------
-# Internal usage
-macro(_debug_dump_project_variables)
-  if(NOT DEFINED DB_DUMP_PROJECT_VARIABLES)
-    message(FATAL_ERROR "DUMP_PROJECT_VARIABLES arguments is missing!")
-  endif()
-
-  get_cmake_property(variable_names VARIABLES)
-  list(SORT variable_names)
-  
-  message("")
-  message("-----")
-  list(APPEND CMAKE_MESSAGE_INDENT " ")
-  message("Variables for PROJECT ${DB_DUMP_PROJECT_VARIABLES}:")
-  list(APPEND CMAKE_MESSAGE_INDENT "  ")
-  foreach (variable_name IN ITEMS ${variable_names})
-    if("${variable_name}" MATCHES "${DB_DUMP_PROJECT_VARIABLES}_")
-      message("${variable_name} = \"${${variable_name}}\"")
     endif()
   endforeach()
   list(POP_BACK CMAKE_MESSAGE_INDENT)
