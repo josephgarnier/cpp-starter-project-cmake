@@ -1,4 +1,4 @@
-<div align="center">
+<div style="text-align: center;">
 <figure>
   <img src="https://i.imgur.com/7moLJxE.png" alt="C++ and CMake" width="50%"/>
 </figure>
@@ -6,11 +6,12 @@
 # C++ Starter Project with CMake
 
 </div>
-<p align="center">
-<strong>A customizable kit to quickly start your C++ projects with CMake.</strong>
-</p>
 
-<p align="center">
+<div style="text-align: center;">
+<strong>A customizable kit to quickly start your C++ projects with CMake.</strong>
+</div>
+
+<p style="text-align: center;">
 <a rel="license" href="https://opensource.org/license/mit"><img alt="Static Badge" src="https://img.shields.io/badge/licence-MIT-brightgreen">
 </a> <img alt="Static Badge" src="https://img.shields.io/badge/plateform-Windows%20%7C%20Linux%20%7C%20Mac-lightgrey"> <img alt="Static Badge" src="https://img.shields.io/badge/language-C%2B%2B%20%7C%20CMake-blue"> <img alt="Static Badge" src="https://img.shields.io/badge/status-in_dev-orange">
 </p>
@@ -48,7 +49,8 @@ This starter ships with all you might need to get up and running blazing fast wi
 - A template suitable for both small and complex projects.
 - Start your development in C++ in a few minutes.
 - A [directory structure](#-folder-structure-overview) common to all you C++ projects.
-- An [easy setup](https://cmake.org/cmake/help/latest/manual/cmake.1.html#options) with an high level of customization;
+- An [easy setup](https://cmake.org/cmake/help/latest/manual/cmake.1.html#options) with an high level of customization.
+- Fully compatible with [Visual Studio Code CMake Tools](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cmake-tools).
 - Can generate the build files for executable and for shared, static and header-only library.
 - Leverages the power of [modern CMake](https://cliutils.gitlab.io/modern-cmake/) to build commands for every phase of the software development lifecycle.
 - Centralized configuration files and no need to modify any CMakeList file.
@@ -64,13 +66,13 @@ This starter ships with all you might need to get up and running blazing fast wi
 
 This project is only a template and you are free to use the compiler and versions of your choice. However, you will need at least the following (install guides are provided on the respective websites):
 
-- **C++20 compiler** - e.g [GCC v15.2+](https://gcc.gnu.org/), [Clang C++ v19.1.3+](https://clang.llvm.org/cxx_status.html) or [Visual Studio](https://visualstudio.microsoft.com).
-- **CMake v3.31.2+** - can be found [here](https://cmake.org/).
+- **CMake v4.0.1 or higher** - can be found [here](https://cmake.org/).
+- **C++ compiler** (any version) - e.g., [GCC v15.2+](https://gcc.gnu.org/), [Clang C++ v19.1.3+](https://clang.llvm.org/cxx_status.html) or [MSVC](https://visualstudio.microsoft.com). The project is developed with the GCC compiler, and its dependencies are provided pre-compiled with GCC.
 
 The following dependencies are **optional** because they will be **automatically downloaded** by CMake if they can't be found:
 
-- [Doxygen v1.12+](http://www.doxygen.nl/) (used when `ENABLE_TEST_MODULE` option is set to `on`);
-- [GTest v1.15.2+](https://github.com/google/googletest) (used when `ENABLE_DOC_MODULE` option is set to `on`).
+- Doxygen >= 1.12 (for doc generation when `ENABLE_TEST_MODULE` is set to `on`) - can be found [here](http://www.doxygen.nl/).
+- GTest >= 1.15.2 (for testing when `ENABLE_DOC_MODULE` is set to `on`) - can be found [here](https://github.com/google/googletest).
 
 ## 🚀 Getting started
 
@@ -919,140 +921,282 @@ Then, the **second file** to configure is the one that allows to customize the g
 
 If after configuring this module you do not wish to activate any others, go directly to the next section.
 
-## ⚙️ Usage and commands
+## ⚙️ Usage and Commands
 
-This project provide several scripts and commands to generate the *Build Lifecycle* and execute each build phase with their targets. If you are a VS Code user, they have all been written in `.vscode/tasks.json` and can be launched from the [command palette](https://code.visualstudio.com/docs/editor/tasks), otherwise you can use a command prompt. All the following instructions have to be executed from the root of the project. They are listed in the order of execution of a complete and classic sequence of build phases.
+Several *commands* and *scripts* are available to generate the *Build Lifecycle* and execute each build phase with their targets, including: build system generation and cleanup, documentation generation, test execution. The scripts are stored in the project root, and the commands can be run from a command prompt.
 
-Commands to **clean the *Build Lifecycle*** (these scripts clean `build/`, `doc/` and `bin/`):
+If you are a VS Code user, all commands have been written as **Visual Studio Code tasks** in `.vscode/tasks.json` and can be launched from the [command palette](https://code.visualstudio.com/docs/editor/tasks). Many of them can also be run from the [Visual Studio Code CMake Tools](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cmake-tools). Scripts are stored in the project root.
 
-```bash
-# clean the Build Lifecycle (on Linux/MacOS)
-./clean-cmake.sh
+The use of commands and scripts is described below, in the order of execution of a complete and classic sequence of build phases. They must be executed from the root project directory:
 
-# clean the Build Lifecycle (on Windows)
-clean-cmake.bat
-```
+- To **clean** the buildsystem (remove content of `build/`, `doc/` and `bin/`):
 
-Commands to **generate the *Build Lifecycle*** (these scripts call the `cmake` command):
+  <details>
+  <summary>see details</summary>
 
-```bash
-# generate the Build Lifecycle (on Linux/MacOS)
-./run-cmake.sh
+  ```bash
+  # On Linux/MacOS
+  ./clean-cmake.sh
 
-# generate the Build Lifecycle (on Windows)
-run-cmake.bat
+  # On Windows
+  clean-cmake.bat
+  ```
 
-# a useful command for listing what targets has been generated
-cmake --build build/ --target help
+  - VS Code task: `Project: Clean`.
+  - **Note:** before running it, edit the script to change the build sub-folder.
+  </details>
 
-# a useful command for listing variables in the cache and their descriptions
-cmake -LAH build/
-```
+- To **generate** the buildsystem (call the `cmake` command):
 
-Commands to **clean and generate the *Build Lifecycle***:
+  <details>
+  <summary>see details</summary>
+  
+  ```bash
+  # On Linux/MacOS
+  ./run-cmake.sh
 
-```bash
-# clean and generate the Build Lifecycle (on Linux/MacOS)
-./clean-cmake.sh && sleep 3s && echo \"\" && ./run-cmake.sh
+  # On Windows
+  run-cmake.bat
+  ```
 
-# clean and generate the Build Lifecycle (on Windows)
-clean-cmake.bat && timeout /t 3 > NUL && echo. && run-cmake.bat
-```
+  - VS Code task: `Project: Clean`.
+  - **Note:** before running it, edit the script to change the default [cmake-presets](https://cmake.org/cmake/help/latest/manual/cmake-presets.7.html).
+  </details>
 
-Commands to **execute the `uninstall` build phase** of the *Build Lifecycle* (only available if the *Export Generator Module* has been activated):
+- To **clean and generate** the buildsystem:
 
-```bash
-# run the uninstall target (on Linux/MacOS)
-sudo cmake --build build/ --target uninstall
+  <details>
+  <summary>see details</summary>
 
-# run the uninstall target (on Windows)
-cmake --build build/ --target uninstall
-```
+  ```bash
+  # On Linux/MacOS
+  ./clean-cmake.sh && echo \"\" && ./run-cmake.sh
 
-Commands to **execute the `clean` build phase** of the *Build Lifecycle*:
+  # On Windows
+  clean-cmake.bat && echo. && run-cmake.bat
+  ```
 
-```bash
-# run the clean target
-cmake --build build/ --target clean
-```
+  - VS Code task: `Project: Clean and Generate`.
+  - **Note:** before running it, edit the script to change the default [cmake-presets](https://cmake.org/cmake/help/latest/manual/cmake-presets.7.html).
+  </details>
 
-Commands to **execute the `compile` build phase** of the *Build Lifecycle*:
+- To **execute the `uninstall`** build phase (call the CMake target 'uninstall'):
 
-```bash
-# build all binary targets (except for tests)
-cmake --build build/ --target all
+  <details>
+  <summary>see details</summary>
 
-# build all binary targets in verbose mode (except for tests)
-cmake --build build/ --target all --verbose
+  ```bash
+  # Run the CMake target 'uninstall' on Linux/MacOS
+  sudo cmake --build --preset "<build-preset-name>" --target uninstall
 
-# execute the `compile` phase after the `clean` phase
-cmake --build build/ --target all --clean-first
+  # Run the CMake target 'uninstall' on Windows
+  cmake --build --preset "<build-preset-name>" --target uninstall
 
-# execute the `compile` phase after the `clean` phase in verbose
-cmake --build build/ --target all --clean-first --verbose
-```
+  # Run the CMake target 'uninstall' on Linux/MacOS without preset
+  sudo cmake --build ./build/<preset-build-folder> --target uninstall
 
-Commands to **execute the `test` build phase** of the *Build Lifecycle* (only available if the *Test Generator Module* has been activated):
+  # Run the CMake target 'uninstall' on Windows without preset
+  cmake --build ./build/<preset-build-folder> --target uninstall
+  ```
 
-```bash
-# build the test binary target and execute the tests binary executable
-cmake --build build/ --target project-name_test && ../bin/project-name_test
-```
+  - VS Code task: `CMake: Uninstall`.
+  - **Note:** commands only available if the *Export Generator Module* has been activated.
+  </details>
 
-Commands to **execute the `doc` build phase** of the *Build Lifecycle* (only available if the *Doc Generator Module* has been activated):
+- To **execute the `clean`** build phase (call the CMake target 'clean'):
 
-```bash
-# run the doc target
-cmake --build build/ --target doc
-```
+  <details>
+  <summary>see details</summary>
 
-Commands to **execute the `install` build phase** of the *Build Lifecycle* (only available if the *Export Generator Module* has been activated):
+  ```bash
+  # Run the CMake target 'clean'
+  cmake --build --preset "<build-preset-name>" --target clean
 
-```bash
-# run the install target (on Linux/MacOS)
-sudo cmake --build build/ --target install
+  # Run the CMake target 'clean' without preset
+  cmake --build ./build/<preset-build-folder> --target clean
+  ```
 
-# run the install target (on Windows)
-cmake --build build/ --target install
-```
+  - VS Code task: `CMake: Clean`.
+  </details>
 
-Commands to **execute the `package` build phase** of the *Build Lifecycle* (only available if the *Package Generator Module* has been activated):
+- To **execute the `default`** build phase (call the CMake target 'all'):
 
-```bash
-# run the package and package_source targets (on Linux/MacOS)
-cmake --build build/ --target package package_source && sleep 3s && rm -rfv bin/_CPack_Packages
+  <details>
+  <summary>see details</summary>
 
-# run the package and package_source targets (on Windows)
-cmake --build build/ --target package package_source && timeout /t 3 > NUL && del /a /f /s /q bin/_CPack_Packages
+  ```bash
+  # Run the CMake target 'all'
+  cmake --build --preset "<build-preset-name>" --target all
 
-# run the package target (on Linux/MacOS)
-cmake --build build/ --target package && sleep 3s && rm -rfv bin/_CPack_Packages
+  # Run the CMake target 'all' in verbose mode
+  cmake --build --preset "<build-preset-name>" --verbose
 
-# run the package target (on Windows)
-cmake --build build/ --target package && timeout /t 3 > NUL && del /a /f /s /q bin/_CPack_Packages
+  # Run the CMake target 'all' without preset
+  cmake --build ./build/<preset-build-folder> --target all
 
-# run the package_source target (on Linux/MacOS)
-cmake --build build/ --target package_source && sleep 3s && rm -rfv bin/_CPack_Packages
+  # Run the CMake target 'all' in verbose mode without preset
+  cmake --build ./build/<preset-build-folder> --target all --verbose
+  ```
 
-# run the package_source target (on Windows)
-cmake --build build/ --target package_source && timeout /t 3 > NUL && del /a /f /s /q bin/_CPack_Packages
+  - VS Code task: `CMake: Build all`.
+  </details>
 
-# a useful command for debugging during the package configuration step (on Linux/MacOS)
-cpack --debug --verbose --config build/CPackConfig.cmake && sleep 3s && rm -rfv bin/_CPack_Packages
+- To **execute the `clean` and `default`** build phases (call the CMake targets 'clean' then 'all'):
 
-# a useful command for debugging during the package configuration step (on Windows)
-cpack --debug --verbose --config build/CPackConfig.cmake && timeout /t 3 > NUL && del /a /f /s /q bin/_CPack_Packages
-```
+  <details>
+  <summary>see details</summary>
 
-Use the following commands to **execute the binaries built** as executable:
+  ```bash
+  # Run the CMake target 'all' after the target 'clean'
+  cmake --build --preset "<build-preset-name>" --target all --clean-first
 
-```bash
-# execute the main binary executable (on Linux/MacOS)
-./bin/project-name
+  # Run the CMake target 'all' after the target 'clean' in verbose mode
+  cmake --build --preset "<build-preset-name>" --target all --clean-first --verbose
+  
+  # Run the CMake target 'all' after the target 'clean' without preset
+  cmake --build ./build/<preset-build-folder> --target all --clean-first
 
-# execute the main binary executable (on Windows)
-bin/project-name
-```
+  # Run the CMake target 'all' after the target 'clean' in verbose mode without preset
+  cmake --build ./build/<preset-build-folder> --target all --clean-first --verbose
+  ```
+
+  - VS Code task: `CMake: Clean and Rebuild all`.
+  </details>
+
+- To **execute the `test`** build phase (call the CMake command 'ctest'):
+
+  <details>
+  <summary>see details</summary>
+
+  ```bash
+  # Run the CMake command 'ctest'
+  ctest --preset "<test-preset-name>"
+
+  # Run the CMake command 'ctest' while displaying much more information
+  ctest --preset "<test-preset-name>" --extra-verbose --debug
+
+  # Run the CMake command 'ctest' without preset
+  ctest --test-dir ./build/<preset-build-folder>
+
+  # Run the CMake command 'ctest' while displaying much more information without preset
+  ctest --test-dir ./build/<preset-build-folder> --extra-verbose --debug
+  ```
+
+  - VS Code task: `CMake: Test`.
+  - **Note:** commands only available if the *Test Generator Module* has been activated.
+  </details>
+
+- To **execute the `doc`** build phase (call the CMake target 'doc'):
+
+  <details>
+  <summary>see details</summary>
+
+  ```bash
+  # Run the CMake target 'doc'
+  cmake --build --preset "<build-preset-name>" --target doc
+
+  # Run the CMake target 'doc' without preset
+  cmake --build ./build/<preset-build-folder> --target doc
+  ```
+
+  - VS Code task: `CMake: Doc`.
+  - **Note:** the 'doc' CMake target is included in 'all' CMake target. This command is only available if the *Doc Generator Module* has been activated.
+  </details>
+
+- To **execute the `install`** build phase (call the CMake target 'install'):
+
+  <details>
+  <summary>see details</summary>
+
+  ```bash
+  # Run the CMake target 'install'
+  cmake --build --preset "<build-preset-name>" --target install
+
+  # Run the CMake target 'install' without preset
+  cmake --build ./build/<preset-build-folder> --target install
+  ```
+
+  - VS Code task: `CMake: Install`.
+  - **Note:** command only available if the *Export Generator Module* has been activated.
+  </details>
+
+- To **execute the `package`** build phase (call the CMake command 'cpack' or the CMake target 'package'):
+
+  <details>
+  <summary>see details</summary>
+
+  ```bash
+  ####### On Linux/MacOS #######
+  # Run the CMake command 'cpack'
+  cpack --preset "<test-preset-name>" && sleep 3s && rm -rfv ./bin/_CPack_Packages
+
+  # Run the CMake targets 'package' and 'package_source'
+  cmake --build --preset "<build-preset-name>" --target package package_source && sleep 3s && rm -rfv ./bin/_CPack_Packages
+
+  ####### On Windows #######
+  # Run the CMake command 'cpack'
+  cpack --preset "<test-preset-name>" && timeout /t 3 > NUL && del /a /f /s /q ./bin/_CPack_Packages
+
+  # Run the CMake targets 'package' and 'package_source'
+  cmake --build --preset "<build-preset-name>" --target package package_source && timeout /t 3 > NUL && del /a /f /s /q ./bin/_CPack_Packages
+  ```
+
+  - VS Code task: `CMake: Package`.
+  - Note: commands only available if the *Package Generator Module* has been activated.
+  </details>
+
+- To **run a binary built** with CMake:
+
+  <details>
+  <summary>see details</summary>
+
+  ```bash
+  # On Linux/MacOS
+  ./bin/<project-name>
+  
+  # On Windows
+  bin/<project-name>
+  ```
+
+  - VS Code task: `CMake: Execute`.
+  </details>
+
+- To **execute a default workflow with `default`, `test`, `doc`** build phases:
+
+  <details>
+  <summary>see details</summary>
+
+  ```bash
+  # Run a default CMake workflow
+  cmake --workflow --preset "<workflow-preset-name>"
+  ```
+
+  - VS Code task: `CMake: Workflow`.
+  </details>
+
+- Some useful commands for debugging:
+
+  <details>
+  <summary>see details</summary>
+
+  ```bash
+  # List what targets has been generated
+  cmake --build ./build/<preset-build-folder> --target help
+
+  # List variables in the cache and their descriptions
+  cmake -LAH ./build/<preset-build-folder>
+
+  # Print all available test labels without running any tests
+  ctest --preset "<test-preset-name>" --extra-verbose --debug --print-labels
+
+  # For debugging during the package configuration step (on Linux/MacOS)
+  cpack --debug --verbose --config ./build/<preset-build-folder>/CPackConfig.cmake && sleep 3s && rm -rfv bin/_CPack_Packages
+
+  # For debugging during the package configuration step (on Windows)
+  cpack --debug --verbose --config ./build/<preset-build-folder>/CPackConfig.cmake && timeout /t 3 > NUL && del /a /f /s /q bin/_CPack_Packages
+  ```
+
+  </details>
 
 ## 📂 Folder structure overview
 
@@ -1065,13 +1209,13 @@ This project has been set up with a specific file/folder structure in mind. The 
 | `bin/` | Any libs that get compiled by the project and the output executables go here, also if you pack your project, the generated files go here. |
 | `build/` | Contains the CMake build-tree. |
 | `cmake/helpers/` | Contains some scripts and all generator modules used to generate the *Build Lifecycle*. |
-| `cmake/modules/` | Contains custom CMake modules. |
+| `cmake/modules/` | Contains custom CMake modules coming from "[CMake Modules Collection](https://github.com/josephgarnier/cmake-modules-collection)" project. |
 | `cmake/project/` | Setting files for configuring the generator modules. |
-| `cmake/toolchains/` | Contains toolchain files for compilers.
+| `cmake/toolchains/` | Contains toolchain files for compilers. |
 | `config/` | Contains configuration files used by the C++ project. |
 | `doc/` | Contains code documentation generated by [Doxygen](http://www.doxygen.org). |
 | `include/` | All necessary third-party header files (.h) and public header files (.h) of the project. |
-| `lib/` | Any libaries needed in the project. |
+| `lib/` | Any libraries needed in the project. |
 | `resources/` | Contains images, musics, maps and all resources needed for the project (e.g for graphical user interfaces). |
 | `src/` | Source files (.cpp) and private/public header files (.h) of the project. |
 | `tests/` | Source files (.cpp) and header files (.h) for the unit testing framework [GTest](https://github.com/google/googletest). |
@@ -1090,7 +1234,7 @@ For this project, several CMake modules had to be developed to complete the comm
 To use a module, follow these instructions:
 
 - copy the module to a directory in your project (e.g. `myproject/cmake/`);
-- in `CMakeLists.txt`, add this directory to search path for CMake modules with `set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}"	"myproject/cmake)"`;
+- in `CMakeLists.txt`, add this directory to search path for CMake modules with `set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "myproject/cmake)"`;
 - in `CMakeLists.txt`, after the previous instruction, include the module with the [`include()` command](https://cmake.org/cmake/help/latest/command/include.html) (e.g. `include(Debug)`).
 
 ## 🤝 Contributing
@@ -1106,7 +1250,7 @@ This project is maintained and developed by [Joseph Garnier](https://www.joseph-
 
 ## ©️ License
 
-This work is licensed under the terms of a <a href="https://opensource.org/license/mit" target="_blank" rel="license noopener noreferrer" style="display:inline-block;">MIT</a>.  See the [LICENSE.md](LICENSE.md) file for details.
+This work is licensed under the terms of the <a href="https://opensource.org/license/mit" target="_blank" rel="license noopener noreferrer" style="display:inline-block;">MIT</a>.  See the [LICENSE.md](LICENSE.md) file for details.
 
 ## 🍻 Acknowledgments
 
