@@ -220,6 +220,8 @@ macro(_print_formated_message)
   list(LENGTH message_args_list message_args_list_size)
   if(${message_args_list_size} GREATER 0)
     _substitute_directives()
+  else()
+    _remove_directives()
   endif()
 
   if(NOT mode STREQUAL "")
@@ -239,7 +241,7 @@ macro(_substitute_directives)
     # Extract the directive "@...@" in traveling through the message parsed like
     # a cursor moving on a ribbon (like on a Turing machine).
     # `message_head` is what has already been parsed, `message_cursor` is what is
-    # currently parsed () and `message_tail` is what will be parsed.
+    # currently parsed and `message_tail` is what will be parsed.
     string(FIND "${message_tail}" "@" pos_first)
     if(${pos_first} EQUAL -1)
       break()
@@ -294,6 +296,12 @@ macro(_substitute_directives)
     string(APPEND message_head "${message_cursor}")
     set(message "${message_head}${message_tail}")
   endwhile()
+endmacro()
+
+#------------------------------------------------------------------------------
+# Internal usage
+macro(_remove_directives)
+  string(REGEX REPLACE "@(ap|rp|apl|rpl)@" "" message "${message}")
 endmacro()
 
 #------------------------------------------------------------------------------
