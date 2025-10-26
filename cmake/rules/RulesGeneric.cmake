@@ -92,11 +92,15 @@ endif()
 # if not found
 find_package("${DEP_NAME}" "${${DEP_NAME}_MIN_VERSION}" NO_MODULE QUIET)
 if(${${DEP_NAME}_FOUND})
-  message(STATUS "${DEP_NAME} v${${DEP_NAME}_MIN_VERSION} found locally: ${${DEP_NAME}_CONFIG}")
+  message(STATUS
+    "${DEP_NAME} v${${DEP_NAME}_MIN_VERSION} found locally: ${${DEP_NAME}_CONFIG}"
+  )
 else()
   if(${${DEP_NAME}_FETCH_AUTODOWNLOAD})
     # Download the dependency and bring it into scope
-    message(STATUS "${DEP_NAME} v${${DEP_NAME}_MIN_VERSION} not found locally, try to download it in the build-tree")
+    message(STATUS
+      "${DEP_NAME} v${${DEP_NAME}_MIN_VERSION} not found locally, try to download it in the build-tree"
+    )
     include(FetchContent)
     set(FETCHCONTENT_QUIET off)
     set(fetch_content_args "")
@@ -157,15 +161,17 @@ else()
 endif()
 
 if(NOT ${${DEP_NAME}_FOUND})
-  if(${${DEP_NAME}_OPTIONAL})
-    message(FATAL_ERROR "Please install the ${DEP_NAME} (v${${DEP_NAME}_MIN_VERSION}) package!")
-  else()
-    message(WARNING "Please install the ${DEP_NAME} (v${${DEP_NAME}_MIN_VERSION}) package!")
+  set(message_mode "WARNING")
+  if(NOT ${${DEP_NAME}_OPTIONAL})
+    set(message_mode "FATAL_ERROR")
   endif()
+  message(${message_mode}
+    "Please install the ${DEP_NAME} (v${${DEP_NAME}_MIN_VERSION}) package!"
+  )
   return()
 endif()
 
-# Links the dependency to the current built target ``CURRENT_TARGET_NAME``
+# Links the dependency to the current target being built
 message(STATUS "Link ${DEP_NAME} to the target '${CURRENT_TARGET_NAME}'")
 target_link_libraries("${CURRENT_TARGET_NAME}"
   PRIVATE

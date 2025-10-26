@@ -86,14 +86,25 @@ endif()
 # Searches for the dependency in local and common directories
 find_package("${DEP_NAME}" "${${DEP_NAME}_MIN_VERSION}" NO_MODULE QUIET)
 if(${${DEP_NAME}_FOUND})
-  message(FATAL_ERROR "${DEP_NAME} v${${DEP_NAME}_MIN_VERSION} not found locally!")
+  message(STATUS
+    "${DEP_NAME} v${${DEP_NAME}_MIN_VERSION} found locally: ${${DEP_NAME}_CONFIG}"
+  )
+else()
+  message(STATUS "${DEP_NAME} v${${DEP_NAME}_MIN_VERSION} not found locally")
+  set(message_mode "WARNING")
+  if(NOT ${${DEP_NAME}_OPTIONAL})
+    set(message_mode "FATAL_ERROR")
+  endif()
+  message(${message_mode}
+    "Please install the ${DEP_NAME} (v${${DEP_NAME}_MIN_VERSION}) package!"
+  )
+  return()
 endif()
-message(STATUS "${DEP_NAME} v${${DEP_NAME}_MIN_VERSION} found locally: ${${DEP_NAME}_CONFIG}")
 
 ######                            <YOUR CODE HERE>                       ######
-######   (remove or uncomment the code above and below is you need to)   ######
+######          (remove the code above and below is you need to)         ######
 
-# Links the dependency to the current built target ``CURRENT_TARGET_NAME``
+# Links the dependency to the current target being built
 message(STATUS "Link ${DEP_NAME} to the target '${CURRENT_TARGET_NAME}'")
 target_link_libraries("${CURRENT_TARGET_NAME}"
   PRIVATE
