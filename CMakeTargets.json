@@ -34,15 +34,20 @@
           },
           "optional": false,
           "configuration": {
-            "compileFeatures": ["cxx_std_20"],
-            "compileDefinitions": ["DEFINE_ONE=1"],
-            "compileOptions": ["-Wall"],
-            "linkOptions": ["-s"]
+            "compileFeatures": [""],
+            "compileDefinitions": [""],
+            "compileOptions": [""],
+            "linkOptions": [""]
           }
         },
         "Qt6": {
-          "rulesFile": "cmake/rules/RulesLibQt.cmake",
-          "minVersion": "4",
+          "rulesFile": "cmake/rules/RulesLibQt6.cmake",
+          "packageLocation": {
+            "windows": "D:/Documents/Software_Libraries/Qt/6.8.0/mingw_64",
+            "unix": "/opt/Qt/6.8.0/gcc_64/lib/cmake",
+            "macos": "/opt/Qt/6.8.0/gcc_64/lib/cmake"
+          },
+          "minVersion": "6.8.0",
           "optional": true
         }
       }
