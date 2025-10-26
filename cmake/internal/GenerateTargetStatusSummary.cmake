@@ -126,10 +126,9 @@ function(generate_target_status_summary target_name output_list_var)
   # Print "External dependencies"
   foreach(dep_name IN ITEMS ${${target_name}_DEPENDENCIES})
     if(${${dep_name}_FOUND})
-      list(APPEND ${output_list_var} "✔ Dependency ${dep_name} linked")
+      list(APPEND ${output_list_var} "✔ Dependency ${dep_name} found")
     else()
-      list(APPEND ${output_list_var} "⚠️ Dependency ${dep_name} not found")
-      # list(APPEND ${output_list_var} "⚠ Dependency ${dep_name} (not found)")
+      list(APPEND ${output_list_var} "⚠ Dependency ${dep_name} not found")
     endif()
   endforeach()
 
