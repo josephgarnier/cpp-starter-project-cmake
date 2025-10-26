@@ -7,7 +7,7 @@
 ******************************************************************************/
 
 #include "source_1.h"
-#include "project-name/project-name_pch.h"
+#include "project-name_pch.h"
 
 Source1::Source1() noexcept
 {

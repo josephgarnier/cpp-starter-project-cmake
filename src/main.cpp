@@ -6,9 +6,9 @@
 * LICENSE file in the root directory of this source tree.
 ******************************************************************************/
 
-#include "project-name/project-name_pch.h"
-#include "project-name/include_1.h"
-#include "project-name/include_2.h"
+#include "project-name_pch.h"
+#include "include_1.h"
+#include "include_2.h"
 #include "source_1.h"
 #include "sub_1/source_sub_1.h"
 #include "sub_2/source_sub_2.h"
