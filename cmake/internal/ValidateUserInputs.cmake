@@ -16,17 +16,18 @@
 #                         <input-value>)
 #
 # Parameters:
-#   output-result-var: The variable in which to store the validation result
-#                      ("on" or "off").
-#   out-err-msg-var: The variable in which to store the error message, if any.
-#   error-on-fail: Controls whether the function raises a fatal error when
-#                  validation fails. Use "on" to trigger a fatal error, or
-#                  "off" to continue execution.
-#   input-value: The project name to validate.
+#   output-result-var  : The variable in which to store the validation result
+#                        ("on" or "off").
+#   out-err-msg-var    : The variable in which to store the error message, if
+#                        any.
+#   error-on-fail      : Controls whether the function raises a fatal error
+#                        when validation fails. Use "on" to trigger a fatal
+#                        error, or "off" to continue execution.
+#   input-value        : The project name to validate.
 #
 # Returns:
-#   output-result-var: The validation result ("on" or "off").
-#   out-err-msg-var: The associated error message, if validation failed.
+#   output-result-var  : The validation result ("on" or "off").
+#   out-err-msg-var    : The associated error message, if validation failed.
 #
 # Errors:
 #   If the provided project name is invalid and ``<error-on-fail>`` is set to
@@ -36,6 +37,9 @@
 #   validate_project_name(is_valid err_msg on "MyProject")
 #------------------------------------------------------------------------------
 function(validate_project_name output_result_var out_err_msg_var error_on_fail input_value)
+  if(NOT ${ARGC} EQUAL 4)
+    message(FATAL_ERROR "validate_project_name() requires exactly 4 arguments, got ${ARGC}!")
+  endif()
   if("${output_result_var}" STREQUAL "")
     message(FATAL_ERROR "output_result_var argument is missing!")
   endif()
@@ -77,17 +81,18 @@ endfunction()
 #                                 <input-value>)
 #
 # Parameters:
-#   output-result-var: The variable in which to store the validation result
-#                      ("on" or "off").
-#   out-err-msg-var: The variable in which to store the error message, if any.
-#   error-on-fail: Controls whether the function raises a fatal error when
-#                  validation fails. Use "on" to trigger a fatal error, or
-#                  "off" to continue execution.
-#   input-value: The cxx standard version to validate.
+#   output-result-var  : The variable in which to store the validation result
+#                        ("on" or "off").
+#   out-err-msg-var    : The variable in which to store the error message, if
+#                        any.
+#   error-on-fail      : Controls whether the function raises a fatal error
+#                        when validation fails. Use "on" to trigger a fatal
+#                        error, or "off" to continue execution.
+#   input-value        : The cxx standard version to validate.
 #
 # Returns:
-#   output-result-var: The validation result ("on" or "off").
-#   out-err-msg-var: The associated error message, if validation failed.
+#   output-result-var  : The validation result ("on" or "off").
+#   out-err-msg-var    : The associated error message, if validation failed.
 #
 # Errors:
 #   If the provided cxx standard version is invalid and ``<error-on-fail>`` is
@@ -97,6 +102,9 @@ endfunction()
 #   validate_cxx_standard_version(is_valid err_msg on "${CMAKE_CXX_STANDARD}")
 #------------------------------------------------------------------------------
 function(validate_cxx_standard_version output_result_var out_err_msg_var error_on_fail input_value)
+  if(NOT ${ARGC} EQUAL 4)
+    message(FATAL_ERROR "validate_cxx_standard_version() requires exactly 4 arguments, got ${ARGC}!")
+  endif()
   if("${output_result_var}" STREQUAL "")
     message(FATAL_ERROR "output_result_var argument is missing!")
   endif()
@@ -138,17 +146,18 @@ endfunction()
 #                       <input-value>)
 #
 # Parameters:
-#   output-result-var: The variable in which to store the validation result
-#                      ("on" or "off").
-#   out-err-msg-var: The variable in which to store the error message, if any.
-#   error-on-fail: Controls whether the function raises a fatal error when
-#                  validation fails. Use "on" to trigger a fatal error, or
-#                  "off" to continue execution.
-#   input-value: The build type to validate.
+#   output-result-var  : The variable in which to store the validation result
+#                        ("on" or "off").
+#   out-err-msg-var    : The variable in which to store the error message, if
+#                        any.
+#   error-on-fail      : Controls whether the function raises a fatal error
+#                        when validation fails. Use "on" to trigger a fatal
+#                        error, or "off" to continue execution.
+#   input-value        : The build type to validate.
 #
 # Returns:
-#   output-result-var: The validation result ("on" or "off").
-#   out-err-msg-var: The associated error message, if validation failed.
+#   output-result-var  : The validation result ("on" or "off").
+#   out-err-msg-var    : The associated error message, if validation failed.
 #
 # Errors:
 #   If the provided build type is invalid and ``<error-on-fail>`` is set to
@@ -158,6 +167,9 @@ endfunction()
 #   validate_build_type(is_valid err_msg on "${CMAKE_BUILD_TYPE}")
 #------------------------------------------------------------------------------
 function(validate_build_type output_result_var out_err_msg_var error_on_fail input_value)
+  if(NOT ${ARGC} EQUAL 4)
+    message(FATAL_ERROR "validate_build_type() requires exactly 4 arguments, got ${ARGC}!")
+  endif()
   if("${output_result_var}" STREQUAL "")
     message(FATAL_ERROR "output_result_var argument is missing!")
   endif()
@@ -199,17 +211,18 @@ endfunction()
 #                        <input-value>)
 #
 # Parameters:
-#   output-result-var: The variable in which to store the validation result
-#                      ("on" or "off").
-#   out-err-msg-var: The variable in which to store the error message, if any.
-#   error-on-fail: Controls whether the function raises a fatal error when
-#                  validation fails. Use "on" to trigger a fatal error, or
-#                  "off" to continue execution.
-#   input-value: The target name to validate.
+#   output-result-var  : The variable in which to store the validation result
+#                        ("on" or "off").
+#   out-err-msg-var    : The variable in which to store the error message, if
+#                        any.
+#   error-on-fail      : Controls whether the function raises a fatal error
+#                        when validation fails. Use "on" to trigger a fatal
+#                        error, or "off" to continue execution.
+#   input-value        : The target name to validate.
 #
 # Returns:
-#   output-result-var: The validation result ("on" or "off").
-#   out-err-msg-var: The associated error message, if validation failed.
+#   output-result-var  : The validation result ("on" or "off").
+#   out-err-msg-var    : The associated error message, if validation failed.
 #
 # Errors:
 #   If the provided target name is invalid and ``<error-on-fail>`` is set to
@@ -219,6 +232,9 @@ endfunction()
 #   validate_target_name(is_valid err_msg on "MyTarget")
 #------------------------------------------------------------------------------
 function(validate_target_name output_result_var out_err_msg_var error_on_fail input_value)
+  if(NOT ${ARGC} EQUAL 4)
+    message(FATAL_ERROR "validate_target_name() requires exactly 4 arguments, got ${ARGC}!")
+  endif()
   if("${output_result_var}" STREQUAL "")
     message(FATAL_ERROR "output_result_var argument is missing!")
   endif()
@@ -260,17 +276,18 @@ endfunction()
 #                           <input-value>)
 #
 # Parameters:
-#   output-result-var: The variable in which to store the validation result
-#                      ("on" or "off").
-#   out-err-msg-var: The variable in which to store the error message, if any.
-#   error-on-fail: Controls whether the function raises a fatal error when
-#                  validation fails. Use "on" to trigger a fatal error, or
-#                  "off" to continue execution.
-#   input-value: The main file path to validate.
+#   output-result-var  : The variable in which to store the validation result
+#                        ("on" or "off").
+#   out-err-msg-var    : The variable in which to store the error message, if
+#                        any.
+#   error-on-fail      : Controls whether the function raises a fatal error
+#                        when validation fails. Use "on" to trigger a fatal
+#                        error, or "off" to continue execution.
+#   input-value        : The main file path to validate.
 #
 # Returns:
-#   output-result-var: The validation result ("on" or "off").
-#   out-err-msg-var: The associated error message, if validation failed.
+#   output-result-var  : The validation result ("on" or "off").
+#   out-err-msg-var    : The associated error message, if validation failed.
 #
 # Errors:
 #   If the provided main file path is invalid and ``<error-on-fail>`` is set to
@@ -280,6 +297,9 @@ endfunction()
 #   validate_main_file_path(is_valid err_msg on "${CMAKE_CURRENT_SOURCE_DIR}/main.cpp")
 #------------------------------------------------------------------------------
 function(validate_main_file_path output_result_var out_err_msg_var error_on_fail input_value)
+  if(NOT ${ARGC} EQUAL 4)
+    message(FATAL_ERROR "validate_main_file_path() requires exactly 4 arguments, got ${ARGC}!")
+  endif()
   if("${output_result_var}" STREQUAL "")
     message(FATAL_ERROR "output_result_var argument is missing!")
   endif()
@@ -323,18 +343,19 @@ endfunction()
 #                          <input-value>)
 #
 # Parameters:
-#   output-result-var: The variable in which to store the validation result
+#   output-result-var  : The variable in which to store the validation result
 #                      ("on" or "off").
-#   out-err-msg-var: The variable in which to store the error message, if any.
-#   error-on-fail: Controls whether the function raises a fatal error when
-#                  validation fails. Use "on" to trigger a fatal error, or
-#                  "off" to continue execution.
-#   public-header-dir: The public headers directory root path.
-#   input-value: The PCH file path to validate.
+#   out-err-msg-var    : The variable in which to store the error message, if
+#                        any.
+#   error-on-fail      : Controls whether the function raises a fatal error
+#                        when validation fails. Use "on" to trigger a fatal
+#                        error, or "off" to continue execution.
+#   public-header-dir  : The public headers directory root path.
+#   input-value        : The PCH file path to validate.
 #
 # Returns:
-#   output-result-var: The validation result ("on" or "off").
-#   out-err-msg-var: The associated error message, if validation failed.
+#   output-result-var  : The validation result ("on" or "off").
+#   out-err-msg-var    : The associated error message, if validation failed.
 #
 # Errors:
 #   If the provided PCH file path is invalid and ``<error-on-fail>`` is set to
@@ -346,6 +367,9 @@ endfunction()
 #                          "${CMAKE_CURRENT_SOURCE_DIR}/pch.h")
 #------------------------------------------------------------------------------
 function(validate_pch_file_path output_result_var out_err_msg_var error_on_fail public_header_dir input_value)
+  if(NOT ${ARGC} EQUAL 5)
+    message(FATAL_ERROR "validate_pch_file_path() requires exactly 5 arguments, got ${ARGC}!")
+  endif()
   if("${output_result_var}" STREQUAL "")
     message(FATAL_ERROR "output_result_var argument is missing!")
   endif()
@@ -397,17 +421,18 @@ endfunction()
 #                     <input-value>)
 #
 # Parameters:
-#   output-result-var: The variable in which to store the validation result
-#                      ("on" or "off").
-#   out-err-msg-var: The variable in which to store the error message, if any.
-#   error-on-fail: Controls whether the function raises a fatal error when
-#                  validation fails. Use "on" to trigger a fatal error, or
-#                  "off" to continue execution.
-#   input-value: The depedency name to validate.
+#   output-result-var  : The variable in which to store the validation result
+#                        ("on" or "off").
+#   out-err-msg-var    : The variable in which to store the error message, if
+#                        any.
+#   error-on-fail      : Controls whether the function raises a fatal error
+#                        when validation fails. Use "on" to trigger a fatal
+#                        error, or "off" to continue execution.
+#   input-value        : The depedency name to validate.
 #
 # Returns:
-#   output-result-var: The validation result ("on" or "off").
-#   out-err-msg-var: The associated error message, if validation failed.
+#   output-result-var  : The validation result ("on" or "off").
+#   out-err-msg-var    : The associated error message, if validation failed.
 #
 # Errors:
 #   If the provided dependency name is invalid and ``<error-on-fail>`` is set to
@@ -417,6 +442,9 @@ endfunction()
 #   validate_dep_name(is_valid err_msg on "DependencyName")
 #------------------------------------------------------------------------------
 function(validate_dep_name output_result_var out_err_msg_var error_on_fail input_value)
+  if(NOT ${ARGC} EQUAL 4)
+    message(FATAL_ERROR "validate_dep_name() requires exactly 4 arguments, got ${ARGC}!")
+  endif()
   if("${output_result_var}" STREQUAL "")
     message(FATAL_ERROR "output_result_var argument is missing!")
   endif()
@@ -462,19 +490,20 @@ endfunction()
 #                                <input-value>)
 #
 # Parameters:
-#   output-result-var: The variable in which to store the validation result
-#                      ("on" or "off").
-#   out-err-msg-var: The variable in which to store the error message, if any.
-#   error-on-fail: Controls whether the function raises a fatal error when
-#                  validation fails. Use "on" to trigger a fatal error, or
-#                  "off" to continue execution.
-#   project-dir: The project directory path.
-#   cmake-rules-dir: The cmake rules files directory path.
-#   input-value: The dependency rules relative file path to validate.
+#   output-result-var  : The variable in which to store the validation result
+#                        ("on" or "off").
+#   out-err-msg-var    : The variable in which to store the error message, if
+#                        any.
+#   error-on-fail      : Controls whether the function raises a fatal error
+#                        when validation fails. Use "on" to trigger a fatal
+#                        error, or "off" to continue execution.
+#   project-dir        : The project directory path.
+#   cmake-rules-dir    : The cmake rules files directory path.
+#   input-value        : The dependency rules relative file path to validate.
 #
 # Returns:
-#   output-result-var: The validation result ("on" or "off").
-#   out-err-msg-var: The associated error message, if validation failed.
+#   output-result-var  : The validation result ("on" or "off").
+#   out-err-msg-var    : The associated error message, if validation failed.
 #
 # Errors:
 #   If the provided dependency rules file path is invalid and ``<error-on-fail>``
@@ -487,6 +516,9 @@ endfunction()
 #                                "rules.cmake")
 #------------------------------------------------------------------------------
 function(validate_dep_rules_file_path output_result_var out_err_msg_var error_on_fail project_dir cmake_rules_dir input_value)
+  if(NOT ${ARGC} EQUAL 6)
+    message(FATAL_ERROR "validate_dep_rules_file_path() requires exactly 6 arguments, got ${ARGC}!")
+  endif()
   if("${output_result_var}" STREQUAL "")
     message(FATAL_ERROR "output_result_var argument is missing!")
   endif()
@@ -548,19 +580,20 @@ endfunction()
 #                              <input-value>)
 #
 # Parameters:
-#   output-result-var: The variable in which to store the validation result
-#                      ("on" or "off").
-#   out-err-msg-var: The variable in which to store the error message, if any.
-#   error-on-fail: Controls whether the function raises a fatal error when
-#                  validation fails. Use "on" to trigger a fatal error, or
-#                  "off" to continue execution.
-#   input-var: The dependency import status variable to validate.
-#   context: The file path where the dependency import status variable is
-#            defined.
+#   output-result-var  : The variable in which to store the validation result
+#                        ("on" or "off").
+#   out-err-msg-var    : The variable in which to store the error message, if
+#                        any.
+#   error-on-fail      : Controls whether the function raises a fatal error when
+#                        validation fails. Use "on" to trigger a fatal error, or
+#                        "off" to continue execution.
+#   input-var          : The dependency import status variable to validate.
+#   context            : The file path where the dependency import status
+#                        variable is defined.
 #
 # Returns:
-#   output-result-var: The validation result ("on" or "off").
-#   out-err-msg-var: The associated error message, if validation failed.
+#   output-result-var  : The validation result ("on" or "off").
+#   out-err-msg-var    : The associated error message, if validation failed.
 #
 # Errors:
 #   If the provided dependency import status variable is invalid and
@@ -570,6 +603,9 @@ endfunction()
 #   validate_dep_import_status(is_valid err_msg on "${spdlog_FOUND}")
 #------------------------------------------------------------------------------
 function(validate_dep_import_status output_result_var out_err_msg_var error_on_fail input_var context)
+  if(NOT ${ARGC} EQUAL 5)
+    message(FATAL_ERROR "validate_dep_import_status() requires exactly 5 arguments, got ${ARGC}!")
+  endif()
   if("${output_result_var}" STREQUAL "")
     message(FATAL_ERROR "output_result_var argument is missing!")
   endif()

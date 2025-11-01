@@ -14,6 +14,9 @@
 # Parameters:
 #   target-name: The name of the target whose properties summary is to be printed.
 #
+# Returns:
+#   None
+#
 # Errors:
 #   If the specified target does not exist.
 #
@@ -21,6 +24,9 @@
 #   print_target_properties_summary("fruit-salad")
 #------------------------------------------------------------------------------
 function(print_target_properties_summary target_name)
+  if(NOT ${ARGC} EQUAL 1)
+    message(FATAL_ERROR "print_target_properties_summary() requires exactly 1 arguments, got ${ARGC}!")
+  endif()
   if("${target_name}" STREQUAL "")
     message(FATAL_ERROR "target_name argument is missing!")
   endif()

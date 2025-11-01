@@ -26,10 +26,16 @@
 # Globals read:
 #   <target-name><target-summary-var-suffix>
 #
+# Returns:
+#   None
+#
 # Example:
 #   print_target_status_summaries("_STATUS_SUMMARY")
 #------------------------------------------------------------------------------
 function(print_target_status_summaries target_summary_var_suffix)
+  if(NOT ${ARGC} EQUAL 1)
+    message(FATAL_ERROR "print_target_status_summaries() requires exactly 1 arguments, got ${ARGC}!")
+  endif()
   if("${target_summary_var_suffix}" STREQUAL "")
     message(FATAL_ERROR "target_summary_var_suffix argument is missing!")
   endif()
@@ -57,8 +63,8 @@ endfunction()
 #                        <root-dir>)
 #
 # Parameters:
-#   output-list-var: The variable in which to store the collected targets.
-#   root-dir: The root directory to scan for targets.
+#   output-list-var  : The variable in which to store the collected targets.
+#   root-dir         : The root directory to scan for targets.
 #
 # Returns:
 #   output-list-var: The list of collected targets.
@@ -70,6 +76,9 @@ endfunction()
 #   _collect_all_targets(list_of_targets "${CMAKE_SOURCE_DIR}")
 #------------------------------------------------------------------------------
 function(_collect_all_targets output_list_var root_dir)
+  if(NOT ${ARGC} EQUAL 2)
+    message(FATAL_ERROR "_collect_all_targets() requires exactly 2 arguments, got ${ARGC}!")
+  endif()
   if("${output_list_var}" STREQUAL "")
     message(FATAL_ERROR "output_list_var argument is missing!")
   endif()

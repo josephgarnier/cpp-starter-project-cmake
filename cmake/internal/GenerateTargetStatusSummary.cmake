@@ -18,8 +18,8 @@
 #                                  <output-list-var>)
 #
 # Parameters:
-#   target-name: The name of the target to generate the summary for.
-#   output-list-var: The name of the variable in which to store the summary.
+#   target-name      : The name of the target to generate the summary for.
+#   output-list-var  : The name of the variable in which to store the summary.
 #
 # Globals read:
 #   <target-name>_TYPE
@@ -46,6 +46,9 @@
 #   generate_target_status_summary("fruit-salad" target_status_summary)
 #------------------------------------------------------------------------------
 function(generate_target_status_summary target_name output_list_var)
+  if(NOT ${ARGC} EQUAL 2)
+    message(FATAL_ERROR "generate_target_status_summary() requires exactly 2 arguments, got ${ARGC}!")
+  endif()
   if("${target_name}" STREQUAL "")
     message(FATAL_ERROR "target_name argument is missing!")
   endif()

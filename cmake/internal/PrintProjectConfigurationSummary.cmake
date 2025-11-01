@@ -10,6 +10,9 @@
 # Signature:
 #   print_project_configuration_summary()
 #
+# Parameters:
+#   None
+#
 # Globals read:
 #   PROJECT_NAME
 #   CMAKE_CXX_STANDARD
@@ -18,6 +21,9 @@
 #   <project-name>_PROJECT_DIR
 #   <project-name>_BUILD_DIR
 #   <project-name>_BIN_DIR
+#
+# Returns:
+#   None
 #
 # Example:
 #   print_project_configuration_summary()

@@ -19,13 +19,14 @@
 #
 # Signature:
 #   import_external_dependency(<target-name>
-#                               <config-target-dir-path>
-#                               <config-dep-name>)
+#                              <config-target-dir-path>
+#                              <config-dep-name>)
 #
 # Parameters:
-#   target-name: The target to link the dependency to.
-#   config-target-dir-path: The directory path of the target's configuration.
-#   dep-name: The name of the external dependency to import and link.
+#   target-name             : The target to link the dependency to.
+#   config-target-dir-path  : The directory path of the target's configuration.
+#   dep-name                : The name of the external dependency to import and
+#                             link.
 #
 # Returns:
 #   <dep-name>_FOUND: A boolean value set to 1 if the dependency is found,
@@ -39,6 +40,9 @@
 #   import_external_dependency("fruit-salad" "src" "AppleLib")
 #------------------------------------------------------------------------------
 function(import_external_dependency target_name config_target_dir_path config_dep_name)
+  if(NOT ${ARGC} EQUAL 3)
+    message(FATAL_ERROR "import_external_dependency() requires exactly 3 arguments, got ${ARGC}!")
+  endif()
   if("${target_name}" STREQUAL "")
     message(FATAL_ERROR "target_name argument is missing!")
   endif()
@@ -83,9 +87,10 @@ endfunction()
 #   _map_dep_settings_to_vars(<config-target-dir-path> <config-dep-name>)
 #
 # Parameters:
-#   config-target-dir-path: The path to the target directory in the configuration
-#                           file.
-#   config-dep-name: The name of the dependency in the configuration file.
+#   config-target-dir-path  : The path to the target directory in the
+#                             configuration file.
+#   config-dep-name         : The name of the dependency in the configuration
+#                             file.
 #
 # Returns:
 #   <dep-name>_RULES_FILE
@@ -117,6 +122,9 @@ endfunction()
 #   _map_dep_settings_to_vars("src" "AppleLib")
 #------------------------------------------------------------------------------
 function(_map_dep_settings_to_vars config_target_dir_path config_dep_name)
+  if(NOT ${ARGC} EQUAL 2)
+    message(FATAL_ERROR "_map_dep_settings_to_vars() requires exactly 2 arguments, got ${ARGC}!")
+  endif()
   if("${config_target_dir_path}" STREQUAL "")
     message(FATAL_ERROR "config_target_dir_path argument is missing!")
   endif()
@@ -308,6 +316,9 @@ endfunction()
 #   _unset_var_if_not_found(TARGET_NAME)
 #------------------------------------------------------------------------------
 function(_unset_var_if_not_found var_name)
+  if(NOT ${ARGC} EQUAL 1)
+    message(FATAL_ERROR "_unset_var_if_not_found() requires exactly 1 arguments, got ${ARGC}!")
+  endif()
   if("${${var_name}}" MATCHES "-NOTFOUND$")
     unset("${var_name}" PARENT_SCOPE)
   endif()
