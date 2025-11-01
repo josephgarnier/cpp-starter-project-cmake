@@ -566,10 +566,15 @@ macro(_binary_target_add_include_dirs)
       # @see https://cmake.org/cmake/help/latest/manual/cmake-buildsystem.7.html#build-specification-and-usage-requirements
       # and https://stackoverflow.com/questions/26243169/cmake-target-include-directories-meaning-of-scope
       # and https://cmake.org/pipermail/cmake/2017-October/066457.html.
-      # If PRIVATE is specified for a certain option/property, then that option/property will only impact
-      # the current target. If PUBLIC is specified, then the option/property impacts both the current
-      # target and any others that link to it. If INTERFACE is specified, then the option/property does
-      # not impact the current target but will propagate to other targets that link to it.
+      # If PRIVATE is specified for a certain option/property, then that option
+      # /property will only impact the current target.
+      # If PUBLIC is specified, then the option/property impacts both the current
+      # target and any others that link to it (consummers).
+      # If INTERFACE is specified, then the option/property does not impact the
+      # current target but will propagate to other targets that link to it
+      # (consummers).
+      # When a target A depends on target B, then A is the consumer and B is the
+      # provider.
       PRIVATE
         "${BBT_INCLUDE_DIRECTORIES}"
     )

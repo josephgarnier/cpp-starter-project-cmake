@@ -26,9 +26,9 @@ Usage
 .. signature::
   debug(DUMP_TARGETS <root-dir>)
 
-  Print all buildsystem targets defined in the given directory ``<root-dir>``
-  and its subdirectories. The output displays each target prefixed by its
-  relative directory path from
+  Print all buildsystem and imported targets defined in the given directory
+  ``<root-dir>`` and its subdirectories. The output displays each target
+  prefixed by its relative directory path from
   :cmake:variable:`CMAKE_SOURCE_DIR <cmake:variable:CMAKE_SOURCE_DIR>`.
 
   Example usage:
@@ -37,12 +37,13 @@ Usage
 
     debug(DUMP_TARGETS "${CMAKE_SOURCE_DIR}")
     # output is:
-    #   -- [] Experimental
-    #   -- [] Nightly
+    #   -- [][Buildsystem] Experimental
+    #   -- [][Buildsystem] Nightly
     #   ...
-    #   -- [tests/data] static_mock_lib
-    #   -- [tests/data] shared_mock_lib
-    #   -- [doc] doc
+    #   -- [tests/data][Buildsystem] static_mock_lib
+    #   -- [tests/data][Buildsystem] shared_mock_lib
+    #   -- [doc][Buildsystem] doc
+    #   -- [src][Imported   ] Qt6::Platform
 
 .. signature::
   debug(DUMP_VARIABLES [<INCLUDE_REGEX|EXCLUDE_REGEX> <regular-expression>])
@@ -130,14 +131,11 @@ Usage
 
     debug(DUMP_TARGET_PROPERTIES my_library)
     # output is:
-    #
-    #   -----
-    #   Properties for TARGET my_library:
-    #     my_library.TYPE = "STATIC_LIBRARY"
-    #     my_library.SOURCES = "src/a.cpp;src/b.cpp"
-    #     my_library.INTERFACE_INCLUDE_DIRECTORIES = "include"
+    #   -- Properties for TARGET my_library:
+    #   --   my_library.TYPE = "STATIC_LIBRARY"
+    #   --   my_library.SOURCES = "src/a.cpp;src/b.cpp"
+    #   --   my_library.INTERFACE_INCLUDE_DIRECTORIES = "include"
     #     ...
-    #   -----
 
 Additional commands
 ^^^^^^^^^^^^^^^^^^^
@@ -189,13 +187,21 @@ print various information about the CMake environment.
 
 * Since generator expressions are evaluated during generation of the
   buildsystem, and not during processing of ``CMakeLists.txt`` files, this
-  command allows to interpret  a generator expression:
+  command allows to interpret a generator expression:
 
   .. code-block:: cmake
 
     file(GENERATE OUTPUT debug.txt CONTENT "$<...>")
 
   Check `the documentation <https://cmake.org/cmake/help/latest/manual/cmake-generator-expressions.7.html#debugging>`__ for more informations.
+
+* Watch a CMake variable for change:
+
+  .. code-block:: cmake
+
+    variable_watch(CMAKE_CXX_STANDARD)
+
+  Check `the documentation <https://cmake.org/cmake/help/latest/command/variable_watch.html>`__ for more informations.
 #]=======================================================================]
 
 include_guard()
@@ -239,10 +245,15 @@ macro(_debug_dump_targets)
       message(FATAL_ERROR "Given path: ${DB_DUMP_TARGETS} does not refer to an existing path or directory on disk!")
   endif()
 
-  get_directory_property(targets DIRECTORY "${DB_DUMP_TARGETS}" BUILDSYSTEM_TARGETS)
+  get_directory_property(local_targets DIRECTORY "${DB_DUMP_TARGETS}" BUILDSYSTEM_TARGETS)
+  get_directory_property(imp_targets DIRECTORY "${DB_DUMP_TARGETS}" IMPORTED_TARGETS)
   file(RELATIVE_PATH rel_dir_path "${CMAKE_SOURCE_DIR}" "${DB_DUMP_TARGETS}")
-  foreach(target IN ITEMS ${targets})
-    message(STATUS "[${rel_dir_path}] ${target}")
+
+  foreach(target IN ITEMS ${local_targets})
+    message(STATUS "[${rel_dir_path}][Buildsystem] ${target}")
+  endforeach()
+  foreach(target IN ITEMS ${imp_targets})
+    message(STATUS "[${rel_dir_path}][Imported   ] ${target}")
   endforeach()
 
   get_directory_property(subdirs DIRECTORY "${DB_DUMP_TARGETS}" SUBDIRECTORIES)
@@ -345,20 +356,13 @@ macro(_debug_dump_target_properties)
   list(REMOVE_DUPLICATES propertie_names)
   list(SORT propertie_names)
 
-  message("")
-  message("-----")
-  list(APPEND CMAKE_MESSAGE_INDENT " ")
-  message("Properties for TARGET ${DB_DUMP_TARGET_PROPERTIES}:")
-  list(APPEND CMAKE_MESSAGE_INDENT "  ")
+  message(STATUS "Properties of TARGET ${DB_DUMP_TARGET_PROPERTIES}:")
   foreach(propertie_name IN ITEMS ${propertie_names})
-    get_property(propertie_set TARGET "${DB_DUMP_TARGET_PROPERTIES}" PROPERTY "${propertie_name}" SET)
+    get_property(propertie_set TARGET "${DB_DUMP_TARGET_PROPERTIES}"
+      PROPERTY "${propertie_name}" SET)
     if(${propertie_set})
       get_target_property(propertie_value "${DB_DUMP_TARGET_PROPERTIES}" "${propertie_name}")
-      message("${DB_DUMP_TARGET_PROPERTIES}.${propertie_name} = \"${propertie_value}\"")
+      message(STATUS "  ${DB_DUMP_TARGET_PROPERTIES}.${propertie_name} = \"${propertie_value}\"")
     endif()
   endforeach()
-  list(POP_BACK CMAKE_MESSAGE_INDENT)
-  list(POP_BACK CMAKE_MESSAGE_INDENT)
-  message("-----")
-  message("")
 endmacro()

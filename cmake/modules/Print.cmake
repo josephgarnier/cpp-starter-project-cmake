@@ -18,10 +18,10 @@ Synopsis
   `Print Formated Message`_
     print([<mode>] "message with formated text" <argument>...)
 
-  `Print Paths List`_
+  `Print Path List`_
     print([<mode>] PATHS <file-path>... [INDENT])
 
-  `Print Strings List`_
+  `Print String List`_
     print([<mode>] STRINGS <string>... [INDENT])
 
 Module Variables
@@ -55,42 +55,99 @@ Usage
   Each directive takes the form ``@specifier@``, where ``specifier`` is one of
   the following:
 
-    ``@ap@``
-      Converts the corresponding argument into an absolute path to an existing file or directory.
+    ``@ap@`` (for "absolute path")
+      Converts the corresponding argument into an absolute path to an existing
+      file or directory.
 
-    ``@rp@``
+    ``@rp@`` (for "relative path")
       Converts the corresponding argument into a path relative to the value of
-      the :variable:`PRINT_BASE_DIR` variable. The file or the directory must exist on the disk.
+      the :variable:`PRINT_BASE_DIR` variable. The file or the directory must
+      exist on the disk.
 
-    ``@apl@``
+    ``@apl@`` (for "absolute path list")
       Converts all the corresponding arguments into a list of absolute paths
-      to existing files or directories. This directive should be used last
-      when the message includes several directives.
+      to existing files or directories. Each item is separated by a comma:
+      ``item1, item2, ...``. This directive should be used last when the
+      message includes several directives.
 
-    ``@rpl@``
+    ``@rpl@`` (for "relative path list")
       Converts all the corresponding argument into a list of path relative to
-      the value of the :variable:`PRINT_BASE_DIR` variable. The files or the
-      directories must exist on the disk.
+      the value of the :variable:`PRINT_BASE_DIR` variable. Each item is
+      separated by a comma: ``item1, item2, ...``. The files or the directories
+      must exist on the disk. This directive should be used last when the
+      message includes several directives.
+
+    ``@sl@`` (for "string list")
+      Converts all the corresponding argument into a list of strings where each
+      item is separated by a comma: ``item1, item2, ...`` like with the
+      :command:`print(STRINGS)` command. This directive should be used last
+      when the message includes several directives.
 
   Example usage:
 
   .. code-block:: cmake
 
-    # Case 1: Without mode
+    # Message with ap and rp directives, without mode
     set(PRINT_BASE_DIR "${CMAKE_SOURCE_DIR}")
     set(my_path "src/main.cpp")
     print("Absolute: @ap@, Relative: @rp@" "${my_path}" "${my_path}")
     # output is:
     #   Absolute: /full/path/to/src/main.cpp, Relative: src/main.cpp
 
-    # Case 2: With status mode
+    # Message with ap and rp directives, with mode
     set(PRINT_BASE_DIR "${CMAKE_SOURCE_DIR}")
     set(my_path "src/main.cpp")
     print(STATUS "Absolute: @ap@, Relative: @rp@" "${my_path}" "${my_path}")
     # output is:
     #   -- Absolute: /full/path/to/src/main.cpp, Relative: src/main.cpp
 
-.. _`Print Paths List`:
+    # Message with apl directive
+    set(PRINT_BASE_DIR "${CMAKE_SOURCE_DIR}")
+    set(path_list
+      "src/main.cpp"
+      "src/source_1.cpp"
+      "src/source_2.cpp"
+      "src/source_3.cpp"
+      "src/source_4.cpp"
+      "src/source_5.cpp"
+      "src/sub_1/source_sub_1.cpp"
+      "src/sub_2/source_sub_2.cpp")
+    print(STATUS "Absolute path list: @apl@." "${path_list}")
+    # output is:
+    #   -- Absolute path list: /full/path/to/src/main.cpp, /full/path/to/src/source_1.cpp, /full/path/to/src/source_2.cpp, /full/path/to/src/source_3.cpp, /full/path/to/src/source_4.cpp, /full/path/to/src/source_5.cpp, /full/path/to/src/sub_1/source_sub_1.cpp, /full/path/to/src/sub_2/source_sub_2.cpp.
+
+    # Message with rpl directive
+    set(PRINT_BASE_DIR "${CMAKE_SOURCE_DIR}")
+    set(path_list
+      "${CMAKE_SOURCE_DIR}/src/main.cpp"
+      "${CMAKE_SOURCE_DIR}/src/source_1.cpp"
+      "${CMAKE_SOURCE_DIR}/src/source_2.cpp"
+      "${CMAKE_SOURCE_DIR}/src/source_3.cpp"
+      "${CMAKE_SOURCE_DIR}/src/source_4.cpp"
+      "${CMAKE_SOURCE_DIR}/src/source_5.cpp"
+      "${CMAKE_SOURCE_DIR}/src/sub_1/source_sub_1.cpp"
+      "${CMAKE_SOURCE_DIR}/src/sub_2/source_sub_2.cpp")
+    print(STATUS "Relative path list: @rpl@." "${path_list}")
+    # output is:
+    #   -- Relative path list: src/main.cpp, src/source_1.cpp, src/source_2.cpp, src/source_3.cpp, src/source_4.cpp, src/source_5.cpp, src/sub_1/source_sub_1.cpp, src/sub_2/source_sub_2.cpp.
+
+    # Message with sl directive
+    set(string_list
+      "apple"
+      "banana"
+      "orange"
+      "pineapple"
+      "carrot"
+      "strawberry"
+      "pineapple"
+      "grape"
+      "lemon"
+      "watermelon")
+    print(STATUS "String list: @sl@." "${string_list}")
+    # output is:
+    #   -- String list: apple, banana, orange, pineapple, carrot, strawberry, pineapple, grape, lemon, watermelon.
+
+.. _`Print Path List`:
 
 .. signature::
   print([<mode>] PATHS <file-path>... [INDENT])
@@ -98,7 +155,9 @@ Usage
 
   Record in the log each file from the specified ``<file-path>`` list after
   converting them to paths relative to the value of the :variable:`PRINT_BASE_DIR`
-  variable. This command is inspired by the :cmake:command:`message() <cmake:command:message>` command from CMake.
+  variable. Each item is separated by a comma: ``item1, item2, ...``. This
+  command is inspired by the :cmake:command:`message() <cmake:command:message>`
+  command from CMake.
 
   The optional ``<mode>`` argument determines the message type and may be any
   of the standard message modes supported by the :cmake:command:`message() <cmake:command:message>` command,
@@ -113,19 +172,28 @@ Usage
   .. code-block:: cmake
 
     set(PRINT_BASE_DIR "${CMAKE_SOURCE_DIR}")
-    set(my_files "${CMAKE_SOURCE_DIR}/src/main.cpp" "${CMAKE_SOURCE_DIR}/include/lib.hpp")
-    print(STATUS PATHS ${my_files} INDENT)
+    set(path_list
+      "${CMAKE_SOURCE_DIR}/src/main.cpp"
+      "${CMAKE_SOURCE_DIR}/src/source_1.cpp"
+      "${CMAKE_SOURCE_DIR}/src/source_2.cpp"
+      "${CMAKE_SOURCE_DIR}/src/source_3.cpp"
+      "${CMAKE_SOURCE_DIR}/src/source_4.cpp"
+      "${CMAKE_SOURCE_DIR}/src/source_5.cpp"
+      "${CMAKE_SOURCE_DIR}/src/sub_1/source_sub_1.cpp"
+      "${CMAKE_SOURCE_DIR}/src/sub_2/source_sub_2.cpp")
+    print(STATUS PATHS ${path_list} INDENT)
     # output is:
-    #   src/main.cpp ; include/lib.hpp
+    #   -- src/main.cpp, src/source_2.cpp, src/source_3.cpp, src/source_4.cpp, src/source_5.cpp, src/sub_1/source_sub_1.cpp, src/sub_2/source_sub_2.cpp
 
-.. _`Print Strings List`:
+.. _`Print String List`:
 
 .. signature::
   print([<mode>] STRINGS <string>... [INDENT])
   :target: STRINGS
 
-  Record in the log each string from the given ``<string>`` list. This command
-  is inspired by the :cmake:command:`message() <cmake:command:message>` command from CMake.
+  Record in the log each string from the given ``<string>`` list. Each item is
+  separated by a comma: ``item1, item2, ...``. This command is inspired by the
+  :cmake:command:`message() <cmake:command:message>` command from CMake.
 
   If specified, the optional ``<mode>`` keyword must be one of the standard
   message modes accepted by the :cmake:command:`message() <cmake:command:message>` command, such as ``STATUS``, ``WARNING``, ``ERROR``, etc.
@@ -138,10 +206,13 @@ Usage
 
   .. code-block:: cmake
 
-    set(my_list "one" "two" "three")
-    print(STATUS STRINGS ${my_list} INDENT)
+    set(string_list
+        "apple" "banana" "orange"
+        "carrot" "strawberry" "pineapple"
+        "grape" "lemon" "watermelon")
+    print(STATUS STRINGS ${string_list} INDENT)
     # output is:
-    #   one ; two ; three
+    #   -- apple, banana, orange, carrot, strawberry, pineapple, grape, lemon, watermelon
 #]=======================================================================]
 
 include_guard()
@@ -288,11 +359,16 @@ macro(_substitute_directives)
       list(JOIN relative_path_list ", " formated_path_list)
       set(directive_to_substitute "${formated_path_list}")
       set(message_args_list "")
+    elseif("${directive_to_substitute}" STREQUAL "@sl@")
+      list(PREPEND message_args_list "${message_arg}")
+      list(JOIN message_args_list ", " formated_string_list)
+      set(directive_to_substitute "${formated_string_list}")
+      set(message_args_list "")
     else()
       message(FATAL_ERROR "Directive ${directive_to_substitute} is unsupported!")
     endif()
     set(message_cursor "${directive_to_substitute}")
-    
+
     string(APPEND message_head "${message_cursor}")
     set(message "${message_head}${message_tail}")
   endwhile()
@@ -301,7 +377,7 @@ endmacro()
 #------------------------------------------------------------------------------
 # Internal usage
 macro(_remove_directives)
-  string(REGEX REPLACE "@(ap|rp|apl|rpl)@" "" message "${message}")
+  string(REGEX REPLACE "@(ap|rp|apl|rpl|sl)@" "" message "${message}")
 endmacro()
 
 #------------------------------------------------------------------------------
@@ -330,7 +406,7 @@ macro(_print_paths_list)
     file(RELATIVE_PATH relative_path "${PRINT_BASE_DIR}" "${file}")
     list(APPEND relative_path_list "${relative_path}")
   endforeach()
-  list(JOIN relative_path_list " ; " formated_message)
+  list(JOIN relative_path_list ", " formated_message)
   set(message "${formated_message}")
 
   if(${PRT_INDENT})
@@ -371,7 +447,7 @@ macro(_print_strings_list)
   foreach(string IN ITEMS ${PRT_STRINGS})
     list(APPEND formated_message "${string}")
   endforeach()
-  list(JOIN formated_message " ; " formated_message)
+  list(JOIN formated_message ", " formated_message)
   set(message "${formated_message}")
 
   if(${PRT_INDENT})

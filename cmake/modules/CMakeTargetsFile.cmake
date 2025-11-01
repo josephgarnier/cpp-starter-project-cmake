@@ -120,26 +120,30 @@ The root object recognizes the following fields:
     array properties:
 
       ``compileFeatures``
-        A list of compile features to pass to the target. It is
-        used as a parameter for the
+        A list of compile features to pass to the target. Example:
+        ``["cxx_std_20", "cxx_thread_local", "cxx_trailing_return_types"]``.
+        It is intended to be used as a parameter for the
         :cmake:command:`target_compile_features() <cmake:command:target_compile_features>`
         command. The property is required, but the array can be empty.
 
       ``compileDefinitions``
-        A list of preprocessor definitions applied when compiling this
-        target. It is used as a parameter for the
+        A list of preprocessor definitions applied when compiling this target.
+        Example: ``["DEFINE_ONE=1", "DEFINE_TWO=2", "OPTION_1"]``. It is
+        intended to be used as a parameter for the
         :cmake:command:`target_compile_definitions() <cmake:command:target_compile_definitions>`
         command. The property is required, but the array can be empty.
 
       ``compileOptions``
-        A list of compiler options to pass when building this
-        target. It is used as a parameter for the
+        A list of compiler options to pass when building this target. Example:
+        ``["-Wall", "-Wextra", "/W4"]``. It is intended to be used as a
+        parameter for the
         :cmake:command:`target_compile_options() <cmake:command:target_compile_options>`
         command. The property is required, but the array can be empty.
 
       ``linkOptions``
-        A list of linker options to pass when building this target. It is used
-        as a parameter for the
+        A list of linker options to pass when building this target. Example:
+        ``["-s", "-z", "/INCREMENTAL:NO"]``. It is intended to be used as a
+        parameter for the
         :cmake:command:`target_link_options() <cmake:command:target_link_options>`
         command. The property is required, but the array can be empty.
 
@@ -270,29 +274,36 @@ The root object recognizes the following fields:
       contains the following array properties:
 
         ``compileFeatures``
-          A list of compile features to pass to the dependency. It is used as
-          a parameter for the
+          A list of compile features that must be enabled or disabled when
+          compiling code that consumes the dependency. Example:
+          ``["cxx_std_20", "cxx_thread_local", "cxx_trailing_return_types"]``.
+          It is intended to be used as a parameter for the
           :cmake:command:`target_compile_features() <cmake:command:target_compile_features>`
           command. The property is required when ``rulesFile`` is ``generic``,
           otherwise optional, but the array can be empty.
 
         ``compileDefinitions``
-          A list of preprocessor definitions applied when compiling the
-          dependency. It is used as a parameter for the
+          A list of compile definitions that must be defined when compiling
+          code that consumes the dependency. Example: ``["DEFINE_ONE=1",
+          "DEFINE_TWO=2", "OPTION_1"]``. It is intended to be used as a
+          parameter for the
           :cmake:command:`target_compile_definitions() <cmake:command:target_compile_definitions>`
           command. The property is required when ``rulesFile`` is ``generic``,
           otherwise optional, but the array can be empty.
 
         ``compileOptions``
-          A list of compiler options to pass when building the dependency. It
-          is used as a parameter for the
+          A list of compiler options that must be supplied to the compiler when
+          compiling code that consumes the dependency. Example: ``["-Wall",
+          "-Wextra", "/W4"]``. It is intended to be used as a parameter for the
           :cmake:command:`target_compile_options() <cmake:command:target_compile_options>`
           command. The property is required when ``rulesFile`` is ``generic``,
           otherwise optional, but the array can be empty.
 
         ``linkOptions``
-          A list of linker options to pass when building this dependency. It is
-          used as a parameter for the
+          A list of linker options that must be enabled or disabled when
+          linking code that consumes the dependency. Example: ``["-s", "-z",
+          "/INCREMENTAL:NO"]``. It is intended to be used as a parameter for
+          the
           :cmake:command:`target_link_options() <cmake:command:target_link_options>`
           command. The property is required when ``rulesFile`` is ``generic``,
           otherwise optional, but the array can be empty.

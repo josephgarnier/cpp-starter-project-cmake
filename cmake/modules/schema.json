@@ -42,28 +42,28 @@
               "type": "object",
               "properties": {
                 "compileFeatures": {
-                  "description": "List of optional CMake compile features required by the target",
+                  "description": "List of optional CMake compile features required by the target (e.g. [\"cxx_std_20\", \"cxx_thread_local\", \"cxx_trailing_return_types\"])",
                   "type": "array",
                   "items": {
                     "type": "string"
                   }
                 },
                 "compileDefinitions": {
-                  "description": "List of optional preprocessor definitions applied when compiling this target",
+                  "description": "List of optional preprocessor definitions applied when compiling this target (e.g. [\"DEFINE_ONE=1\", \"DEFINE_TWO=2\", \"OPTION_1\"])",
                   "type": "array",
                   "items": {
                     "type": "string"
                   }
                 },
                 "compileOptions": {
-                  "description": "List of optional compiler options passed to this target",
+                  "description": "List of optional compiler options passed to this target (e.g. [\"-Wall\", \"-Wextra\", \"/W4\"])",
                   "type": "array",
                   "items": {
                     "type": "string"
                   }
                 },
                 "linkOptions": {
-                  "description": "List of optional linker options passed to this target",
+                  "description": "List of optional linker options passed to this target (e.g. [\"-s\", \"-z\", \"/INCREMENTAL:NO\"])",
                   "type": "array",
                   "items": {
                     "type": "string"
@@ -101,7 +101,7 @@
                   ]
                 },
                 "includeDir": {
-                  "description": "The path to the directory in '/include' from which public headers are collected (only required if mode is 'split')",
+                  "description": "The relative path to the directory in 'include/' from which public headers are collected (only required if mode is 'split')",
                   "type": "string",
                   "pattern": "^include(/.+)?$"
                 }
