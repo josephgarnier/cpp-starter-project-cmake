@@ -479,14 +479,12 @@ endfunction()
 # path must:
 #   - Not be empty
 #   - Exist on disk
-#   - Be located in the cmake rules files directory ``<cmake-rules-dir>``
 #
 # Signature:
 #   validate_dep_rules_file_path(<output-result-var>
 #                                <out-err-msg-var>
 #                                <error-on-fail>
 #                                <project-dir>
-#                                <cmake-rules-dir>
 #                                <input-value>)
 #
 # Parameters:
@@ -498,7 +496,6 @@ endfunction()
 #                        when validation fails. Use "on" to trigger a fatal
 #                        error, or "off" to continue execution.
 #   project-dir        : The project directory path.
-#   cmake-rules-dir    : The cmake rules files directory path.
 #   input-value        : The dependency rules relative file path to validate.
 #
 # Returns:
@@ -512,12 +509,11 @@ endfunction()
 # Example:
 #   validate_dep_rules_file_path(is_valid err_msg on
 #                                "${CMAKE_SOURCE_DIR}"
-#                                "${CMAKE_SOURCE_DIR}/cmake/rules"
 #                                "rules.cmake")
 #------------------------------------------------------------------------------
-function(validate_dep_rules_file_path output_result_var out_err_msg_var error_on_fail project_dir cmake_rules_dir input_value)
-  if(NOT ${ARGC} EQUAL 6)
-    message(FATAL_ERROR "validate_dep_rules_file_path() requires exactly 6 arguments, got ${ARGC}!")
+function(validate_dep_rules_file_path output_result_var out_err_msg_var error_on_fail project_dir input_value)
+  if(NOT ${ARGC} EQUAL 5)
+    message(FATAL_ERROR "validate_dep_rules_file_path() requires exactly 5 arguments, got ${ARGC}!")
   endif()
   if("${output_result_var}" STREQUAL "")
     message(FATAL_ERROR "output_result_var argument is missing!")
@@ -535,13 +531,6 @@ function(validate_dep_rules_file_path output_result_var out_err_msg_var error_on
     OR (NOT IS_DIRECTORY "${project_dir}"))
       message(FATAL_ERROR "Given path: ${project_dir} does not refer to an existing path or directory on disk!")
   endif()
-  if("${cmake_rules_dir}" STREQUAL "")
-    message(FATAL_ERROR "cmake_rules_dir argument is missing!")
-  endif()
-  if((NOT EXISTS "${cmake_rules_dir}")
-    OR (NOT IS_DIRECTORY "${cmake_rules_dir}"))
-      message(FATAL_ERROR "Given path: ${cmake_rules_dir} does not refer to an existing path or directory on disk!")
-  endif()
 
   set(${output_result_var} on)
   set(${out_err_msg_var} "")
@@ -554,9 +543,6 @@ function(validate_dep_rules_file_path output_result_var out_err_msg_var error_on
   elseif(NOT EXISTS "${absolute_rules_file_path}")
     set(${output_result_var} off)
     set(${out_err_msg_var} "Dependency rules file path '${input_value}' does not exist on disk!")
-  elseif(NOT "${absolute_rules_file_path}" MATCHES "^${cmake_rules_dir}")
-    set(${output_result_var} off)
-    set(${out_err_msg_var} "Dependency rules file '@rp@' is not located in the cmake/rules directory!" "${absolute_rules_file_path}")
   endif()
 
   if(NOT ${output_result_var} AND ${error_on_fail})

@@ -144,7 +144,6 @@ function(_map_dep_settings_to_vars config_target_dir_path config_dep_name)
   if(NOT "${${config_dep_name}_RULES_FILE}" STREQUAL "generic")
     validate_dep_rules_file_path(is_valid err_msg on
       "${${PROJECT_NAME}_PROJECT_DIR}"
-      "${${PROJECT_NAME}_CMAKE_RULES_DIR}"
       "${${config_dep_name}_RULES_FILE}"
     )
   endif()
