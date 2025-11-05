@@ -83,7 +83,7 @@ else()
   set(CMAKE_PREFIX_PATH "${${DEP_NAME}_DIR}")
 endif()
 
-# Searches for the dependency in local and common directories
+# Searches for prebuilt dependency in local and common directories
 find_package("${DEP_NAME}" "${${DEP_NAME}_MIN_VERSION}" COMPONENTS Widgets Gui Core Svg Concurrent REQUIRED)
 if(${${DEP_NAME}_FOUND})
   message(STATUS
@@ -122,24 +122,12 @@ qt6_wrap_cpp(MOC_HEADER_FILES ${QOBJECT_HEADER_FILES} TARGET "${CURRENT_TARGET_N
 qt6_wrap_ui(UI_SOURCE_FILES ${UI_FILES})
 qt6_add_resources(RESSOURCE_SOURCE_FILES ${RESSOURCE_FILES})
 
-list(LENGTH MOC_HEADER_FILES nb_header_files)
-if(${nb_header_files} GREATER 0)
-  print(VERBOSE "Moc header files generated: @rpl@" "${MOC_HEADER_FILES}")
-else()
-  message(VERBOSE "Moc header files generated: (none)")
-endif()
-list(LENGTH UI_SOURCE_FILES nb_ui_source_files)
-if(${nb_ui_source_files} GREATER 0)
-  print(VERBOSE "UI source files generated: @rpl@" "${UI_SOURCE_FILES}")
-else()
-  message(VERBOSE "UI source files generated: (none)")
-endif()
-list(LENGTH RESSOURCE_SOURCE_FILES nb_res_source_files)
-if(${nb_res_source_files} GREATER 0)
-  print(VERBOSE "Resources source files generated: @rpl@" "${RESSOURCE_SOURCE_FILES}")
-else()
-  message(VERBOSE "Resources source files generated: (none)")
-endif()
+print_path_list(VERBOSE
+  "Moc header files generated" "${MOC_HEADER_FILES}")
+print_path_list(VERBOSE
+  "UI source files generated" "${UI_SOURCE_FILES}")
+print_path_list(VERBOSE
+  "Resources source files generated" "${RESSOURCE_SOURCE_FILES}")
 
 # Attach files to the current target being built and structure source groups to match
 # project tree

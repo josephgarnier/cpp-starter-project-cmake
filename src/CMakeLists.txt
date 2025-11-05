@@ -94,30 +94,14 @@ cmake_targets_file(GET_VALUE ${BIN_TARGET_NAME}_COMPILE_OPTIONS
 cmake_targets_file(GET_VALUE ${BIN_TARGET_NAME}_LINK_OPTIONS
   TARGET "${CONFIG_TARGET_ID}" KEY "build.linkOptions")
 
-list(LENGTH ${BIN_TARGET_NAME}_COMPILE_FEATURES nb_features)
-if(${nb_features} GREATER 0)
-  message(VERBOSE "Applying compile features: ${${BIN_TARGET_NAME}_COMPILE_FEATURES}")
-else()
-  message(VERBOSE "Applying compile features: (none)")
-endif()
-list(LENGTH ${BIN_TARGET_NAME}_COMPILE_DEFINITIONS nb_defs)
-if(${nb_defs} GREATER 0)
-  message(VERBOSE "Applying compile definitions: ${${BIN_TARGET_NAME}_COMPILE_DEFINITIONS}")
-else()
-  message(VERBOSE "Applying compile definitions: (none)")
-endif()
-list(LENGTH ${BIN_TARGET_NAME}_COMPILE_OPTIONS nb_compile_opts)
-if(${nb_compile_opts} GREATER 0)
-  message(VERBOSE "Applying compile options: ${${BIN_TARGET_NAME}_COMPILE_OPTIONS}")
-else()
-  message(VERBOSE "Applying compile options: (none)")
-endif()
-list(LENGTH ${BIN_TARGET_NAME}_LINK_OPTIONS nb_link_opts)
-if(${nb_link_opts} GREATER 0)
-  message(VERBOSE "Applying link options: ${${BIN_TARGET_NAME}_LINK_OPTIONS}")
-else()
-  message(VERBOSE "Applying link options: (none)")
-endif()
+print_string_list(VERBOSE
+  "Applying compile features" "${${BIN_TARGET_NAME}_COMPILE_FEATURES}")
+print_string_list(VERBOSE
+  "Applying compile definitions" "${${BIN_TARGET_NAME}_COMPILE_DEFINITIONS}")
+print_string_list(VERBOSE
+  "Applying compile options" "${${BIN_TARGET_NAME}_COMPILE_OPTIONS}")
+print_string_list(VERBOSE
+  "Applying link options" "${${BIN_TARGET_NAME}_LINK_OPTIONS}")
 
 binary_target(CONFIGURE_SETTINGS "${BIN_TARGET_NAME}"
   COMPILE_FEATURES "${${BIN_TARGET_NAME}_COMPILE_FEATURES}"
@@ -156,14 +140,10 @@ directory(COLLECT_SOURCES_BY_POLICY
   PRIVATE_HEADER_FILES ${BIN_TARGET_NAME}_PRIVATE_HEADERS
 )
 
-list(LENGTH ${BIN_TARGET_NAME}_PRIVATE_HEADERS private_header_files_count)
-list(LENGTH ${BIN_TARGET_NAME}_PUBLIC_HEADERS public_header_files_count)
-math(EXPR header_files_count
-  "${private_header_files_count} + ${public_header_files_count}"
-)
-print(VERBOSE "Header files collected (${header_files_count}): @rpl@" "${${BIN_TARGET_NAME}_PRIVATE_HEADERS}" "${${BIN_TARGET_NAME}_PUBLIC_HEADERS}")
-list(LENGTH ${BIN_TARGET_NAME}_PRIVATE_SOURCES source_files_count)
-print(VERBOSE "Source files collected (${source_files_count}): @rpl@" "${${BIN_TARGET_NAME}_PRIVATE_SOURCES}")
+print_path_list(VERBOSE
+  "Header files collected" "${${BIN_TARGET_NAME}_PRIVATE_HEADERS};${${BIN_TARGET_NAME}_PUBLIC_HEADERS}")
+print_path_list(VERBOSE
+  "Source files collected" "${${BIN_TARGET_NAME}_PRIVATE_SOURCES}")
 
 list(POP_BACK CMAKE_MESSAGE_INDENT)
 message(VERBOSE "Collecting sources and headers - done")
