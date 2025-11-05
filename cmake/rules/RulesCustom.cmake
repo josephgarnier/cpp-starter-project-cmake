@@ -83,7 +83,7 @@ else()
   set(CMAKE_PREFIX_PATH "${${DEP_NAME}_DIR}")
 endif()
 
-# Searches for the dependency in local and common directories
+# Searches for prebuilt dependency in local and common directories
 find_package("${DEP_NAME}" "${${DEP_NAME}_MIN_VERSION}" NO_MODULE QUIET)
 if(${${DEP_NAME}_FOUND})
   message(STATUS

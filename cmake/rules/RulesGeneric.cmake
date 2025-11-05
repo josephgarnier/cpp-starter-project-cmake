@@ -88,8 +88,8 @@ else()
   set(CMAKE_PREFIX_PATH "${${DEP_NAME}_DIR}")
 endif()
 
-# Searches for the dependency in local and common directories, or downloads it
-# if not found
+# Searches for prebuilt dependency in local and common directories, or downloads
+# it to build it from sources if not found
 find_package("${DEP_NAME}" "${${DEP_NAME}_MIN_VERSION}" NO_MODULE QUIET)
 if(${${DEP_NAME}_FOUND})
   message(STATUS
@@ -97,7 +97,7 @@ if(${${DEP_NAME}_FOUND})
   )
 else()
   if(${${DEP_NAME}_FETCH_AUTODOWNLOAD})
-    # Download the dependency and bring it into scope
+    # Download the dependency sources and bring them into scope
     message(STATUS
       "${DEP_NAME} v${${DEP_NAME}_MIN_VERSION} not found locally, try to download it in the build-tree"
     )
@@ -148,7 +148,8 @@ else()
       USES_TERMINAL_DOWNLOAD on
     )
     FetchContent_MakeAvailable("${DEP_NAME}")
-    if(${${DEP_NAME}_POPULATED})
+    string(TOLOWER "${DEP_NAME}" DEP_NAME_LOWER)
+    if(${${DEP_NAME_LOWER}_POPULATED})
       message(STATUS "${DEP_NAME} downloaded with success")
       set(${DEP_NAME}_FOUND 1)
     else()
