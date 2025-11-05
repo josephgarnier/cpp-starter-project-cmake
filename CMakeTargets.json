@@ -49,6 +49,17 @@
           },
           "minVersion": "6.8.0",
           "optional": true
+        },
+        "googletest": {
+          "rulesFile": "lib/googletest/googletest.cmake",
+          "minVersion": "1.17.0",
+          "fetchInfo": {
+            "autodownload": true,
+            "kind": "git",
+            "repository": "https://github.com/google/googletest.git",
+            "tag": "52eb810"
+          },
+          "optional": true
         }
       }
     }
