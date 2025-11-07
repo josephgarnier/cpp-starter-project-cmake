@@ -172,6 +172,34 @@ if(NOT ${${DEP_NAME}_FOUND})
   return()
 endif()
 
+# Add compile features to the dependency
+message(STATUS "Applying ${DEP_NAME} configuration")
+target_compile_features("${DEP_NAME}"
+  PRIVATE
+    ${${DEP_NAME}_CONFIG_COMPILE_FEATURES} # don't add quote (yeah, the signature is inconsistent with other CMake target commands)
+)
+
+# Add compile definitions to the dependency
+target_compile_definitions("${DEP_NAME}"
+  PRIVATE
+    "${${DEP_NAME}_CONFIG_COMPILE_DEFINITIONS}"
+)
+
+# Add compile options to the dependency
+target_compile_options("${DEP_NAME}"
+  PRIVATE
+    "${${DEP_NAME}_CONFIG_COMPILE_OPTIONS}"
+)
+
+# Add link options to the dependency
+get_target_property(dep_type "${DEP_NAME}" TYPE)
+if(NOT dep_type STREQUAL "STATIC_LIBRARY")
+  target_link_options("${DEP_NAME}"
+    PRIVATE
+      "${${DEP_NAME}_CONFIG_LINK_OPTIONS}"
+  )
+endif()
+
 # Links the dependency to the current target being built
 message(STATUS "Link ${DEP_NAME} to the target '${CURRENT_TARGET_NAME}'")
 target_link_libraries("${CURRENT_TARGET_NAME}"
