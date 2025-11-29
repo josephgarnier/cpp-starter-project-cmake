@@ -63,16 +63,15 @@ function(import_external_dependency target_name config_target_dir_path config_de
   
   # Call the CMake rules file
   if("${${config_dep_name}_RULES_FILE}" STREQUAL "generic")
-    include("${${PROJECT_NAME}_CMAKE_RULES_DIR}/RulesGeneric.cmake")
-    validate_dep_import_status(is_valid err_msg on
-      "${config_dep_name}_FOUND" "RulesGeneric.cmake"
-    )
+    set(rules_file_name "RulesGeneric.cmake")
+    set(rules_file_path "${${PROJECT_NAME}_CMAKE_RULES_DIR}/${rules_file_name}")
   else()
-    include("${${PROJECT_NAME}_PROJECT_DIR}/${${config_dep_name}_RULES_FILE}")
-    validate_dep_import_status(is_valid err_msg on
-      "${config_dep_name}_FOUND" "${${config_dep_name}_RULES_FILE}"
-    )
+    set(rules_file_name "${${config_dep_name}_RULES_FILE}")
+    set(rules_file_path "${${PROJECT_NAME}_PROJECT_DIR}/${rules_file_name}")
   endif()
+  include("${rules_file_path}")
+  validate_dep_import_status(is_valid err_msg on
+    "${config_dep_name}_FOUND" "${rules_file_name}")
 
   return(PROPAGATE "${config_dep_name}_FOUND")
 endfunction()

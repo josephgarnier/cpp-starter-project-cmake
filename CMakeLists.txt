@@ -177,7 +177,7 @@ endif()
 message(STATUS "Processor architecture is ${CMAKE_SYSTEM_PROCESSOR}")
 set(SYSTEM_NAME "${CMAKE_SYSTEM_NAME}-${CMAKE_CXX_COMPILER_ID}-${CMAKE_SYSTEM_PROCESSOR}")
 string(TOLOWER ${SYSTEM_NAME} SYSTEM_NAME)
-message(STATUS "System name set to ${SYSTEM_NAME}")
+message(STATUS "System name set to '${SYSTEM_NAME}'")
 
 ####################### Set output directories ################################
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY           "${${PROJECT_NAME}_BIN_DIR}")
@@ -197,8 +197,9 @@ set(CMAKE_CXX_STANDARD "${PARAM_BUILD_STANDARD_VERSION}")
 set(CMAKE_CXX_STANDARD_REQUIRED on)
 message(STATUS "C++ standard version set to C++${CMAKE_CXX_STANDARD}")
 
+# CMAKE_BUILD_TYPE is set in CMakePresets.json
 validate_build_type(is_valid err_msg on "${CMAKE_BUILD_TYPE}")
-message(STATUS "Build type set to ${CMAKE_BUILD_TYPE}")
+message(STATUS "Build type set to '${CMAKE_BUILD_TYPE}'")
 
 if("${PARAM_DEFAULT_LIBS_TYPE}" STREQUAL "staticLib")
   set(BUILD_SHARED_LIBS off)
@@ -207,7 +208,7 @@ elseif("${PARAM_DEFAULT_LIBS_TYPE}" STREQUAL "sharedLib")
 else()
   message(FATAL_ERROR "Unknown default libraries type: ${PARAM_DEFAULT_LIBS_TYPE}. It must be 'staticLib' or 'sharedLib'!")
 endif()
-message(STATUS "Build shared libs set to ${BUILD_SHARED_LIBS}")
+message(STATUS "Build shared libs set to '${BUILD_SHARED_LIBS}'")
 
 ################### Organize IDE folders and configure generator settings #####
 set(CMAKE_FOLDER "PredefinedTargets")
