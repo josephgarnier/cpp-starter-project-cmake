@@ -286,28 +286,28 @@
                       "type": "object",
                       "properties": {
                         "compileFeatures": {
-                          "description": "List of optional CMake compile features required by this dependency",
+                          "description": "List of optional compile features that must be enabled or disabled when compiling code that consumes the dependency (e.g. [\"cxx_std_20\", \"cxx_thread_local\", \"cxx_trailing_return_types\"])",
                           "type": "array",
                           "items": {
                             "type": "string"
                           }
                         },
                         "compileDefinitions": {
-                          "description": "List of optional preprocessor definitions applied when compiling this dependency",
+                          "description": "List of optional compile definitions that must be defined when compiling code that consumes the dependency (e.g. [\"DEFINE_ONE=1\", \"DEFINE_TWO=2\", \"OPTION_1\"])",
                           "type": "array",
                           "items": {
                             "type": "string"
                           }
                         },
                         "compileOptions": {
-                          "description": "List of optional compiler options passed to this dependency",
+                          "description": "List of optional compiler options that must be supplied to the compiler when compiling code that consumes the dependency (e.g. [\"-Wall\", \"-Wextra\", \"/W4\"])",
                           "type": "array",
                           "items": {
                             "type": "string"
                           }
                         },
                         "linkOptions": {
-                          "description": "List of optional linker options passed to this dependency",
+                          "description": "List of optional linker options that must be enabled or disabled when linking code that consumes the dependency (e.g. [\"-s\", \"-z\", \"/INCREMENTAL:NO\"])",
                           "type": "array",
                           "items": {
                             "type": "string"

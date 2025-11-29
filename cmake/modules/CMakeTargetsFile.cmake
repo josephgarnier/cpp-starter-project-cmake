@@ -28,9 +28,10 @@ possible to have structured properties and they would be difficult to read.
 
 The purpose of this module is to simplify the automated creation of binary
 targets by allowing their settings to be declared in a standardized JSON
-configuration file. The structure of this file is defined using a
-`JSON schema <https://json-schema.org/>`_. Various commands are provided to
-read and interpret this configuration file.
+configuration file. Thus, the `build specification <https://cmake.org/cmake/help/latest/manual/cmake-buildsystem.7.html#target-build-specification>`_ of a target and its `usage
+requirements <https://cmake.org/cmake/help/latest/manual/cmake-buildsystem.7.html#target-usage-requirements>`_ can be easily defined. The structure of this file is defined
+using a `JSON schema <https://json-schema.org/>`_. Various commands are
+provided to read and interpret this configuration file.
 
 The configuration file must be named ``CMakeTargets.json`` and can reside
 anywhere in the project's directory.
@@ -638,10 +639,10 @@ Querying
     # output is:
     #   setting_value (dependencies): AppleLib;BananaLib;CarrotLib;OrangeLib;
     #   PineappleLib
-    cmake_targets_file(TRY_GET_VALUE setting_value TARGET "src" KEY "inexisting.setting")
-    message("setting_value (inexisting.setting): ${setting_value}")
+    cmake_targets_file(TRY_GET_VALUE setting_value TARGET "src" KEY "nonexistent.setting")
+    message("setting_value (nonexistent.setting): ${setting_value}")
     # output is:
-    #   setting_value (inexisting.setting): inexisting.setting-NOTFOUND
+    #   setting_value (nonexistent.setting): nonexistent.setting-NOTFOUND
 
 Debugging
 ^^^^^^^^^
@@ -749,13 +750,13 @@ function(cmake_targets_file)
 endfunction()
 
 #------------------------------------------------------------------------------
-# Internal usage
+# [Internal use only]
 macro(_cmake_targets_file_load)
   if(NOT DEFINED CTF_LOAD)
     message(FATAL_ERROR "LOAD argument is missing or need a value!")
   endif()
   if((NOT EXISTS "${CTF_LOAD}")
-    OR (IS_DIRECTORY "${CTF_LOAD}"))
+      OR (IS_DIRECTORY "${CTF_LOAD}"))
     message(FATAL_ERROR "Given path: ${CTF_LOAD} does not refer to an existing path or file on disk!")
   endif()
   if(NOT "${CTF_LOAD}" MATCHES "\\.json$")
@@ -943,8 +944,11 @@ macro(_cmake_targets_file_load)
 endmacro()
 
 #------------------------------------------------------------------------------
-# Internal usage
+# [Internal use only]
 function(_has_json_property output_var json_block json_path_list)
+  if(NOT ${ARGC} EQUAL 3)
+    message(FATAL_ERROR "_has_json_property() requires exactly 3 arguments, got ${ARGC}!")
+  endif()
   if("${output_var}" STREQUAL "")
     message(FATAL_ERROR "output_var argument is empty!")
   endif()
@@ -961,8 +965,11 @@ function(_has_json_property output_var json_block json_path_list)
 endfunction()
 
 #------------------------------------------------------------------------------
-# Internal usage
+# [Internal use only]
 function(_get_json_value output_var json_block json_path_list json_type is_required)
+  if(NOT ${ARGC} EQUAL 5)
+    message(FATAL_ERROR "_get_json_value() requires exactly 5 arguments, got ${ARGC}!")
+  endif()
   if("${output_var}" STREQUAL "")
     message(FATAL_ERROR "output_var argument is empty!")
   endif()
@@ -995,8 +1002,11 @@ function(_get_json_value output_var json_block json_path_list json_type is_requi
 endfunction()
 
 #------------------------------------------------------------------------------
-# Internal usage
+# [Internal use only]
 function(_get_json_array output_list_var json_block json_path_list is_required)
+  if(NOT ${ARGC} EQUAL 4)
+    message(FATAL_ERROR "_get_json_array() requires exactly 4 arguments, got ${ARGC}!")
+  endif()
   if("${output_list_var}" STREQUAL "")
     message(FATAL_ERROR "output_list_var argument is empty!")
   endif()
@@ -1028,8 +1038,11 @@ function(_get_json_array output_list_var json_block json_path_list is_required)
 endfunction()
 
 #------------------------------------------------------------------------------
-# Internal usage
+# [Internal use only]
 function(_json_array_to_list output_list_var json_array)
+  if(NOT ${ARGC} EQUAL 2)
+    message(FATAL_ERROR "_json_array_to_list() requires exactly 2 arguments, got ${ARGC}!")
+  endif()
   if("${output_list_var}" STREQUAL "")
     message(FATAL_ERROR "output_list_var argument is empty!")
   endif()
@@ -1054,8 +1067,11 @@ function(_json_array_to_list output_list_var json_array)
 endfunction()
 
 #------------------------------------------------------------------------------
-# Internal usage
+# [Internal use only]
 function(_get_json_object output_map_var json_block json_path_list is_required)
+  if(NOT ${ARGC} EQUAL 4)
+    message(FATAL_ERROR "_get_json_object() requires exactly 4 arguments, got ${ARGC}!")
+  endif()
   if("${output_map_var}" STREQUAL "")
     message(FATAL_ERROR "output_map_var argument is empty!")
   endif()
@@ -1087,8 +1103,11 @@ function(_get_json_object output_map_var json_block json_path_list is_required)
 endfunction()
 
 #------------------------------------------------------------------------------
-# Internal usage
+# [Internal use only]
 function(_json_object_to_map output_map_var json_object)
+  if(NOT ${ARGC} EQUAL 2)
+    message(FATAL_ERROR "_json_object_to_map() requires exactly 2 arguments, got ${ARGC}!")
+  endif()
   if("${output_map_var}" STREQUAL "")
     message(FATAL_ERROR "output_map_var argument is empty!")
   endif()
@@ -1114,8 +1133,11 @@ function(_json_object_to_map output_map_var json_object)
 endfunction()
 
 #------------------------------------------------------------------------------
-# Internal usage
+# [Internal use only]
 function(_serialize_list output_var input_list)
+  if(NOT ${ARGC} EQUAL 2)
+    message(FATAL_ERROR "_serialize_list() requires exactly 2 arguments, got ${ARGC}!")
+  endif()
   if("${output_var}" STREQUAL "")
     message(FATAL_ERROR "output_var argument is empty!")
   endif()
@@ -1126,8 +1148,11 @@ function(_serialize_list output_var input_list)
 endfunction()
 
 #------------------------------------------------------------------------------
-# Internal usage
+# [Internal use only]
 function(_deserialize_list output_list_var encoded_string)
+  if(NOT ${ARGC} EQUAL 2)
+    message(FATAL_ERROR "_deserialize_list() requires exactly 2 arguments, got ${ARGC}!")
+  endif()
   if("${output_list_var}" STREQUAL "")
     message(FATAL_ERROR "output_list_var argument is empty!")
   endif()
@@ -1139,8 +1164,11 @@ function(_deserialize_list output_list_var encoded_string)
 endfunction()
 
 #------------------------------------------------------------------------------
-# Internal usage
+# [Internal use only]
 function(_is_serialized_list output_var input_string)
+  if(NOT ${ARGC} EQUAL 2)
+    message(FATAL_ERROR "_is_serialized_list() requires exactly 2 arguments, got ${ARGC}!")
+  endif()
   if("${output_var}" STREQUAL "")
     message(FATAL_ERROR "output_var argument is empty!")
   endif()
@@ -1155,7 +1183,8 @@ function(_is_serialized_list output_var input_string)
 endfunction()
 
 #------------------------------------------------------------------------------
-# Internal usage. This function validates a JSON string property.
+# [Internal use only]
+# Validates a JSON string property.
 #
 # Signature:
 #   _validate_json_string(PROP_PATH [<prop-key>...]
@@ -1165,19 +1194,20 @@ endfunction()
 #                         [PATTERN <regex>])
 #
 # Parameters:
-#   PROP_PATH: The path (as list of keys) to the property to validate.
-#   PROP_VALUE: The string coming from the property to validate. The value must
-#               be a string of text.
-#   MIN_LENGTH: The minimum length of the string for the PROP_VALUE. The value
-#               MUST be a non-negative integer. To be valid, the length of
-#               PROP_VALUE must be greater than, or equal to, MIN_LENGTH.
-#   MAX_LENGTH: The maximum length of the string for the PROP_VALUE. The value
-#               MUST be a non-negative integer. To be valid, the length of
-#               PROP_VALUE must be less than, or equal to, MAX_LENGTH.
-#   PATTERN: The regular expression that the PROP_VALUE must match. The value
-#            MUST be a string. This string SHOULD be a valid regular expression,
-#            according to the CMake regular expression dialect. The be valid,
-#            PROP_VALUE must match the regular expression matches successfully.
+#   PROP_PATH   : The path (as list of keys) to the property to validate.
+#   PROP_VALUE  : The string coming from the property to validate. The value 
+#                 must be a string of text.
+#   MIN_LENGTH  : The minimum length of the string for the PROP_VALUE. The
+#                 value MUST be a non-negative integer. To be valid, the length
+#                 of PROP_VALUE must be greater than, or equal to, MIN_LENGTH.
+#   MAX_LENGTH  : The maximum length of the string for the PROP_VALUE. The
+#                 value MUST be a non-negative integer. To be valid, the length
+#                 of PROP_VALUE must be less than, or equal to, MAX_LENGTH.
+#   PATTERN     : The regular expression that the PROP_VALUE must match. The
+#                 value MUST be a string. This string SHOULD be a valid regular
+#                 expression, according to the CMake regular expression dialect.
+#                 To be valid, PROP_VALUE must match the regular expression
+#                 matches successfully.
 #
 # Returns:
 #   None
@@ -1197,11 +1227,11 @@ function(_validate_json_string)
     message(FATAL_ERROR "Unrecognized arguments: \"${VJS_UNPARSED_ARGUMENTS}\"")
   endif()
   if((NOT DEFINED VJS_PROP_PATH)
-    AND (NOT "PROP_PATH" IN_LIST VJS_KEYWORDS_MISSING_VALUES))
+      AND (NOT "PROP_PATH" IN_LIST VJS_KEYWORDS_MISSING_VALUES))
     message(FATAL_ERROR "PROP_PATH argument is missing or need a value!")
   endif()
   if((NOT DEFINED VJS_PROP_VALUE)
-    AND (NOT "PROP_VALUE" IN_LIST VJS_KEYWORDS_MISSING_VALUES))
+      AND (NOT "PROP_VALUE" IN_LIST VJS_KEYWORDS_MISSING_VALUES))
     message(FATAL_ERROR "PROP_VALUE argument is missing or need a value!")
   endif()
   if("MIN_LENGTH" IN_LIST VJS_KEYWORDS_MISSING_VALUES)
@@ -1257,16 +1287,17 @@ function(_validate_json_string)
 endfunction()
 
 #------------------------------------------------------------------------------
-# Internal usage. This function validates a JSON boolean property.
+# [Internal use only]
+# Validates a JSON boolean property.
 #
 # Signature:
 #   _validate_json_boolean(PROP_PATH [<prop-key>...]
 #                          PROP_VALUE <number>)
 #
 # Parameters:
-#   PROP_PATH: The path (as list of keys) to the property to validate.
-#   PROP_VALUE: The boolean coming from the property to validate. The value must
-#               be 'ON' or 'OFF'.
+#   PROP_PATH   : The path (as list of keys) to the property to validate.
+#   PROP_VALUE  : The boolean coming from the property to validate. The value
+#                 must be 'ON' or 'OFF'.
 #
 # Returns:
 #   None
@@ -1285,7 +1316,7 @@ function(_validate_json_boolean)
     message(FATAL_ERROR "Unrecognized arguments: \"${VJB_UNPARSED_ARGUMENTS}\"")
   endif()
   if((NOT DEFINED VJB_PROP_PATH)
-    AND (NOT "PROP_PATH" IN_LIST VJB_KEYWORDS_MISSING_VALUES))
+      AND (NOT "PROP_PATH" IN_LIST VJB_KEYWORDS_MISSING_VALUES))
     message(FATAL_ERROR "PROP_PATH argument is missing or need a value!")
   endif()
   if(NOT DEFINED VJB_PROP_VALUE)
@@ -1299,7 +1330,8 @@ function(_validate_json_boolean)
 endfunction()
 
 #------------------------------------------------------------------------------
-# Internal usage. This function validates a JSON number property.
+# [Internal use only]
+# This function validates a JSON number property.
 #
 # Signature:
 #   _validate_json_number(PROP_PATH [<prop-key>...]
@@ -1311,23 +1343,23 @@ endfunction()
 #                         [EXCLU_MAX <number>])
 #
 # Parameters:
-#   PROP_PATH: The path (as list of keys) to the property to validate.
-#   PROP_VALUE: The number coming from the property to validate. Can be an
-#               integer (e.g. 1) or floating-point (e.g. 1.0) value.
-#   MULTIPLE_OF: The multiple of which the PROP_VALUE must be a multiple. The
-#                value MUST be an integer, strictly greater than 0.
-#   MIN: The minimum value allowed for the PROP_VALUE. The value MUST be a
-#        number, representing an inclusive lower limit. To be valid, PROP_VALUE
-#        >= MIN must be true.
-#   EXCLU_MIN: The minimum exclusive value allowed for the PROP_VALUE. The value
-#              MUST be a number, representing an exclusive lower limit. To be
-#              valid, PROP_VALUE > EXCLU_MIN must be true.
-#   MAX: The maximum value allowed for the PROP_VALUE. The value MUST be a
-#        number, representing an inclusive upper limit. To be valid, PROP_VALUE
-#        <= MAX must be true.
-#   EXCLU_MAX: The maximum exclusive value allowed for the PROP_VALUE. The value
-#              MUST be a number, representing an exclusive upper limit. To be
-#              valid, PROP_VALUE < EXCLU_MAX must be true.
+#   PROP_PATH    : The path (as list of keys) to the property to validate.
+#   PROP_VALUE   : The number coming from the property to validate. Can be an
+#                  integer (e.g. 1) or floating-point (e.g. 1.0) value.
+#   MULTIPLE_OF  : The multiple of which the PROP_VALUE must be a multiple. The
+#                  value MUST be an integer, strictly greater than 0.
+#   MIN          : The minimum value allowed for the PROP_VALUE. The value MUST
+#                  be a number, representing an inclusive lower limit. To be
+#                  valid, PROP_VALUE >= MIN must be true.
+#   EXCLU_MIN    : The minimum exclusive value allowed for the PROP_VALUE. The
+#                  value MUST be a number, representing an exclusive lower
+#                  limit. To be valid, PROP_VALUE > EXCLU_MIN must be true.
+#   MAX          : The maximum value allowed for the PROP_VALUE. The value MUST
+#                  be a number, representing an inclusive upper limit. To be
+#                  valid, PROP_VALUE <= MAX must be true.
+#   EXCLU_MAX    : The maximum exclusive value allowed for the PROP_VALUE. The
+#                  value MUST be a number, representing an exclusive upper
+#                  limit. To be valid, PROP_VALUE < EXCLU_MAX must be true.
 #
 # Returns:
 #   None
@@ -1348,7 +1380,7 @@ function(_validate_json_number)
     message(FATAL_ERROR "Unrecognized arguments: \"${VJN_UNPARSED_ARGUMENTS}\"")
   endif()
   if((NOT DEFINED VJN_PROP_PATH)
-    AND (NOT "PROP_PATH" IN_LIST VJN_KEYWORDS_MISSING_VALUES))
+      AND (NOT "PROP_PATH" IN_LIST VJN_KEYWORDS_MISSING_VALUES))
     message(FATAL_ERROR "PROP_PATH argument is missing or need a value!")
   endif()
   if(NOT DEFINED VJN_PROP_VALUE)
@@ -1453,7 +1485,7 @@ function(_validate_json_number)
 endfunction()
 
 #------------------------------------------------------------------------------
-# Internal usage
+# [Internal use only]
 macro(_cmake_targets_file_is_loaded)
   if(NOT DEFINED CTF_IS_LOADED)
     message(FATAL_ERROR "IS_LOADED argument is missing or need a value!")
@@ -1468,7 +1500,7 @@ macro(_cmake_targets_file_is_loaded)
 endmacro()
 
 #------------------------------------------------------------------------------
-# Internal usage
+# [Internal use only]
 macro(_cmake_targets_file_get_loaded_file)
   if(NOT DEFINED CTF_GET_LOADED_FILE)
     message(FATAL_ERROR "GET_LOADED_FILE argument is missing or need a value!")
@@ -1485,7 +1517,7 @@ macro(_cmake_targets_file_get_loaded_file)
 endmacro()
 
 #------------------------------------------------------------------------------
-# Internal usage
+# [Internal use only]
 macro(_cmake_targets_file_has_config)
   if(NOT DEFINED CTF_HAS_CONFIG)
     message(FATAL_ERROR "HAS_CONFIG argument is missing or need a value!")
@@ -1504,7 +1536,7 @@ macro(_cmake_targets_file_has_config)
 endmacro()
 
 #------------------------------------------------------------------------------
-# Internal usage
+# [Internal use only]
 macro(_cmake_targets_file_get_value)
   if(NOT DEFINED CTF_GET_VALUE)
     message(FATAL_ERROR "GET_VALUE argument is missing or need a value!")
@@ -1538,7 +1570,7 @@ macro(_cmake_targets_file_get_value)
 endmacro()
 
 #------------------------------------------------------------------------------
-# Internal usage
+# [Internal use only]
 macro(_cmake_targets_file_try_get_value)
   if(NOT DEFINED CTF_TRY_GET_VALUE)
     message(FATAL_ERROR "TRY_GET_VALUE argument is missing or need a value!")
@@ -1567,7 +1599,7 @@ macro(_cmake_targets_file_try_get_value)
 endmacro()
 
 #------------------------------------------------------------------------------
-# Internal usage
+# [Internal use only]
 macro(_cmake_targets_file_get_settings)
   if(NOT DEFINED CTF_GET_SETTINGS)
     message(FATAL_ERROR "GET_SETTINGS argument is missing or need a value!")
@@ -1583,7 +1615,7 @@ macro(_cmake_targets_file_get_settings)
 endmacro()
 
 #------------------------------------------------------------------------------
-# Internal usage
+# [Internal use only]
 macro(_cmake_targets_file_has_setting)
   if(NOT DEFINED CTF_HAS_SETTING)
     message(FATAL_ERROR "HAS_SETTING argument is missing or need a value!")
@@ -1607,7 +1639,7 @@ macro(_cmake_targets_file_has_setting)
 endmacro()
 
 #------------------------------------------------------------------------------
-# Internal usage
+# [Internal use only]
 macro(_cmake_targets_file_get_keys)
   if(NOT DEFINED CTF_GET_KEYS)
     message(FATAL_ERROR "GET_KEYS argument is missing or need a value!")
@@ -1624,7 +1656,7 @@ macro(_cmake_targets_file_get_keys)
 endmacro()
 
 #------------------------------------------------------------------------------
-# Internal usage
+# [Internal use only]
 macro(_cmake_targets_file_print_configs)
   if(NOT ${CTF_PRINT_CONFIGS})
     message(FATAL_ERROR "PRINT_CONFIGS arguments is missing!")
@@ -1639,7 +1671,7 @@ macro(_cmake_targets_file_print_configs)
 endmacro()
 
 #------------------------------------------------------------------------------
-# Internal usage
+# [Internal use only]
 macro(_cmake_targets_file_print_target_config)
   if(NOT DEFINED CTF_PRINT_TARGET_CONFIG)
     message(FATAL_ERROR "PRINT_TARGET_CONFIG argument is missing or need a value!")
@@ -1677,8 +1709,11 @@ macro(_cmake_targets_file_print_target_config)
 endmacro()
 
 #------------------------------------------------------------------------------
-# Internal usage
+# [Internal use only]
 function(_assert_config_file_loaded)
+  if(NOT ${ARGC} EQUAL 0)
+    message(FATAL_ERROR "_assert_config_file_loaded() requires exactly 0 arguments, got ${ARGC}!")
+  endif()
   get_property(is_file_loaded GLOBAL PROPERTY "TARGETS_CONFIG_LOADED")
   if(NOT "${is_file_loaded}" STREQUAL "on")
     message(FATAL_ERROR "Targets configuration not loaded. Call cmake_targets_file(LOAD) first!")
@@ -1686,8 +1721,11 @@ function(_assert_config_file_loaded)
 endfunction()
 
 #------------------------------------------------------------------------------
-# Internal usage
+# [Internal use only]
 function(_assert_target_config_exists target_dir_path)
+  if(NOT ${ARGC} EQUAL 1)
+    message(FATAL_ERROR "_assert_target_config_exists() requires exactly 1 arguments, got ${ARGC}!")
+  endif()
   if("${target_dir_path}" STREQUAL "")
     message(FATAL_ERROR "target_dir_path argument is empty!")
   endif()

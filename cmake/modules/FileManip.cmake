@@ -133,7 +133,7 @@ function(file_manip)
   elseif(DEFINED FM_STRIP_PATH)
     _file_manip_strip_path()
   elseif((DEFINED FM_GET_COMPONENT)
-    OR ("GET_COMPONENT" IN_LIST FM_KEYWORDS_MISSING_VALUES))
+      OR ("GET_COMPONENT" IN_LIST FM_KEYWORDS_MISSING_VALUES))
     if("${FM_MODE}" STREQUAL DIRECTORY)
       _file_manip_get_component_directory()
     elseif("${FM_MODE}" STREQUAL NAME)
@@ -147,7 +147,7 @@ function(file_manip)
 endfunction()
 
 #------------------------------------------------------------------------------
-# Internal usage
+# [Internal use only]
 macro(_file_manip_relative_path)
   if(NOT DEFINED FM_RELATIVE_PATH)
     message(FATAL_ERROR "RELATIVE_PATH arguments is missing!")
@@ -156,7 +156,7 @@ macro(_file_manip_relative_path)
     message(FATAL_ERROR "BASE_DIR arguments is missing!")
   endif()
   if((NOT EXISTS "${FM_BASE_DIR}")
-    OR (NOT IS_DIRECTORY "${FM_BASE_DIR}"))
+      OR (NOT IS_DIRECTORY "${FM_BASE_DIR}"))
     message(FATAL_ERROR "Given path: ${FM_BASE_DIR} does not refer to an existing path or directory on disk!")
   endif()
 
@@ -177,7 +177,7 @@ macro(_file_manip_relative_path)
 endmacro()
 
 #------------------------------------------------------------------------------
-# Internal usage
+# [Internal use only]
 macro(_file_manip_absolute_path)
   if(NOT DEFINED FM_ABSOLUTE_PATH)
     message(FATAL_ERROR "ABSOLUTE_PATH arguments is missing!")
@@ -186,7 +186,7 @@ macro(_file_manip_absolute_path)
     message(FATAL_ERROR "BASE_DIR arguments is missing!")
   endif()
   if((NOT EXISTS "${FM_BASE_DIR}")
-    OR (NOT IS_DIRECTORY "${FM_BASE_DIR}"))
+      OR (NOT IS_DIRECTORY "${FM_BASE_DIR}"))
     message(FATAL_ERROR "Given path: ${FM_BASE_DIR} does not refer to an existing path or directory on disk!")
   endif()
 
@@ -207,7 +207,7 @@ macro(_file_manip_absolute_path)
 endmacro()
 
 #------------------------------------------------------------------------------
-# Internal usage
+# [Internal use only]
 macro(_file_manip_strip_path)
   if(NOT DEFINED FM_STRIP_PATH)
     message(FATAL_ERROR "STRIP_PATH arguments is missing!")
@@ -230,10 +230,10 @@ macro(_file_manip_strip_path)
 endmacro()
 
 #------------------------------------------------------------------------------
-# Internal usage
+# [Internal use only]
 macro(_file_manip_get_component_directory)
   if((NOT DEFINED FM_GET_COMPONENT)
-    AND (NOT "GET_COMPONENT" IN_LIST FM_KEYWORDS_MISSING_VALUES))
+      AND (NOT "GET_COMPONENT" IN_LIST FM_KEYWORDS_MISSING_VALUES))
     message(FATAL_ERROR "GET_COMPONENT arguments is missing!")
   endif()
   if(NOT DEFINED FM_MODE)
@@ -253,10 +253,10 @@ macro(_file_manip_get_component_directory)
 endmacro()
 
 #------------------------------------------------------------------------------
-# Internal usage
+# [Internal use only]
 macro(_file_manip_get_component_name)
   if((NOT DEFINED FM_GET_COMPONENT)
-    AND (NOT "GET_COMPONENT" IN_LIST FM_KEYWORDS_MISSING_VALUES))
+      AND (NOT "GET_COMPONENT" IN_LIST FM_KEYWORDS_MISSING_VALUES))
     message(FATAL_ERROR "GET_COMPONENT arguments is missing!")
   endif()
   if(NOT DEFINED FM_MODE)

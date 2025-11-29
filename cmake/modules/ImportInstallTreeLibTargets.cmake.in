@@ -8,15 +8,14 @@
 get_filename_component(_IMPORT_PREFIX "${CMAKE_CURRENT_LIST_FILE}" PATH)
 get_filename_component(_IMPORT_PREFIX "${_IMPORT_PREFIX}" PATH)
 get_filename_component(_IMPORT_PREFIX "${_IMPORT_PREFIX}" PATH)
-get_filename_component(_IMPORT_PREFIX "${_IMPORT_PREFIX}" PATH)
 if(_IMPORT_PREFIX STREQUAL "/")
   set(_IMPORT_PREFIX "")
 endif()
 
-# Create imported target "@lib_target_name@"
+# Create imported target "$<TARGET_PROPERTY:NAME>"
 add_library("$<TARGET_PROPERTY:NAME>" @lib_target_type@ IMPORTED)
 
-# Import target "@lib_target_name@" for configuration "@lib_target_type@"
+# Import target "$<TARGET_PROPERTY:NAME>" for configuration "$<CONFIG>"
 set_target_properties("$<TARGET_PROPERTY:NAME>" PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/$<TARGET_PROPERTY:INTERFACE_INCLUDE_DIRECTORIES_INSTALL>"
   IMPORTED_LOCATION_$<CONFIG> "${_IMPORT_PREFIX}/$<TARGET_PROPERTY:IMPORTED_LOCATION_INSTALL_$<CONFIG>>"
@@ -24,7 +23,6 @@ set_target_properties("$<TARGET_PROPERTY:NAME>" PROPERTIES
   IMPORTED_SONAME_$<CONFIG> "$<TARGET_PROPERTY:IMPORTED_SONAME_$<CONFIG>>"
 )
 set_property(TARGET "$<TARGET_PROPERTY:NAME>" APPEND PROPERTY IMPORTED_CONFIGURATIONS "$<CONFIG>")
-
 # Cleanup temporary variables
-unset(_IMPORT_PREFIX)
+set(_IMPORT_PREFIX)
 #----------------------------------------------------------------

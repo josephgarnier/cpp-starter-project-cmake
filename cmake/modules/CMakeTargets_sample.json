@@ -17,7 +17,7 @@
         "mode": "split",
         "includeDir": "include"
       },
-      "dependencies": {
+      "extDependencies": {
         "AppleLib": {
           "rulesFile": "generic",
           "packageLocation": {
@@ -74,6 +74,45 @@
             "repository": "https://example.com/PineappleLib.zip",
             "hash": "1234567"
           }
+        }
+      },
+      "prebuiltDependencies": {
+        "StrawberryLib": {
+          "rulesFile": "generic",
+          "importInfo": {
+            "rootDir": "lib/strawberry",
+            "fileBasenames": {
+              "sharedRelease": "strawberry_shared_1.15.0",
+              "sharedDebug": "strawberryd_shared_1.15.0",
+              "staticRelease": "strawberry_static_1.15.0",
+              "staticDebug": "strawberryd_static_1.15.0"
+            }
+          },
+          "includeDir": "lib/strawberry/include",
+          "optional": false
+        },
+        "GrapeLib": {
+          "rulesFile": "RulesGrapeLib.cmake",
+          "optional": true
+        }
+      },
+      "sourceDependencies": {
+        "LemonLib": {
+          "rulesFile": "generic",
+          "useCMakeLists": true,
+          "rootDir": "lib/lemon",
+          "configuration": {
+            "compileFeatures": ["cxx_std_20"],
+            "compileDefinitions": ["DEFINE_ONE=1"],
+            "compileOptions": ["-Wall"],
+            "linkOptions": ["-s"]
+          },
+          "includeDir": "lib/lemon/include",
+          "optional": false
+        },
+        "WatermelonLib": {
+          "rulesFile": "RulesWatermelonLib.cmake",
+          "optional": true
         }
       }
     },

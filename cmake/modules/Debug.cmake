@@ -8,7 +8,7 @@
 Debug
 -----
 
-Operations for helping with debug. It requires CMake 3.20 or newer.
+Operations for helping with debug, inspired by :cmake:module:`CMakePrintHelpers <cmake:module:CMakePrintHelpers>` module. It requires CMake 3.20 or newer.
 
 Synopsis
 ^^^^^^^^
@@ -37,13 +37,15 @@ Usage
 
     debug(DUMP_TARGETS "${CMAKE_SOURCE_DIR}")
     # output is:
-    #   -- [][Buildsystem] Experimental
-    #   -- [][Buildsystem] Nightly
+    #   -- 
+    #    Targets in the project:
+    #      [][Buildsystem] Experimental
+    #      [][Buildsystem] Nightly
     #   ...
-    #   -- [tests/data][Buildsystem] static_mock_lib
-    #   -- [tests/data][Buildsystem] shared_mock_lib
-    #   -- [doc][Buildsystem] doc
-    #   -- [src][Imported   ] Qt6::Platform
+    #      [tests/data][Buildsystem] static_mock_lib
+    #      [tests/data][Buildsystem] shared_mock_lib
+    #      [doc][Buildsystem] doc
+    #      [src][Imported   ] Qt6::Platform
 
 .. signature::
   debug(DUMP_VARIABLES [<INCLUDE_REGEX|EXCLUDE_REGEX> <regular-expression>])
@@ -62,23 +64,29 @@ Usage
 
     debug(DUMP_VARIABLES)
     # output is:
-    #   BUILD_SHARED_LIBS=ON
-    #   CMAKE_CURRENT_SOURCE_DIR=/home/user/project/src
-    #   CMAKE_VERSION=3.28.3
-    #   PROJECT_NAME=MyProject
+    #   -- 
+    #    Variables of CMake:
+    #      BUILD_SHARED_LIBS = "ON"
+    #      CMAKE_CURRENT_SOURCE_DIR = "/home/user/project/src"
+    #      CMAKE_VERSION = "3.28.3"
+    #      PROJECT_NAME = "MyProject"
     #   ...
 
     debug(DUMP_VARIABLES INCLUDE_REGEX "^PROJECT_")
     # output is:
+    #   -- 
+    #    Variables of CMake:
     #   ...
-    #   PROJECT_IS_TOP_LEVEL=ON
-    #   PROJECT_NAME=MyProject
+    #      PROJECT_IS_TOP_LEVEL = "ON"
+    #      PROJECT_NAME = "MyProject"
     #   ...
 
     debug(DUMP_VARIABLES EXCLUDE_REGEX "^CMAKE_")
     # output is:
-    #   BUILD_SHARED_LIBS=ON
-    #   PROJECT_NAME=MyProject
+    #   -- 
+    #    Variables of CMake:
+    #      BUILD_SHARED_LIBS = "ON"
+    #      PROJECT_NAME = "MyProject"
     #   ...
 
 .. signature::
@@ -103,11 +111,13 @@ Usage
 
     debug(DUMP_PROPERTIES)
     # output is:
-    #   ADDITIONAL_CLEAN_FILES
-    #   ALIAS_GLOBAL
-    #   ANDROID_API
-    #   ARCHIVE_OUTPUT_DIRECTORY
-    #   AUTOMOC
+    #   -- 
+    #    Properties of CMake:
+    #      ADDITIONAL_CLEAN_FILES
+    #      ALIAS_GLOBAL
+    #      ANDROID_API
+    #      ARCHIVE_OUTPUT_DIRECTORY
+    #      AUTOMOC
     #   ...
 
 .. signature::
@@ -131,11 +141,12 @@ Usage
 
     debug(DUMP_TARGET_PROPERTIES my_library)
     # output is:
-    #   -- Properties for TARGET my_library:
-    #   --   my_library.TYPE = "STATIC_LIBRARY"
-    #   --   my_library.SOURCES = "src/a.cpp;src/b.cpp"
-    #   --   my_library.INTERFACE_INCLUDE_DIRECTORIES = "include"
-    #     ...
+    #   -- 
+    #    Properties for TARGET my_library:
+    #      my_library.TYPE = "STATIC_LIBRARY"
+    #      my_library.SOURCES = "src/a.cpp;src/b.cpp"
+    #      my_library.INTERFACE_INCLUDE_DIRECTORIES = "include"
+    #      ...
 
 Additional commands
 ^^^^^^^^^^^^^^^^^^^
@@ -202,11 +213,26 @@ print various information about the CMake environment.
     variable_watch(CMAKE_CXX_STANDARD)
 
   Check `the documentation <https://cmake.org/cmake/help/latest/command/variable_watch.html>`__ for more informations.
+
+* Debugging facility to print the origin of the contents of properties which
+  may be determined by dependencies:
+
+  .. code-block:: cmake
+
+    set(CMAKE_DEBUG_TARGET_PROPERTIES
+      INCLUDE_DIRECTORIES
+      COMPILE_DEFINITIONS
+      POSITION_INDEPENDENT_CODE
+      CONTAINER_SIZE_REQUIRED
+      LIB_VERSION
+    )
+
+  Check `the documentation <https://cmake.org/cmake/help/latest/variable/CMAKE_DEBUG_TARGET_PROPERTIES.html>`__ for more informations.
 #]=======================================================================]
 
 include_guard()
 
-cmake_minimum_required (VERSION 3.20 FATAL_ERROR)
+cmake_minimum_required(VERSION 4.0.1 FATAL_ERROR)
 include(CMakePrintHelpers)
 
 #------------------------------------------------------------------------------
@@ -235,36 +261,43 @@ function(debug)
 endfunction()
 
 #------------------------------------------------------------------------------
-# Internal usage
+# [Internal use only]
 macro(_debug_dump_targets)
   if(NOT DEFINED DB_DUMP_TARGETS)
     message(FATAL_ERROR "DUMP_TARGETS arguments is missing!")
   endif()
   if((NOT EXISTS "${DB_DUMP_TARGETS}")
-    OR (NOT IS_DIRECTORY "${DB_DUMP_TARGETS}"))
-      message(FATAL_ERROR "Given path: ${DB_DUMP_TARGETS} does not refer to an existing path or directory on disk!")
+      OR (NOT IS_DIRECTORY "${DB_DUMP_TARGETS}"))
+    message(FATAL_ERROR "Given path: ${DB_DUMP_TARGETS} does not refer to an existing path or directory on disk!")
   endif()
 
-  get_directory_property(local_targets DIRECTORY "${DB_DUMP_TARGETS}" BUILDSYSTEM_TARGETS)
-  get_directory_property(imp_targets DIRECTORY "${DB_DUMP_TARGETS}" IMPORTED_TARGETS)
-  file(RELATIVE_PATH rel_dir_path "${CMAKE_SOURCE_DIR}" "${DB_DUMP_TARGETS}")
+  function(__debug_dump_targets_recursive output_msg_var dir)
+    get_directory_property(local_targets DIRECTORY "${dir}" BUILDSYSTEM_TARGETS)
+    get_directory_property(imp_targets DIRECTORY "${dir}" IMPORTED_TARGETS)
+    file(RELATIVE_PATH rel_dir_path "${CMAKE_SOURCE_DIR}" "${dir}")
 
-  foreach(target IN ITEMS ${local_targets})
-    message(STATUS "[${rel_dir_path}][Buildsystem] ${target}")
-  endforeach()
-  foreach(target IN ITEMS ${imp_targets})
-    message(STATUS "[${rel_dir_path}][Imported   ] ${target}")
-  endforeach()
+    foreach(target IN ITEMS ${local_targets})
+      string(APPEND "${output_msg_var}" "   [${rel_dir_path}][Buildsystem] ${target}\n")
+    endforeach()
+    foreach(target IN ITEMS ${imp_targets})
+      string(APPEND "${output_msg_var}" "   [${rel_dir_path}][Imported   ] ${target}\n")
+    endforeach()
 
-  get_directory_property(subdirs DIRECTORY "${DB_DUMP_TARGETS}" SUBDIRECTORIES)
-  foreach(subdir IN ITEMS ${subdirs})
-    set(DB_DUMP_TARGETS "${subdir}")
-    _debug_dump_targets()
-  endforeach()
+    get_directory_property(subdirs DIRECTORY "${dir}" SUBDIRECTORIES)
+    foreach(subdir IN ITEMS ${subdirs})
+      __debug_dump_targets_recursive("${output_msg_var}" "${subdir}")
+    endforeach()
+    return(PROPAGATE "${output_msg_var}")
+  endfunction()
+
+  set(message "\n")
+  string(APPEND message " Targets in the project:\n")
+  __debug_dump_targets_recursive(message "${DB_DUMP_TARGETS}")
+  message(STATUS "${message}")
 endmacro()
 
 #------------------------------------------------------------------------------
-# Internal usage
+# [Internal use only]
 macro(_debug_dump_variables)
   if(NOT ${DB_DUMP_VARIABLES})
     message(FATAL_ERROR "DUMP_VARIABLES arguments is missing!")
@@ -276,24 +309,28 @@ macro(_debug_dump_variables)
     message(FATAL_ERROR "EXCLUDE_REGEX argument is missing or need a value!")
   endif()
   if((DEFINED DB_INCLUDE_REGEX)
-    AND (DEFINED DB_EXCLUDE_REGEX))
+      AND (DEFINED DB_EXCLUDE_REGEX))
     message(FATAL_ERROR "INCLUDE_REGEX|EXCLUDE_REGEX cannot be used together!")
   endif()
 
   get_cmake_property(variable_names VARIABLES)
   list(SORT variable_names)
   list(REMOVE_DUPLICATES variable_names)
+  
+  set(message "\n")
+  string(APPEND message " Variables of CMake:\n")
   foreach (variable_name IN ITEMS ${variable_names})
     if((NOT DEFINED DB_INCLUDE_REGEX AND NOT DEFINED DB_EXCLUDE_REGEX)
-      OR (DEFINED DB_INCLUDE_REGEX AND "${variable_name}" MATCHES "${DB_INCLUDE_REGEX}")
-      OR (DEFINED DB_EXCLUDE_REGEX AND NOT "${variable_name}" MATCHES "${DB_EXCLUDE_REGEX}"))
-      message(STATUS "${variable_name}= ${${variable_name}}")
+        OR (DEFINED DB_INCLUDE_REGEX AND "${variable_name}" MATCHES "${DB_INCLUDE_REGEX}")
+        OR (DEFINED DB_EXCLUDE_REGEX AND NOT "${variable_name}" MATCHES "${DB_EXCLUDE_REGEX}"))
+      string(APPEND message "   ${variable_name} = \"${${variable_name}}\"\n")
     endif()
   endforeach()
+  message(STATUS "${message}")
 endmacro()
 
 #------------------------------------------------------------------------------
-# Internal usage
+# [Internal use only]
 macro(_debug_dump_properties)
   if(NOT ${DB_DUMP_PROPERTIES})
     message(FATAL_ERROR "DUMP_PROPERTIES arguments is missing!")
@@ -307,13 +344,17 @@ macro(_debug_dump_properties)
   string(REGEX REPLACE ";" "\\\\;" propertie_names "${propertie_names}")
   string(REGEX REPLACE "\n" ";" propertie_names "${propertie_names}")
   list(SORT propertie_names)
+  
+  set(message "\n")
+  string(APPEND message " Properties of CMake:\n")
   foreach (propertie_name IN ITEMS ${propertie_names})
-    message(STATUS "${propertie_name}")
+    string(APPEND message "   ${propertie_name}\n")
   endforeach()
+  message(STATUS "${message}")
 endmacro()
 
 #------------------------------------------------------------------------------
-# Internal usage
+# [Internal use only]
 macro(_debug_dump_target_properties)
   if(NOT DEFINED DB_DUMP_TARGET_PROPERTIES)
     message(FATAL_ERROR "DUMP_TARGET_PROPERTIES arguments is missing!")
@@ -356,13 +397,15 @@ macro(_debug_dump_target_properties)
   list(REMOVE_DUPLICATES propertie_names)
   list(SORT propertie_names)
 
-  message(STATUS "Properties of TARGET ${DB_DUMP_TARGET_PROPERTIES}:")
+  set(message "\n")
+  string(APPEND message " Properties for TARGET ${DB_DUMP_TARGET_PROPERTIES}:\n")
   foreach(propertie_name IN ITEMS ${propertie_names})
     get_property(propertie_set TARGET "${DB_DUMP_TARGET_PROPERTIES}"
       PROPERTY "${propertie_name}" SET)
     if(${propertie_set})
       get_target_property(propertie_value "${DB_DUMP_TARGET_PROPERTIES}" "${propertie_name}")
-      message(STATUS "  ${DB_DUMP_TARGET_PROPERTIES}.${propertie_name} = \"${propertie_value}\"")
+      string(APPEND message "   ${DB_DUMP_TARGET_PROPERTIES}.${propertie_name} = \"${propertie_value}\"\n")
     endif()
   endforeach()
+  message(STATUS "${message}")
 endmacro()

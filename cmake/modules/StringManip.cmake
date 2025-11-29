@@ -188,7 +188,7 @@ function(string_manip)
 endfunction()
 
 #------------------------------------------------------------------------------
-# Internal usage
+# [Internal use only]
 macro(_string_manip_split)
   list(LENGTH SM_SPLIT nb_args)
   if(NOT ${nb_args} EQUAL 2)
@@ -203,7 +203,7 @@ macro(_string_manip_split)
 endmacro()
 
 #------------------------------------------------------------------------------
-# Internal usage
+# [Internal use only]
 macro(_string_manip_split_transform_identifier_upper)
   if(NOT DEFINED SM_SPLIT_TRANSFORM)
     message(FATAL_ERROR "TRANSFORM arguments is missing or need a value!")
@@ -240,7 +240,7 @@ macro(_string_manip_split_transform_identifier_upper)
 endmacro()
 
 #------------------------------------------------------------------------------
-# Internal usage
+# [Internal use only]
 macro(_string_manip_split_transform_start_case)
   if(NOT DEFINED SM_SPLIT_TRANSFORM)
     message(FATAL_ERROR "TRANSFORM arguments is missing or need a value!")
@@ -271,7 +271,7 @@ macro(_string_manip_split_transform_start_case)
 endmacro()
 
 #------------------------------------------------------------------------------
-# Internal usage
+# [Internal use only]
 macro(_string_manip_strip_interfaces)
   if(NOT DEFINED SM_STRIP_INTERFACES)
     message(FATAL_ERROR "STRIP_INTERFACES argument is missing or need a value!")
@@ -288,13 +288,13 @@ macro(_string_manip_strip_interfaces)
 endmacro()
 
 #------------------------------------------------------------------------------
-# Internal usage
+# [Internal use only]
 macro(_string_manip_extract_interface)
   if(NOT DEFINED SM_EXTRACT_INTERFACE)
     message(FATAL_ERROR "EXTRACT_INTERFACE arguments is missing or need a value!")
   endif()
   if((NOT ${SM_BUILD})
-    AND (NOT ${SM_INSTALL}))
+      AND (NOT ${SM_INSTALL}))
     message(FATAL_ERROR "BUILD|INSTALL arguments is missing!")
   endif()
   if(${SM_BUILD} AND ${SM_INSTALL})

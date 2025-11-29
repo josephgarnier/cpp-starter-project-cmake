@@ -251,7 +251,7 @@ function(print)
 endfunction()
 
 #------------------------------------------------------------------------------
-# Internal usage
+# [Internal use only]
 macro(_print_formated_message)
   # Error when no arguments are given.
   if(${PRT_ARGC} EQUAL 0)
@@ -303,7 +303,7 @@ macro(_print_formated_message)
 endmacro()
 
 #------------------------------------------------------------------------------
-# Internal usage
+# [Internal use only]
 macro(_substitute_directives)
   set(message_head "")
   set(message_tail "${message}")
@@ -375,19 +375,19 @@ macro(_substitute_directives)
 endmacro()
 
 #------------------------------------------------------------------------------
-# Internal usage
+# [Internal use only]
 macro(_remove_directives)
   string(REGEX REPLACE "@(ap|rp|apl|rpl|sl)@" "" message "${message}")
 endmacro()
 
 #------------------------------------------------------------------------------
-# Internal usage
+# [Internal use only]
 macro(_print_paths_list)
   if(DEFINED PRT_UNPARSED_ARGUMENTS)
     message(FATAL_ERROR "Unrecognized arguments: \"${PRT_UNPARSED_ARGUMENTS}\"!")
   endif()
   if((NOT DEFINED PRT_PATHS)
-    AND (NOT "PATHS" IN_LIST PRT_KEYWORDS_MISSING_VALUES))
+      AND (NOT "PATHS" IN_LIST PRT_KEYWORDS_MISSING_VALUES))
     message(FATAL_ERROR "PATHS arguments is missing!")
   endif()
   
@@ -423,13 +423,13 @@ macro(_print_paths_list)
 endmacro()
 
 #------------------------------------------------------------------------------
-# Internal usage
+# [Internal use only]
 macro(_print_strings_list)
   if(DEFINED PRT_UNPARSED_ARGUMENTS)
     message(FATAL_ERROR "Unrecognized arguments: \"${PRT_UNPARSED_ARGUMENTS}\"!")
   endif()
   if((NOT DEFINED PRT_STRINGS)
-    AND (NOT "STRINGS" IN_LIST PRT_KEYWORDS_MISSING_VALUES))
+      AND (NOT "STRINGS" IN_LIST PRT_KEYWORDS_MISSING_VALUES))
     message(FATAL_ERROR "STRINGS arguments is missing!")
   endif()
   

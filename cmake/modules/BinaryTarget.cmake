@@ -37,6 +37,19 @@ Usage
   CMake project, according to the specified binary type: ``STATIC``, ``SHARED``
   , ``HEADER``, ``EXEC``.
 
+  A ``STATIC`` library forces ``BUILD_SHARED_LIBS`` to ``off``.
+
+  A ``SHARED`` library sets visibility and export-related variables before
+  creating the target:
+
+    * ``BUILD_SHARED_LIBS`` is set to ``on``.
+    * ``CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS`` is set to ``off`` to disable
+      automatic symbol exports on Windows.
+    * ``CMAKE_CXX_VISIBILITY_PRESET`` is set to ``hidden`` to hide symbols
+      by default.
+    * ``CMAKE_VISIBILITY_INLINES_HIDDEN`` is set to ``on`` so that inline
+      symbols follow the same visibility rules.
+
   Example usage:
 
   .. code-block:: cmake
@@ -166,8 +179,8 @@ Usage
 .. signature::
   binary_target(ADD_PRECOMPILE_HEADER <target-name> HEADER_FILE <file-path>)
 
-  Add a precompile header file (PCH) ``<file_path>`` to an existing binary
-  target ``<target_name>`` with ``PRIVATE`` visibility. The file is added to
+  Add a precompile header file (PCH) ``<file-path>`` to an existing binary
+  target ``<target-name>`` with ``PRIVATE`` visibility. The file is added to
   the target with :cmake:command:`target_precompile_headers() <cmake:command:target_precompile_headers>` to populate the
   :cmake:prop_tgt:`PRECOMPILE_HEADERS <cmake:prop_tgt:PRECOMPILE_HEADERS>` target property.
 
@@ -186,7 +199,7 @@ Usage
 .. signature::
   binary_target(ADD_INCLUDE_DIRECTORIES <target-name> INCLUDE_DIRECTORIES [<dir-path>...|<gen-expr>...])
 
-  Add include directories to an existing binary target ``<target_name>`` with
+  Add include directories to an existing binary target ``<target-name>`` with
   ``PRIVATE`` visibility. The file is added to the target with
   :cmake:command:`target_include_directories() <cmake:command:target_include_directories>` to populate the
   :cmake:prop_tgt:`INCLUDE_DIRECTORIES <cmake:prop_tgt:INCLUDE_DIRECTORIES>` target property. Arguments may use generator expressions with the
@@ -368,7 +381,7 @@ function(binary_target)
 endfunction()
 
 #------------------------------------------------------------------------------
-# Internal usage
+# [Internal use only]
 macro(_binary_target_create)
   if(NOT DEFINED BBT_CREATE)
     message(FATAL_ERROR "CREATE argument is missing or need a value!")
@@ -377,9 +390,9 @@ macro(_binary_target_create)
     message(FATAL_ERROR "The target \"${BBT_CREATE}\" already exists!")
   endif()
   if((NOT ${BBT_STATIC})
-    AND (NOT ${BBT_SHARED})
-    AND (NOT ${BBT_HEADER})
-    AND (NOT ${BBT_EXEC}))
+      AND (NOT ${BBT_SHARED})
+      AND (NOT ${BBT_HEADER})
+      AND (NOT ${BBT_EXEC}))
     message(FATAL_ERROR "STATIC|SHARED|HEADER|EXEC arguments is missing!")
   endif()
   if(${BBT_STATIC} AND ${BBT_SHARED} AND ${BBT_HEADER} AND ${BBT_EXEC})
@@ -387,14 +400,17 @@ macro(_binary_target_create)
   endif()
 
   if(${BBT_STATIC})
+    # All libraries will be built static unless the library was explicitly
+    # added as a shared library
+    set(BUILD_SHARED_LIBS off)
     add_library("${BBT_CREATE}" STATIC)
   elseif(${BBT_SHARED})
     # All libraries will be built shared unless the library was explicitly
     # added as a static library
-    set(BUILD_SHARED_LIBS                           on)
-    set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS            off)
-    set(CMAKE_CXX_VISIBILITY_PRESET                 "hidden")
-    set(CMAKE_VISIBILITY_INLINES_HIDDEN             on)
+    set(BUILD_SHARED_LIBS                  on)
+    set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS   off)
+    set(CMAKE_CXX_VISIBILITY_PRESET        "hidden")
+    set(CMAKE_VISIBILITY_INLINES_HIDDEN    on)
     message(VERBOSE "Symbol visibility is configured as: no automatic exports, hidden by default, inline hidden")
     add_library("${BBT_CREATE}" SHARED)
   elseif(${BBT_HEADER})
@@ -407,7 +423,7 @@ macro(_binary_target_create)
 endmacro()
 
 #------------------------------------------------------------------------------
-# Internal usage
+# [Internal use only]
 macro(_binary_target_config_settings)
   if(NOT DEFINED BBT_CONFIGURE_SETTINGS)
     message(FATAL_ERROR "CONFIGURE_SETTINGS argument is missing or need a value!")
@@ -416,19 +432,19 @@ macro(_binary_target_config_settings)
     message(FATAL_ERROR "The target \"${BBT_CONFIGURE_SETTINGS}\" does not exists!")
   endif()
   if((NOT DEFINED BBT_COMPILE_FEATURES)
-    AND (NOT "COMPILE_FEATURES" IN_LIST BBT_KEYWORDS_MISSING_VALUES))
+      AND (NOT "COMPILE_FEATURES" IN_LIST BBT_KEYWORDS_MISSING_VALUES))
     message(FATAL_ERROR "COMPILE_FEATURES argument is missing or need a value!")
   endif()
   if((NOT DEFINED BBT_COMPILE_DEFINITIONS)
-    AND (NOT "COMPILE_DEFINITIONS" IN_LIST BBT_KEYWORDS_MISSING_VALUES))
+      AND (NOT "COMPILE_DEFINITIONS" IN_LIST BBT_KEYWORDS_MISSING_VALUES))
     message(FATAL_ERROR "COMPILE_DEFINITIONS argument is missing or need a value!")
   endif()
   if((NOT DEFINED BBT_COMPILE_OPTIONS)
-    AND (NOT "COMPILE_OPTIONS" IN_LIST BBT_KEYWORDS_MISSING_VALUES))
+      AND (NOT "COMPILE_OPTIONS" IN_LIST BBT_KEYWORDS_MISSING_VALUES))
     message(FATAL_ERROR "COMPILE_OPTIONS argument is missing or need a value!")
   endif()
   if((NOT DEFINED BBT_LINK_OPTIONS)
-    AND (NOT "LINK_OPTIONS" IN_LIST BBT_KEYWORDS_MISSING_VALUES))
+      AND (NOT "LINK_OPTIONS" IN_LIST BBT_KEYWORDS_MISSING_VALUES))
     message(FATAL_ERROR "LINK_OPTIONS argument is missing or need a value!")
   endif()
   if(NOT DEFINED CMAKE_CXX_STANDARD)
@@ -485,7 +501,7 @@ macro(_binary_target_config_settings)
 endmacro()
 
 #------------------------------------------------------------------------------
-# Internal usage
+# [Internal use only]
 macro(_binary_target_add_sources)
   if(NOT DEFINED BBT_ADD_SOURCES)
     message(FATAL_ERROR "ADD_SOURCES argument is missing or need a value!")
@@ -494,15 +510,15 @@ macro(_binary_target_add_sources)
     message(FATAL_ERROR "The target \"${BBT_ADD_SOURCES}\" does not exists!")
   endif()
   if((NOT DEFINED BBT_SOURCE_FILES)
-    AND (NOT "SOURCE_FILES" IN_LIST BBT_KEYWORDS_MISSING_VALUES))
+      AND (NOT "SOURCE_FILES" IN_LIST BBT_KEYWORDS_MISSING_VALUES))
     message(FATAL_ERROR "SOURCE_FILES argument is missing or need a value!")
   endif()
   if((NOT DEFINED BBT_PRIVATE_HEADER_FILES)
-    AND (NOT "PRIVATE_HEADER_FILES" IN_LIST BBT_KEYWORDS_MISSING_VALUES))
+      AND (NOT "PRIVATE_HEADER_FILES" IN_LIST BBT_KEYWORDS_MISSING_VALUES))
     message(FATAL_ERROR "PRIVATE_HEADER_FILES argument is missing or need a value!")
   endif()
   if((NOT DEFINED BBT_PUBLIC_HEADER_FILES)
-    AND (NOT "PUBLIC_HEADER_FILES" IN_LIST BBT_KEYWORDS_MISSING_VALUES))
+      AND (NOT "PUBLIC_HEADER_FILES" IN_LIST BBT_KEYWORDS_MISSING_VALUES))
     message(FATAL_ERROR "PUBLIC_HEADER_FILES argument is missing or need a value!")
   endif()
 
@@ -526,7 +542,7 @@ macro(_binary_target_add_sources)
 endmacro()
 
 #------------------------------------------------------------------------------
-# Internal usage
+# [Internal use only]
 macro(_binary_target_add_pre_header)
   if(NOT DEFINED BBT_ADD_PRECOMPILE_HEADER)
     message(FATAL_ERROR "ADD_PRECOMPILE_HEADER argument is missing or need a value!")
@@ -548,7 +564,7 @@ macro(_binary_target_add_pre_header)
 endmacro()
 
 #------------------------------------------------------------------------------
-# Internal usage
+# [Internal use only]
 macro(_binary_target_add_include_dirs)
   if(NOT DEFINED BBT_ADD_INCLUDE_DIRECTORIES)
     message(FATAL_ERROR "ADD_INCLUDE_DIRECTORIES argument is missing or need a value!")
@@ -557,7 +573,7 @@ macro(_binary_target_add_include_dirs)
     message(FATAL_ERROR "The target \"${BBT_ADD_INCLUDE_DIRECTORIES}\" does not exists!")
   endif()
   if((NOT DEFINED BBT_INCLUDE_DIRECTORIES)
-    AND (NOT "INCLUDE_DIRECTORIES" IN_LIST BBT_KEYWORDS_MISSING_VALUES))
+      AND (NOT "INCLUDE_DIRECTORIES" IN_LIST BBT_KEYWORDS_MISSING_VALUES))
     message(FATAL_ERROR "INCLUDE_DIRECTORIES argument is missing or need a value!")
   endif()
   
@@ -582,7 +598,7 @@ macro(_binary_target_add_include_dirs)
 endmacro()
 
 #------------------------------------------------------------------------------
-# Internal usage
+# [Internal use only]
 macro(_binary_target_add_dependencies)
   if(NOT DEFINED BBT_ADD_DEPENDENCIES)
     message(FATAL_ERROR "ADD_DEPENDENCIES argument is missing or need a value!")
@@ -591,7 +607,7 @@ macro(_binary_target_add_dependencies)
     message(FATAL_ERROR "The target \"${BBT_ADD_DEPENDENCIES}\" does not exists!")
   endif()
   if((NOT DEFINED BBT_DEPENDENCIES)
-    AND (NOT "DEPENDENCIES" IN_LIST BBT_KEYWORDS_MISSING_VALUES))
+      AND (NOT "DEPENDENCIES" IN_LIST BBT_KEYWORDS_MISSING_VALUES))
     message(FATAL_ERROR "DEPENDENCIES argument is missing or need a value!")
   endif()
 
@@ -604,7 +620,7 @@ macro(_binary_target_add_dependencies)
 endmacro()
 
 #------------------------------------------------------------------------------
-# Internal usage
+# [Internal use only]
 macro(_binary_target_create_fully)
   if(NOT DEFINED BBT_CREATE_FULLY)
     message(FATAL_ERROR "CREATE_FULLY argument is missing or need a value!")
@@ -613,9 +629,9 @@ macro(_binary_target_create_fully)
     message(FATAL_ERROR "The target \"${BBT_CREATE_FULLY}\" already exists!")
   endif()
   if((NOT ${BBT_STATIC})
-    AND (NOT ${BBT_SHARED})
-    AND (NOT ${BBT_HEADER})
-    AND (NOT ${BBT_EXEC}))
+      AND (NOT ${BBT_SHARED})
+      AND (NOT ${BBT_HEADER})
+      AND (NOT ${BBT_EXEC}))
     message(FATAL_ERROR "STATIC|SHARED|HEADER|EXEC arguments is missing!")
   endif()
   if(${BBT_STATIC} AND ${BBT_SHARED} AND ${BBT_HEADER} AND ${BBT_EXEC})
@@ -637,26 +653,26 @@ macro(_binary_target_create_fully)
     message(FATAL_ERROR "CMAKE_CXX_STANDARD is not set!")
   endif()
   if((NOT DEFINED BBT_SOURCE_FILES)
-    AND (NOT "SOURCE_FILES" IN_LIST BBT_KEYWORDS_MISSING_VALUES))
+      AND (NOT "SOURCE_FILES" IN_LIST BBT_KEYWORDS_MISSING_VALUES))
     message(FATAL_ERROR "SOURCE_FILES argument is missing or need a value!")
   endif()
   if((NOT DEFINED BBT_PRIVATE_HEADER_FILES)
-    AND (NOT "PRIVATE_HEADER_FILES" IN_LIST BBT_KEYWORDS_MISSING_VALUES))
+      AND (NOT "PRIVATE_HEADER_FILES" IN_LIST BBT_KEYWORDS_MISSING_VALUES))
     message(FATAL_ERROR "PRIVATE_HEADER_FILES argument is missing or need a value!")
   endif()
   if((NOT DEFINED BBT_PUBLIC_HEADER_FILES)
-    AND (NOT "PUBLIC_HEADER_FILES" IN_LIST BBT_KEYWORDS_MISSING_VALUES))
+      AND (NOT "PUBLIC_HEADER_FILES" IN_LIST BBT_KEYWORDS_MISSING_VALUES))
     message(FATAL_ERROR "PUBLIC_HEADER_FILES argument is missing or need a value!")
   endif()
   if("PRECOMPILE_HEADER_FILE" IN_LIST BBT_KEYWORDS_MISSING_VALUES)
     message(FATAL_ERROR "PRECOMPILE_HEADER_FILE argument is missing or need a value!")
   endif()
   if((DEFINED BBT_PRECOMPILE_HEADER_FILE)
-    AND (NOT EXISTS "${BBT_PRECOMPILE_HEADER_FILE}"))
+      AND (NOT EXISTS "${BBT_PRECOMPILE_HEADER_FILE}"))
     message(FATAL_ERROR "Given path: ${BBT_PRECOMPILE_HEADER_FILE} does not refer to an existing path or directory on disk!")
   endif()
   if((NOT DEFINED BBT_INCLUDE_DIRECTORIES)
-    AND (NOT "INCLUDE_DIRECTORIES" IN_LIST BBT_KEYWORDS_MISSING_VALUES))
+      AND (NOT "INCLUDE_DIRECTORIES" IN_LIST BBT_KEYWORDS_MISSING_VALUES))
     message(FATAL_ERROR "INCLUDE_DIRECTORIES argument is missing or need a value!")
   endif()
 
