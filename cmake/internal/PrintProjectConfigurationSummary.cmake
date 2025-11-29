@@ -29,6 +29,9 @@
 #   print_project_configuration_summary()
 #------------------------------------------------------------------------------
 function(print_project_configuration_summary)
+  if(NOT ${ARGC} EQUAL 0)
+    message(FATAL_ERROR "print_project_configuration_summary() requires exactly 0 arguments, got ${ARGC}!")
+  endif()
   message(STATUS "📄 Project '${PROJECT_NAME}' Configuration Summary:")
   list(APPEND CMAKE_MESSAGE_INDENT "   ")
   message(STATUS "• C++ standard        : C++${CMAKE_CXX_STANDARD}")
