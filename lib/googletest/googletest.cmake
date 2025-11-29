@@ -99,10 +99,12 @@ if(${${DEP_NAME}_FETCH_AUTODOWNLOAD})
     message(STATUS
       "${DEP_NAME} v${${DEP_NAME}_MIN_VERSION} found locally: ${${DEP_NAME}_CONFIG}"
     )
+    set(${DEP_NAME}_TARGET_IMPORTED true)
   elseif(${${DEP_NAME_LOWER}_POPULATED})
     message(STATUS "${DEP_NAME} downloaded with success")
     set(${DEP_NAME}_SOURCE_DIR "${${DEP_NAME_LOWER}_SOURCE_DIR}")
     set(${DEP_NAME}_BINARY_DIR "${${DEP_NAME_LOWER}_BINARY_DIR}")
+    set(${DEP_NAME}_TARGET_IMPORTED false)
     set(${DEP_NAME}_FOUND 1)
   else()
     message(STATUS "${DEP_NAME} downloading failed")
@@ -122,3 +124,29 @@ if(NOT ${${DEP_NAME}_FOUND})
   )
   return()
 endif()
+
+if(${${DEP_NAME}_TARGET_IMPORTED})
+  # Add the dependency targets in a folder for IDE project
+  set_target_properties("GTest::gtest" "GTest::gtest_main" "GTest::gmock" "GTest::gmock_main" 
+    PROPERTIES FOLDER "${CMAKE_FOLDER}/GTest"
+  )
+else()
+  # Add the dependency targets in a folder for IDE project
+  set_target_properties("gtest" "gtest_main" "gmock" "gmock_main"
+    PROPERTIES FOLDER "${CMAKE_FOLDER}/GTest"
+  )
+  # Add compile definitions to the dependency
+  foreach(dep_target IN ITEMS "gtest" "gtest_main" "gmock" "gmock_main")
+    target_compile_definitions("${dep_target}"
+      PRIVATE
+        "GTEST_HAS_PTHREAD=0;GTEST_CREATE_SHARED_LIBRARY=1;GTEST_LINKED_AS_SHARED_LIBRARY=1"
+    )
+  endforeach()
+endif()
+
+# Links the dependency to the current target being built
+message(STATUS "Link ${DEP_NAME} to the target '${CURRENT_TARGET_NAME}'")
+target_link_libraries("${CURRENT_TARGET_NAME}"
+  PRIVATE
+    "GTest::gtest;GTest::gtest_main;GTest::gmock;GTest::gmock_main"
+)
