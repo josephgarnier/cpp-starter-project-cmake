@@ -11,7 +11,7 @@
 #!/bin/bash
 readonly WORKSPACE_DIR=$(pwd)
 
-cmake --log-level=TRACE -S "${WORKSPACE_DIR}" --preset "x64-Release-Linux-GCC"
+cmake -S "${WORKSPACE_DIR}" --preset "x64-Release-Linux-GCC"
 
 # To debug your CMakeLists.txt, use the command below and comment the previous one
 # cmake --debug-output --trace-expand --log-level=TRACE -S "${WORKSPACE_DIR}" --preset "x64-Release-Linux-GCC" --trace-redirect=output.log

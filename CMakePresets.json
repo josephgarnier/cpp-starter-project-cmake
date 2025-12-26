@@ -14,6 +14,7 @@
       "binaryDir": "${sourceDir}/build/${presetName}",
       "installDir": "${sourceDir}/build/install/${presetName}",
       "cacheVariables": {
+        "CMAKE_MESSAGE_LOG_LEVEL": "TRACE",
         "PARAM_PROJECT_NAME": "project-name",
         "PARAM_PROJECT_SUMMARY": "description",
         "PARAM_PROJECT_VENDOR_NAME": "your-name",
