@@ -16,7 +16,7 @@ set "BUILD_DIR=%WORKSPACE_DIR%\build\x64-Release-Win-GCC"
 set "SOLUTION_DIR=%WORKSPACE_DIR%\build"
 
 if EXIST %SOLUTION_DIR% (
-	cmake --build %SOLUTION_DIR% --target clean
+	cmake --build %BUILD_DIR% --target clean
 
 	rem Remove solution in build directory.
 	for /f "usebackq tokens=*" %%f in (`dir "%SOLUTION_DIR%\*" /a /b`) do (

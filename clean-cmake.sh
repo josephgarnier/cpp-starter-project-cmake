@@ -14,7 +14,7 @@ declare -r BUILD_DIR="${WORKSPACE_DIR}/build/x64-Release-Win-GCC"
 declare -r SOLUTION_DIR="${WORKSPACE_DIR}/build"
 
 if [[ -d "${SOLUTION_DIR}" ]]; then
-	cmake --build "${SOLUTION_DIR}" --target clean
+	cmake --build "${BUILD_DIR}" --target clean
 
 	# Remove solution in build directory, excepted gitignore file.
 	shopt -s extglob
