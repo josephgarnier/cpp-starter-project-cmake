@@ -149,7 +149,7 @@ include(FetchContent)
 include(GenerateExportHeader)
 include(GNUInstallDirs)
 
-# Local modules
+# Custom modules
 include(BinaryTarget)
 include(CMakeTargetsFile)
 include(Debug)
@@ -157,11 +157,11 @@ include(Dependency)
 include(Directory)
 include(FileManip)
 include(Map)
+include(PathManip)
 include(Print)
 include(StringManip)
 
 message(STATUS "Project initialized")
-
 
 ###############################################################################
 ### 2. Application binaries configuration (add all app binary targets)

@@ -125,16 +125,16 @@
               },
               "additionalProperties": false
             },
-            "dependencies": {
+            "extDependencies": {
               "description": "The external packages or modules this target depends on",
               "type": "object",
               "patternProperties": {
                 "^[^\\s]+$": {
-                  "description": "The name of the dependency (also called 'PackageName' in CMake)",
+                  "description": "The name of the dependency (also called 'PackageName' in CMake) used to find the file 'Find<PackageName>.cmake' with find_package(). It must be compatible with CMake's PackageName requirements.",
                   "type": "object",
                   "properties": {
                     "rulesFile": {
-                      "description": "The CMake file that defines how to integrate the dependency into the build system. It must be either 'generic', to use a predefined  rules file, or a path to a file ending with '.cmake'",
+                      "description": "The CMake file that defines how to integrate the dependency into the build system. Must be either 'generic', to use a predefined  rules file, or a relative path to a file ending with '.cmake'",
                       "oneOf": [
                         {
                           "const": "generic"
@@ -281,8 +281,8 @@
                       "description": "Indicates whether the dependency is optional (true) or required (false) (only required if rulesFile is 'generic')",
                       "type": "boolean"
                     },
-                    "configuration": {
-                      "description": "Additional dependency settings (only required if rulesFile is 'generic')",
+                    "build": {
+                      "description": "Additional dependency settings for building (only required if rulesFile is 'generic')",
                       "type": "object",
                       "properties": {
                         "compileFeatures": {
@@ -336,10 +336,10 @@
                           "minVersion",
                           "fetchInfo",
                           "optional",
-                          "configuration"
+                          "build"
                         ],
                         "properties": {
-                          "configuration": {
+                          "build": {
                             "required": [
                               "compileFeatures",
                               "compileDefinitions",
@@ -363,7 +363,7 @@
             "build",
             "mainFile",
             "headerPolicy",
-            "dependencies"
+            "extDependencies"
           ],
           "additionalProperties": false
         }

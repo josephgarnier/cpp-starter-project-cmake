@@ -17,7 +17,7 @@
         "mode": "split",
         "includeDir": "include/project-name"
       },
-      "dependencies": {
+      "extDependencies": {
         "spdlog": {
           "rulesFile": "generic",
           "packageLocation": {
@@ -33,7 +33,7 @@
             "tag": "8e56133"
           },
           "optional": false,
-          "configuration": {
+          "build": {
             "compileFeatures": [],
             "compileDefinitions": [],
             "compileOptions": [],

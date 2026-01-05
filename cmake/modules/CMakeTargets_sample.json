@@ -20,6 +20,7 @@
       "extDependencies": {
         "AppleLib": {
           "rulesFile": "generic",
+          "integrationMethod": "FIND_PACKAGE|FETCH_CONTENT|FIND_AND_FETCH|EXTERNAL_PROJECT",
           "packageLocation": {
             "windows": "C:/Program Files/libs/apple/1.15.0",
             "unix": "/opt/apple/1.15.0",
@@ -33,7 +34,7 @@
             "tag": "1234567"
           },
           "optional": false,
-          "configuration": {
+          "build": {
             "compileFeatures": ["cxx_std_20"],
             "compileDefinitions": ["DEFINE_ONE=1"],
             "compileOptions": ["-Wall"],
@@ -41,7 +42,7 @@
           }
         },
         "BananaLib": {
-          "rulesFile": "RulesBananaLib.cmake",
+          "rulesFile": "cmake/rules/RulesBananaLib.cmake",
           "minVersion": "4",
           "fetchInfo": {
             "autodownload": false
@@ -49,7 +50,7 @@
           "optional": true
         },
         "CarrotLib": {
-          "rulesFile": "RulesCarrotLib.cmake",
+          "rulesFile": "cmake/rules/RulesCarrotLib.cmake",
           "fetchInfo": {
             "autodownload": true,
             "kind": "svn",
@@ -58,7 +59,7 @@
           }
         },
         "OrangeLib": {
-          "rulesFile": "RulesOrangeLib.cmake",
+          "rulesFile": "cmake/rules/RulesOrangeLib.cmake",
           "fetchInfo": {
             "autodownload": true,
             "kind": "mercurial",
@@ -67,7 +68,7 @@
           }
         },
         "PineappleLib": {
-          "rulesFile": "RulesPineappleLib.cmake",
+          "rulesFile": "cmake/rules/RulesPineappleLib.cmake",
           "fetchInfo": {
             "autodownload": true,
             "kind": "url",
@@ -79,39 +80,50 @@
       "prebuiltDependencies": {
         "StrawberryLib": {
           "rulesFile": "generic",
-          "importInfo": {
-            "rootDir": "lib/strawberry",
-            "fileBasenames": {
-              "sharedRelease": "strawberry_shared_1.15.0",
-              "sharedDebug": "strawberryd_shared_1.15.0",
-              "staticRelease": "strawberry_static_1.15.0",
-              "staticDebug": "strawberryd_static_1.15.0"
-            }
+          "rootDir": "lib/strawberry",
+          "fileBasenames": {
+            "sharedRelease": "strawberry_shared_1.15.0",
+            "sharedDebug": "strawberryd_shared_1.15.0",
+            "staticRelease": "strawberry_static_1.15.0",
+            "staticDebug": "strawberryd_static_1.15.0"
           },
-          "includeDir": "lib/strawberry/include",
+          "targetName": "strawberry-lib",
+          "includeDir": "include",
           "optional": false
         },
         "GrapeLib": {
-          "rulesFile": "RulesGrapeLib.cmake",
+          "rulesFile": "cmake/rules/RulesGrapeLib.cmake",
           "optional": true
         }
       },
       "sourceDependencies": {
-        "LemonLib": {
+        "LemonLib": { # A human-readable name for the library or package. This does not affect usage of the pkg-config tool, which uses the name of the .pc file.
           "rulesFile": "generic",
-          "useCMakeLists": true,
+          "useCMakeLists": false,
           "rootDir": "lib/lemon",
-          "configuration": {
-            "compileFeatures": ["cxx_std_20"],
-            "compileDefinitions": ["DEFINE_ONE=1"],
-            "compileOptions": ["-Wall"],
-            "linkOptions": ["-s"]
+          "target" : {
+            "name": "strawberry-lib",
+            "type": "staticLib",
+            "build": {
+              "compileFeatures": ["cxx_std_20"],
+              "compileDefinitions": ["DEFINE_ONE=1"],
+              "compileOptions": ["-Wall"],
+              "linkOptions": ["-s"]
+            },
+            "sourceFiles": ["*"],
+            "headerFiles": ["*"],
+            "includeDirs": ["include"],
+            "linkLibraries": [],
+            "dependencies": [],
+            "export": {
+              "headerFiles": ["*"], # Export into /{install-prefix}/include all headers found in includeDirs or in rootDir if no includeDir is defined
+              "extraSourceFiles": ["*"]
+            }
           },
-          "includeDir": "lib/lemon/include",
           "optional": false
         },
         "WatermelonLib": {
-          "rulesFile": "RulesWatermelonLib.cmake",
+          "rulesFile": "cmake/rules/RulesWatermelonLib.cmake",
           "optional": true
         }
       }

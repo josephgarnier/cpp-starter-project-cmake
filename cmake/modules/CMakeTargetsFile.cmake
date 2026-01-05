@@ -9,7 +9,7 @@ CMakeTargetsFile
 ----------------
 
 Provide operations to configure binary targets using a JSON configuration file.
-It requires CMake 3.20 or newer.
+It requires CMake 4.0.1 or newer.
 
 Introduction
 ^^^^^^^^^^^^
@@ -183,25 +183,26 @@ The root object recognizes the following fields:
         headers are located. The path must start with ``include`` (e.g.,
         ``include``, ``include/mylib``) and must not include a trailing slash.
 
-  ``dependencies``
-    The required object property specifying the set of dependencies needed by
-    the target. Its value is an object whose keys are the names of the
-    dependencies. A name is intended to be used as ``PackageName`` argument to
+  ``extDependencies``
+    The required object property specifying the set of dependencies outside of
+    the project and needed by the target. Its value is an object whose keys are
+    the names of the dependencies. A name is intended to be used as
+    ``PackageName`` argument to find the file 'Find<PackageName>.cmake' with
     :cmake:command:`find_package() <cmake:command:find_package>`. It must
     therefore be compatible with CMake's ``PackageName`` requirements. Each
-    name must be unique within the ``dependencies`` object and cannot contain
-    a space.
+    name must be unique within the ``extDependencies`` object and cannot
+    contain a space.
 
-    Each entry of a ``dependencies`` object is a JSON object that may contain
-    the following properties:
+    Each entry of a ``extDependencies`` object is a JSON object that may
+    contain the following properties:
 
     ``rulesFile``
       A required property that specifies how to integrate the dependency into
       the build system. It can be either:
 
       * ``generic`` - use the predefined generic rules for integration.
-      * a path to a ``.cmake`` file - the file must exist and contain the
-        logic for handling the dependency.
+      * a relative path to a ``.cmake`` file - the file must exist and contain
+        the logic for handling the dependency.
 
     ``packageLocation``
       A required object when ``rulesFile`` is ``generic``, otherwise optional.
@@ -269,10 +270,10 @@ The root object recognizes the following fields:
       indicating whether the dependency is optional (``true``) or required
       (``false``).
 
-    ``configuration``
+    ``build``
       A required object when ``rulesFile`` is ``generic``, otherwise optional,
-      specifying some additional settings applied to the dependency. It
-      contains the following array properties:
+      specifying some additional settings applied to the dependency during
+      building. It contains the following array properties:
 
         ``compileFeatures``
           A list of compile features that must be enabled or disabled when
@@ -372,8 +373,8 @@ Loading
       ``TARGETS_CONFIG_<target-dir-path>``.
 
     ``TARGETS_CONFIG_LOADED``
-      Set to ``on`` once the configuration is successfully loaded, otherwise
-      to ``off``.
+      Set to ``true`` once the configuration is successfully loaded, otherwise
+      to ``false``.
 
   This command must be called exactly once before using any other
   module operation. If the configuration is already loaded, calling :command:`cmake_targets_file(LOAD)`
@@ -385,8 +386,8 @@ Loading
   derived from the JSON property names. Nested properties are flattened by
   concatenating their successive parent keys, separated by a dot (``.``). For
   example, the JSON key ``rulesFile`` from the above example is stored in the
-  map as ``dependencies.AppleLib.rulesFile``. The list of all keys for a target
-  's map can be retrieved using the :command:`cmake_targets_file(GET_KEYS)`
+  map as ``extDependencies.AppleLib.rulesFile``. The list of all keys for a
+  target's map can be retrieved using the :command:`cmake_targets_file(GET_KEYS)`
   command.
 
   In this context, a setting is a key/value pair, and the set of settings for
@@ -412,7 +413,7 @@ Loading
     get_property(banana_config GLOBAL PROPERTY "TARGETS_CONFIG_src/banana")
     get_property(src_config GLOBAL PROPERTY "TARGETS_CONFIG_src")
     message("'src' array is: ${src_config}")
-    # output is:
+    # Output:
     #   'src' array is: name:fruit-salad;type:executable;mainFile:src/main.cpp;
     #   pchFile:include/fruit_salad_pch.h;build.compileFeatures:cxx_std_20;
     #   build.compileDefinitions:DEFINE_ONE=1|DEFINE_TWO=2|
@@ -422,8 +423,8 @@ Loading
 .. signature::
   cmake_targets_file(IS_LOADED <output-var>)
 
-  Set ``<output-var>`` to ``on`` if a targets configuration file has been
-  loaded with success, or ``off`` otherwise. This checks the global property
+  Set ``<output-var>`` to ``true`` if a targets configuration file has been
+  loaded with success, or ``false`` otherwise. This checks the global property
   ``TARGETS_CONFIG_LOADED`` set by a successful invocation of the
   :command:`cmake_targets_file(LOAD)` command.
 
@@ -434,8 +435,8 @@ Loading
     cmake_targets_file(LOAD "${CMAKE_SOURCE_DIR}/CMakeTargets.json")
     cmake_targets_file(IS_LOADED is_file_loaded)
     message("file_loaded: ${is_file_loaded}")
-    # output is:
-    #   file_loaded: on
+    # Output:
+    #   file_loaded: true
 
 .. signature::
   cmake_targets_file(GET_LOADED_FILE <output-var>)
@@ -453,7 +454,7 @@ Loading
 
     cmake_targets_file(GET_LOADED_FILE json_file_content)
     message("json_file_content: ${json_file_content}")
-    # output is:
+    # Output:
     #   json_file_content: {
     #     "$schema": "schema.json",
     #     "$id": "schema.json",
@@ -468,8 +469,8 @@ Querying
 .. signature::
   cmake_targets_file(HAS_CONFIG <output-var> TARGET <target-dir-path>)
 
-  Set ``<output-var>`` to ``on`` if a configuration exists for the given
-  target directory path ``<target-dir-path>``, or ``off`` otherwise.
+  Set ``<output-var>`` to ``true`` if a configuration exists for the given
+  target directory path ``<target-dir-path>``, or ``false`` otherwise.
 
   Example usage :
 
@@ -478,7 +479,7 @@ Querying
     cmake_targets_file(HAS_CONFIG is_target_configured TARGET "src")
     message("is_target_configured (src): ${is_target_configured}")
     # output is:
-    #   is_target_configured (src): on
+    #   is_target_configured (src): true
 
 .. signature::
   cmake_targets_file(GET_SETTINGS <output-map-var> TARGET <target-dir-path>)
@@ -506,15 +507,15 @@ Querying
 
     cmake_targets_file(GET_SETTINGS target_config_map TARGET "src")
     message("target_config (src): ${target_config_map}")
-    # output is:
+    # Output:
     #   target_config (src): name:fruit-salad;type:executable;mainFile:
     #   src/main.cpp;pchFile:include/fruit_salad_pch.h;...
 
 .. signature::
   cmake_targets_file(HAS_SETTING <output-var> TARGET <target-dir-path> KEY <setting-name>)
 
-  Set ``<output-var>`` to ``on`` if the configuration of the given target
-  contains the specified setting key ``<setting-name>``, or ``off`` otherwise.
+  Set ``<output-var>`` to ``true`` if the configuration of the given target
+  contains the specified setting key ``<setting-name>``, or ``false`` otherwise.
 
   Example usage:
 
@@ -522,8 +523,8 @@ Querying
 
     cmake_targets_file(HAS_SETTING has_setting_key TARGET "src" KEY "type")
     message("has_setting_key (type): ${has_setting_key}")
-    # output is:
-    #   has_setting_key (type): on
+    # Output:
+    #   has_setting_key (type): true
 
 .. signature::
   cmake_targets_file(GET_KEYS <output-list-var> TARGET <target-dir-path>)
@@ -583,17 +584,17 @@ Querying
 
     cmake_targets_file(GET_VALUE setting_value TARGET "src" KEY "type")
     message("setting_value (type): ${setting_value}")
-    # output is:
+    # Output:
     #   setting_value (type): executable
     cmake_targets_file(GET_VALUE setting_value TARGET "src" KEY "build.compileDefinitions")
     message("setting_value (build.compileDefinitions): ${setting_value}")
-    # output is:
+    # Output:
     #   setting_value (build.compileDefinitions): DEFINE_ONE=1;DEFINE_TWO=2;
     #   OPTION_1
-    cmake_targets_file(GET_VALUE setting_value TARGET "src" KEY "dependencies")
-    message("setting_value (dependencies): ${setting_value}")
-    # output is:
-    #   setting_value (dependencies): AppleLib;BananaLib;CarrotLib;OrangeLib;
+    cmake_targets_file(GET_VALUE setting_value TARGET "src" KEY "extDependencies")
+    message("setting_value (extDependencies): ${setting_value}")
+    # Output:
+    #   setting_value (extDependencies): AppleLib;BananaLib;CarrotLib;OrangeLib;
     #   PineappleLib
 
 .. signature::
@@ -601,7 +602,9 @@ Querying
 
   Try to retrieve the value associated to a specific setting key
   ``<setting-name>`` defined for a given target configuration in the global
-  property ``TARGETS_CONFIG_<target-dir-path>``.
+  property ``TARGETS_CONFIG_<target-dir-path>``. Contrary to
+  :command:`cmake_targets_file(GET_VALUE)`, no error is raised if the ``KEY``
+  does not exist in the target configuration.
 
   The ``<target-dir-path>`` specifies the directory path of the target whose
   configuration setting should be retrieved. This must correspond to a path
@@ -627,21 +630,21 @@ Querying
 
     cmake_targets_file(TRY_GET_VALUE setting_value TARGET "src" KEY "type")
     message("setting_value (type): ${setting_value}")
-    # output is:
+    # Output:
     #   setting_value (type): executable
     cmake_targets_file(TRY_GET_VALUE setting_value TARGET "src" KEY "build.compileDefinitions")
     message("setting_value (build.compileDefinitions): ${setting_value}")
-    # output is:
+    # Output:
     #   setting_value (build.compileDefinitions): DEFINE_ONE=1;DEFINE_TWO=2;
     #   OPTION_1
-    cmake_targets_file(TRY_GET_VALUE setting_value TARGET "src" KEY "dependencies")
-    message("setting_value (dependencies): ${setting_value}")
-    # output is:
-    #   setting_value (dependencies): AppleLib;BananaLib;CarrotLib;OrangeLib;
+    cmake_targets_file(TRY_GET_VALUE setting_value TARGET "src" KEY "extDependencies")
+    message("setting_value (extDependencies): ${setting_value}")
+    # Output:
+    #   setting_value (extDependencies): AppleLib;BananaLib;CarrotLib;OrangeLib;
     #   PineappleLib
     cmake_targets_file(TRY_GET_VALUE setting_value TARGET "src" KEY "nonexistent.setting")
     message("setting_value (nonexistent.setting): ${setting_value}")
-    # output is:
+    # Output:
     #   setting_value (nonexistent.setting): nonexistent.setting-NOTFOUND
 
 Debugging
@@ -662,7 +665,7 @@ Debugging
   .. code-block:: cmake
 
     cmake_targets_file(PRINT_CONFIGS)
-    # output is:
+    # Output:
     #   -- Target: fruit-salad
     #   --   type: executable
     #   --   build.compileFeatures: cxx_std_20|cxx_thread_local|cxx_trailing_return_types
@@ -694,7 +697,7 @@ Debugging
   .. code-block:: cmake
 
     cmake_targets_file(PRINT_TARGET_CONFIG "src")
-    # output is:
+    # Output:
     #   -- Target: fruit-salad
     #   --   type: executable
     #   --   build.compileFeatures: cxx_std_20|cxx_thread_local|cxx_trailing_return_types
@@ -708,7 +711,7 @@ Debugging
 
 include_guard()
 
-cmake_minimum_required (VERSION 3.20 FATAL_ERROR)
+cmake_minimum_required(VERSION 4.0.1 FATAL_ERROR)
 include(Map)
 
 #------------------------------------------------------------------------------
@@ -717,136 +720,147 @@ function(cmake_targets_file)
   set(options PRINT_CONFIGS)
   set(one_value_args LOAD IS_LOADED GET_LOADED_FILE GET_VALUE TRY_GET_VALUE TARGET KEY GET_SETTINGS GET_KEYS PRINT_TARGET_CONFIG HAS_CONFIG HAS_SETTING)
   set(multi_value_args "")
-  cmake_parse_arguments(CTF "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
+  cmake_parse_arguments(PARSE_ARGV 0 arg
+    "${options}" "${one_value_args}" "${multi_value_args}"
+  )
 
-  if(DEFINED CTF_UNPARSED_ARGUMENTS)
-    message(FATAL_ERROR "Unrecognized arguments: \"${CTF_UNPARSED_ARGUMENTS}\"")
+  if(DEFINED arg_UNPARSED_ARGUMENTS)
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() called with unrecognized arguments: \"${arg_UNPARSED_ARGUMENTS}\"")
   endif()
-  if(DEFINED CTF_LOAD)
+  if(DEFINED arg_LOAD)
+    set(current_command "cmake_targets_file(LOAD)")
     _cmake_targets_file_load()
-  elseif(DEFINED CTF_IS_LOADED)
+  elseif(DEFINED arg_IS_LOADED)
+    set(current_command "cmake_targets_file(IS_LOADED)")
     _cmake_targets_file_is_loaded()
-  elseif(DEFINED CTF_GET_LOADED_FILE)
+  elseif(DEFINED arg_GET_LOADED_FILE)
+    set(current_command "cmake_targets_file(GET_LOADED_FILE)")
     _cmake_targets_file_get_loaded_file()
-  elseif(DEFINED CTF_HAS_CONFIG)
+  elseif(DEFINED arg_HAS_CONFIG)
+    set(current_command "cmake_targets_file(HAS_CONFIG)")
     _cmake_targets_file_has_config()
-  elseif(DEFINED CTF_GET_VALUE)
+  elseif(DEFINED arg_GET_VALUE)
+    set(current_command "cmake_targets_file(GET_VALUE)")
     _cmake_targets_file_get_value()
-  elseif(DEFINED CTF_TRY_GET_VALUE)
+  elseif(DEFINED arg_TRY_GET_VALUE)
+    set(current_command "cmake_targets_file(TRY_GET_VALUE)")
     _cmake_targets_file_try_get_value()
-  elseif(DEFINED CTF_GET_SETTINGS)
+  elseif(DEFINED arg_GET_SETTINGS)
+    set(current_command "cmake_targets_file(GET_SETTINGS)")
     _cmake_targets_file_get_settings()
-  elseif(DEFINED CTF_HAS_SETTING)
+  elseif(DEFINED arg_HAS_SETTING)
+    set(current_command "cmake_targets_file(HAS_SETTING)")
     _cmake_targets_file_has_setting()
-  elseif(DEFINED CTF_GET_KEYS)
+  elseif(DEFINED arg_GET_KEYS)
+    set(current_command "cmake_targets_file(GET_KEYS)")
     _cmake_targets_file_get_keys()
-  elseif(${CTF_PRINT_CONFIGS})
+  elseif(${arg_PRINT_CONFIGS})
+    set(current_command "cmake_targets_file(PRINT_CONFIGS)")
     _cmake_targets_file_print_configs()
-  elseif(DEFINED CTF_PRINT_TARGET_CONFIG)
+  elseif(DEFINED arg_PRINT_TARGET_CONFIG)
+    set(current_command "cmake_targets_file(PRINT_TARGET_CONFIG)")
     _cmake_targets_file_print_target_config()
   else()
-    message(FATAL_ERROR "The operation name or arguments are missing!")
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}(<OP> <value> ...) requires an operation and a value to be specified!")
   endif()
 endfunction()
 
 #------------------------------------------------------------------------------
 # [Internal use only]
 macro(_cmake_targets_file_load)
-  if(NOT DEFINED CTF_LOAD)
-    message(FATAL_ERROR "LOAD argument is missing or need a value!")
+  if((NOT DEFINED arg_LOAD)
+      OR (NOT EXISTS "${arg_LOAD}")
+      OR (IS_DIRECTORY "${arg_LOAD}"))
+    message(FATAL_ERROR "${current_command} requires the keyword LOAD '${arg_LOAD}' to be provided with a path to an existing file on disk!")
   endif()
-  if((NOT EXISTS "${CTF_LOAD}")
-      OR (IS_DIRECTORY "${CTF_LOAD}"))
-    message(FATAL_ERROR "Given path: ${CTF_LOAD} does not refer to an existing path or file on disk!")
-  endif()
-  if(NOT "${CTF_LOAD}" MATCHES "\\.json$")
-    message(FATAL_ERROR "Given path: ${CTF_LOAD} is not a json file!")
+  if(NOT "${arg_LOAD}" MATCHES "\\.json$")
+    message(FATAL_ERROR "${current_command} requires the keyword LOAD '${arg_LOAD}' to be provided with a path to a json file!")
   endif()
 
   # Read the JSON file
-  file(READ "${CTF_LOAD}" json_file_content)
+  file(READ "${arg_LOAD}" json_file_content)
 
   # Extract and parse the list of target paths (keys of the "targets" object)
   # Use '_get_json_object' because the property keys of 'targets'
   # (target paths) are of type 'pattern property' (set by user)
-  _get_json_object(targets_map "${json_file_content}" "targets" on)
-  map(KEYS targets_map target_paths)
+  _get_json_object(target_map "${json_file_content}" "targets" true)
+  map(KEYS target_map target_paths)
   foreach(target_path IN ITEMS ${target_paths})
     _validate_json_string(PROP_PATH "targets;${target_path}" PROP_VALUE "${target_path}" PATTERN "^[A-Za-z0-9_]+(/.+)?$")
-  
+
     set(target_config_map "")
-    map(GET targets_map "${target_path}" target_json_block)
+    map(GET target_map "${target_path}" target_json_block)
 
     # Extract all top-level and required primitive properties
-    _get_json_value(name "${target_json_block}" "name" "STRING" on)
+    _get_json_value(name "${target_json_block}" "name" "STRING" true)
     _validate_json_string(PROP_PATH "name" PROP_VALUE "${name}" MIN_LENGTH "1")
     map(ADD target_config_map "name" "${name}")
 
-    _get_json_value(type "${target_json_block}" "type" "STRING" on)
+    _get_json_value(type "${target_json_block}" "type" "STRING" true)
     _validate_json_string(PROP_PATH "type" PROP_VALUE "${type}" PATTERN "^(staticLib|sharedLib|interfaceLib|executable)$")
     map(ADD target_config_map "type" "${type}")
 
-    _get_json_value(main_file "${target_json_block}" "mainFile" "STRING" on)
+    _get_json_value(main_file "${target_json_block}" "mainFile" "STRING" true)
     _validate_json_string(PROP_PATH "mainFile" PROP_VALUE "${main_file}" PATTERN "(.+/)?[^/]+\\.(cpp|cc|cxx)$")
     map(ADD target_config_map "mainFile" "${main_file}")
 
     # Extract all top-level and optional primitive properties
-    _get_json_value(pch_file "${target_json_block}" "pchFile" "STRING" off)
+    _get_json_value(pch_file "${target_json_block}" "pchFile" "STRING" false)
     if(NOT "${pch_file}" MATCHES "-NOTFOUND$")
       _validate_json_string(PROP_PATH "pchFile" PROP_VALUE "${pch_file}" PATTERN "(.+/)?[^/]+\\.(h|hpp|hxx|inl|tpp)$")
       map(ADD target_config_map "pchFile" "${pch_file}")
     endif()
 
     # Extract nested 'build' object properties
-    _get_json_value(build_json_block "${target_json_block}" "build" "OBJECT" on)
+    _get_json_value(build_json_block "${target_json_block}" "build" "OBJECT" true)
     foreach(prop_key "compileFeatures" "compileDefinitions" "compileOptions" "linkOptions")
-      _get_json_array(build_settings_list "${build_json_block}" "${prop_key}" on)
+      _get_json_array(build_settings_list "${build_json_block}" "${prop_key}" true)
       _serialize_list(serialized_list "${build_settings_list}")
       map(ADD target_config_map "build.${prop_key}" "${serialized_list}")
     endforeach()
 
     # Extract nested 'header policy' object properties
-    _get_json_value(header_policy_mode "${target_json_block}" "headerPolicy;mode" "STRING" on)
+    _get_json_value(header_policy_mode "${target_json_block}" "headerPolicy;mode" "STRING" true)
     _validate_json_string(PROP_PATH "headerPolicy;mode" PROP_VALUE "${header_policy_mode}" PATTERN "^(split|merged)$")
     map(ADD target_config_map "headerPolicy.mode" "${header_policy_mode}")
     if("${header_policy_mode}" STREQUAL "split")
       # 'includeDir' is required when mode is 'split'
       _get_json_value(include_dir
-        "${target_json_block}" "headerPolicy;includeDir" "STRING" on)
+        "${target_json_block}" "headerPolicy;includeDir" "STRING" true)
       _validate_json_string(PROP_PATH "headerPolicy;includeDir" PROP_VALUE "${include_dir}" PATTERN "^include(/.+)?$")
       map(ADD target_config_map "headerPolicy.includeDir" "${include_dir}")
     endif()
 
-    # Extract nested 'dependencies' object properties
-    # Use '_get_json_object' because the property keys of 'dependencies'
+    # Extract nested 'extDependencies' object properties.
+    # Use '_get_json_object' because the property keys of 'extDependencies'
     # (dep. names) are of type 'pattern property' (set by user)
-    _get_json_object(deps_map "${target_json_block}" "dependencies" on)
+    _get_json_object(deps_map "${target_json_block}" "extDependencies" true)
     map(KEYS deps_map dep_names)
     _serialize_list(serialized_dep_names "${dep_names}")
-    map(ADD target_config_map "dependencies" "${serialized_dep_names}")
+    map(ADD target_config_map "extDependencies" "${serialized_dep_names}")
     foreach(dep_name IN ITEMS ${dep_names})
-      _validate_json_string(PROP_PATH "dependencies;${dep_name}" PROP_VALUE "${target_path}" PATTERN "^[^ \t\r\n]+$")
+      _validate_json_string(PROP_PATH "extDependencies;${dep_name}" PROP_VALUE "${target_path}" PATTERN "^[^ \t\r\n]+$")
       map(GET deps_map "${dep_name}" dep_json_block)
 
       # Only 'rulesFile' is required, others properties are required only if
       # rulesFile is 'generic'
-      _get_json_value(dep_rules_file "${dep_json_block}" "rulesFile" "STRING" on)
+      _get_json_value(dep_rules_file "${dep_json_block}" "rulesFile" "STRING" true)
       _validate_json_string(PROP_PATH "rulesFile" PROP_VALUE "${dep_rules_file}" PATTERN "^((.+/)?[^/]+\\.cmake|generic)$")
-      map(ADD target_config_map "dependencies.${dep_name}.rulesFile" "${dep_rules_file}")
+      map(ADD target_config_map "extDependencies.${dep_name}.rulesFile" "${dep_rules_file}")
       # Required flag (true/false depending on rulesFile)
-      set(is_generic off)
+      set(is_generic false)
       if("${dep_rules_file}" STREQUAL "generic")
-        set(is_generic on)
+        set(is_generic true)
       endif()
 
       # Extract all top-level primitive properties
       _get_json_value(dep_min_version "${dep_json_block}" "minVersion" "STRING" ${is_generic})
       if(NOT "${dep_min_version}" MATCHES "-NOTFOUND$")
-        map(ADD target_config_map "dependencies.${dep_name}.minVersion" "${dep_min_version}")
+        map(ADD target_config_map "extDependencies.${dep_name}.minVersion" "${dep_min_version}")
       endif()
       _get_json_value(dep_optional "${dep_json_block}" "optional" "BOOLEAN" ${is_generic})
       if(NOT "${dep_optional}" MATCHES "-NOTFOUND$")
-        map(ADD target_config_map "dependencies.${dep_name}.optional" "${dep_optional}")
+        map(ADD target_config_map "extDependencies.${dep_name}.optional" "${dep_optional}")
       endif()
 
       # Extract nested 'packageLocation' object properties
@@ -855,28 +869,28 @@ macro(_cmake_targets_file_load)
       if(NOT "${dep_package_loc_json_block}" MATCHES "-NOTFOUND$")
         foreach(prop_key "windows" "unix" "macos")
           _get_json_value(prop_value
-            "${dep_package_loc_json_block}" "windows" "STRING" off)
+            "${dep_package_loc_json_block}" "windows" "STRING" false)
           if(NOT "${prop_value}" MATCHES "-NOTFOUND$")
             _validate_json_string(PROP_PATH "packageLocation.windows" PROP_VALUE "${prop_value}" PATTERN "^[A-Za-z]:[/]([^<>:\"/\\\\|?*]+[/]?)*$")
-            map(ADD target_config_map "dependencies.${dep_name}.packageLocation.windows" "${prop_value}")
+            map(ADD target_config_map "extDependencies.${dep_name}.packageLocation.windows" "${prop_value}")
           endif()
 
           _get_json_value(prop_value
-            "${dep_package_loc_json_block}" "unix" "STRING" off)
+            "${dep_package_loc_json_block}" "unix" "STRING" false)
           if(NOT "${prop_value}" MATCHES "-NOTFOUND$")
             _validate_json_string(PROP_PATH "packageLocation.unix" PROP_VALUE "${prop_value}" PATTERN "^(/[^/ \t\r\n]+)+/?$")
-            map(ADD target_config_map "dependencies.${dep_name}.packageLocation.unix" "${prop_value}")
+            map(ADD target_config_map "extDependencies.${dep_name}.packageLocation.unix" "${prop_value}")
           endif()
 
           _get_json_value(prop_value
-            "${dep_package_loc_json_block}" "macos" "STRING" off)
+            "${dep_package_loc_json_block}" "macos" "STRING" false)
           if(NOT "${prop_value}" MATCHES "-NOTFOUND$")
             _validate_json_string(PROP_PATH "packageLocation.macos" PROP_VALUE "${prop_value}" PATTERN "^(/[^/ \t\r\n]+)+/?$")
-            map(ADD target_config_map "dependencies.${dep_name}.packageLocation.macos" "${prop_value}")
+            map(ADD target_config_map "extDependencies.${dep_name}.packageLocation.macos" "${prop_value}")
           endif()
         endforeach()
       endif()
-      
+
       # Extract nested 'fetchInfo' object properties
       _get_json_value(dep_fetch_info_json_block "${dep_json_block}" "fetchInfo" "OBJECT" ${is_generic})
       if(NOT "${dep_fetch_info_json_block}" MATCHES "-NOTFOUND$")
@@ -884,54 +898,54 @@ macro(_cmake_targets_file_load)
         # others properties are required only if autodownload is 'true'
         _get_json_value(dep_fetch_autodownload "${dep_fetch_info_json_block}" "autodownload" "BOOLEAN" ${is_generic})
         if(NOT "${dep_fetch_autodownload}" MATCHES "-NOTFOUND$")
-          map(ADD target_config_map "dependencies.${dep_name}.fetchInfo.autodownload" "${dep_fetch_autodownload}")
+          map(ADD target_config_map "extDependencies.${dep_name}.fetchInfo.autodownload" "${dep_fetch_autodownload}")
         endif()
 
         # Required flag (true/false depending on autodownload)
-        set(is_autodownload_true off)
+        set(is_autodownload_true false)
         if(${dep_fetch_autodownload})
-          set(is_autodownload_true on)
+          set(is_autodownload_true true)
         endif()
 
         # Others properties depends on 'kind'
         _get_json_value(dep_fetch_kind "${dep_fetch_info_json_block}" "kind" "STRING" ${is_autodownload_true})
         if(NOT "${dep_fetch_kind}" MATCHES "-NOTFOUND$")
             _validate_json_string(PROP_PATH "fetchInfo;kind" PROP_VALUE "${dep_fetch_kind}" PATTERN "^(url|git|svn|mercurial)$")
-            map(ADD target_config_map "dependencies.${dep_name}.fetchInfo.kind" "${dep_fetch_kind}")
+            map(ADD target_config_map "extDependencies.${dep_name}.fetchInfo.kind" "${dep_fetch_kind}")
             if("${dep_fetch_kind}" MATCHES "^(git|mercurial)$")
               foreach(prop_key "repository" "tag")
-                _get_json_value(prop_value "${dep_fetch_info_json_block}" "${prop_key}" "STRING" on)
-                map(ADD target_config_map "dependencies.${dep_name}.fetchInfo.${prop_key}" "${prop_value}")
+                _get_json_value(prop_value "${dep_fetch_info_json_block}" "${prop_key}" "STRING" true)
+                map(ADD target_config_map "extDependencies.${dep_name}.fetchInfo.${prop_key}" "${prop_value}")
               endforeach()
             endif()
             if("${dep_fetch_kind}" STREQUAL "url")
               foreach(prop_key "repository" "hash")
-                _get_json_value(prop_value "${dep_fetch_info_json_block}" "${prop_key}" "STRING" on)
-                map(ADD target_config_map "dependencies.${dep_name}.fetchInfo.${prop_key}" "${prop_value}")
+                _get_json_value(prop_value "${dep_fetch_info_json_block}" "${prop_key}" "STRING" true)
+                map(ADD target_config_map "extDependencies.${dep_name}.fetchInfo.${prop_key}" "${prop_value}")
               endforeach()
             endif()
             if("${dep_fetch_kind}" STREQUAL "svn")
               foreach(prop_key "repository" "revision")
-                _get_json_value(prop_value "${dep_fetch_info_json_block}" "${prop_key}" "STRING" on)
-                map(ADD target_config_map "dependencies.${dep_name}.fetchInfo.${prop_key}" "${prop_value}")
+                _get_json_value(prop_value "${dep_fetch_info_json_block}" "${prop_key}" "STRING" true)
+                map(ADD target_config_map "extDependencies.${dep_name}.fetchInfo.${prop_key}" "${prop_value}")
               endforeach()
             endif()
         endif()
       endif()
 
-      # Extract nested 'configuration' object properties
-      _get_json_value(dep_config_json_block "${dep_json_block}" "configuration" "OBJECT" ${is_generic})
+      # Extract nested 'build' object properties
+      _get_json_value(dep_config_json_block "${dep_json_block}" "build" "OBJECT" ${is_generic})
       if(NOT "${dep_config_json_block}" MATCHES "-NOTFOUND$")
         foreach(prop_key "compileFeatures" "compileDefinitions" "compileOptions" "linkOptions")
           _get_json_array(dep_configs_list "${dep_config_json_block}" "${prop_key}" ${is_generic})
           if(NOT "${dep_configs_list}" MATCHES "-NOTFOUND$")
             _serialize_list(serialized_list "${dep_configs_list}")
-            map(ADD target_config_map "dependencies.${dep_name}.configuration.${prop_key}" "${serialized_list}")
+            map(ADD target_config_map "extDependencies.${dep_name}.build.${prop_key}" "${serialized_list}")
           endif()
         endforeach()
       endif()
     endforeach()
-    
+
     # Store the target configuration
     set_property(GLOBAL PROPERTY "TARGETS_CONFIG_${target_path}" "${target_config_map}")
   endforeach()
@@ -940,246 +954,249 @@ macro(_cmake_targets_file_load)
   # list of targets
   set_property(GLOBAL PROPERTY TARGETS_CONFIG_RAW_JSON "${json_file_content}")
   set_property(GLOBAL PROPERTY TARGETS_CONFIG_LIST "${target_paths}")
-  set_property(GLOBAL PROPERTY TARGETS_CONFIG_LOADED on)
+  set_property(GLOBAL PROPERTY TARGETS_CONFIG_LOADED true)
 endmacro()
 
 #------------------------------------------------------------------------------
 # [Internal use only]
 function(_has_json_property output_var json_block json_path_list)
   if(NOT ${ARGC} EQUAL 3)
-    message(FATAL_ERROR "_has_json_property() requires exactly 3 arguments, got ${ARGC}!")
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() requires exactly 3 arguments, got ${ARGC}!")
   endif()
   if("${output_var}" STREQUAL "")
-    message(FATAL_ERROR "output_var argument is empty!")
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() requires 'output_var' argument to be a non-empty string value!")
   endif()
   if("${json_block}" STREQUAL "")
-    message(FATAL_ERROR "json_block argument is empty!")
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() requires 'json_block' argument to be a non-empty string value!")
   endif()
 
   string(JSON json_value ERROR_VARIABLE err GET "${json_block}" ${json_path_list})
   if(err)
-    set(${output_var} off PARENT_SCOPE)
+    set(${output_var} false)
   else()
-    set(${output_var} on PARENT_SCOPE)
+    set(${output_var} true)
   endif()
+  return(PROPAGATE "${output_var}")
 endfunction()
 
 #------------------------------------------------------------------------------
 # [Internal use only]
 function(_get_json_value output_var json_block json_path_list json_type is_required)
   if(NOT ${ARGC} EQUAL 5)
-    message(FATAL_ERROR "_get_json_value() requires exactly 5 arguments, got ${ARGC}!")
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() requires exactly 5 arguments, got ${ARGC}!")
   endif()
   if("${output_var}" STREQUAL "")
-    message(FATAL_ERROR "output_var argument is empty!")
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() requires 'output_var' argument to be a non-empty string value!")
   endif()
   if("${json_block}" STREQUAL "")
-    message(FATAL_ERROR "json_block argument is empty!")
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() requires 'json_block' argument to be a non-empty string value!")
   endif()
   if(NOT "${json_type}" MATCHES "^(NULL|STRING|NUMBER|BOOLEAN|ARRAY|OBJECT)$")
-    message(FATAL_ERROR "json_type must be \"NULL\", \"STRING\", \"NUMBER\", \"BOOLEAN\", \"ARRAY\" or \"OBJECT\"!")
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() requires 'json_type' argument to be a string with value \"NULL\", \"STRING\", \"NUMBER\", \"BOOLEAN\", \"ARRAY\" or \"OBJECT\"!")
   endif()
-  if(NOT "${is_required}" MATCHES "^(on|off)$")
-    message(FATAL_ERROR "is_required must be \"on\" or \"off\"")
+  if(NOT "${is_required}" MATCHES "^(true|false)$")
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() requires 'is_required' argument to be a boolean with value \"true\" or \"false\"")
   endif()
 
   string(JSON json_block_type ERROR_VARIABLE err TYPE "${json_block}" ${json_path_list})
   if(err)
     if(${is_required})
       list(JOIN json_path_list "." joined)
-      message(FATAL_ERROR "Missing required JSON property '${joined}'!")
+      message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}(): missing required JSON property '${joined}'!")
     else()
-      set(${output_var} "${json_block_type}" PARENT_SCOPE) # will be <json-path...->-NOTFOUND
-      return()
+      set(${output_var} "${json_block_type}") # will be <json-path...->-NOTFOUND
+      return(PROPAGATE "${output_var}")
     endif()
   endif()
   if(NOT "${json_block_type}" STREQUAL "${json_type}")
-    message(FATAL_ERROR "Given JSON block is not an ${json_type}, but a ${json_block_type}!")
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}(): given JSON block is not an ${json_type}, but a ${json_block_type}!")
   endif()
 
-  string(JSON json_value GET "${json_block}" ${json_path_list})
-  set(${output_var} "${json_value}" PARENT_SCOPE)
+  string(JSON ${output_var} GET "${json_block}" ${json_path_list})
+  return(PROPAGATE "${output_var}")
 endfunction()
 
 #------------------------------------------------------------------------------
 # [Internal use only]
 function(_get_json_array output_list_var json_block json_path_list is_required)
   if(NOT ${ARGC} EQUAL 4)
-    message(FATAL_ERROR "_get_json_array() requires exactly 4 arguments, got ${ARGC}!")
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() requires exactly 4 arguments, got ${ARGC}!")
   endif()
   if("${output_list_var}" STREQUAL "")
-    message(FATAL_ERROR "output_list_var argument is empty!")
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() requires 'output_list_var' argument to be a non-empty string value!")
   endif()
   if("${json_block}" STREQUAL "")
-    message(FATAL_ERROR "json_block argument is empty!")
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() requires 'json_block' argument to be a non-empty string value!")
   endif()
-  if(NOT "${is_required}" MATCHES "^(on|off)$")
-    message(FATAL_ERROR "is_required must be \"on\" or \"off\"")
+  if(NOT "${is_required}" MATCHES "^(true|false)$")
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() requires 'is_required' argument to be a boolean with value \"true\" or \"false\"")
   endif()
 
   string(JSON json_block_type ERROR_VARIABLE err TYPE "${json_block}" ${json_path_list})
   if(err)
     if(${is_required})
       list(JOIN json_path_list "." joined)
-      message(FATAL_ERROR "Missing required JSON property '${joined}'!")
+      message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}(): missing required JSON property '${joined}'!")
     else()
-      set(${output_list_var} "${json_block_type}" PARENT_SCOPE) # will be <json-path...->-NOTFOUND
-      return()
+      set(${output_list_var} "${json_block_type}") # will be <json-path...->-NOTFOUND
+      return(PROPAGATE "${output_list_var}")
     endif()
   endif()
   if(NOT "${json_block_type}" STREQUAL "ARRAY")
-    message(FATAL_ERROR "Given JSON block is not an ARRAY, but a ${json_block_type}!")
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}(): given JSON block is not an ARRAY, but a ${json_block_type}!")
   endif()
 
-  set(elements_list "")
+  set(${output_list_var} "")
   string(JSON json_array GET "${json_block}" ${json_path_list})
-  _json_array_to_list(elements_list "${json_array}")
-  set(${output_list_var} "${elements_list}" PARENT_SCOPE)
+  _json_array_to_list(${output_list_var} "${json_array}")
+  return(PROPAGATE "${output_list_var}")
 endfunction()
 
 #------------------------------------------------------------------------------
 # [Internal use only]
 function(_json_array_to_list output_list_var json_array)
   if(NOT ${ARGC} EQUAL 2)
-    message(FATAL_ERROR "_json_array_to_list() requires exactly 2 arguments, got ${ARGC}!")
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() requires exactly 2 arguments, got ${ARGC}!")
   endif()
   if("${output_list_var}" STREQUAL "")
-    message(FATAL_ERROR "output_list_var argument is empty!")
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() requires 'output_list_var' argument to be a non-empty string value!")
   endif()
   if("${json_array}" STREQUAL "")
-    message(FATAL_ERROR "json_array argument is empty!")
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() requires 'json_array' argument to be a non-empty string value!")
   endif()
   string(JSON json_block_type TYPE "${json_array}")
   if(NOT "${json_block_type}" STREQUAL "ARRAY")
-    message(FATAL_ERROR "Given JSON block is not an ARRAY, but a ${json_block_type}!")
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() requires 'json_array' JSON block to be an ARRAY, but it is a ${json_block_type}!")
   endif()
 
-  set(elements_list "")
+  set(${output_list_var} "")
   string(JSON nb_elem LENGTH "${json_array}")
   if (nb_elem GREATER 0)
     math(EXPR last_index "${nb_elem} - 1")
     foreach(i RANGE 0 ${last_index})
       string(JSON elem GET "${json_array}" ${i})
-      list(APPEND elements_list "${elem}")
+      list(APPEND ${output_list_var} "${elem}")
     endforeach()
   endif()
-  set(${output_list_var} "${elements_list}" PARENT_SCOPE)
+  return(PROPAGATE "${output_list_var}")
 endfunction()
 
 #------------------------------------------------------------------------------
 # [Internal use only]
 function(_get_json_object output_map_var json_block json_path_list is_required)
   if(NOT ${ARGC} EQUAL 4)
-    message(FATAL_ERROR "_get_json_object() requires exactly 4 arguments, got ${ARGC}!")
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() requires exactly 4 arguments, got ${ARGC}!")
   endif()
   if("${output_map_var}" STREQUAL "")
-    message(FATAL_ERROR "output_map_var argument is empty!")
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() requires 'output_map_var' argument to be a non-empty string value!")
   endif()
   if("${json_block}" STREQUAL "")
-    message(FATAL_ERROR "json_block argument is empty!")
+    message(FATAL_ERROR "j${CMAKE_CURRENT_FUNCTION}() requires 'json_block' argument to be a non-empty string value!")
   endif()
-  if(NOT "${is_required}" MATCHES "^(on|off)$")
-    message(FATAL_ERROR "is_required must be \"on\" or \"off\"")
+  if(NOT "${is_required}" MATCHES "^(true|false)$")
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() requires 'is_required' argument to be a boolean with value \"true\" or \"false\"")
   endif()
 
   string(JSON json_block_type ERROR_VARIABLE err TYPE "${json_block}" ${json_path_list})
   if(err)
     if(${is_required})
       list(JOIN json_path_list "." joined)
-      message(FATAL_ERROR "Missing required JSON property '${joined}'!")
+      message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}(): missing required JSON property '${joined}'!")
     else()
-      set(${output_map_var} "${json_block_type}" PARENT_SCOPE) # will be <json-path...->-NOTFOUND
-      return()
+      set(${output_map_var} "${json_block_type}") # will be <json-path...->-NOTFOUND
+      return(PROPAGATE "${output_map_var}")
     endif()
   endif()
   if(NOT "${json_block_type}" STREQUAL "OBJECT")
-    message(FATAL_ERROR "Given JSON block is not an OBJECT, but a ${json_block_type}!")
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}(): given JSON block is not an OBJECT, but a ${json_block_type}!")
   endif()
 
-  set(objects_map "")
+  set(${output_map_var} "")
   string(JSON json_object GET "${json_block}" ${json_path_list})
-  _json_object_to_map(objects_map "${json_object}")
-  set(${output_map_var} "${objects_map}" PARENT_SCOPE)
+  _json_object_to_map(${output_map_var} "${json_object}")
+  return(PROPAGATE "${output_map_var}")
 endfunction()
 
 #------------------------------------------------------------------------------
 # [Internal use only]
 function(_json_object_to_map output_map_var json_object)
   if(NOT ${ARGC} EQUAL 2)
-    message(FATAL_ERROR "_json_object_to_map() requires exactly 2 arguments, got ${ARGC}!")
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() requires exactly 2 arguments, got ${ARGC}!")
   endif()
   if("${output_map_var}" STREQUAL "")
-    message(FATAL_ERROR "output_map_var argument is empty!")
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() requires 'output_map_var' argument to be a non-empty string value!")
   endif()
   if("${json_object}" STREQUAL "")
-    message(FATAL_ERROR "json_object argument is empty!")
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() requires 'json_object' argument to be a non-empty string value!")
   endif()
   string(JSON json_block_type TYPE "${json_object}")
   if(NOT "${json_block_type}" STREQUAL "OBJECT")
-    message(FATAL_ERROR "Given JSON block is not an OBJECT, but a ${json_block_type}!")
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() requires 'json_array' JSON block to be an OBJECT, but it is a ${json_block_type}!")
   endif()
 
-  set(objects_map "")
+  set(${output_map_var} "")
   string(JSON nb_objects LENGTH "${json_object}")
   if(nb_objects GREATER 0)
     math(EXPR last_index "${nb_objects} - 1")
     foreach(i RANGE 0 ${last_index})
       string(JSON prop_key MEMBER "${json_object}" ${i})
       string(JSON prop_value GET "${json_object}" "${prop_key}")
-      map(ADD objects_map "${prop_key}" "${prop_value}")
+      map(ADD ${output_map_var} "${prop_key}" "${prop_value}")
     endforeach()
   endif()
-  set(${output_map_var} "${objects_map}" PARENT_SCOPE)
+  return(PROPAGATE "${output_map_var}")
 endfunction()
 
 #------------------------------------------------------------------------------
 # [Internal use only]
 function(_serialize_list output_var input_list)
   if(NOT ${ARGC} EQUAL 2)
-    message(FATAL_ERROR "_serialize_list() requires exactly 2 arguments, got ${ARGC}!")
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() requires exactly 2 arguments, got ${ARGC}!")
   endif()
   if("${output_var}" STREQUAL "")
-    message(FATAL_ERROR "output_var argument is empty!")
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() requires 'output_var' argument to be a non-empty string value!")
   endif()
 
   list(TRANSFORM input_list REPLACE "\\|" "\\\\|")
-  list(JOIN input_list "|" joined)
-  set(${output_var} "${joined}" PARENT_SCOPE)
+  list(JOIN input_list "|" ${output_var})
+  return(PROPAGATE "${output_var}")
 endfunction()
 
 #------------------------------------------------------------------------------
 # [Internal use only]
 function(_deserialize_list output_list_var encoded_string)
   if(NOT ${ARGC} EQUAL 2)
-    message(FATAL_ERROR "_deserialize_list() requires exactly 2 arguments, got ${ARGC}!")
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() requires exactly 2 arguments, got ${ARGC}!")
   endif()
   if("${output_list_var}" STREQUAL "")
-    message(FATAL_ERROR "output_list_var argument is empty!")
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() requires 'output_list_var' argument to be a non-empty string value!")
   endif()
 
   string(REPLACE "\\|" "<PIPE_ESC>" result "${encoded_string}")
   string(REPLACE "|" ";" result "${result}")
   string(REPLACE "<PIPE_ESC>" "|" result "${result}")
-  set(${output_list_var} "${result}" PARENT_SCOPE)
+  set(${output_list_var} "${result}")
+  return(PROPAGATE "${output_list_var}")
 endfunction()
 
 #------------------------------------------------------------------------------
 # [Internal use only]
 function(_is_serialized_list output_var input_string)
   if(NOT ${ARGC} EQUAL 2)
-    message(FATAL_ERROR "_is_serialized_list() requires exactly 2 arguments, got ${ARGC}!")
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() requires exactly 2 arguments, got ${ARGC}!")
   endif()
   if("${output_var}" STREQUAL "")
-    message(FATAL_ERROR "output_var argument is empty!")
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() requires 'output_var' argument to be a non-empty string value!")
   endif()
 
   string(REPLACE "\\|" "<PIPE_ESC>" result "${input_string}")
   string(FIND "${result}" "|" pos)
   if(${pos} EQUAL -1)
-    set(${output_var} off PARENT_SCOPE)
+    set(${output_var} false)
   else()
-    set(${output_var} on PARENT_SCOPE)
+    set(${output_var} true)
   endif()
+  return(PROPAGATE "${output_var}")
 endfunction()
 
 #------------------------------------------------------------------------------
@@ -1195,7 +1212,7 @@ endfunction()
 #
 # Parameters:
 #   PROP_PATH   : The path (as list of keys) to the property to validate.
-#   PROP_VALUE  : The string coming from the property to validate. The value 
+#   PROP_VALUE  : The string coming from the property to validate. The value
 #                 must be a string of text.
 #   MIN_LENGTH  : The minimum length of the string for the PROP_VALUE. The
 #                 value MUST be a non-negative integer. To be valid, the length
@@ -1221,31 +1238,35 @@ function(_validate_json_string)
   set(options "")
   set(one_value_args PROP_VALUE MIN_LENGTH MAX_LENGTH PATTERN)
   set(multi_value_args PROP_PATH)
-  cmake_parse_arguments(VJS "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
+  cmake_parse_arguments(PARSE_ARGV 0 arg
+    "${options}" "${one_value_args}" "${multi_value_args}"
+  )
 
-  if(DEFINED VJS_UNPARSED_ARGUMENTS)
-    message(FATAL_ERROR "Unrecognized arguments: \"${VJS_UNPARSED_ARGUMENTS}\"")
+  if(DEFINED arg_UNPARSED_ARGUMENTS)
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() called with unrecognized arguments: \"${arg_UNPARSED_ARGUMENTS}\"")
   endif()
-  if((NOT DEFINED VJS_PROP_PATH)
-      AND (NOT "PROP_PATH" IN_LIST VJS_KEYWORDS_MISSING_VALUES))
-    message(FATAL_ERROR "PROP_PATH argument is missing or need a value!")
+  if((NOT DEFINED arg_PROP_PATH)
+      AND (NOT "PROP_PATH" IN_LIST arg_KEYWORDS_MISSING_VALUES))
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() requires the keyword PROP_PATH to be provided!")
   endif()
-  if((NOT DEFINED VJS_PROP_VALUE)
-      AND (NOT "PROP_VALUE" IN_LIST VJS_KEYWORDS_MISSING_VALUES))
-    message(FATAL_ERROR "PROP_VALUE argument is missing or need a value!")
+  if(NOT DEFINED arg_PROP_VALUE)
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() requires the keyword PROP_VALUE to be provided!")
   endif()
-  if("MIN_LENGTH" IN_LIST VJS_KEYWORDS_MISSING_VALUES)
-    message(FATAL_ERROR "MIN_LENGTH argument is missing or need a value!")
+  if((DEFINED arg_MIN_LENGTH)
+      AND ("${arg_MIN_LENGTH}" STREQUAL ""))
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() requires the keyword MIN_LENGTH to be provided with a number value!")
   endif()
-  if("MAX_LENGTH" IN_LIST VJS_KEYWORDS_MISSING_VALUES)
-    message(FATAL_ERROR "MAX_LENGTH argument is missing or need a value!")
+  if((DEFINED arg_MAX_LENGTH)
+      AND ("${arg_MAX_LENGTH}" STREQUAL ""))
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() requires the keyword MAX_LENGTH to be provided with a number value!")
   endif()
-  if("PATTERN" IN_LIST VJS_KEYWORDS_MISSING_VALUES)
-    message(FATAL_ERROR "PATTERN argument is missing or need a value!")
+  if((DEFINED arg_PATTERN)
+      AND ("${arg_PATTERN}" STREQUAL ""))
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() requires the keyword PATTERN to be provided with a non-empty string value!")
   endif()
 
   # Join path for errors
-  list(JOIN VJS_PROP_PATH "." prop_path_joined)
+  list(JOIN arg_PROP_PATH "." prop_path_joined)
 
   # Check the value is a positive integer:
   #   ^ and $ -> start and end of the string (avoid false positives).
@@ -1255,33 +1276,33 @@ function(_validate_json_string)
   set(is_positive_integer_regex "^\\+?[1-9][0-9]*$")
 
   # Check length "min length" constraint
-  if(DEFINED VJS_MIN_LENGTH)
-    if(NOT ${VJS_MIN_LENGTH} MATCHES "${is_positive_integer_regex}")
-      message(FATAL_ERROR "MIN_LENGTH argument is not an integer strictly greater than 0!")
+  if(DEFINED arg_MIN_LENGTH)
+    if(NOT ${arg_MIN_LENGTH} MATCHES "${is_positive_integer_regex}")
+      message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}(): MIN_LENGTH argument is not an integer strictly greater than 0!")
     endif()
-  
-    string(LENGTH "${VJS_PROP_VALUE}" string_length)
-    if(NOT ${string_length} GREATER_EQUAL ${VJS_MIN_LENGTH})
-      message(FATAL_ERROR "Incorrect value for '${prop_path_joined}'. ${VJS_PROP_VALUE} is shorter than the minimum length of ${VJS_MIN_LENGTH}!")
+
+    string(LENGTH "${arg_PROP_VALUE}" string_length)
+    if(NOT ${string_length} GREATER_EQUAL ${arg_MIN_LENGTH})
+      message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}(): incorrect value for '${prop_path_joined}'. ${arg_PROP_VALUE} is shorter than the minimum length of ${arg_MIN_LENGTH}!")
     endif()
   endif()
 
   # Check length "max length" constraint
-  if(DEFINED VJS_MAX_LENGTH)
-    if(NOT ${VJS_MAX_LENGTH} MATCHES "${is_positive_integer_regex}")
-      message(FATAL_ERROR "MAX_LENGTH argument is not an integer strictly greater than 0!")
+  if(DEFINED arg_MAX_LENGTH)
+    if(NOT ${arg_MAX_LENGTH} MATCHES "${is_positive_integer_regex}")
+      message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}(): MAX_LENGTH argument is not an integer strictly greater than 0!")
     endif()
 
-    string(LENGTH "${VJS_PROP_VALUE}" string_length)
-    if(NOT ${string_length} LESS_EQUAL ${VJS_MAX_LENGTH})
-      message(FATAL_ERROR "Incorrect value for '${prop_path_joined}'. ${VJS_PROP_VALUE} is longer than the maximum length of ${VJS_MAX_LENGTH}!")
+    string(LENGTH "${arg_PROP_VALUE}" string_length)
+    if(NOT ${string_length} LESS_EQUAL ${arg_MAX_LENGTH})
+      message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}(): incorrect value for '${prop_path_joined}'. ${arg_PROP_VALUE} is longer than the maximum length of ${arg_MAX_LENGTH}!")
     endif()
   endif()
 
   # Check regular expression "pattern" constraint
-  if(DEFINED VJS_PATTERN)
-    if(NOT "${VJS_PROP_VALUE}" MATCHES ${VJS_PATTERN})
-      message(FATAL_ERROR "Incorrect value for '${prop_path_joined}'. ${VJS_PROP_VALUE} does not match the pattern of ${VJS_PATTERN}!")
+  if(DEFINED arg_PATTERN)
+    if(NOT "${arg_PROP_VALUE}" MATCHES ${arg_PATTERN})
+      message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}(): incorrect value for '${prop_path_joined}'. ${arg_PROP_VALUE} does not match the pattern of ${arg_PATTERN}!")
     endif()
   endif()
 endfunction()
@@ -1292,7 +1313,7 @@ endfunction()
 #
 # Signature:
 #   _validate_json_boolean(PROP_PATH [<prop-key>...]
-#                          PROP_VALUE <number>)
+#                          PROP_VALUE <string>)
 #
 # Parameters:
 #   PROP_PATH   : The path (as list of keys) to the property to validate.
@@ -1310,22 +1331,25 @@ function(_validate_json_boolean)
   set(options "")
   set(one_value_args PROP_VALUE)
   set(multi_value_args PROP_PATH)
-  cmake_parse_arguments(VJB "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
+  cmake_parse_arguments(PARSE_ARGV 0 arg
+    "${options}" "${one_value_args}" "${multi_value_args}"
+  )
 
-  if(DEFINED VJB_UNPARSED_ARGUMENTS)
-    message(FATAL_ERROR "Unrecognized arguments: \"${VJB_UNPARSED_ARGUMENTS}\"")
+  if(DEFINED arg_UNPARSED_ARGUMENTS)
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() called with unrecognized arguments: \"${arg_UNPARSED_ARGUMENTS}\"")
   endif()
-  if((NOT DEFINED VJB_PROP_PATH)
-      AND (NOT "PROP_PATH" IN_LIST VJB_KEYWORDS_MISSING_VALUES))
-    message(FATAL_ERROR "PROP_PATH argument is missing or need a value!")
+  if((NOT DEFINED arg_PROP_PATH)
+      AND (NOT "PROP_PATH" IN_LIST arg_KEYWORDS_MISSING_VALUES))
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() requires the keyword PROP_PATH to be provided!")
   endif()
-  if(NOT DEFINED VJB_PROP_VALUE)
-    message(FATAL_ERROR "PROP_VALUE argument is missing or need a value!")
+  if((NOT DEFINED arg_PROP_VALUE)
+      OR ("${arg_PROP_VALUE}" STREQUAL ""))
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() requires the keyword PROP_VALUE to be provided with a non-empty string value!")
   endif()
-  
-  if(NOT "${VJB_PROP_VALUE}" MATCHES "^(ON|OFF)$")
-    list(JOIN VJB_PROP_PATH "." prop_path_joined)
-    message(FATAL_ERROR "Incorrect type for '${prop_path_joined}'. Expected 'boolean'!")
+
+  if(NOT "${arg_PROP_VALUE}" MATCHES "^(ON|OFF)$")
+    list(JOIN arg_PROP_PATH "." prop_path_joined)
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}(): incorrect type for '${prop_path_joined}'. Expected 'boolean'!")
   endif()
 endfunction()
 
@@ -1374,36 +1398,44 @@ function(_validate_json_number)
   set(options "")
   set(one_value_args PROP_VALUE MULTIPLE_OF MIN MAX EXCLU_MIN EXCLU_MAX)
   set(multi_value_args PROP_PATH)
-  cmake_parse_arguments(VJN "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
+  cmake_parse_arguments(PARSE_ARGV 0 arg
+    "${options}" "${one_value_args}" "${multi_value_args}"
+  )
 
-  if(DEFINED VJN_UNPARSED_ARGUMENTS)
-    message(FATAL_ERROR "Unrecognized arguments: \"${VJN_UNPARSED_ARGUMENTS}\"")
+  if(DEFINED arg_UNPARSED_ARGUMENTS)
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() called with unrecognized arguments: \"${arg_UNPARSED_ARGUMENTS}\"")
   endif()
-  if((NOT DEFINED VJN_PROP_PATH)
-      AND (NOT "PROP_PATH" IN_LIST VJN_KEYWORDS_MISSING_VALUES))
-    message(FATAL_ERROR "PROP_PATH argument is missing or need a value!")
+  if((NOT DEFINED arg_PROP_PATH)
+      AND (NOT "PROP_PATH" IN_LIST arg_KEYWORDS_MISSING_VALUES))
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() requires the keyword PROP_PATH to be provided!")
   endif()
-  if(NOT DEFINED VJN_PROP_VALUE)
-    message(FATAL_ERROR "PROP_VALUE argument is missing or need a value!")
+  if((NOT DEFINED arg_PROP_VALUE)
+      OR ("${arg_PROP_VALUE}" STREQUAL ""))
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() requires the keyword PROP_VALUE to be provided with a number value!")
   endif()
-  if("MULTIPLE_OF" IN_LIST VJN_KEYWORDS_MISSING_VALUES)
-    message(FATAL_ERROR "MULTIPLE_OF argument is missing or need a value!")
+  if((DEFINED arg_MULTIPLE_OF)
+      AND ("${arg_MULTIPLE_OF}" STREQUAL ""))
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() requires the keyword MULTIPLE_OF to be provided with a number value!")
   endif()
-  if("MIN" IN_LIST VJN_KEYWORDS_MISSING_VALUES)
-    message(FATAL_ERROR "MIN argument is missing or need a value!")
+  if((DEFINED arg_MIN)
+      AND ("${arg_MIN}" STREQUAL ""))
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() requires the keyword MIN to be provided with a number value!")
   endif()
-  if("MAX" IN_LIST VJN_KEYWORDS_MISSING_VALUES)
-    message(FATAL_ERROR "MAX argument is missing or need a value!")
+  if((DEFINED arg_MAX)
+      AND ("${arg_MAX}" STREQUAL ""))
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() requires the keyword MAX to be provided with a number value!")
   endif()
-  if("EXCLU_MIN" IN_LIST VJN_KEYWORDS_MISSING_VALUES)
-    message(FATAL_ERROR "EXCLU_MIN argument is missing or need a value!")
+  if((DEFINED arg_EXCLU_MIN)
+      AND ("${arg_EXCLU_MIN}" STREQUAL ""))
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() requires the keyword EXCLU_MIN to be provided with a number value!")
   endif()
-  if("EXCLU_MAX" IN_LIST VJN_KEYWORDS_MISSING_VALUES)
-    message(FATAL_ERROR "EXCLU_MAX argument is missing or need a value!")
+  if((DEFINED arg_EXCLU_MAX)
+      AND ("${arg_EXCLU_MAX}" STREQUAL ""))
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() requires the keyword EXCLU_MAX to be provided with a number value!")
   endif()
 
   # Join path for errors
-  list(JOIN VJN_PROP_PATH "." prop_path_joined)
+  list(JOIN arg_PROP_PATH "." prop_path_joined)
 
   # Check the value is a number:
   #   ^ and $ -> start and end of the string (avoid false positives).
@@ -1412,74 +1444,74 @@ function(_validate_json_number)
   #   ([.][0-9]+)? -> optional fractional part with a point followed by at
   #                   least one digit.
   set(is_number_regex "^[\\+-]?[0-9]+([.][0-9]+)?$")
-  if(NOT ${VJN_PROP_VALUE} MATCHES "${is_number_regex}")
-    message(FATAL_ERROR "Incorrect type for '${prop_path_joined}'. Expected 'number'!")
+  if(NOT ${arg_PROP_VALUE} MATCHES "${is_number_regex}")
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}(): incorrect type for '${prop_path_joined}'. Expected 'number'!")
   endif()
 
   # Check "multiple of" constraint
-  if(DEFINED VJN_MULTIPLE_OF)
+  if(DEFINED arg_MULTIPLE_OF)
     # Check the value is a positive integer:
     #   ^ and $ -> start and end of the string (avoid false positives).
     #   +? -> optional sign.
     #   [0-9] -> first mandatory digit.
     #   [0-9]* -> optional additional digits.
     set(is_positive_integer_regex "^\\+?[1-9][0-9]*$")
-    if(NOT ${VJN_MULTIPLE_OF} MATCHES "${is_positive_integer_regex}")
-      message(FATAL_ERROR "MULTIPLE_OF argument is not an integer strictly greater than 0!")
+    if(NOT ${arg_MULTIPLE_OF} MATCHES "${is_positive_integer_regex}")
+      message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}(): MULTIPLE_OF argument is not an integer strictly greater than 0!")
     endif()
     # Prevent division by zero
     set(is_zero_regex "^[\\+-]?(0+)(\\.0+)?$")
-    if(${VJN_MULTIPLE_OF} MATCHES "${is_zero_regex}")
-      message(FATAL_ERROR "MULTIPLE_OF argument is an incorrect value. Division by 0 is not allowed!")
+    if(${arg_MULTIPLE_OF} MATCHES "${is_zero_regex}")
+      message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}(): MULTIPLE_OF argument is an incorrect value. Division by 0 is not allowed!")
     endif()
 
     # Perform scaled division to simulate floating point support
-    math(EXPR scaled_div "(${VJN_PROP_VALUE} * 1000000) / ${VJN_MULTIPLE_OF}")
+    math(EXPR scaled_div "(${arg_PROP_VALUE} * 1000000) / ${arg_MULTIPLE_OF}")
 
     # Check if the division result is an integer by testing modulo 1e6
     math(EXPR mod "${scaled_div} % 1000000")
     if(NOT ${mod} EQUAL 0)
-      message(FATAL_ERROR "Incorrect value for '${prop_path_joined}'. ${VJN_PROP_VALUE} is not divisible by ${VJN_MULTIPLE_OF}!")
+      message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}(): incorrect value for '${prop_path_joined}'. ${arg_PROP_VALUE} is not divisible by ${arg_MULTIPLE_OF}!")
     endif()
   endif()
 
   # Check range "min" constraint
-  if(DEFINED VJN_MIN)
-    if(NOT ${VJN_MIN} MATCHES "${is_number_regex}")
-      message(FATAL_ERROR "MIN argument is not a number!")
+  if(DEFINED arg_MIN)
+    if(NOT ${arg_MIN} MATCHES "${is_number_regex}")
+      message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}(): MIN argument is not a number!")
     endif()
-    if(NOT ${VJN_PROP_VALUE} GREATER_EQUAL ${VJN_MIN})
-      message(FATAL_ERROR "Incorrect value for '${prop_path_joined}'. ${VJN_PROP_VALUE} is below the minimum of ${VJN_MIN}!")
+    if(NOT ${arg_PROP_VALUE} GREATER_EQUAL ${arg_MIN})
+      message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}(): incorrect value for '${prop_path_joined}'. ${arg_PROP_VALUE} is below the minimum of ${arg_MIN}!")
     endif()
   endif()
 
   # Check range "min exclusive" constraint
-  if(DEFINED VJN_EXCLU_MIN)
-    if(NOT ${VJN_EXCLU_MIN} MATCHES "${is_number_regex}")
-      message(FATAL_ERROR "EXCLU_MIN argument is not a number!")
+  if(DEFINED arg_EXCLU_MIN)
+    if(NOT ${arg_EXCLU_MIN} MATCHES "${is_number_regex}")
+      message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}(): EXCLU_MIN argument is not a number!")
     endif()
-    if(NOT ${VJN_PROP_VALUE} GREATER ${VJN_EXCLU_MIN})
-      message(FATAL_ERROR "Incorrect value for '${prop_path_joined}'. ${VJN_PROP_VALUE} is below the exclusive minimum of ${VJN_EXCLU_MIN}!")
+    if(NOT ${arg_PROP_VALUE} GREATER ${arg_EXCLU_MIN})
+      message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}(): incorrect value for '${prop_path_joined}'. ${arg_PROP_VALUE} is below the exclusive minimum of ${arg_EXCLU_MIN}!")
     endif()
   endif()
 
   # Check range "max" constraint
-  if(DEFINED VJN_MAX)
-    if(NOT ${VJN_MAX} MATCHES "${is_number_regex}")
-      message(FATAL_ERROR "MAX argument is not a number!")
+  if(DEFINED arg_MAX)
+    if(NOT ${arg_MAX} MATCHES "${is_number_regex}")
+      message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}(): MAX argument is not a number!")
     endif()
-    if(NOT ${VJN_PROP_VALUE} LESS_EQUAL ${VJN_MAX})
-      message(FATAL_ERROR "Incorrect value for '${prop_path_joined}'. ${VJN_PROP_VALUE} is above the maximum of ${VJN_MAX}!")
+    if(NOT ${arg_PROP_VALUE} LESS_EQUAL ${arg_MAX})
+      message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}(): incorrect value for '${prop_path_joined}'. ${arg_PROP_VALUE} is above the maximum of ${arg_MAX}!")
     endif()
   endif()
 
   # Check range "max exclusive" constraint
-  if(DEFINED VJN_EXCLU_MAX)
-    if(NOT ${VJN_EXCLU_MAX} MATCHES "${is_number_regex}")
-      message(FATAL_ERROR "EXCLU_MAX argument is not a number!")
+  if(DEFINED arg_EXCLU_MAX)
+    if(NOT ${arg_EXCLU_MAX} MATCHES "${is_number_regex}")
+      message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}(): EXCLU_MAX argument is not a number!")
     endif()
-    if(NOT ${VJN_PROP_VALUE} LESS ${VJN_EXCLU_MAX})
-      message(FATAL_ERROR "Incorrect value for '${prop_path_joined}'. ${VJN_PROP_VALUE} is above the exclusive maximum of ${VJN_EXCLU_MAX}!")
+    if(NOT ${arg_PROP_VALUE} LESS ${arg_EXCLU_MAX})
+      message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}(): incorrect value for '${prop_path_joined}'. ${arg_PROP_VALUE} is above the exclusive maximum of ${arg_EXCLU_MAX}!")
     endif()
   endif()
 endfunction()
@@ -1487,106 +1519,119 @@ endfunction()
 #------------------------------------------------------------------------------
 # [Internal use only]
 macro(_cmake_targets_file_is_loaded)
-  if(NOT DEFINED CTF_IS_LOADED)
-    message(FATAL_ERROR "IS_LOADED argument is missing or need a value!")
+  if((NOT DEFINED arg_IS_LOADED)
+      OR ("${arg_IS_LOADED}" STREQUAL ""))
+    message(FATAL_ERROR "${current_command} requires the keyword IS_LOADED to be provided with a non-empty string value!")
   endif()
 
   get_property(is_file_loaded GLOBAL PROPERTY "TARGETS_CONFIG_LOADED")
-  if(NOT "${is_file_loaded}" STREQUAL "on")
-    set(${CTF_IS_LOADED} off PARENT_SCOPE)
+  if(NOT "${is_file_loaded}" STREQUAL "true")
+    set(${arg_IS_LOADED} false)
   else()
-    set(${CTF_IS_LOADED} on PARENT_SCOPE)
+    set(${arg_IS_LOADED} true)
   endif()
+  return(PROPAGATE "${arg_IS_LOADED}")
 endmacro()
 
 #------------------------------------------------------------------------------
 # [Internal use only]
 macro(_cmake_targets_file_get_loaded_file)
-  if(NOT DEFINED CTF_GET_LOADED_FILE)
-    message(FATAL_ERROR "GET_LOADED_FILE argument is missing or need a value!")
+  if((NOT DEFINED arg_GET_LOADED_FILE)
+      OR ("${arg_GET_LOADED_FILE}" STREQUAL ""))
+    message(FATAL_ERROR "${current_command} requires the keyword GET_LOADED_FILE to be provided with a non-empty string value!")
   endif()
   _assert_config_file_loaded()
 
   get_property(is_set GLOBAL PROPERTY "TARGETS_CONFIG_RAW_JSON" SET)
   if(NOT ${is_set})
-    message(FATAL_ERROR "No JSON configuration file loaded!")
+    message(FATAL_ERROR "${current_command}: no JSON configuration file loaded!")
   endif()
 
-  get_property(loaded_file_content GLOBAL PROPERTY "TARGETS_CONFIG_RAW_JSON")
-  set(${CTF_GET_LOADED_FILE} "${loaded_file_content}" PARENT_SCOPE)
+  get_property(${arg_GET_LOADED_FILE} GLOBAL PROPERTY "TARGETS_CONFIG_RAW_JSON")
+  return(PROPAGATE "${arg_GET_LOADED_FILE}")
 endmacro()
 
 #------------------------------------------------------------------------------
 # [Internal use only]
 macro(_cmake_targets_file_has_config)
-  if(NOT DEFINED CTF_HAS_CONFIG)
-    message(FATAL_ERROR "HAS_CONFIG argument is missing or need a value!")
+  if((NOT DEFINED arg_HAS_CONFIG)
+      OR ("${arg_HAS_CONFIG}" STREQUAL ""))
+    message(FATAL_ERROR "${current_command} requires the keyword HAS_CONFIG to be provided with a non-empty string value!")
   endif()
-  if(NOT DEFINED CTF_TARGET)
-    message(FATAL_ERROR "TARGET argument is missing or need a value!")
+  if((NOT DEFINED arg_TARGET)
+      OR ("${arg_TARGET}" STREQUAL ""))
+    message(FATAL_ERROR "${current_command} requires the keyword TARGET to be provided with a non-empty string value!")
   endif()
   _assert_config_file_loaded()
 
-  get_property(does_config_exist GLOBAL PROPERTY "TARGETS_CONFIG_${CTF_TARGET}" SET)
+  get_property(does_config_exist GLOBAL PROPERTY "TARGETS_CONFIG_${arg_TARGET}" SET)
   if(${does_config_exist})
-    set(${CTF_HAS_CONFIG} on PARENT_SCOPE)
+    set(${arg_HAS_CONFIG} true)
   else()
-    set(${CTF_HAS_CONFIG} off PARENT_SCOPE)
+    set(${arg_HAS_CONFIG} false)
   endif()
+  return(PROPAGATE "${arg_HAS_CONFIG}")
 endmacro()
 
 #------------------------------------------------------------------------------
 # [Internal use only]
 macro(_cmake_targets_file_get_value)
-  if(NOT DEFINED CTF_GET_VALUE)
-    message(FATAL_ERROR "GET_VALUE argument is missing or need a value!")
+  if((NOT DEFINED arg_GET_VALUE)
+      OR ("${arg_GET_VALUE}" STREQUAL ""))
+    message(FATAL_ERROR "${current_command} requires the keyword GET_VALUE to be provided with a non-empty string value!")
   endif()
-  if(NOT DEFINED CTF_TARGET)
-    message(FATAL_ERROR "TARGET argument is missing or need a value!")
+  if((NOT DEFINED arg_TARGET)
+      OR ("${arg_TARGET}" STREQUAL ""))
+    message(FATAL_ERROR "${current_command} requires the keyword TARGET to be provided with a non-empty string value!")
   endif()
-  if(NOT DEFINED CTF_KEY)
-    message(FATAL_ERROR "KEY argument is missing or need a value!")
+  if((NOT DEFINED arg_KEY)
+      OR ("${arg_KEY}" STREQUAL ""))
+    message(FATAL_ERROR "${current_command} requires the keyword KEY to be provided with a non-empty string value!")
   endif()
   _assert_config_file_loaded()
-  _assert_target_config_exists("${CTF_TARGET}")
-  
-  get_property(target_config_map GLOBAL PROPERTY "TARGETS_CONFIG_${CTF_TARGET}")
+  _assert_target_config_exists("${arg_TARGET}")
+
+  get_property(target_config_map GLOBAL PROPERTY "TARGETS_CONFIG_${arg_TARGET}")
 
   # Check if the key exists
-  map(HAS_KEY target_config_map "${CTF_KEY}" has_setting_key)
+  map(HAS_KEY target_config_map "${arg_KEY}" has_setting_key)
   if(NOT ${has_setting_key})
-    message(FATAL_ERROR "Target ${CTF_TARGET} has no setting key '${CTF_KEY}'!")
+    message(FATAL_ERROR "${current_command}: target ${arg_TARGET} has no setting key '${arg_KEY}'!")
   endif()
 
   # Get the value
-  map(GET target_config_map "${CTF_KEY}" setting_value)
-  
+  map(GET target_config_map "${arg_KEY}" setting_value)
+
   # Deserialize the value if needed
   _is_serialized_list(is_serialized "${setting_value}")
   if(${is_serialized})
     _deserialize_list(setting_value "${setting_value}")
   endif()
-  set(${CTF_GET_VALUE} "${setting_value}" PARENT_SCOPE)
+  set(${arg_GET_VALUE} "${setting_value}")
+  return(PROPAGATE "${arg_GET_VALUE}")
 endmacro()
 
 #------------------------------------------------------------------------------
 # [Internal use only]
 macro(_cmake_targets_file_try_get_value)
-  if(NOT DEFINED CTF_TRY_GET_VALUE)
-    message(FATAL_ERROR "TRY_GET_VALUE argument is missing or need a value!")
+  if((NOT DEFINED arg_TRY_GET_VALUE)
+      OR ("${arg_TRY_GET_VALUE}" STREQUAL ""))
+    message(FATAL_ERROR "${current_command} requires the keyword TRY_GET_VALUE to be provided with a non-empty string value!")
   endif()
-  if(NOT DEFINED CTF_TARGET)
-    message(FATAL_ERROR "TARGET argument is missing or need a value!")
+  if((NOT DEFINED arg_TARGET)
+      OR ("${arg_TARGET}" STREQUAL ""))
+    message(FATAL_ERROR "${current_command} requires the keyword TARGET to be provided with a non-empty string value!")
   endif()
-  if(NOT DEFINED CTF_KEY)
-    message(FATAL_ERROR "KEY argument is missing or need a value!")
+  if((NOT DEFINED arg_KEY)
+      OR ("${arg_KEY}" STREQUAL ""))
+    message(FATAL_ERROR "${current_command} requires the keyword KEY to be provided with a non-empty string value!")
   endif()
   _assert_config_file_loaded()
-  _assert_target_config_exists("${CTF_TARGET}")
-  
-  get_property(target_config_map GLOBAL PROPERTY "TARGETS_CONFIG_${CTF_TARGET}")
+  _assert_target_config_exists("${arg_TARGET}")
 
-  map(FIND target_config_map "${CTF_KEY}" setting_value)
+  get_property(target_config_map GLOBAL PROPERTY "TARGETS_CONFIG_${arg_TARGET}")
+
+  map(FIND target_config_map "${arg_KEY}" setting_value)
   if(NOT "${setting_value}" MATCHES "-NOTFOUND$")
     # Deserialize the value if needed
     _is_serialized_list(is_serialized "${setting_value}")
@@ -1594,78 +1639,86 @@ macro(_cmake_targets_file_try_get_value)
       _deserialize_list(setting_value "${setting_value}")
     endif()
   endif()
-
-  set(${CTF_TRY_GET_VALUE} "${setting_value}" PARENT_SCOPE)
+  set(${arg_TRY_GET_VALUE} "${setting_value}")
+  return(PROPAGATE "${arg_TRY_GET_VALUE}")
 endmacro()
 
 #------------------------------------------------------------------------------
 # [Internal use only]
 macro(_cmake_targets_file_get_settings)
-  if(NOT DEFINED CTF_GET_SETTINGS)
-    message(FATAL_ERROR "GET_SETTINGS argument is missing or need a value!")
+  if((NOT DEFINED arg_GET_SETTINGS)
+      OR ("${arg_GET_SETTINGS}" STREQUAL ""))
+    message(FATAL_ERROR "${current_command} requires the keyword GET_SETTINGS to be provided with a non-empty string value!")
   endif()
-  if(NOT DEFINED CTF_TARGET)
-    message(FATAL_ERROR "TARGET argument is missing or need a value!")
+  if((NOT DEFINED arg_TARGET)
+      OR ("${arg_TARGET}" STREQUAL ""))
+    message(FATAL_ERROR "${current_command} requires the keyword TARGET to be provided with a non-empty string value!")
   endif()
   _assert_config_file_loaded()
-  _assert_target_config_exists("${CTF_TARGET}")
+  _assert_target_config_exists("${arg_TARGET}")
 
-  get_property(target_config_map GLOBAL PROPERTY "TARGETS_CONFIG_${CTF_TARGET}")
-  set(${CTF_GET_SETTINGS} "${target_config_map}" PARENT_SCOPE)
+  get_property(${arg_GET_SETTINGS} GLOBAL PROPERTY "TARGETS_CONFIG_${arg_TARGET}")
+  return(PROPAGATE "${arg_GET_SETTINGS}")
 endmacro()
 
 #------------------------------------------------------------------------------
 # [Internal use only]
 macro(_cmake_targets_file_has_setting)
-  if(NOT DEFINED CTF_HAS_SETTING)
-    message(FATAL_ERROR "HAS_SETTING argument is missing or need a value!")
+  if((NOT DEFINED arg_HAS_SETTING)
+      OR ("${arg_HAS_SETTING}" STREQUAL ""))
+    message(FATAL_ERROR "${current_command} requires the keyword HAS_SETTING to be provided with a non-empty string value!")
   endif()
-  if(NOT DEFINED CTF_TARGET)
-    message(FATAL_ERROR "TARGET argument is missing or need a value!")
+  if((NOT DEFINED arg_TARGET)
+      OR ("${arg_TARGET}" STREQUAL ""))
+    message(FATAL_ERROR "${current_command} requires the keyword TARGET to be provided with a non-empty string value!")
   endif()
-  if(NOT DEFINED CTF_KEY)
-    message(FATAL_ERROR "KEY argument is missing or need a value!")
+  if((NOT DEFINED arg_KEY)
+      OR ("${arg_KEY}" STREQUAL ""))
+    message(FATAL_ERROR "${current_command} requires the keyword KEY to be provided with a non-empty string value!")
   endif()
   _assert_config_file_loaded()
-  _assert_target_config_exists("${CTF_TARGET}")
-  
-  get_property(target_config_map GLOBAL PROPERTY "TARGETS_CONFIG_${CTF_TARGET}")
-  map(HAS_KEY target_config_map "${CTF_KEY}" has_setting_key)
+  _assert_target_config_exists("${arg_TARGET}")
+
+  get_property(target_config_map GLOBAL PROPERTY "TARGETS_CONFIG_${arg_TARGET}")
+  map(HAS_KEY target_config_map "${arg_KEY}" has_setting_key)
   if(${has_setting_key})
-    set(${CTF_HAS_SETTING} on PARENT_SCOPE)
+    set(${arg_HAS_SETTING} true)
   else()
-    set(${CTF_HAS_SETTING} off PARENT_SCOPE)
+    set(${arg_HAS_SETTING} false)
   endif()
+  return(PROPAGATE "${arg_HAS_SETTING}")
 endmacro()
 
 #------------------------------------------------------------------------------
 # [Internal use only]
 macro(_cmake_targets_file_get_keys)
-  if(NOT DEFINED CTF_GET_KEYS)
-    message(FATAL_ERROR "GET_KEYS argument is missing or need a value!")
+  if((NOT DEFINED arg_GET_KEYS)
+      OR ("${arg_GET_KEYS}" STREQUAL ""))
+    message(FATAL_ERROR "${current_command} requires the keyword GET_KEYS to be provided with a non-empty string value!")
   endif()
-  if(NOT DEFINED CTF_TARGET)
-    message(FATAL_ERROR "TARGET argument is missing or need a value!")
+  if((NOT DEFINED arg_TARGET)
+      OR ("${arg_TARGET}" STREQUAL ""))
+    message(FATAL_ERROR "${current_command} requires the keyword TARGET to be provided with a non-empty string value!")
   endif()
   _assert_config_file_loaded()
-  _assert_target_config_exists("${CTF_TARGET}")
+  _assert_target_config_exists("${arg_TARGET}")
 
-  get_property(target_config_map GLOBAL PROPERTY "TARGETS_CONFIG_${CTF_TARGET}")
-  map(KEYS target_config_map setting_keys)
-  set(${CTF_GET_KEYS} "${setting_keys}" PARENT_SCOPE)
+  get_property(target_config_map GLOBAL PROPERTY "TARGETS_CONFIG_${arg_TARGET}")
+  map(KEYS target_config_map ${arg_GET_KEYS})
+  return(PROPAGATE "${arg_GET_KEYS}")
 endmacro()
 
 #------------------------------------------------------------------------------
 # [Internal use only]
 macro(_cmake_targets_file_print_configs)
-  if(NOT ${CTF_PRINT_CONFIGS})
-    message(FATAL_ERROR "PRINT_CONFIGS arguments is missing!")
+  if(NOT ${arg_PRINT_CONFIGS})
+    message(FATAL_ERROR "${current_command} requires the keyword PRINT_CONFIGS to be provided!")
   endif()
   _assert_config_file_loaded()
 
   get_property(target_paths GLOBAL PROPERTY "TARGETS_CONFIG_LIST")
   foreach(target_path IN ITEMS ${target_paths})
-    set(CTF_PRINT_TARGET_CONFIG "${target_path}")
+    set(arg_PRINT_TARGET_CONFIG "${target_path}")
     _cmake_targets_file_print_target_config()
   endforeach()
 endmacro()
@@ -1673,13 +1726,14 @@ endmacro()
 #------------------------------------------------------------------------------
 # [Internal use only]
 macro(_cmake_targets_file_print_target_config)
-  if(NOT DEFINED CTF_PRINT_TARGET_CONFIG)
-    message(FATAL_ERROR "PRINT_TARGET_CONFIG argument is missing or need a value!")
+  if((NOT DEFINED arg_PRINT_TARGET_CONFIG)
+      OR ("${arg_PRINT_TARGET_CONFIG}" STREQUAL ""))
+    message(FATAL_ERROR "${current_command} requires the keyword PRINT_TARGET_CONFIG to be provided with a non-empty string value!")
   endif()
   _assert_config_file_loaded()
-  _assert_target_config_exists("${CTF_PRINT_TARGET_CONFIG}")
+  _assert_target_config_exists("${arg_PRINT_TARGET_CONFIG}")
 
-  get_property(target_config_map GLOBAL PROPERTY "TARGETS_CONFIG_${CTF_PRINT_TARGET_CONFIG}")
+  get_property(target_config_map GLOBAL PROPERTY "TARGETS_CONFIG_${arg_PRINT_TARGET_CONFIG}")
   map(GET target_config_map "name" target_name)
   message(STATUS "Target: ${target_name}")
 
@@ -1692,16 +1746,16 @@ macro(_cmake_targets_file_print_target_config)
     endif()
   endforeach()
 
-  # Print nested 'dependencies' object properties
-  message(STATUS "  Dependencies:")
-  map(GET target_config_map "dependencies" dep_names)
+  # Print nested 'extDependencies' object properties
+  message(STATUS "  ExtDependencies:")
+  map(GET target_config_map "extDependencies" dep_names)
   _deserialize_list(dep_names "${dep_names}")
   foreach(dep_name IN ITEMS ${dep_names})
     message(STATUS "    ${dep_name}:")
-    foreach(dep_prop_key "rulesFile" "packageLocation.windows" "packageLocation.unix" "packageLocation.macos" "minVersion" "fetchInfo.autodownload" "fetchInfo.kind" "fetchInfo.repository" "fetchInfo.tag" "fetchInfo.hash" "fetchInfo.revision" "optional" "configuration.compileFeatures" "configuration.compileDefinitions" "configuration.compileOptions" "configuration.linkOptions")
-      map(HAS_KEY target_config_map "dependencies.${dep_name}.${dep_prop_key}" has_setting_key)
+    foreach(dep_prop_key "rulesFile" "packageLocation.windows" "packageLocation.unix" "packageLocation.macos" "minVersion" "fetchInfo.autodownload" "fetchInfo.kind" "fetchInfo.repository" "fetchInfo.tag" "fetchInfo.hash" "fetchInfo.revision" "optional" "build.compileFeatures" "build.compileDefinitions" "build.compileOptions" "build.linkOptions")
+      map(HAS_KEY target_config_map "extDependencies.${dep_name}.${dep_prop_key}" has_setting_key)
       if(${has_setting_key})
-        map(GET target_config_map "dependencies.${dep_name}.${dep_prop_key}" dep_prop_value)
+        map(GET target_config_map "extDependencies.${dep_name}.${dep_prop_key}" dep_prop_value)
         message(STATUS "      ${dep_prop_key}: ${dep_prop_value}")
       endif()
     endforeach()
@@ -1712,11 +1766,11 @@ endmacro()
 # [Internal use only]
 function(_assert_config_file_loaded)
   if(NOT ${ARGC} EQUAL 0)
-    message(FATAL_ERROR "_assert_config_file_loaded() requires exactly 0 arguments, got ${ARGC}!")
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() requires exactly 0 arguments, got ${ARGC}!")
   endif()
   get_property(is_file_loaded GLOBAL PROPERTY "TARGETS_CONFIG_LOADED")
-  if(NOT "${is_file_loaded}" STREQUAL "on")
-    message(FATAL_ERROR "Targets configuration not loaded. Call cmake_targets_file(LOAD) first!")
+  if(NOT "${is_file_loaded}" STREQUAL "true")
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}(): targets configuration not loaded. Call cmake_targets_file(LOAD) first!")
   endif()
 endfunction()
 
@@ -1724,14 +1778,14 @@ endfunction()
 # [Internal use only]
 function(_assert_target_config_exists target_dir_path)
   if(NOT ${ARGC} EQUAL 1)
-    message(FATAL_ERROR "_assert_target_config_exists() requires exactly 1 arguments, got ${ARGC}!")
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() requires exactly 1 arguments, got ${ARGC}!")
   endif()
   if("${target_dir_path}" STREQUAL "")
-    message(FATAL_ERROR "target_dir_path argument is empty!")
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() requires 'target_dir_path' argument to be a non-empty string value!")
   endif()
 
   get_property(does_config_exist GLOBAL PROPERTY "TARGETS_CONFIG_${target_dir_path}" SET)
   if(NOT ${does_config_exist})
-    message(FATAL_ERROR "No configuration found with the target path ${target_dir_path}!")
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}(): no configuration found with the target path ${target_dir_path}!")
   endif()
 endfunction()

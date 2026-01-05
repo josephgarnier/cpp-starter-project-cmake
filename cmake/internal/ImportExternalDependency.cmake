@@ -60,8 +60,8 @@ function(import_external_dependency target_name config_target_dir_path config_de
   set(CURRENT_TARGET_NAME "${target_name}")
   set(DEP_NAME "${config_dep_name}")
   _map_dep_settings_to_vars("${config_target_dir_path}" "${config_dep_name}")
-  
-  # Call the CMake rules file
+
+  # Call the CMake rules file to create the target
   if("${${config_dep_name}_RULES_FILE}" STREQUAL "generic")
     set(rules_file_name "RulesGeneric.cmake")
     set(rules_file_path "${${PROJECT_NAME}_CMAKE_RULES_DIR}/${rules_file_name}")
@@ -108,10 +108,10 @@ endfunction()
 #   <dep-name>_FETCH_REVISION
 #   <dep-name>_FETCH_HASH
 #   <dep-name>_OPTIONAL
-#   <dep-name>_CONFIG_COMPILE_FEATURES
-#   <dep-name>_CONFIG_COMPILE_DEFINITIONS
-#   <dep-name>_CONFIG_COMPILE_OPTIONS
-#   <dep-name>_CONFIG_LINK_OPTIONS
+#   <dep-name>_BUILD_COMPILE_FEATURES
+#   <dep-name>_BUILD_COMPILE_DEFINITIONS
+#   <dep-name>_BUILD_COMPILE_OPTIONS
+#   <dep-name>_BUILD_LINK_OPTIONS
 #
 # Erros:
 #   If no configuration matching the target directory path is found in
@@ -138,7 +138,7 @@ function(_map_dep_settings_to_vars config_target_dir_path config_dep_name)
   # Set <dep-name>_RULES_FILE
   cmake_targets_file(GET_VALUE ${config_dep_name}_RULES_FILE
     TARGET "${config_target_dir_path}"
-    KEY "dependencies.${config_dep_name}.rulesFile"
+    KEY "extDependencies.${config_dep_name}.rulesFile"
   )
   if(NOT "${${config_dep_name}_RULES_FILE}" STREQUAL "generic")
     validate_dep_rules_file_path(is_valid err_msg on
@@ -150,42 +150,42 @@ function(_map_dep_settings_to_vars config_target_dir_path config_dep_name)
   # Set <dep-name>_PACKAGE_LOC_WIN
   cmake_targets_file(TRY_GET_VALUE ${config_dep_name}_PACKAGE_LOC_WIN
     TARGET "${config_target_dir_path}"
-    KEY "dependencies.${config_dep_name}.packageLocation.windows"
+    KEY "extDependencies.${config_dep_name}.packageLocation.windows"
   )
   _unset_var_if_not_found(${config_dep_name}_PACKAGE_LOC_WIN)
 
   # Set <dep-name>_PACKAGE_LOC_UNIX
   cmake_targets_file(TRY_GET_VALUE ${config_dep_name}_PACKAGE_LOC_UNIX
     TARGET "${config_target_dir_path}"
-    KEY "dependencies.${config_dep_name}.packageLocation.unix"
+    KEY "extDependencies.${config_dep_name}.packageLocation.unix"
   )
   _unset_var_if_not_found(${config_dep_name}_PACKAGE_LOC_UNIX)
 
   # Set <dep-name>_PACKAGE_LOC_MAC
   cmake_targets_file(TRY_GET_VALUE ${config_dep_name}_PACKAGE_LOC_MAC
     TARGET "${config_target_dir_path}"
-    KEY "dependencies.${config_dep_name}.packageLocation.macos"
+    KEY "extDependencies.${config_dep_name}.packageLocation.macos"
   )
   _unset_var_if_not_found(${config_dep_name}_PACKAGE_LOC_MAC)
 
   # Set <dep-name>_MIN_VERSION
   cmake_targets_file(TRY_GET_VALUE ${config_dep_name}_MIN_VERSION
     TARGET "${config_target_dir_path}"
-    KEY "dependencies.${config_dep_name}.minVersion"
+    KEY "extDependencies.${config_dep_name}.minVersion"
   )
   _unset_var_if_not_found(${config_dep_name}_MIN_VERSION)
 
   # Set <dep-name>_FETCH_AUTODOWNLOAD
   cmake_targets_file(TRY_GET_VALUE ${config_dep_name}_FETCH_AUTODOWNLOAD
     TARGET "${config_target_dir_path}"
-    KEY "dependencies.${config_dep_name}.fetchInfo.autodownload"
+    KEY "extDependencies.${config_dep_name}.fetchInfo.autodownload"
   )
   _unset_var_if_not_found(${config_dep_name}_FETCH_AUTODOWNLOAD)
 
   # Set <dep-name>_FETCH_KIND
   cmake_targets_file(TRY_GET_VALUE ${config_dep_name}_FETCH_KIND
     TARGET "${config_target_dir_path}"
-    KEY "dependencies.${config_dep_name}.fetchInfo.kind"
+    KEY "extDependencies.${config_dep_name}.fetchInfo.kind"
   )
   _unset_var_if_not_found(${config_dep_name}_FETCH_KIND)
 
@@ -213,65 +213,66 @@ function(_map_dep_settings_to_vars config_target_dir_path config_dep_name)
   # Set <dep-name>_FETCH_REPOSITORY
   cmake_targets_file(TRY_GET_VALUE ${config_dep_name}_FETCH_REPOSITORY
     TARGET "${config_target_dir_path}"
-    KEY "dependencies.${config_dep_name}.fetchInfo.repository"
+    KEY "extDependencies.${config_dep_name}.fetchInfo.repository"
   )
   _unset_var_if_not_found(${config_dep_name}_FETCH_REPOSITORY)
 
   # Set <dep-name>_FETCH_TAG
   cmake_targets_file(TRY_GET_VALUE ${config_dep_name}_FETCH_TAG
     TARGET "${config_target_dir_path}"
-    KEY "dependencies.${config_dep_name}.fetchInfo.tag"
+    KEY "extDependencies.${config_dep_name}.fetchInfo.tag"
   )
   _unset_var_if_not_found(${config_dep_name}_FETCH_TAG)
 
   # Set <dep-name>_FETCH_REVISION
   cmake_targets_file(TRY_GET_VALUE ${config_dep_name}_FETCH_REVISION
     TARGET "${config_target_dir_path}"
-    KEY "dependencies.${config_dep_name}.fetchInfo.revision"
+    KEY "extDependencies.${config_dep_name}.fetchInfo.revision"
   )
   _unset_var_if_not_found(${config_dep_name}_FETCH_REVISION)
 
   # Set <dep-name>_FETCH_HASH
   cmake_targets_file(TRY_GET_VALUE ${config_dep_name}_FETCH_HASH
     TARGET "${config_target_dir_path}"
-    KEY "dependencies.${config_dep_name}.fetchInfo.hash"
+    KEY "extDependencies.${config_dep_name}.fetchInfo.hash"
   )
   _unset_var_if_not_found(${config_dep_name}_FETCH_HASH)
 
   # Set <dep-name>_OPTIONAL
   cmake_targets_file(TRY_GET_VALUE ${config_dep_name}_OPTIONAL
     TARGET "${config_target_dir_path}"
-    KEY "dependencies.${config_dep_name}.optional"
+    KEY "extDependencies.${config_dep_name}.optional"
   )
   _unset_var_if_not_found(${config_dep_name}_OPTIONAL)
 
-  # Set <dep-name>_CONFIG_COMPILE_FEATURES
-  cmake_targets_file(TRY_GET_VALUE ${config_dep_name}_CONFIG_COMPILE_FEATURES
+  # Set <dep-name>_BUILD_COMPILE_FEATURES
+  cmake_targets_file(TRY_GET_VALUE ${config_dep_name}_BUILD_COMPILE_FEATURES
     TARGET "${config_target_dir_path}"
-    KEY "dependencies.${config_dep_name}.configuration.compileFeatures"
+    KEY "extDependencies.${config_dep_name}.build.compileFeatures"
   )
-  _unset_var_if_not_found(${config_dep_name}_CONFIG_COMPILE_FEATURES)
 
-  # Set <dep-name>_CONFIG_COMPILE_DEFINITIONS
-  cmake_targets_file(TRY_GET_VALUE ${config_dep_name}_CONFIG_COMPILE_DEFINITIONS
-    TARGET "${config_target_dir_path}"
-    KEY "dependencies.${config_dep_name}.configuration.compileDefinitions"
-  )
-  _unset_var_if_not_found(${config_dep_name}_CONFIG_COMPILE_DEFINITIONS)
+  _unset_var_if_not_found(${config_dep_name}_BUILD_COMPILE_FEATURES)
 
-  # Set <dep-name>_CONFIG_COMPILE_OPTIONS
-  cmake_targets_file(TRY_GET_VALUE ${config_dep_name}_CONFIG_COMPILE_OPTIONS
+  # Set <dep-name>_BUILD_COMPILE_DEFINITIONS
+  cmake_targets_file(TRY_GET_VALUE ${config_dep_name}_BUILD_COMPILE_DEFINITIONS
     TARGET "${config_target_dir_path}"
-    KEY "dependencies.${config_dep_name}.configuration.compileOptions"
+    KEY "extDependencies.${config_dep_name}.build.compileDefinitions"
   )
-  _unset_var_if_not_found(${config_dep_name}_CONFIG_COMPILE_OPTIONS)
+  _unset_var_if_not_found(${config_dep_name}_BUILD_COMPILE_DEFINITIONS)
 
-  # Set <dep-name>_CONFIG_LINK_OPTIONS
-  cmake_targets_file(TRY_GET_VALUE ${config_dep_name}_CONFIG_LINK_OPTIONS
+  # Set <dep-name>_BUILD_COMPILE_OPTIONS
+  cmake_targets_file(TRY_GET_VALUE ${config_dep_name}_BUILD_COMPILE_OPTIONS
     TARGET "${config_target_dir_path}"
-    KEY "dependencies.${config_dep_name}.configuration.linkOptions"
+    KEY "extDependencies.${config_dep_name}.build.compileOptions"
   )
-  _unset_var_if_not_found(${config_dep_name}_CONFIG_LINK_OPTIONS)
+  _unset_var_if_not_found(${config_dep_name}_BUILD_COMPILE_OPTIONS)
+
+  # Set <dep-name>_BUILD_LINK_OPTIONS
+  cmake_targets_file(TRY_GET_VALUE ${config_dep_name}_BUILD_LINK_OPTIONS
+    TARGET "${config_target_dir_path}"
+    KEY "extDependencies.${config_dep_name}.build.linkOptions"
+  )
+  _unset_var_if_not_found(${config_dep_name}_BUILD_LINK_OPTIONS)
 
   return(PROPAGATE
     "${config_dep_name}_RULES_FILE"
@@ -290,10 +291,10 @@ function(_map_dep_settings_to_vars config_target_dir_path config_dep_name)
     "${config_dep_name}_FETCH_REVISION"
     "${config_dep_name}_FETCH_HASH"
     "${config_dep_name}_OPTIONAL"
-    "${config_dep_name}_CONFIG_COMPILE_FEATURES"
-    "${config_dep_name}_CONFIG_COMPILE_DEFINITIONS"
-    "${config_dep_name}_CONFIG_COMPILE_OPTIONS"
-    "${config_dep_name}_CONFIG_LINK_OPTIONS"
+    "${config_dep_name}_BUILD_COMPILE_FEATURES"
+    "${config_dep_name}_BUILD_COMPILE_DEFINITIONS"
+    "${config_dep_name}_BUILD_COMPILE_OPTIONS"
+    "${config_dep_name}_BUILD_LINK_OPTIONS"
   )
 endfunction()
 

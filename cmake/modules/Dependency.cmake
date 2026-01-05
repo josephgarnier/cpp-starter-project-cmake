@@ -11,21 +11,161 @@ Dependency
 Operations to manipule dependencies. They mainly encapsulate the numerous
 function calls required to
 :cmake:guide:`import and export dependencies <guide:Importing and Exporting Guide>`.
-It requires CMake 3.20 or newer.
+It requires CMake 4.0.1 or newer.
 
 Synopsis
 ^^^^^^^^
 
 .. parsed-literal::
 
-  dependency(`BUILD`_ <lib-target-name> [...])
+  dependency(`BUILD`_ <target-name> [...])
   dependency(`IMPORT`_ <lib-target-name> [...])
   dependency(`ADD_INCLUDE_DIRECTORIES`_ <lib-target-name> <SET|APPEND> INTERFACE <gen-expr>...)
-  dependency(`SET_IMPORTED_LOCATION`_ <lib-target-name> [CONFIGURATION <config-type>] PUBLIC <gen-expr>...)
+  dependency(`SET_IMPORTED_LOCATION`_ <lib-target-name> [CONFIGURATION <config-type>] INTERFACE <gen-expr>...)
   dependency(`EXPORT`_ <lib-target-name>... <BUILD_TREE|INSTALL_TREE> [APPEND] OUTPUT_FILE <file-name>)
 
 Usage
 ^^^^^
+
+.. signature::
+  dependency(BUILD <target-name> [...])
+
+  Build a dependency from source:
+
+  .. code-block:: cmake
+
+    dependency(BUILD <target-name>
+               TYPE <STATIC|SHARED|HEADER|EXEC>
+               DEP_DIR <dir-path>
+               [COMPILE_FEATURES <feature>...]
+               [COMPILE_DEFINITIONS <definition>...]
+               [COMPILE_OPTIONS <option>...]
+               [LINK_OPTIONS <option>...]
+               [PRIVATE_SOURCES
+                  DIRECTORIES <dir-path>... (pourquoi ??)
+                  FILES <*>|<file-path>...]
+               [PRIVATE_HEADERS
+                  DIRECTORIES <dir-path>... (pourquoi ??)
+                  FILES <*>|<file-path>...]
+               [PUBLIC_HEADERS
+                  DIRECTORIES <dir-path>... (pourquoi ??)
+                  FILES [<*>|<file-path>...]
+               [LINK_LIBRARIES <target-name>...|<gen-expr>...]
+               [DEPENDENCIES <target-dependency-name>...]
+               [EXPORT_HEADERS <*>|<file-path>...] # Peut etre à virer car remplacé par public_headers
+               [EXPORT_EXTRA_SOURCES <*>|<file-path>...])
+
+  Creates the binary target ``<target-name>`` of type ``STATIC``, ``SHARED``,
+  ``HEADER``, or ``EXEC``. The target is generated from the files listed under
+  ``SOURCE_FILES`` and ``HEADER_FILES`` located inside the directory specified
+  by ``DEP_DIR``. All file and directory paths must be relative to this
+  dependency root directory.
+
+  The options are:
+
+    ``<target-name>``: (required)
+      The *unique* name of the build target.
+
+    ``TYPE <STATIC|SHARED|HEADER|EXEC>``: (required)
+      The actual target type to build. The valid values are: ``STATIC``,
+      ``SHARED``, ``HEADER``, and ``EXEC``.
+
+    ``COMPILE_FEATURES <feature>...``: (optional)
+      A list of compile features to pass to the target. Example:
+      ``["cxx_std_20", "cxx_thread_local", "cxx_trailing_return_types"]``.
+
+    ``COMPILE_DEFINITIONS <definition>...``: (optional)
+      A list of preprocessor definitions applied when compiling the target.
+      Example: ``["DEFINE_ONE=1", "DEFINE_TWO=2", "OPTION_1"]``.
+
+    ``COMPILE_OPTIONS <option>...``: (optional)
+      A list of compiler options to pass when building the target. Example:
+      ``["-Wall", "-Wextra", "/W4"]``.
+
+    ``LINK_OPTIONS <option>...``: (optional)
+      A list of linker options to pass when building the target. Example:
+      ``["-s", "-z", "/INCREMENTAL:NO"]``.
+
+    ``DEP_DIR <dir-path>``: (required)
+      The path to the directory containing all dependency files. Any relative
+      path is treated as relative to the current source directory (i.e.
+      :cmake:variable:`CMAKE_CURRENT_SOURCE_DIR <cmake:variable:CMAKE_CURRENT_SOURCE_DIR>`).
+      This path will be used as base directory for all other paths of this
+      command.
+
+    ``SOURCE_FILES <*>|<file-path>...``: (required)
+      The list of source files (e.g., ``.cpp``, ``.c``) to use when building
+      the target. All paths must be relative to the dependency root directory
+      ``DEP_DIR``. The list can be empty, especially for header-only
+      dependencies. A wildcard ``*`` may be used to automatically collect all
+      ``.cpp``, ``.cc``, or ``.cxx`` files recursively from ``DEP_DIR``.
+
+    ``HEADER_FILES <*>|<file-path>...``: (required)
+      The list of header files (e.g., ``.h``) to use when building the target.
+      All paths must be relative to the dependency root directory
+      ``DEP_DIR``. The list can be empty, especially for header-only
+      dependencies. A wildcard ``*`` may be used to automatically collect all
+      ``.h``, ``.hpp``, ``.hxx``, ``.inl``, or ``.tpp`` files recursively from
+      ``DEP_DIR``.
+
+    ``INCLUDE_DIRS <dir-path>...|<gen-expr>...``: (optional)
+      Include directories added to the target with ``PRIVATE`` visibility.
+      Paths must be relative to ``DEP_DIR``. Generator expressions may be used
+      with the syntax ``$<...>``.
+
+    ``LINK_LIBRARIES <target-name>...|<gen-expr>...``: (optional)
+      The list of libraries that the target should be linked with. They can be
+      target names or generator expressions with the syntax ``$<...>``.
+
+    ``DEPENDENCIES <target-dependency-name>...``: (optional)
+      The list of targets on which ``<target-name>`` depends on and that must
+      be built before.
+
+    ``EXPORT_HEADERS <*>|<file-path>...``: (optional)
+      The set of header files copied at install time from the source-tree to
+      the install-tree. These headers become available for inclusion to the
+      source files in all targets that transitively depend on it. If ``*`` is
+      used, files with the extensions ``.h``, ``.hpp``, ``.hxx``, ``.inl``, or
+      ``.tpp`` are collected recursively from the directories listed in
+      ``INCLUDE_DIRS`` when present, otherwise from ``DEP_DIR``.
+
+      During installation, the directory structure is copied verbatim to the
+      standards-conforming location:
+      ``<CMAKE_INSTALL_PREFIX>/<CMAKE_INSTALL_INCLUDEDIR>/<PROJECT_NAME>/lib/<DEP_DIR_NAME>``
+
+    ``EXPORT_EXTRA_SOURCES <*>|<file-path>...``: (optional)
+      The set of additional source files copied at install time from the source
+      -tree to the install-tree. These files become available for inclusion to the
+      source files in all targets that transitively depend on it. If ``*`` is
+      used, files are collected recursively from the directories listed in
+      ``INCLUDE_DIRS`` when present, otherwise from ``DEP_DIR``. When both
+      ``EXPORT_HEADERS`` and ``EXPORT_EXTRA_SOURCES`` are used, any duplicated
+      paths found in ``EXPORT_EXTRA_SOURCES`` are removed. When both
+      ``EXPORT_HEADERS`` and ``EXPORT_EXTRA_SOURCES`` are used, EXPORT_EXTRA_SOURCES est expurgé des doublons qui viennent de EXPORT_HEADERS.
+
+      During installation, the directory structure is copied verbatim to the
+      standards-conforming location:
+      ``<CMAKE_INSTALL_PREFIX>/<CMAKE_INSTALL_INCLUDEDIR>/<PROJECT_NAME>/lib/<DEP_DIR_NAME>``
+
+  Example usage:
+
+  .. code-block:: cmake
+
+    # Build a shared lib dependency
+    dependency(BUILD "my_shared_lib"
+      TYPE SHARED
+      COMPILE_FEATURES "cxx_std_20" "cxx_thread_local" "cxx_trailing_return_types"
+      COMPILE_DEFINITIONS "DEFINE_ONE=1" "DEFINE_TWO=2" "OPTION_1"
+      COMPILE_OPTIONS "-Wall" "-Wextra"
+      LINK_OPTIONS "-s" "-z"
+      DEP_DIR "lib/my_shared_lib"
+      SOURCE_FILES "src/main.cpp" "src/util.cpp" "src/source_1.cpp"
+      HEADER_FILES "src/util.h" "src/source_1.h" "include/lib_1.h" "include/lib_2.h"
+      INCLUDE_DIRS "include"
+      LINK_LIBRARIES "dep_1" "dep_2"
+      DEPENDENCIES "dep_3"
+      EXPORT_HEADERS "*"
+      EXPORT_EXTRA_SOURCES "my_shared_lib.cpp")
 
 .. signature::
   dependency(IMPORT <lib-target-name> [...])
@@ -40,10 +180,12 @@ Usage
                [FIND_RELEASE_FILE <lib-file-basename>]
                [FIND_DEBUG_FILE <lib-file-basename>])
 
-  Create an imported library target named ``<lib-target-name>`` by locating its
-  binary files in ``FIND_ROOT_DIR`` for ``RELEASE`` and/or ``DEBUG``, and set
-  the necessary target properties. An aliased target is also created with the
-  name ``<lib-target-name>::<lib-target-name>``.
+  Create an imported library target named ``<PROJECT_NAME>_<lib-target-name>``
+  by locating its binary files in ``FIND_ROOT_DIR`` for ``RELEASE`` and/or
+  ``DEBUG`` configurations, and set the necessary target properties. Note that
+  the logical name of the target ``<target-name>`` is prefixed with
+  ``<PROJECT_NAME>_`` in order to follow best practices. That is also why an
+  aliased target is created with the name ``<PROJECT_NAME>::<lib-target-name>``.
 
   This command combines calls to :command:`directory(FIND_LIB)`,
   :cmake:command:`add_library(IMPORTED) <cmake:command:add_library(imported)>` and
@@ -82,9 +224,10 @@ Usage
 
   An error is raised if more than one file matches or no file is found.
 
-  Once located, an imported target is created using :cmake:command:`add_library(IMPORTED) <cmake:command:add_library(imported)>` and
-  appropriate properties for each available configuration (``RELEASE`` and/or
-  ``DEBUG``) are set, including paths to the binary and import libraries (if
+  Once located, an imported target is created using
+  :cmake:command:`add_library(IMPORTED) <cmake:command:add_library(imported)>`
+  and appropriate properties for each available configuration (``RELEASE`` and/
+  or ``DEBUG``) are set, including paths to the binary and import libraries (if
   applicable), as well as the soname.
 
   The following target properties are configured:
@@ -151,63 +294,64 @@ Usage
   :cmake:ref:`requires standard variables <cmake developer standard variable names>`.
   It also supports use in multiples :cmake:ref:`build configurations` contexts
   by replicating the behavior of the
-  :cmake:module:`SelectLibraryConfigurations <cmake:module:SelectLibraryConfigurations>` 
+  :cmake:module:`SelectLibraryConfigurations <cmake:module:SelectLibraryConfigurations>`
   module.
 
-  This command then returns the following result variables:
+  This command then returns the following result variables, where
+  ``<lib-target-fullname>`` is set to ``<PROJECT_NAME>_<lib-target-name>``:
 
-    ``<lib-target-name>_LIBRARY_RELEASE``
+    ``<lib-target-fullname>_LIBRARY_RELEASE``
       The full absolute path to the ``Release`` build of the library. If no
       file found, its value is set to
-      ``<lib-target-name>_LIBRARY_RELEASE-NOTFOUND``. The variable is undefined
+      ``<lib-target-fullname>_LIBRARY_RELEASE-NOTFOUND``. The variable is undefined
       when the ``FIND_RELEASE_FILE`` argument is not provided.
 
-    ``<lib-target-name>_LIBRARY_DEBUG``
+    ``<lib-target-fullname>_LIBRARY_DEBUG``
       The full absolute path to the ``Debug`` build of the library. If no
       file found, its value is set to
-      ``<lib-target-name>_LIBRARY_DEBUG-NOTFOUND``. The variable is undefined
+      ``<lib-target-fullname>_LIBRARY_DEBUG-NOTFOUND``. The variable is undefined
       when the ``FIND_DEBUG_FILE`` argument is not provided.
 
-    ``<lib-target-name>_IMP_LIBRARY_RELEASE``
+    ``<lib-target-fullname>_IMP_LIBRARY_RELEASE``
       The full absolute path to the ``Release`` import build of the library. If
       no file found, its value is set to
-      ``<lib-target-name>_IMP_LIBRARY_RELEASE-NOTFOUND``. The variable is
+      ``<lib-target-fullname>_IMP_LIBRARY_RELEASE-NOTFOUND``. The variable is
       undefined when the ``FIND_RELEASE_FILE`` argument is not provided.
 
-    ``<lib-target-name>_IMP_LIBRARY_DEBUG``
+    ``<lib-target-fullname>_IMP_LIBRARY_DEBUG``
       The full absolute path to the ``Debug`` import build of the library. If
       no file found, its value is set to
-      ``<lib-target-name>_IMP_LIBRARY_DEBUG-NOTFOUND``. The variable is
+      ``<lib-target-fullname>_IMP_LIBRARY_DEBUG-NOTFOUND``. The variable is
       undefined when the ``FIND_DEBUG_FILE`` argument is not provided.
 
-    ``<lib-target-name>_FOUND_RELEASE``
+    ``<lib-target-fullname>_FOUND_RELEASE``
       Set to true if the ``Release`` library and import library has been found
       successfully, otherwise set to false. To be true, both
-      ``<lib-target-name>_LIBRARY_RELEASE`` and
-      ``<lib-target-name>_IMP_LIBRARY_RELEASE`` must not be set to
+      ``<lib-target-fullname>_LIBRARY_RELEASE`` and
+      ``<lib-target-fullname>_IMP_LIBRARY_RELEASE`` must not be set to
       ``-NOTFOUND``. The variable is undefined when the ``FIND_RELEASE_FILE``
       argument is not provided.
 
-    ``<lib-target-name>_FOUND_DEBUG``
+    ``<lib-target-fullname>_FOUND_DEBUG``
       Set to true if the ``Debug`` library and import library has been found
       successfully, otherwise set to false. To be true, both
-      ``<lib-target-name>_LIBRARY_DEBUG`` and
-      ``<lib-target-name>_IMP_LIBRARY_DEBUG`` must not be set to
+      ``<lib-target-fullname>_LIBRARY_DEBUG`` and
+      ``<lib-target-fullname>_IMP_LIBRARY_DEBUG`` must not be set to
       ``-NOTFOUND``. The variable is undefined when the ``FIND_DEBUG_FILE``
       argument is not provided.
 
-    ``<lib-target-name>_FOUND``
-      Set to false if ``<lib-target-name>_FOUND_RELEASE`` or
-      ``<lib-target-name>_FOUND_DEBUG`` are defined and set to false. Otherwise,
+    ``<lib-target-fullname>_FOUND``
+      Set to false if ``<lib-target-fullname>_FOUND_RELEASE`` or
+      ``<lib-target-fullname>_FOUND_DEBUG`` are defined and set to false. Otherwise,
       set to true.
 
-    ``<lib-target-name>_LIBRARY``
-      The value of ``<lib-target-name>_LIBRARY_RELEASE`` variable if found,
-      otherwise it is set to the value of ``<lib-target-name>_LIBRARY_DEBUG``
+    ``<lib-target-fullname>_LIBRARY``
+      The value of ``<lib-target-fullname>_LIBRARY_RELEASE`` variable if found,
+      otherwise it is set to the value of ``<lib-target-fullname>_LIBRARY_DEBUG``
       variable if found. If both are found, the release library value takes
       precedence. If both are not found, because
-      ``<lib-target-name>_FOUND_RELEASE`` and ``<lib-target-name>_FOUND_DEBUG``
-      are set to false, it is set to value ``<lib-target-name>_LIBRARY-NOTFOUND``.
+      ``<lib-target-fullname>_FOUND_RELEASE`` and ``<lib-target-fullname>_FOUND_DEBUG``
+      are set to false, it is set to value ``<lib-target-fullname>_LIBRARY-NOTFOUND``.
 
       If the :cmake:manual:`CMake Generator <cmake:manual:cmake-generators(7)>`
       in use supports build configurations, then this variable will be a list
@@ -219,15 +363,15 @@ Usage
       use does not support build configurations, then this variable value will
       not contain these keywords.
 
-    ``<lib-target-name>_LIBRARIES``
-      The same value as the ``<lib-target-name>_LIBRARY`` variable.
+    ``<lib-target-fullname>_LIBRARIES``
+      The same value as the ``<lib-target-fullname>_LIBRARY`` variable.
 
-    ``<lib-target-name>_ROOT_DIR``
+    ``<lib-target-fullname>_ROOT_DIR``
       The base directory absolute path where to look for the
-      ``<lib-target-name>`` files. The value is set to the ``FIND_ROOT_DIR``
+      ``<lib-target-fullname>`` files. The value is set to the ``FIND_ROOT_DIR``
       argument.
 
-  No library is added if ``<lib-target-name>_FOUND`` is set to false.
+  No library is added if ``<lib-target-fullname>_FOUND`` is set to false.
 
   Example usage:
 
@@ -251,7 +395,7 @@ Usage
       FIND_IMPLIB implib
       NAME "mylib_1.11.0"
       SHARED
-      RELATIVE off
+      RELATIVE false
       ROOT_DIR "${CMAKE_SOURCE_DIR}/lib"
     )
     cmake_path(GET lib FILENAME lib_name)
@@ -269,7 +413,7 @@ Usage
       FIND_IMPLIB implib
       NAME "mylibd_1.11.0"
       SHARED
-      RELATIVE off
+      RELATIVE false
       ROOT_DIR "${CMAKE_SOURCE_DIR}/lib"
     )
     cmake_path(GET lib FILENAME lib_name)
@@ -302,7 +446,7 @@ Usage
       FIND_IMPLIB implib
       NAME "mylib_1.11.0"
       SHARED
-      RELATIVE off
+      RELATIVE false
       ROOT_DIR "${CMAKE_SOURCE_DIR}/lib"
     )
     cmake_path(GET lib FILENAME lib_name)
@@ -320,7 +464,7 @@ Usage
       FIND_IMPLIB implib
       NAME "mylibd_1.11.0"
       SHARED
-      RELATIVE off
+      RELATIVE false
       ROOT_DIR "${CMAKE_SOURCE_DIR}/lib"
     )
     cmake_path(GET lib FILENAME lib_name)
@@ -363,7 +507,7 @@ Usage
   in calling it if the target is not intended to be exported.
 
   The behavior differs from standard CMake in that it stores build and install
-  include paths separately using generator expressions (see 
+  include paths separately using generator expressions (see
   :cmake:ref:`how to write build specification with generator expressions <include directories and usage requirements>`).
 
   The ``INTERFACE`` visibility keyword indicates how the specified directories
@@ -455,7 +599,7 @@ Usage
     )
 
     # Set include directories for shared lib
-    dependency(ADD_INCLUDE_DIRECTORIES "my_shared_lib" SET
+    dependency(ADD_INCLUDE_DIRECTORIES "<PROJECT_NAME>_my_shared_lib" SET
       INTERFACE
         "$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include/mylib>"
         "$<INSTALL_INTERFACE:include/mylib>"
@@ -463,12 +607,12 @@ Usage
     # Is more or less equivalent to:
     target_include_directories(my_shared_lib
       INTERFACE
-          "$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include/mylib>"
-          "$<INSTALL_INTERFACE:include/mylib>"
+        "$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include/mylib>"
+        "$<INSTALL_INTERFACE:include/mylib>"
     )
 
     # Set include directories for static lib
-    dependency(ADD_INCLUDE_DIRECTORIES "my_static_lib" SET
+    dependency(ADD_INCLUDE_DIRECTORIES "<PROJECT_NAME>_my_static_lib" SET
       INTERFACE
         "$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include/mylib>"
         "$<INSTALL_INTERFACE:include/mylib>"
@@ -487,7 +631,7 @@ Usage
     ``<CMAKE_INSTALL_PREFIX>`` is resolved when imported via :command:`dependency(EXPORT)`).
 
 .. signature::
-  dependency(SET_IMPORTED_LOCATION <lib-target-name> [CONFIGURATION <config-type>] PUBLIC <gen-expr>...)
+  dependency(SET_IMPORTED_LOCATION <lib-target-name> [CONFIGURATION <config-type>] INTERFACE <gen-expr>...)
 
   Set the :cmake:prop_tgt:`IMPORTED_LOCATION_<CONFIG> <cmake:prop_tgt:IMPORTED_LOCATION_<CONFIG>>` property of the imported
   target ``<lib-target-name>`` using generator expressions to provide the
@@ -503,16 +647,16 @@ Usage
   are used when generating the export script. Therefore, there is no benefit
   in calling it if the target is not intended to be exported.
 
-  If ``CONFIGURATION`` is given, the property is only set for that
-  configuration. Otherwise, the property is set for all configurations
-  supported by the target. Configuration types must match one of the
-  values listed in the target's :cmake:prop_tgt:`IMPORTED_CONFIGURATIONS <cmake:prop_tgt:IMPORTED_CONFIGURATIONS>` property.
+  If ``CONFIGURATION`` is given (``DEBUG``, ``RELEASE``, etc.), the property is
+  only set for that configuration. Otherwise, the property is set for all
+  configurations supported by the target. Configuration types must match one of
+  the values listed in the target's :cmake:prop_tgt:`IMPORTED_CONFIGURATIONS <cmake:prop_tgt:IMPORTED_CONFIGURATIONS>` property.
 
-  The ``PUBLIC`` keyword must be followed by one or more generator expressions
-  that define the path to the library file during build and install phases.
-  The paths following it **must use generator expressions** like
+  The ``INTERFACE`` keyword must be followed by one or more generator
+  expressions that define the path to the library file during build and install
+  phases. The paths following it **must use generator expressions** like
   ``$<BUILD_INTERFACE:...>`` and ``$<INSTALL_INTERFACE:...>`` to distinguish
-  between build and install phases. (see 
+  between build and install phases. (see
   `how write build specification with generator expressions <https://cmake.org/cmake/help/latest/manual/cmake-buildsystem.7.html#build-specification-with-generator-expressions>`__).
 
   These expressions are evaluated to determine the value of the following
@@ -562,29 +706,29 @@ Usage
     )
 
     # Set imported location for shared lib
-    dependency(SET_IMPORTED_LOCATION "my_shared_lib"
+    dependency(SET_IMPORTED_LOCATION "<PROJECT_NAME>_my_shared_lib"
       CONFIGURATION RELEASE
-      PUBLIC
+      INTERFACE
         "$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/lib/mylib_1.11.0.dll>"
         "$<INSTALL_INTERFACE:lib/mylib_1.11.0.dll>"
     )
-    dependency(SET_IMPORTED_LOCATION "my_shared_lib"
+    dependency(SET_IMPORTED_LOCATION "<PROJECT_NAME>_my_shared_lib"
       CONFIGURATION DEBUG
-      PUBLIC
+      INTERFACE
         "$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/lib/mylibd_1.11.0.dll>"
         "$<INSTALL_INTERFACE:lib/mylibd_1.11.0.dll>"
     )
 
     # Set include directories for static lib
-    dependency(SET_IMPORTED_LOCATION "my_static_lib"
+    dependency(SET_IMPORTED_LOCATION "<PROJECT_NAME>_my_static_lib"
       CONFIGURATION RELEASE
-      PUBLIC
+      INTERFACE
         "$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/lib/mylib_1.11.0.lib>"
         "$<INSTALL_INTERFACE:lib/mylib_1.11.0.lib>"
     )
-    dependency(SET_IMPORTED_LOCATION "my_static_lib"
+    dependency(SET_IMPORTED_LOCATION "<PROJECT_NAME>_my_static_lib"
       CONFIGURATION DEBUG
-      PUBLIC
+      INTERFACE
         "$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/lib/mylibd_1.11.0.lib>"
         "$<INSTALL_INTERFACE:lib/mylibd_1.11.0.lib>"
     )
@@ -650,7 +794,7 @@ Usage
       FIND_RELEASE_FILE "mylib_1.11.0"
       FIND_DEBUG_FILE "mylibd_1.11.0"
     )
-    dependency(ADD_INCLUDE_DIRECTORIES "my_shared_lib" SET
+    dependency(ADD_INCLUDE_DIRECTORIES "<PROJECT_NAME>_my_shared_lib" SET
       INTERFACE
         "$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include/mylib>"
         "$<INSTALL_INTERFACE:include/mylib>"
@@ -661,14 +805,14 @@ Usage
       FIND_RELEASE_FILE "mylib_1.11.0"
       FIND_DEBUG_FILE "mylibd_1.11.0"
     )
-    dependency(ADD_INCLUDE_DIRECTORIES "my_static_lib" SET
+    dependency(ADD_INCLUDE_DIRECTORIES "<PROJECT_NAME>_my_static_lib" SET
       INTERFACE
         "$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include/mylib>"
         "$<INSTALL_INTERFACE:include/mylib>"
     )
 
     # Export from Build-Tree
-    dependency(EXPORT "my_shared_lib" "my_static_lib"
+    dependency(EXPORT "<PROJECT_NAME>_my_shared_lib" "<PROJECT_NAME>_my_static_lib"
       BUILD_TREE
       OUTPUT_FILE_NAME "InternalDependencyTargets.cmake"
     )
@@ -680,7 +824,7 @@ Usage
 
     # Exporting from Install-Tree
     set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/install")
-    dependency(EXPORT "my_shared_lib" "my_static_lib"
+    dependency(EXPORT "<PROJECT_NAME>_my_shared_lib" "<PROJECT_NAME>_my_static_lib"
       INSTALL_TREE
       OUTPUT_FILE_NAME "InternalDependencyTargets.cmake"
     )
@@ -712,94 +856,165 @@ include(StringManip)
 # Public function of this module
 function(dependency)
   set(options BUILD_TREE INSTALL_TREE SET APPEND)
-  set(one_value_args IMPORT TYPE FIND_ROOT_DIR FIND_RELEASE_FILE FIND_DEBUG_FILE OUTPUT_FILE_NAME ADD_INCLUDE_DIRECTORIES SET_IMPORTED_LOCATION CONFIGURATION)
-  set(multi_value_args EXPORT INTERFACE PUBLIC)
-  cmake_parse_arguments(DEP "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
-  
-  if(DEFINED DEP_UNPARSED_ARGUMENTS)
-    message(FATAL_ERROR "Unrecognized arguments: \"${DEP_UNPARSED_ARGUMENTS}\"")
+  set(one_value_args IMPORT TYPE FIND_ROOT_DIR FIND_RELEASE_FILE FIND_DEBUG_FILE OUTPUT_FILE_NAME ADD_INCLUDE_DIRECTORIES SET_IMPORTED_LOCATION CONFIGURATION BUILD ROOT_DIR)
+  set(multi_value_args EXPORT INTERFACE COMPILE_FEATURES COMPILE_DEFINITIONS COMPILE_OPTIONS LINK_OPTIONS SOURCE_FILES HEADER_FILES INCLUDE_DIRS LINK_LIBRARIES DEPENDENCIES EXPORT_HEADERS EXPORT_EXTRA_SOURCES)
+  cmake_parse_arguments(PARSE_ARGV 0 arg
+    "${options}" "${one_value_args}" "${multi_value_args}"
+  )
+
+  if(DEFINED arg_UNPARSED_ARGUMENTS)
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() called with unrecognized arguments: \"${arg_UNPARSED_ARGUMENTS}\"")
   endif()
 
-  if(DEFINED DEP_IMPORT)
+  if(DEFINED arg_BUILD)
+    set(current_command "dependency(BUILD)")
+    _dependency_build()
+  elseif(DEFINED arg_IMPORT)
+    set(current_command "dependency(IMPORT)")
     _dependency_import()
-  elseif(DEFINED DEP_EXPORT)
+  elseif(DEFINED arg_EXPORT)
+    set(current_command "dependency(EXPORT)")
     _dependency_export()
-  elseif(DEFINED DEP_ADD_INCLUDE_DIRECTORIES)
+  elseif(DEFINED arg_ADD_INCLUDE_DIRECTORIES)
+    set(current_command "dependency(ADD_INCLUDE_DIRECTORIES)")
     _dependency_add_include_directories()
-  elseif(DEFINED DEP_SET_IMPORTED_LOCATION)
+  elseif(DEFINED arg_SET_IMPORTED_LOCATION)
+    set(current_command "dependency(SET_IMPORTED_LOCATION)")
     _dependency_set_imported_location()
   else()
-    message(FATAL_ERROR "The operation name or arguments are missing!")
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}(<OP> <value> ...) requires an operation and a value to be specified!")
   endif()
 endfunction()
 
 #------------------------------------------------------------------------------
 # [Internal use only]
-macro(_dependency_import)
-  if(NOT DEFINED DEP_IMPORT)
-    message(FATAL_ERROR "IMPORT argument is missing or need a value!")
+macro(_dependency_build)
+  if(NOT DEFINED arg_BUILD)
+    message(FATAL_ERROR "BUILD argument is missing or need a value!")
   endif()
-  if(TARGET "${DEP_IMPORT}")
-    message(FATAL_ERROR "The target \"${DEP_IMPORT}\" already exists!")
+  if(TARGET "${arg_BUILD}")
+    message(FATAL_ERROR "The target \"${arg_BUILD}\" already exists!")
   endif()
-  if((NOT DEFINED DEP_TYPE)
-      OR (NOT "${DEP_TYPE}" MATCHES "^(SHARED|STATIC)$"))
-    message(FATAL_ERROR "TYPE argument arguments is wrong!")
+  if((NOT DEFINED arg_TYPE)
+      OR (NOT "${arg_TYPE}" MATCHES "^(STATIC|SHARED|HEADER|EXEC)$"))
+    message(FATAL_ERROR "TYPE argument is wrong!")
   endif()
-  if(NOT DEFINED DEP_FIND_ROOT_DIR)
-    message(FATAL_ERROR "FIND_ROOT_DIR argument is missing or need a value!")
+  if("COMPILE_FEATURES" IN_LIST arg_KEYWORDS_MISSING_VALUES)
+    message(FATAL_ERROR "COMPILE_FEATURES argument is missing or need a value!")
   endif()
-  if((NOT DEFINED DEP_FIND_RELEASE_FILE)
-      AND (NOT DEFINED DEP_FIND_DEBUG_FILE))
-    message(FATAL_ERROR "FIND_RELEASE_FILE|FIND_DEBUG_FILE argument is missing!")
+  if("COMPILE_DEFINITIONS" IN_LIST arg_KEYWORDS_MISSING_VALUES)
+    message(FATAL_ERROR "COMPILE_DEFINITIONS argument is missing or need a value!")
   endif()
-  if("FIND_RELEASE_FILE" IN_LIST DEP_KEYWORDS_MISSING_VALUES)
-    message(FATAL_ERROR "FIND_RELEASE_FILE need a value!")
+  if("COMPILE_OPTIONS" IN_LIST arg_KEYWORDS_MISSING_VALUES)
+    message(FATAL_ERROR "COMPILE_OPTIONS argument is missing or need a value!")
   endif()
-  if("FIND_DEBUG_FILE" IN_LIST DEP_KEYWORDS_MISSING_VALUES)
-    message(FATAL_ERROR "FIND_DEBUG_FILE need a value!")
+  if("LINK_OPTIONS" IN_LIST arg_KEYWORDS_MISSING_VALUES)
+    message(FATAL_ERROR "LINK_OPTIONS argument is missing or need a value!")
+  endif()
+  if(NOT DEFINED arg_DIR)
+    message(FATAL_ERROR "ROOT_DIR argument is missing or need a value!")
+  endif()
+  if((NOT DEFINED arg_SOURCE_FILES)
+      AND (NOT "SOURCE_FILES" IN_LIST arg_KEYWORDS_MISSING_VALUES))
+    message(FATAL_ERROR "SOURCE_FILES argument is missing or need a value!")
+  endif()
+  if((NOT DEFINED arg_HEADER_FILES)
+      AND (NOT "HEADER_FILES" IN_LIST arg_KEYWORDS_MISSING_VALUES))
+    message(FATAL_ERROR "HEADER_FILES argument is missing or need a value!")
+  endif()
+  if("INCLUDE_DIRS" IN_LIST arg_KEYWORDS_MISSING_VALUES)
+    message(FATAL_ERROR "INCLUDE_DIRS argument is missing or need a value!")
+  endif()
+  if("LINK_LIBRARIES" IN_LIST arg_KEYWORDS_MISSING_VALUES)
+    message(FATAL_ERROR "LINK_LIBRARIES argument is missing or need a value!")
+  endif()
+  if("DEPENDENCIES" IN_LIST arg_KEYWORDS_MISSING_VALUES)
+    message(FATAL_ERROR "DEPENDENCIES argument is missing or need a value!")
+  endif()
+  if("EXPORT_HEADERS" IN_LIST arg_KEYWORDS_MISSING_VALUES)
+    message(FATAL_ERROR "EXPORT_HEADERS argument is missing or need a value!")
+  endif()
+  if("EXPORT_EXTRA_SOURCES" IN_LIST arg_KEYWORDS_MISSING_VALUES)
+    message(FATAL_ERROR "EXPORT_EXTRA_SOURCES argument is missing or need a value!")
   endif()
 
+
+endmacro()
+
+#------------------------------------------------------------------------------
+# [Internal use only]
+macro(_dependency_import)
+  if((NOT DEFINED arg_IMPORT)
+      OR ("${arg_IMPORT}" STREQUAL ""))
+    message(FATAL_ERROR "${current_command} requires the keyword IMPORT to be provided with a non-empty string value!")
+  endif()
+  if(TARGET "${PROJECT_NAME}_${arg_IMPORT}")
+    message(FATAL_ERROR "${current_command} requires the target \"${PROJECT_NAME}_${arg_IMPORT}\" does not already exist!")
+  endif()
+  if(TARGET "${PROJECT_NAME}::${arg_IMPORT}")
+    message(FATAL_ERROR "${current_command} requires the aliased target \"${PROJECT_NAME}::${arg_IMPORT}\" does not already exist!")
+  endif()
+  if((NOT DEFINED arg_TYPE)
+      OR (NOT ${arg_TYPE} MATCHES "^(SHARED|STATIC)$"))
+    message(FATAL_ERROR "${current_command} requires the keyword TYPE to be provided with the 'SHARED' or 'STATIC' value!")
+  endif()
+  if((NOT DEFINED arg_FIND_ROOT_DIR)
+      OR (NOT IS_DIRECTORY "${arg_FIND_ROOT_DIR}"))
+    message(FATAL_ERROR "${current_command} requires the keyword FIND_ROOT_DIR '${arg_FIND_ROOT_DIR}' to be provided with a path to an existing directory on disk!")
+  endif()
+  if((NOT DEFINED arg_FIND_RELEASE_FILE)
+      AND (NOT DEFINED arg_FIND_DEBUG_FILE))
+    message(FATAL_ERROR "${current_command} requires the keyword FIND_RELEASE_FILE or FIND_DEBUG_FILE to be provided!")
+  endif()
+  if(DEFINED arg_FIND_RELEASE_FILE AND "${arg_FIND_RELEASE_FILE}" STREQUAL "")
+    message(FATAL_ERROR "${current_command} requires FIND_RELEASE_FILE to be a non-empty string value!")
+  endif()
+  if(DEFINED arg_FIND_DEBUG_FILE AND "${arg_FIND_DEBUG_FILE}" STREQUAL "")
+    message(FATAL_ERROR "${current_command} requires FIND_DEBUG_FILE to be a non-empty string value!")
+  endif()
+
+  set(lib_target_fullname "${PROJECT_NAME}_${arg_IMPORT}")
+  set(lib_target_aliasname "${PROJECT_NAME}::${arg_IMPORT}")
   set(return_vars
-    "${DEP_IMPORT}_LIBRARY_RELEASE"
-    "${DEP_IMPORT}_LIBRARY_DEBUG"
-    "${DEP_IMPORT}_IMP_LIBRARY_RELEASE"
-    "${DEP_IMPORT}_IMP_LIBRARY_DEBUG"
-    "${DEP_IMPORT}_LIBRARY"
-    "${DEP_IMPORT}_LIBRARIES"
-    "${DEP_IMPORT}_ROOT_DIR"
-    "${DEP_IMPORT}_FOUND"
-    "${DEP_IMPORT}_FOUND_RELEASE"
-    "${DEP_IMPORT}_FOUND_DEBUG"
+    "${lib_target_fullname}_LIBRARY_RELEASE"
+    "${lib_target_fullname}_LIBRARY_DEBUG"
+    "${lib_target_fullname}_IMP_LIBRARY_RELEASE"
+    "${lib_target_fullname}_IMP_LIBRARY_DEBUG"
+    "${lib_target_fullname}_LIBRARY"
+    "${lib_target_fullname}_LIBRARIES"
+    "${lib_target_fullname}_ROOT_DIR"
+    "${lib_target_fullname}_FOUND"
+    "${lib_target_fullname}_FOUND_RELEASE"
+    "${lib_target_fullname}_FOUND_DEBUG"
   )
 
   # Find and get library and import library each build type (RELEASE or DEBUG)
   foreach(build_type IN ITEMS "RELEASE" "DEBUG")
     # Skip the loop if lib for this config is not requested
-    if(NOT DEFINED DEP_FIND_${build_type}_FILE)
+    if(NOT DEFINED arg_FIND_${build_type}_FILE)
       continue()
     endif()
 
-    set(${DEP_IMPORT}_FOUND_${build_type} false)
-    directory(FIND_LIB ${DEP_IMPORT}_LIBRARY_${build_type}
-      FIND_IMPLIB ${DEP_IMPORT}_IMP_LIBRARY_${build_type}
-      NAME "${DEP_FIND_${build_type}_FILE}"
-      "${DEP_TYPE}"
-      RELATIVE off
-      ROOT_DIR "${DEP_FIND_ROOT_DIR}"
+    set(${lib_target_fullname}_FOUND_${build_type} false)
+    directory(FIND_LIB ${lib_target_fullname}_LIBRARY_${build_type}
+      FIND_IMPLIB ${lib_target_fullname}_IMP_LIBRARY_${build_type}
+      NAME "${arg_FIND_${build_type}_FILE}"
+      "${arg_TYPE}"
+      RELATIVE false
+      ROOT_DIR "${arg_FIND_ROOT_DIR}"
     )
     # Because only shared libraries on Windows platform use import libraries,
     # implib is always equals to `implib-NOTFOUND` for other cases, so the value is
     # replaced to empty only for these other cases.
-    if(NOT (WIN32 AND ("${DEP_TYPE}" STREQUAL "SHARED")))
-      if(NOT ${DEP_IMPORT}_IMP_LIBRARY_${build_type})
-        set(${DEP_IMPORT}_IMP_LIBRARY_${build_type} "")
+    if(NOT (WIN32 AND ("${arg_TYPE}" STREQUAL "SHARED")))
+      if(NOT ${lib_target_fullname}_IMP_LIBRARY_${build_type})
+        set(${lib_target_fullname}_IMP_LIBRARY_${build_type} "")
       endif()
     endif()
 
-    if((NOT "${${DEP_IMPORT}_LIBRARY_${build_type}}" MATCHES "-NOTFOUND$")
-        AND (NOT "${${DEP_IMPORT}_IMP_LIBRARY_${build_type}}" MATCHES "-NOTFOUND$"))
-      set(${DEP_IMPORT}_FOUND_${build_type} true)
+    if((NOT "${${lib_target_fullname}_LIBRARY_${build_type}}" MATCHES "-NOTFOUND$")
+        AND (NOT "${${lib_target_fullname}_IMP_LIBRARY_${build_type}}" MATCHES "-NOTFOUND$"))
+      set(${lib_target_fullname}_FOUND_${build_type} true)
     endif()
   endforeach()
 
@@ -807,42 +1022,41 @@ macro(_dependency_import)
   # configurations. This code copies the behavior of the CMake module
   # `SelectLibraryConfigurations`.)
   get_property(is_multi_config GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
-  if(${DEP_IMPORT}_FOUND_RELEASE AND ${DEP_IMPORT}_FOUND_DEBUG
-      AND (NOT "${${DEP_IMPORT}_LIBRARY_RELEASE}" STREQUAL "${${DEP_IMPORT}_LIBRARY_DEBUG}")
+  if(${lib_target_fullname}_FOUND_RELEASE AND ${lib_target_fullname}_FOUND_DEBUG
+      AND (NOT "${${lib_target_fullname}_LIBRARY_RELEASE}" STREQUAL "${${lib_target_fullname}_LIBRARY_DEBUG}")
       AND (is_multi_config OR CMAKE_BUILD_TYPE))
     # If the generator is multi-config or if CMAKE_BUILD_TYPE is set for
     # single-config generators, set optimized and debug libraries
-    set(${DEP_IMPORT}_LIBRARY "")
-    list(APPEND ${DEP_IMPORT}_LIBRARY optimized "${${DEP_IMPORT}_LIBRARY_RELEASE}")
-    list(APPEND ${DEP_IMPORT}_LIBRARY debug "${${DEP_IMPORT}_LIBRARY_DEBUG}")
-  elseif(${DEP_IMPORT}_FOUND_RELEASE)
-    set(${DEP_IMPORT}_LIBRARY "${${DEP_IMPORT}_LIBRARY_RELEASE}")
-  elseif(${DEP_IMPORT}_FOUND_DEBUG)
-    set(${DEP_IMPORT}_LIBRARY "${${DEP_IMPORT}_LIBRARY_DEBUG}")
+    set(${lib_target_fullname}_LIBRARY "")
+    list(APPEND ${lib_target_fullname}_LIBRARY optimized "${${lib_target_fullname}_LIBRARY_RELEASE}")
+    list(APPEND ${lib_target_fullname}_LIBRARY debug "${${lib_target_fullname}_LIBRARY_DEBUG}")
+  elseif(${lib_target_fullname}_FOUND_RELEASE)
+    set(${lib_target_fullname}_LIBRARY "${${lib_target_fullname}_LIBRARY_RELEASE}")
+  elseif(${lib_target_fullname}_FOUND_DEBUG)
+    set(${lib_target_fullname}_LIBRARY "${${lib_target_fullname}_LIBRARY_DEBUG}")
   else()
-    set(${DEP_IMPORT}_LIBRARY "${DEP_IMPORT}_LIBRARY-NOTFOUND")
+    set(${lib_target_fullname}_LIBRARY "${lib_target_fullname}_LIBRARY-NOTFOUND")
   endif()
 
-  set(${DEP_IMPORT}_ROOT_DIR "${DEP_FIND_ROOT_DIR}")
-  set(${DEP_IMPORT}_LIBRARY "${${DEP_IMPORT}_LIBRARY}")
-  set(${DEP_IMPORT}_LIBRARIES "${${DEP_IMPORT}_LIBRARY}")
-  if(DEFINED ${DEP_IMPORT}_FOUND_RELEASE AND NOT ${${DEP_IMPORT}_FOUND_RELEASE}
-      OR DEFINED ${DEP_IMPORT}_FOUND_DEBUG AND NOT ${${DEP_IMPORT}_FOUND_DEBUG})
-    set(${DEP_IMPORT}_FOUND false)
+  set(${lib_target_fullname}_ROOT_DIR "${arg_FIND_ROOT_DIR}")
+  set(${lib_target_fullname}_LIBRARIES "${${lib_target_fullname}_LIBRARY}")
+  if((DEFINED ${lib_target_fullname}_FOUND_RELEASE AND NOT ${${lib_target_fullname}_FOUND_RELEASE})
+      OR (DEFINED ${lib_target_fullname}_FOUND_DEBUG AND NOT ${${lib_target_fullname}_FOUND_DEBUG}))
+    set(${lib_target_fullname}_FOUND false)
   else()
-    set(${DEP_IMPORT}_FOUND true)
+    set(${lib_target_fullname}_FOUND true)
   endif()
 
   # Exit the function if no lib or implib has been found for one or both build
   # types
-  if(NOT ${DEP_IMPORT}_FOUND)
+  if(NOT ${lib_target_fullname}_FOUND)
     return(PROPAGATE ${return_vars})
   endif()
 
   # Create target
-  add_library("${DEP_IMPORT}" "${DEP_TYPE}" IMPORTED)
-  add_library("${DEP_IMPORT}::${DEP_IMPORT}" ALIAS "${DEP_IMPORT}")
-  set_target_properties("${DEP_IMPORT}" PROPERTIES
+  add_library("${lib_target_fullname}" "${arg_TYPE}" IMPORTED)
+  add_library("${lib_target_aliasname}" ALIAS "${lib_target_fullname}")
+  set_target_properties("${lib_target_fullname}" PROPERTIES
     # For usage from source-tree
     INTERFACE_INCLUDE_DIRECTORIES ""
     # Custom property for usage from build-tree
@@ -854,23 +1068,23 @@ macro(_dependency_import)
   # Add library properties for each build type (RELEASE or DEBUG)
   foreach(build_type IN ITEMS "RELEASE" "DEBUG")
     # Skip the loop if lib or implib is not found or build type is not set
-    if(NOT ${DEP_IMPORT}_FOUND_${build_type})
+    if(NOT ${lib_target_fullname}_FOUND_${build_type})
       continue()
     endif()
 
-    cmake_path(GET ${DEP_IMPORT}_LIBRARY_${build_type} FILENAME lib_file_name)
-    set_target_properties("${DEP_IMPORT}" PROPERTIES
+    cmake_path(GET ${lib_target_fullname}_LIBRARY_${build_type} FILENAME lib_file_name)
+    set_target_properties("${lib_target_fullname}" PROPERTIES
       # Only for '.so|.dll|.a|.lib'. For usage from source-tree
-      IMPORTED_LOCATION_${build_type} "${${DEP_IMPORT}_LIBRARY_${build_type}}"
+      IMPORTED_LOCATION_${build_type} "${${lib_target_fullname}_LIBRARY_${build_type}}"
       # Custom property for usage from build-tree
       IMPORTED_LOCATION_BUILD_${build_type} ""
       # Custom property for usage from install-tree
       IMPORTED_LOCATION_INSTALL_${build_type} ""
       # Only for '.dll.a|.a|.lib' on DLL platforms
-      IMPORTED_IMPLIB_${build_type} "${${DEP_IMPORT}_IMP_LIBRARY_${build_type}}"
+      IMPORTED_IMPLIB_${build_type} "${${lib_target_fullname}_IMP_LIBRARY_${build_type}}"
       IMPORTED_SONAME_${build_type} "${lib_file_name}"
     )
-    set_property(TARGET "${DEP_IMPORT}"
+    set_property(TARGET "${lib_target_fullname}"
       APPEND PROPERTY IMPORTED_CONFIGURATIONS "${build_type}"
     )
   endforeach()
@@ -881,101 +1095,104 @@ endmacro()
 #------------------------------------------------------------------------------
 # [Internal use only]
 macro(_dependency_add_include_directories)
-  if(NOT DEFINED DEP_ADD_INCLUDE_DIRECTORIES)
-    message(FATAL_ERROR "ADD_INCLUDE_DIRECTORIES argument is missing or need a value!")
+  if((NOT DEFINED arg_ADD_INCLUDE_DIRECTORIES)
+      OR ("${arg_ADD_INCLUDE_DIRECTORIES}" STREQUAL ""))
+    message(FATAL_ERROR "${current_command} requires the keyword ADD_INCLUDE_DIRECTORIES to be provided with a non-empty string value!")
   endif()
-  if((NOT ${DEP_SET})
-      AND (NOT ${DEP_APPEND}))
-    message(FATAL_ERROR "SET|APPEND argument is missing!")
+  if(NOT TARGET "${arg_ADD_INCLUDE_DIRECTORIES}")
+    message(FATAL_ERROR "${current_command} requires the target \"${arg_ADD_INCLUDE_DIRECTORIES}\" to already exist!")
   endif()
-  if(${DEP_SET} AND ${DEP_APPEND})
-    message(FATAL_ERROR "SET|APPEND cannot be used together!")
+  if((NOT ${arg_SET})
+      AND (NOT ${arg_APPEND}))
+    message(FATAL_ERROR "${current_command} requires the keyword SET or APPEND to be provided!")
   endif()
-  if(NOT DEFINED DEP_INTERFACE)
-    message(FATAL_ERROR "INTERFACE argument is missing or need a value!")
+  if(${arg_SET} AND ${arg_APPEND})
+    message(FATAL_ERROR "${current_command} requires SET and APPEND not to be used together, they are mutually exclusive!")
   endif()
-  if(NOT TARGET "${DEP_ADD_INCLUDE_DIRECTORIES}")
-    message(FATAL_ERROR "The target \"${DEP_ADD_INCLUDE_DIRECTORIES}\" does not exists!")
+  if(NOT DEFINED arg_INTERFACE)
+    message(FATAL_ERROR "${current_command} requires the keyword INTERFACE to be provided with at least one value!")
   endif()
 
-  string_manip(EXTRACT_INTERFACE DEP_INTERFACE
+  string_manip(EXTRACT_INTERFACE arg_INTERFACE
     BUILD
     OUTPUT_VARIABLE include_dirs_build_interface
   )
-  string_manip(EXTRACT_INTERFACE DEP_INTERFACE
+  string_manip(EXTRACT_INTERFACE arg_INTERFACE
     INSTALL
     OUTPUT_VARIABLE include_dirs_install_interface
   )
-  if(${DEP_SET})
-    set_property(TARGET "${DEP_ADD_INCLUDE_DIRECTORIES}"
+  if(${arg_SET})
+    set_property(TARGET "${arg_ADD_INCLUDE_DIRECTORIES}"
       PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${include_dirs_build_interface}"
     )
-    set_property(TARGET "${DEP_ADD_INCLUDE_DIRECTORIES}"
+    set_property(TARGET "${arg_ADD_INCLUDE_DIRECTORIES}"
       PROPERTY INTERFACE_INCLUDE_DIRECTORIES_BUILD "${include_dirs_build_interface}"
     )
-    set_property(TARGET "${DEP_ADD_INCLUDE_DIRECTORIES}"
+    set_property(TARGET "${arg_ADD_INCLUDE_DIRECTORIES}"
       PROPERTY INTERFACE_INCLUDE_DIRECTORIES_INSTALL "${include_dirs_install_interface}"
     )
-  elseif(${DEP_APPEND})
-    set_property(TARGET "${DEP_ADD_INCLUDE_DIRECTORIES}" APPEND
+  elseif(${arg_APPEND})
+    set_property(TARGET "${arg_ADD_INCLUDE_DIRECTORIES}" APPEND
       PROPERTY INTERFACE_INCLUDE_DIRECTORIES "${include_dirs_build_interface}"
     )
-    set_property(TARGET "${DEP_ADD_INCLUDE_DIRECTORIES}" APPEND
+    set_property(TARGET "${arg_ADD_INCLUDE_DIRECTORIES}" APPEND
       PROPERTY INTERFACE_INCLUDE_DIRECTORIES_BUILD "${include_dirs_build_interface}"
     )
-    set_property(TARGET "${DEP_ADD_INCLUDE_DIRECTORIES}" APPEND
+    set_property(TARGET "${arg_ADD_INCLUDE_DIRECTORIES}" APPEND
       PROPERTY INTERFACE_INCLUDE_DIRECTORIES_INSTALL "${include_dirs_install_interface}"
     )
   else()
-    message(FATAL_ERROR "Wrong option!")
+    message(FATAL_ERROR "${current_command} requires the keyword SET or APPEND to be used!")
   endif()
 
-  get_target_property(all_include_dirs "${DEP_ADD_INCLUDE_DIRECTORIES}" INTERFACE_INCLUDE_DIRECTORIES)
-  set(${DEP_ADD_INCLUDE_DIRECTORIES}_INCLUDE_DIR "${include_dirs_build_interface}")
-  set(${DEP_ADD_INCLUDE_DIRECTORIES}_INCLUDE_DIRS "${all_include_dirs}")
+  get_target_property(all_include_dirs "${arg_ADD_INCLUDE_DIRECTORIES}" INTERFACE_INCLUDE_DIRECTORIES)
+  set(${arg_ADD_INCLUDE_DIRECTORIES}_INCLUDE_DIR "${include_dirs_build_interface}")
+  set(${arg_ADD_INCLUDE_DIRECTORIES}_INCLUDE_DIRS "${all_include_dirs}")
   return(PROPAGATE
-    "${DEP_ADD_INCLUDE_DIRECTORIES}_INCLUDE_DIR"
-    "${DEP_ADD_INCLUDE_DIRECTORIES}_INCLUDE_DIRS"
+    "${arg_ADD_INCLUDE_DIRECTORIES}_INCLUDE_DIR"
+    "${arg_ADD_INCLUDE_DIRECTORIES}_INCLUDE_DIRS"
   )
 endmacro()
 
 #------------------------------------------------------------------------------
 # [Internal use only]
 macro(_dependency_set_imported_location)
-  if(NOT DEFINED DEP_SET_IMPORTED_LOCATION)
-    message(FATAL_ERROR "SET_IMPORTED_LOCATION argument is missing or need a value!")
+  if((NOT DEFINED arg_SET_IMPORTED_LOCATION)
+      OR ("${arg_SET_IMPORTED_LOCATION}" STREQUAL ""))
+    message(FATAL_ERROR "${current_command} requires the keyword SET_IMPORTED_LOCATION to be provided with a non-empty string value!")
   endif()
-  if("CONFIGURATION" IN_LIST DEP_KEYWORDS_MISSING_VALUES)
-    message(FATAL_ERROR "CONFIGURATION argument is missing or need a value!")
+  if(NOT TARGET "${arg_SET_IMPORTED_LOCATION}")
+    message(FATAL_ERROR "${current_command} requires the target \"${arg_SET_IMPORTED_LOCATION}\" to already exist!")
   endif()
-  if(NOT DEFINED DEP_PUBLIC)
-    message(FATAL_ERROR "PUBLIC argument is missing or need a value!")
+  if((DEFINED arg_CONFIGURATION)
+      AND ("${arg_CONFIGURATION}" STREQUAL ""))
+    message(FATAL_ERROR "${current_command} requires the keyword CONFIGURATION to be provided with a non-empty string value!")
   endif()
-  if(NOT TARGET "${DEP_SET_IMPORTED_LOCATION}")
-    message(FATAL_ERROR "The target \"${DEP_SET_IMPORTED_LOCATION}\" does not exists!")
+  if(NOT DEFINED arg_INTERFACE)
+    message(FATAL_ERROR "${current_command} requires the keyword INTERFACE to be provided with at least one value!")
   endif()
 
-  get_target_property(supported_config_types "${DEP_SET_IMPORTED_LOCATION}" IMPORTED_CONFIGURATIONS)
-  string_manip(EXTRACT_INTERFACE DEP_PUBLIC
+  get_target_property(supported_config_types "${arg_SET_IMPORTED_LOCATION}" IMPORTED_CONFIGURATIONS)
+  string_manip(EXTRACT_INTERFACE arg_INTERFACE
     BUILD
     OUTPUT_VARIABLE imp_loc_build_interface
   )
-  string_manip(EXTRACT_INTERFACE DEP_PUBLIC
+  string_manip(EXTRACT_INTERFACE arg_INTERFACE
     INSTALL
     OUTPUT_VARIABLE imp_loc_install_interface
   )
-  if(DEFINED DEP_CONFIGURATION)
-    if(NOT "${DEP_CONFIGURATION}" IN_LIST supported_config_types)
-      message(FATAL_ERROR "The build type \"${DEP_CONFIGURATION}\" is not a supported configuration!")
+  if(DEFINED arg_CONFIGURATION)
+    if(NOT "${arg_CONFIGURATION}" IN_LIST supported_config_types)
+      message(FATAL_ERROR "${current_command} requires the keyword CONFIGURATION to be provided with one of the following supported configurations: ${supported_config_types}")
     endif()
-    set_target_properties("${DEP_SET_IMPORTED_LOCATION}" PROPERTIES
-      IMPORTED_LOCATION_${DEP_CONFIGURATION} "${imp_loc_build_interface}"
-      IMPORTED_LOCATION_BUILD_${DEP_CONFIGURATION} "${imp_loc_build_interface}"
-      IMPORTED_LOCATION_INSTALL_${DEP_CONFIGURATION} "${imp_loc_install_interface}"
+    set_target_properties("${arg_SET_IMPORTED_LOCATION}" PROPERTIES
+      IMPORTED_LOCATION_${arg_CONFIGURATION} "${imp_loc_build_interface}"
+      IMPORTED_LOCATION_BUILD_${arg_CONFIGURATION} "${imp_loc_build_interface}"
+      IMPORTED_LOCATION_INSTALL_${arg_CONFIGURATION} "${imp_loc_install_interface}"
     )
   else()
     foreach(build_type IN ITEMS ${supported_config_types})
-      set_target_properties("${DEP_SET_IMPORTED_LOCATION}" PROPERTIES
+      set_target_properties("${arg_SET_IMPORTED_LOCATION}" PROPERTIES
         IMPORTED_LOCATION_${build_type} "${imp_loc_build_interface}"
         IMPORTED_LOCATION_BUILD_${build_type} "${imp_loc_build_interface}"
         IMPORTED_LOCATION_INSTALL_${build_type} "${imp_loc_install_interface}"
@@ -987,20 +1204,20 @@ endmacro()
 #------------------------------------------------------------------------------
 # [Internal use only]
 macro(_dependency_export_deprecated)
-  if(NOT DEFINED DEP_EXPORT)
+  if(NOT DEFINED arg_EXPORT)
     message(FATAL_ERROR "EXPORT arguments is missing or need a value!")
   endif()
-  if((NOT ${DEP_BUILD_TREE})
-      AND (NOT ${DEP_INSTALL_TREE}))
+  if((NOT ${arg_BUILD_TREE})
+      AND (NOT ${arg_INSTALL_TREE}))
     message(FATAL_ERROR "BUILD_TREE|INSTALL_TREE argument is missing!")
   endif()
-  if(${DEP_BUILD_TREE} AND ${DEP_INSTALL_TREE})
+  if(${arg_BUILD_TREE} AND ${arg_INSTALL_TREE})
     message(FATAL_ERROR "BUILD_TREE|INSTALL_TREE cannot be used together!")
   endif()
-  if(NOT DEFINED DEP_OUTPUT_FILE)
+  if(NOT DEFINED arg_OUTPUT_FILE)
     message(FATAL_ERROR "OUTPUT_FILE argument is missing or need a value!")
   endif()
-  foreach(lib_target_name IN ITEMS ${DEP_EXPORT})
+  foreach(lib_target_name IN ITEMS ${arg_EXPORT})
     if(NOT TARGET "${lib_target_name}")
       message(FATAL_ERROR "The target \"${lib_target_name}\" does not exists!")
     endif()
@@ -1013,16 +1230,16 @@ macro(_dependency_export_deprecated)
   # Set paths to export files
   cmake_path(SET export_dir "${CMAKE_CURRENT_BINARY_DIR}")
   cmake_path(SET export_file_template "${CMAKE_CURRENT_FUNCTION_LIST_DIR}")
-  if(${DEP_BUILD_TREE})
+  if(${arg_BUILD_TREE})
     cmake_path(APPEND export_file_template "ImportBuildTreeLibTargets.cmake.in")
-  elseif(${DEP_INSTALL_TREE})
+  elseif(${arg_INSTALL_TREE})
     cmake_path(APPEND export_file_template "ImportInstallTreeLibTargets.cmake.in")
     cmake_path(APPEND export_dir "cmake" "export") # This is where the export file to copy during install will be generated
     if(NOT EXISTS "${export_dir}")
       file(MAKE_DIRECTORY "${export_dir}")
     endif()
   endif()
-  set(export_file "${export_dir}/${DEP_OUTPUT_FILE}")
+  set(export_file "${export_dir}/${arg_OUTPUT_FILE}")
 
   # Read the template file once
   file(READ "${export_file_template}" template_content)
@@ -1030,20 +1247,20 @@ macro(_dependency_export_deprecated)
   # Sanitize the output file path to create a valid CMake property identifier
   cmake_path(GET export_file FILENAME sanitized_export_file)
   string(MAKE_C_IDENTIFIER "${sanitized_export_file}" sanitized_export_file)
-  
+
   # List of previously generated intermediate files
   get_property(existing_export_parts GLOBAL PROPERTY "_EXPORT_PARTS_${sanitized_export_file}")
 
   # Throw an error if export command already specified for the file and 'APPEND' keyword is not used
   list(LENGTH existing_export_parts nb_parts)
-  if((NOT ${nb_parts} EQUAL 0) AND (NOT ${DEP_APPEND}))
+  if((NOT ${nb_parts} EQUAL 0) AND (NOT ${arg_APPEND}))
     message(FATAL_ERROR
-      "Export command already specified for the file \"${DEP_OUTPUT_FILE}\". Did you miss 'APPEND' keyword?")
+      "Export command already specified for the file \"${arg_OUTPUT_FILE}\". Did you miss 'APPEND' keyword?")
   endif()
-  
+
   # List of intermediate files to concatenate later
   set(new_export_parts "")
-  foreach(lib_target_name IN ITEMS ${DEP_EXPORT})
+  foreach(lib_target_name IN ITEMS ${arg_EXPORT})
     # Set template file variables
     get_target_property(lib_target_type "${lib_target_name}" TYPE)
     if("${lib_target_type}" STREQUAL "STATIC_LIBRARY")
@@ -1054,7 +1271,7 @@ macro(_dependency_export_deprecated)
       message(FATAL_ERROR
         "Target type \"${lib_target_type}\" for target \"${lib_target_name}\" is unsupported by export command!")
     endif()
-  
+
     # Substitute variable values referenced as @VAR@
     string(CONFIGURE "${template_content}" configured_content @ONLY)
 
@@ -1096,7 +1313,7 @@ macro(_dependency_export_deprecated)
     list(APPEND merge_command_args
       "OUTPUT" "${export_file}" "APPEND")
   endif()
-  if(${DEP_APPEND})
+  if(${arg_APPEND})
     list(APPEND merge_command_args
       "COMMAND" "${CMAKE_COMMAND}" "-E" "touch" "${export_file}"
       "COMMAND" "${CMAKE_COMMAND}" "-E" "cat" ${new_export_parts} ">>" "${export_file}"
@@ -1118,7 +1335,7 @@ macro(_dependency_export_deprecated)
       VERBATIM
     )
   endif()
-  if(${DEP_INSTALL_TREE})
+  if(${arg_INSTALL_TREE})
     install(FILES "${export_file}"
       DESTINATION "cmake/export" # Path is relative to CMAKE_INSTALL_PREFIX
     )
@@ -1128,42 +1345,43 @@ endmacro()
 #------------------------------------------------------------------------------
 # [Internal use only]
 macro(_dependency_export)
-  if(NOT DEFINED DEP_EXPORT)
-    message(FATAL_ERROR "EXPORT arguments is missing or need a value!")
+  if(NOT DEFINED arg_EXPORT)
+    message(FATAL_ERROR "${current_command} requires the keyword EXPORT to be provided with at least one value!")
   endif()
-  if((NOT ${DEP_BUILD_TREE})
-      AND (NOT ${DEP_INSTALL_TREE}))
-    message(FATAL_ERROR "BUILD_TREE|INSTALL_TREE argument is missing!")
+  if((NOT ${arg_BUILD_TREE})
+      AND (NOT ${arg_INSTALL_TREE}))
+    message(FATAL_ERROR "${current_command} requires the keyword BUILD_TREE or INSTALL_TREE to be provided!")
   endif()
-  if(${DEP_BUILD_TREE} AND ${DEP_INSTALL_TREE})
-    message(FATAL_ERROR "BUILD_TREE|INSTALL_TREE cannot be used together!")
+  if(${arg_BUILD_TREE} AND ${arg_INSTALL_TREE})
+    message(FATAL_ERROR "${current_command} requires BUILD_TREE and INSTALL_TREE not to be used together, they are mutually exclusive!")
   endif()
-  if(NOT DEFINED DEP_OUTPUT_FILE_NAME)
-    message(FATAL_ERROR "OUTPUT_FILE_NAME argument is missing or need a value!")
+  if((NOT DEFINED arg_OUTPUT_FILE_NAME)
+      OR ("${arg_OUTPUT_FILE_NAME}" STREQUAL ""))
+    message(FATAL_ERROR "${current_command} requires the keyword OUTPUT_FILE_NAME to be provided with a non-empty string value!")
   endif()
-  foreach(lib_target_name IN ITEMS ${DEP_EXPORT})
+  foreach(lib_target_name IN ITEMS ${arg_EXPORT})
     if(NOT TARGET "${lib_target_name}")
-      message(FATAL_ERROR "The target \"${lib_target_name}\" does not exists!")
+      message(FATAL_ERROR "${current_command} requires the target \"${lib_target_name}\" to already exist!")
     endif()
   endforeach()
   if((NOT DEFINED CMAKE_BUILD_TYPE)
       OR ("${CMAKE_BUILD_TYPE}" STREQUAL ""))
-    message(FATAL_ERROR "CMAKE_BUILD_TYPE is not set!")
+    message(FATAL_ERROR "${current_command} requires CMAKE_BUILD_TYPE to be set!")
   endif()
 
   # Set paths to export files
   cmake_path(SET export_dir "${CMAKE_CURRENT_BINARY_DIR}")
   cmake_path(SET intermediate_export_dir "${CMAKE_BINARY_DIR}/CMakeFiles")
-  if(${DEP_BUILD_TREE})
+  if(${arg_BUILD_TREE})
     cmake_path(APPEND intermediate_export_dir "ExportFromBuildTree")
-  elseif(${DEP_INSTALL_TREE})
+  elseif(${arg_INSTALL_TREE})
     cmake_path(APPEND intermediate_export_dir "ExportFromInstallTree")
     cmake_path(APPEND export_dir "cmake" "export") # This is where the export file to copy during install will be generated
     if(NOT EXISTS "${export_dir}")
       file(MAKE_DIRECTORY "${export_dir}")
     endif()
   endif()
-  set(export_file "${export_dir}/${DEP_OUTPUT_FILE_NAME}")
+  set(export_file "${export_dir}/${arg_OUTPUT_FILE_NAME}")
 
   # Remove the files generated by a previous cmake command call
   if(EXISTS "${intermediate_export_dir}")
@@ -1175,18 +1393,18 @@ macro(_dependency_export)
   string(MAKE_C_IDENTIFIER "${sanitized_export_file}" sanitized_export_file)
 
   # List of previously generated intermediate files
-  if(${DEP_BUILD_TREE})
+  if(${arg_BUILD_TREE})
     get_property(existing_export_parts GLOBAL PROPERTY "_BUILD_EXPORT_PARTS_${sanitized_export_file}")
-  elseif(${DEP_INSTALL_TREE})
+  elseif(${arg_INSTALL_TREE})
     get_property(existing_export_parts GLOBAL PROPERTY "_INSTALL_EXPORT_PARTS_${sanitized_export_file}")
   endif()
 
   # Throw an error if this command has already been called and 'APPEND' keyword
   # is not used
   list(LENGTH existing_export_parts nb_parts)
-  if((NOT ${nb_parts} EQUAL 0) AND (NOT ${DEP_APPEND}))
+  if((NOT ${nb_parts} EQUAL 0) AND (NOT ${arg_APPEND}))
     message(FATAL_ERROR
-      "Export command already specified for the file \"${DEP_OUTPUT_FILE_NAME}\". Did you miss 'APPEND' keyword?")
+      "${current_command} already specified an export command for the file \"${arg_OUTPUT_FILE_NAME}\". Did you miss 'APPEND' keyword?")
   endif()
 
   # List of intermediate part files to concatenate later
@@ -1195,7 +1413,7 @@ macro(_dependency_export)
   # Code executed only at the first call to Dependency(EXPORT)
   if(${nb_parts} EQUAL 0)
     # Add CMake insall rules to move the export file
-    if(${DEP_INSTALL_TREE})
+    if(${arg_INSTALL_TREE})
       install(FILES "${export_file}"
         DESTINATION "cmake/export" # Path is relative to CMAKE_INSTALL_PREFIX
       )
@@ -1219,15 +1437,15 @@ macro(_dependency_export)
     list(APPEND new_export_parts "${header_part_file}")
   endif()
 
-  foreach(lib_target_name IN ITEMS ${DEP_EXPORT})
+  foreach(lib_target_name IN ITEMS ${arg_EXPORT})
     # Generate a per-target intermediate file with generator expressions
     get_target_property(lib_target_type "${lib_target_name}" TYPE)
     set(new_part_file "${intermediate_export_dir}/${lib_target_name}Targets-${lib_target_type}.part.cmake")
     if(NOT ("${new_part_file}" IN_LIST existing_export_parts))
       set(import_instructions "")
-      if(${DEP_BUILD_TREE})
+      if(${arg_BUILD_TREE})
         _generate_import_from_build_tree("${lib_target_name}" import_instructions)
-      elseif(${DEP_INSTALL_TREE})
+      elseif(${arg_INSTALL_TREE})
         _generate_import_from_install_tree("cmake/export" "${lib_target_name}" import_instructions)
       endif()
 
@@ -1280,9 +1498,9 @@ macro(_dependency_export)
     list(APPEND existing_export_parts footer_part_file)
   endif()
 
-  if(${DEP_BUILD_TREE})
+  if(${arg_BUILD_TREE})
     set_property(GLOBAL PROPERTY "_BUILD_EXPORT_PARTS_${sanitized_export_file}" "${existing_export_parts}")
-  elseif(${DEP_INSTALL_TREE})
+  elseif(${arg_INSTALL_TREE})
     set_property(GLOBAL PROPERTY "_INSTALL_EXPORT_PARTS_${sanitized_export_file}" "${existing_export_parts}")
   endif()
 
@@ -1297,7 +1515,7 @@ macro(_dependency_export)
     list(APPEND merge_command_args
       "OUTPUT" "${export_file}" "APPEND")
   endif()
-  if(${DEP_APPEND})
+  if(${arg_APPEND})
     list(APPEND merge_command_args
       "COMMAND" "${CMAKE_COMMAND}" "-E" "touch" "${export_file}"
       "COMMAND" "${CMAKE_COMMAND}" "-E" "cat" ${new_export_parts} ">>" "${export_file}"
@@ -1325,10 +1543,10 @@ endmacro()
 # [Internal use only]
 function(_generate_import_header_code in_output_var)
   if(NOT ${ARGC} EQUAL 1)
-    message(FATAL_ERROR "_generate_import_header_code() requires exactly 1 arguments, got ${ARGC}!")
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() requires exactly 1 arguments, got ${ARGC}!")
   endif()
   if("${in_output_var}" STREQUAL "")
-    message(FATAL_ERROR "in_output_var argument is empty!")
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() requires 'in_output_var' to be a non-empty string value!")
   endif()
 
   string(APPEND ${in_output_var}
@@ -1346,13 +1564,13 @@ endfunction()
 # [Internal use only]
 function(_generate_import_from_build_tree lib_target_name in_output_var)
   if(NOT ${ARGC} EQUAL 2)
-    message(FATAL_ERROR "_generate_import_from_build_tree() requires exactly 2 arguments, got ${ARGC}!")
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() requires exactly 2 arguments, got ${ARGC}!")
   endif()
   if("${lib_target_name}" STREQUAL "")
-    message(FATAL_ERROR "lib_target_name argument is empty!")
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() requires 'lib_target_name' argument to be a non-empty string value!")
   endif()
   if("${in_output_var}" STREQUAL "")
-    message(FATAL_ERROR "in_output_var argument is empty!")
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() requires 'in_output_var' argument to be a non-empty string value!")
   endif()
 
   # Creates the imported target
@@ -1400,16 +1618,16 @@ endfunction()
 # [Internal use only]
 function(_generate_import_from_install_tree relative_export_dir_path lib_target_name in_output_var)
   if(NOT ${ARGC} EQUAL 3)
-    message(FATAL_ERROR "_generate_import_from_install_tree() requires exactly 3 arguments, got ${ARGC}!")
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() requires exactly 3 arguments, got ${ARGC}!")
   endif()
   if("${relative_export_dir_path}" STREQUAL "")
-    message(FATAL_ERROR "relative_export_dir_path argument is empty!")
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() requires 'relative_export_dir_path' argument to be a non-empty string value!")
   endif()
   if("${lib_target_name}" STREQUAL "")
-    message(FATAL_ERROR "lib_target_name argument is empty!")
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() requires 'lib_target_name' argument to be a non-empty string value!")
   endif()
   if("${in_output_var}" STREQUAL "")
-    message(FATAL_ERROR "in_output_var argument is empty!")
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() requires 'in_output_var' argument to be a non-empty string value!")
   endif()
 
   # Add the code to compute the installation prefix relative to the import
@@ -1488,10 +1706,10 @@ endfunction()
 # [Internal use only]
 function(_generate_import_footer_code in_output_var)
   if(NOT ${ARGC} EQUAL 1)
-    message(FATAL_ERROR "_generate_import_footer_code() requires exactly 1 arguments, got ${ARGC}!")
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() requires exactly 1 arguments, got ${ARGC}!")
   endif()
   if("${in_output_var}" STREQUAL "")
-    message(FATAL_ERROR "in_output_var argument is empty!")
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() requires 'in_output_var' argument to be a non-empty string value!")
   endif()
 
   string(APPEND ${in_output_var}

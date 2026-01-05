@@ -51,10 +51,10 @@
 #   <DEP_NAME>_FETCH_REVISION
 #   <DEP_NAME>_FETCH_HASH
 #   <DEP_NAME>_OPTIONAL
-#   <DEP_NAME>_CONFIG_COMPILE_FEATURES
-#   <DEP_NAME>_CONFIG_COMPILE_DEFINITIONS
-#   <DEP_NAME>_CONFIG_COMPILE_OPTIONS
-#   <DEP_NAME>_CONFIG_LINK_OPTIONS
+#   <DEP_NAME>_BUILD_COMPILE_FEATURES
+#   <DEP_NAME>_BUILD_COMPILE_DEFINITIONS
+#   <DEP_NAME>_BUILD_COMPILE_OPTIONS
+#   <DEP_NAME>_BUILD_LINK_OPTIONS
 #
 # Outputs:
 #   Link the dependency ``<DEP_NAME>`` to the target ``<CURRENT_TARGET_NAME>``.
@@ -176,19 +176,19 @@ endif()
 message(STATUS "Applying ${DEP_NAME} configuration")
 target_compile_features("${DEP_NAME}"
   PRIVATE
-    ${${DEP_NAME}_CONFIG_COMPILE_FEATURES} # don't add quote (yeah, the signature is inconsistent with other CMake target commands)
+    ${${DEP_NAME}_BUILD_COMPILE_FEATURES} # don't add quote (yeah, the signature is inconsistent with other CMake target commands)
 )
 
 # Add compile definitions to the dependency
 target_compile_definitions("${DEP_NAME}"
   PRIVATE
-    "${${DEP_NAME}_CONFIG_COMPILE_DEFINITIONS}"
+    "${${DEP_NAME}_BUILD_COMPILE_DEFINITIONS}"
 )
 
 # Add compile options to the dependency
 target_compile_options("${DEP_NAME}"
   PRIVATE
-    "${${DEP_NAME}_CONFIG_COMPILE_OPTIONS}"
+    "${${DEP_NAME}_BUILD_COMPILE_OPTIONS}"
 )
 
 # Add link options to the dependency
@@ -196,7 +196,7 @@ get_target_property(dep_type "${DEP_NAME}" TYPE)
 if(NOT dep_type STREQUAL "STATIC_LIBRARY")
   target_link_options("${DEP_NAME}"
     PRIVATE
-      "${${DEP_NAME}_CONFIG_LINK_OPTIONS}"
+      "${${DEP_NAME}_BUILD_LINK_OPTIONS}"
   )
 endif()
 

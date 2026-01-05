@@ -8,7 +8,7 @@
 Debug
 -----
 
-Operations for helping with debug, inspired by :cmake:module:`CMakePrintHelpers <cmake:module:CMakePrintHelpers>` module. It requires CMake 3.20 or newer.
+Operations for helping with debug, inspired by :cmake:module:`CMakePrintHelpers <cmake:module:CMakePrintHelpers>` module. It requires CMake 4.0.1 or newer.
 
 Synopsis
 ^^^^^^^^
@@ -36,8 +36,8 @@ Usage
   .. code-block:: cmake
 
     debug(DUMP_TARGETS "${CMAKE_SOURCE_DIR}")
-    # output is:
-    #   -- 
+    # Output:
+    #   --
     #    Targets in the project:
     #      [][Buildsystem] Experimental
     #      [][Buildsystem] Nightly
@@ -63,8 +63,8 @@ Usage
   .. code-block:: cmake
 
     debug(DUMP_VARIABLES)
-    # output is:
-    #   -- 
+    # Output:
+    #   --
     #    Variables of CMake:
     #      BUILD_SHARED_LIBS = "ON"
     #      CMAKE_CURRENT_SOURCE_DIR = "/home/user/project/src"
@@ -73,8 +73,8 @@ Usage
     #   ...
 
     debug(DUMP_VARIABLES INCLUDE_REGEX "^PROJECT_")
-    # output is:
-    #   -- 
+    # Output:
+    #   --
     #    Variables of CMake:
     #   ...
     #      PROJECT_IS_TOP_LEVEL = "ON"
@@ -82,8 +82,8 @@ Usage
     #   ...
 
     debug(DUMP_VARIABLES EXCLUDE_REGEX "^CMAKE_")
-    # output is:
-    #   -- 
+    # Output:
+    #   --
     #    Variables of CMake:
     #      BUILD_SHARED_LIBS = "ON"
     #      PROJECT_NAME = "MyProject"
@@ -110,8 +110,8 @@ Usage
   .. code-block:: cmake
 
     debug(DUMP_PROPERTIES)
-    # output is:
-    #   -- 
+    # Output:
+    #   --
     #    Properties of CMake:
     #      ADDITIONAL_CLEAN_FILES
     #      ALIAS_GLOBAL
@@ -140,8 +140,8 @@ Usage
   .. code-block:: cmake
 
     debug(DUMP_TARGET_PROPERTIES my_library)
-    # output is:
-    #   -- 
+    # Output:
+    #   --
     #    Properties for TARGET my_library:
     #      my_library.TYPE = "STATIC_LIBRARY"
     #      my_library.SOURCES = "src/a.cpp;src/b.cpp"
@@ -241,34 +241,37 @@ function(debug)
   set(options DUMP_VARIABLES DUMP_PROPERTIES)
   set(one_value_args DUMP_TARGETS INCLUDE_REGEX EXCLUDE_REGEX DUMP_TARGET_PROPERTIES)
   set(multi_value_args "")
-  cmake_parse_arguments(DB "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
-  
-  if(DEFINED DB_UNPARSED_ARGUMENTS)
-    message(FATAL_ERROR "Unrecognized arguments: \"${DB_UNPARSED_ARGUMENTS}\"!")
+  cmake_parse_arguments(PARSE_ARGV 0 arg
+    "${options}" "${one_value_args}" "${multi_value_args}"
+  )
+
+  if(DEFINED arg_UNPARSED_ARGUMENTS)
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}() called with unrecognized arguments: \"${arg_UNPARSED_ARGUMENTS}\"!")
   endif()
 
-  if(DEFINED DB_DUMP_TARGETS)
+  if(DEFINED arg_DUMP_TARGETS)
+    set(current_command "debug(DUMP_TARGETS)")
     _debug_dump_targets()
-  elseif(${DB_DUMP_VARIABLES})
+  elseif(${arg_DUMP_VARIABLES})
+    set(current_command "debug(DUMP_VARIABLES)")
     _debug_dump_variables()
-  elseif(${DB_DUMP_PROPERTIES})
+  elseif(${arg_DUMP_PROPERTIES})
+    set(current_command "debug(DUMP_PROPERTIES)")
     _debug_dump_properties()
-  elseif(DEFINED DB_DUMP_TARGET_PROPERTIES)
+  elseif(DEFINED arg_DUMP_TARGET_PROPERTIES)
+    set(current_command "debug(DUMP_TARGET_PROPERTIES)")
     _debug_dump_target_properties()
   else()
-    message(FATAL_ERROR "The operation name or arguments are missing!")
+    message(FATAL_ERROR "${CMAKE_CURRENT_FUNCTION}(<OP> <value> ...) requires an operation and a value to be specified!")
   endif()
 endfunction()
 
 #------------------------------------------------------------------------------
 # [Internal use only]
 macro(_debug_dump_targets)
-  if(NOT DEFINED DB_DUMP_TARGETS)
-    message(FATAL_ERROR "DUMP_TARGETS arguments is missing!")
-  endif()
-  if((NOT EXISTS "${DB_DUMP_TARGETS}")
-      OR (NOT IS_DIRECTORY "${DB_DUMP_TARGETS}"))
-    message(FATAL_ERROR "Given path: ${DB_DUMP_TARGETS} does not refer to an existing path or directory on disk!")
+  if((NOT DEFINED arg_DUMP_TARGETS)
+      OR (NOT IS_DIRECTORY "${arg_DUMP_TARGETS}"))
+    message(FATAL_ERROR "${current_command} requires the keyword DUMP_TARGETS '${arg_DUMP_TARGETS}' to be provided with a path to an existing directory on disk!")
   endif()
 
   function(__debug_dump_targets_recursive output_msg_var dir)
@@ -292,37 +295,36 @@ macro(_debug_dump_targets)
 
   set(message "\n")
   string(APPEND message " Targets in the project:\n")
-  __debug_dump_targets_recursive(message "${DB_DUMP_TARGETS}")
+  __debug_dump_targets_recursive(message "${arg_DUMP_TARGETS}")
   message(STATUS "${message}")
 endmacro()
 
 #------------------------------------------------------------------------------
 # [Internal use only]
 macro(_debug_dump_variables)
-  if(NOT ${DB_DUMP_VARIABLES})
-    message(FATAL_ERROR "DUMP_VARIABLES arguments is missing!")
+  if(NOT DEFINED arg_DUMP_VARIABLES)
+    message(FATAL_ERROR "${current_command} requires the keyword DUMP_VARIABLES to be provided!")
   endif()
-  if("INCLUDE_REGEX" IN_LIST DB_KEYWORDS_MISSING_VALUES)
-    message(FATAL_ERROR "INCLUDE_REGEX argument is missing or need a value!")
+  if((DEFINED arg_INCLUDE_REGEX) AND ("${arg_INCLUDE_REGEX}" STREQUAL ""))
+    message(FATAL_ERROR "${current_command} requires INCLUDE_REGEX to be a non-empty string value!")
   endif()
-  if("EXCLUDE_REGEX" IN_LIST DB_KEYWORDS_MISSING_VALUES)
-    message(FATAL_ERROR "EXCLUDE_REGEX argument is missing or need a value!")
+  if((DEFINED arg_EXCLUDE_REGEX) AND ("${arg_EXCLUDE_REGEX}" STREQUAL ""))
+    message(FATAL_ERROR "${current_command} requires EXCLUDE_REGEX to be a non-empty string value!")
   endif()
-  if((DEFINED DB_INCLUDE_REGEX)
-      AND (DEFINED DB_EXCLUDE_REGEX))
-    message(FATAL_ERROR "INCLUDE_REGEX|EXCLUDE_REGEX cannot be used together!")
+  if((DEFINED arg_INCLUDE_REGEX) AND (DEFINED arg_EXCLUDE_REGEX))
+    message(FATAL_ERROR "${current_command} requires INCLUDE_REGEX and EXCLUDE_REGEX not to be used together, they are mutually exclusive!")
   endif()
 
   get_cmake_property(variable_names VARIABLES)
   list(SORT variable_names)
   list(REMOVE_DUPLICATES variable_names)
-  
+
   set(message "\n")
   string(APPEND message " Variables of CMake:\n")
   foreach (variable_name IN ITEMS ${variable_names})
-    if((NOT DEFINED DB_INCLUDE_REGEX AND NOT DEFINED DB_EXCLUDE_REGEX)
-        OR (DEFINED DB_INCLUDE_REGEX AND "${variable_name}" MATCHES "${DB_INCLUDE_REGEX}")
-        OR (DEFINED DB_EXCLUDE_REGEX AND NOT "${variable_name}" MATCHES "${DB_EXCLUDE_REGEX}"))
+    if((NOT DEFINED arg_INCLUDE_REGEX AND NOT DEFINED arg_EXCLUDE_REGEX)
+        OR (DEFINED arg_INCLUDE_REGEX AND "${variable_name}" MATCHES "${arg_INCLUDE_REGEX}")
+        OR (DEFINED arg_EXCLUDE_REGEX AND NOT "${variable_name}" MATCHES "${arg_EXCLUDE_REGEX}"))
       string(APPEND message "   ${variable_name} = \"${${variable_name}}\"\n")
     endif()
   endforeach()
@@ -332,23 +334,23 @@ endmacro()
 #------------------------------------------------------------------------------
 # [Internal use only]
 macro(_debug_dump_properties)
-  if(NOT ${DB_DUMP_PROPERTIES})
-    message(FATAL_ERROR "DUMP_PROPERTIES arguments is missing!")
+  if(NOT DEFINED arg_DUMP_PROPERTIES)
+    message(FATAL_ERROR "${current_command} requires the keyword DUMP_PROPERTIES to be provided!")
   endif()
 
   execute_process(COMMAND
     ${CMAKE_COMMAND} --help-property-list
-    OUTPUT_VARIABLE propertie_names
+    OUTPUT_VARIABLE property_names
   )
-  # Convert command output into a CMake list.
-  string(REGEX REPLACE ";" "\\\\;" propertie_names "${propertie_names}")
-  string(REGEX REPLACE "\n" ";" propertie_names "${propertie_names}")
-  list(SORT propertie_names)
-  
+  # Convert command output into a CMake list
+  string(REGEX REPLACE ";" "\\\\;" property_names "${property_names}")
+  string(REGEX REPLACE "\n" ";" property_names "${property_names}")
+  list(SORT property_names)
+
   set(message "\n")
   string(APPEND message " Properties of CMake:\n")
-  foreach (propertie_name IN ITEMS ${propertie_names})
-    string(APPEND message "   ${propertie_name}\n")
+  foreach (property_name IN ITEMS ${property_names})
+    string(APPEND message "   ${property_name}\n")
   endforeach()
   message(STATUS "${message}")
 endmacro()
@@ -356,55 +358,79 @@ endmacro()
 #------------------------------------------------------------------------------
 # [Internal use only]
 macro(_debug_dump_target_properties)
-  if(NOT DEFINED DB_DUMP_TARGET_PROPERTIES)
-    message(FATAL_ERROR "DUMP_TARGET_PROPERTIES arguments is missing!")
+  if((NOT DEFINED arg_DUMP_TARGET_PROPERTIES)
+      OR ("${arg_DUMP_TARGET_PROPERTIES}" STREQUAL ""))
+    message(FATAL_ERROR "${current_command} requires the keyword DUMP_TARGET_PROPERTIES to be provided with a non-empty string value!")
   endif()
-  if(NOT TARGET "${DB_DUMP_TARGET_PROPERTIES}")
-    message(FATAL_ERROR "There is no target named \"${DB_DUMP_TARGET_PROPERTIES}\"!")
+  if(NOT TARGET "${arg_DUMP_TARGET_PROPERTIES}")
+    message(FATAL_ERROR "${current_command} requires the target \"${arg_DUMP_TARGET_PROPERTIES}\" to already exist!")
   endif()
 
   # Get all propreties that cmake supports
   execute_process(COMMAND
     ${CMAKE_COMMAND} --help-property-list
-    OUTPUT_VARIABLE propertie_names
+    OUTPUT_VARIABLE property_names
   )
 
-  # Convert command output into a CMake list.
-  string(REGEX REPLACE ";" "\\\\;" propertie_names "${propertie_names}")
-  string(REGEX REPLACE "\n" ";" propertie_names "${propertie_names}")
-  
-  # Add custom properties used in this project.
-  list(APPEND propertie_names
+  # Convert command output into a CMake list
+  string(REGEX REPLACE ";" "\\\\;" property_names "${property_names}")
+  string(REGEX REPLACE "\n" ";" property_names "${property_names}")
+
+  # Add custom properties used in this project
+  list(APPEND property_names
     "INTERFACE_INCLUDE_DIRECTORIES_BUILD"
     "INTERFACE_INCLUDE_DIRECTORIES_INSTALL"
     "IMPORTED_LOCATION_BUILD_<CONFIG>"
     "IMPORTED_LOCATION_INSTALL_<CONFIG>"
   )
-  
-  # Substitute "_<CONFIG>"" for each variable by the real configuration types (RELEASE and DEBUG).
-  set(config_dependent_propertie_names ${propertie_names})
-  list(FILTER config_dependent_propertie_names INCLUDE REGEX "_<CONFIG>$")
-  list(FILTER propertie_names EXCLUDE REGEX "_<CONFIG>$")
-  foreach(propertie_name IN ITEMS ${config_dependent_propertie_names})
-    string(REPLACE "<CONFIG>" "DEBUG" propertie_name_debug ${propertie_name})
-    list(APPEND propertie_names "${propertie_name_debug}")
-    string(REPLACE "<CONFIG>" "RELEASE" propertie_name_release ${propertie_name})
-    list(APPEND propertie_names "${propertie_name_release}")
+
+  # Substitute "_<CONFIG>" for each variable by the real configuration types
+  # (RELEASE and DEBUG)
+  set(config_dependent_property_names ${property_names})
+  list(FILTER config_dependent_property_names INCLUDE REGEX "_<CONFIG>$")
+  list(FILTER property_names EXCLUDE REGEX "_<CONFIG>$")
+  foreach(property_name IN ITEMS ${config_dependent_property_names})
+    string(REPLACE "<CONFIG>" "DEBUG" property_name_debug ${property_name})
+    list(APPEND property_names "${property_name_debug}")
+    string(REPLACE "<CONFIG>" "RELEASE" property_name_release ${property_name})
+    list(APPEND property_names "${property_name_release}")
   endforeach()
 
+  # Substitue "_<NAME>" in "HEADER_SET_<NAME>" variables by the names in
+  # "HEADER_SETS" property
+  get_property(property_set TARGET "${arg_DUMP_TARGET_PROPERTIES}"
+    PROPERTY "HEADER_SETS" SET)
+  if(${property_set})
+    get_target_property(property_value "${arg_DUMP_TARGET_PROPERTIES}" "HEADER_SETS")
+    foreach(header_set_name IN ITEMS ${property_value})
+      list(APPEND property_names "HEADER_SET_${header_set_name}")
+    endforeach()
+  endif()
+
+  # Substitue "_<NAME>" in "HEADER_DIRS_<NAME>" variables by the names in
+  # "HEADER_DIRS" property
+  get_property(property_set TARGET "${arg_DUMP_TARGET_PROPERTIES}"
+    PROPERTY "HEADER_DIRS" SET)
+  if(${property_set})
+    get_target_property(property_value "${arg_DUMP_TARGET_PROPERTIES}" "HEADER_DIRS")
+    foreach(header_dir_name IN ITEMS ${property_value})
+      list(APPEND property_names "HEADER_DIRS_${header_dir_name}")
+    endforeach()
+  endif()
+
   # Fix https://stackoverflow.com/questions/32197663/how-can-i-remove-the-the-location-property-may-not-be-read-from-target-error-i
-  list(FILTER propertie_names EXCLUDE REGEX "^LOCATION$|^LOCATION_|_LOCATION$")
-  list(REMOVE_DUPLICATES propertie_names)
-  list(SORT propertie_names)
+  list(FILTER property_names EXCLUDE REGEX "^LOCATION$|^LOCATION_|_LOCATION$")
+  list(REMOVE_DUPLICATES property_names)
+  list(SORT property_names)
 
   set(message "\n")
-  string(APPEND message " Properties for TARGET ${DB_DUMP_TARGET_PROPERTIES}:\n")
-  foreach(propertie_name IN ITEMS ${propertie_names})
-    get_property(propertie_set TARGET "${DB_DUMP_TARGET_PROPERTIES}"
-      PROPERTY "${propertie_name}" SET)
-    if(${propertie_set})
-      get_target_property(propertie_value "${DB_DUMP_TARGET_PROPERTIES}" "${propertie_name}")
-      string(APPEND message "   ${DB_DUMP_TARGET_PROPERTIES}.${propertie_name} = \"${propertie_value}\"\n")
+  string(APPEND message " Properties for TARGET ${arg_DUMP_TARGET_PROPERTIES}:\n")
+  foreach(property_name IN ITEMS ${property_names})
+    get_property(property_set TARGET "${arg_DUMP_TARGET_PROPERTIES}"
+      PROPERTY "${property_name}" SET)
+    if(${property_set})
+      get_target_property(property_value "${arg_DUMP_TARGET_PROPERTIES}" "${property_name}")
+      string(APPEND message "   ${arg_DUMP_TARGET_PROPERTIES}.${property_name} = \"${property_value}\"\n")
     endif()
   endforeach()
   message(STATUS "${message}")

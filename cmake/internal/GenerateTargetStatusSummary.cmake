@@ -33,7 +33,7 @@
 #   <target-name>_PCH_FILE
 #   <target-name>_PUBLIC_HEADER_DIR
 #   <target-name>_PRIVATE_HEADER_DIR
-#   <target-name>_DEPENDENCIES
+#   <target-name>_EXT_DEPENDENCIES
 #   <dep-name>_FOUND
 #
 # Returns:
@@ -127,7 +127,7 @@ function(generate_target_status_summary target_name output_list_var)
   endif()
 
   # Print "External dependencies"
-  foreach(dep_name IN ITEMS ${${target_name}_DEPENDENCIES})
+  foreach(dep_name IN ITEMS ${${target_name}_EXT_DEPENDENCIES})
     if(${${dep_name}_FOUND})
       list(APPEND ${output_list_var} "✔ Dependency ${dep_name} found")
     else()

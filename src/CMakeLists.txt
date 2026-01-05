@@ -33,14 +33,15 @@ message(CHECK_START "Making the binary target '${CONFIG_TARGET_NAME}'")
 list(APPEND CMAKE_MESSAGE_INDENT "  ")
 
 ####################### Declare target metadata ###############################
-set(BIN_TARGET_NAME                 "${CONFIG_TARGET_NAME}")
+set(BIN_TARGET_NAME             "${PROJECT_NAME}_${CONFIG_TARGET_NAME}")
+set(BIN_TARGET_ALIASNAME        "${PROJECT_NAME}::${CONFIG_TARGET_NAME}")
 
 ####################### Define and check target structure #####################
 set(${BIN_TARGET_NAME}_TARGET_DIR   "${CMAKE_CURRENT_SOURCE_DIR}")
 set(${BIN_TARGET_NAME}_BUILD_DIR    "${CMAKE_CURRENT_BINARY_DIR}")
 
 if(("${CMAKE_CURRENT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
-  OR ("${CMAKE_CURRENT_BINARY_DIR}" STREQUAL "${CMAKE_BINARY_DIR}"))
+    OR ("${CMAKE_CURRENT_BINARY_DIR}" STREQUAL "${CMAKE_BINARY_DIR}"))
   message(FATAL_ERROR "This CMakeLists.txt file must be in a subdirectory!")
 endif()
 print(VERBOSE "Target source-tree located in @rp@/" "${${BIN_TARGET_NAME}_TARGET_DIR}")
@@ -56,30 +57,26 @@ list(APPEND CMAKE_MESSAGE_INDENT "  ")
 cmake_targets_file(GET_VALUE ${BIN_TARGET_NAME}_TYPE
   TARGET "${CONFIG_TARGET_ID}" KEY "type"
 )
-set(${BIN_TARGET_NAME}_TYPE_IS_STATIC   off)
-set(${BIN_TARGET_NAME}_TYPE_IS_SHARED   off)
-set(${BIN_TARGET_NAME}_TYPE_IS_HEADER   off)
-set(${BIN_TARGET_NAME}_TYPE_IS_EXEC     off)
+set(${BIN_TARGET_NAME}_TYPE_IS_STATIC   false)
+set(${BIN_TARGET_NAME}_TYPE_IS_SHARED   false)
+set(${BIN_TARGET_NAME}_TYPE_IS_HEADER   false)
+set(${BIN_TARGET_NAME}_TYPE_IS_EXEC     false)
 if("${${BIN_TARGET_NAME}_TYPE}" STREQUAL "staticLib")
-  message(VERBOSE "Adding the static library target '${BIN_TARGET_NAME}' to project")
-  set(${BIN_TARGET_NAME}_TYPE_IS_STATIC on)
-  binary_target(CREATE "${BIN_TARGET_NAME}" STATIC)
-  add_library("${PROJECT_NAME}::${BIN_TARGET_NAME}" ALIAS "${BIN_TARGET_NAME}")
+  message(VERBOSE "Adding the static library target '${CONFIG_TARGET_NAME}' to project")
+  set(${BIN_TARGET_NAME}_TYPE_IS_STATIC true)
+  binary_target(CREATE "${CONFIG_TARGET_NAME}" STATIC)
 elseif("${${BIN_TARGET_NAME}_TYPE}" STREQUAL "sharedLib")
-  message(VERBOSE "Adding the shared library target '${BIN_TARGET_NAME}' to project")
-  set(${BIN_TARGET_NAME}_TYPE_IS_SHARED on)
-  binary_target(CREATE "${BIN_TARGET_NAME}" SHARED)
-  add_library("${PROJECT_NAME}::${BIN_TARGET_NAME}" ALIAS "${BIN_TARGET_NAME}")
+  message(VERBOSE "Adding the shared library target '${CONFIG_TARGET_NAME}' to project")
+  set(${BIN_TARGET_NAME}_TYPE_IS_SHARED true)
+  binary_target(CREATE "${CONFIG_TARGET_NAME}" SHARED)
 elseif("${${BIN_TARGET_NAME}_TYPE}" STREQUAL "interfaceLib")
-  message(VERBOSE "Adding the interface library target '${BIN_TARGET_NAME}' to project")
-  set(${BIN_TARGET_NAME}_TYPE_IS_HEADER on)
-  binary_target(CREATE "${BIN_TARGET_NAME}" HEADER)
-  add_library("${PROJECT_NAME}::${BIN_TARGET_NAME}" ALIAS "${BIN_TARGET_NAME}")
+  message(VERBOSE "Adding the interface library target '${CONFIG_TARGET_NAME}' to project")
+  set(${BIN_TARGET_NAME}_TYPE_IS_HEADER true)
+  binary_target(CREATE "${CONFIG_TARGET_NAME}" HEADER)
 elseif("${${BIN_TARGET_NAME}_TYPE}" STREQUAL "executable")
-  message(VERBOSE "Adding the executable target '${BIN_TARGET_NAME}' to project")
-  set(${BIN_TARGET_NAME}_TYPE_IS_EXEC on)
-  binary_target(CREATE "${BIN_TARGET_NAME}" EXEC)
-  add_executable("${PROJECT_NAME}::${BIN_TARGET_NAME}" ALIAS "${BIN_TARGET_NAME}")
+  message(VERBOSE "Adding the executable target '${CONFIG_TARGET_NAME}' to project")
+  set(${BIN_TARGET_NAME}_TYPE_IS_EXEC true)
+  binary_target(CREATE "${CONFIG_TARGET_NAME}" EXEC)
 else()
   message(FATAL_ERROR "Unknown binary target type: ${${BIN_TARGET_NAME}_TYPE}. It must be 'staticLib' or 'sharedLib' or 'interfaceLib' or 'executable'!")
 endif()
@@ -187,7 +184,9 @@ endif()
 ####################### Add header include directories ########################
 print(VERBOSE "Adding include directories: @rpl@" "${${BIN_TARGET_NAME}_PUBLIC_HEADER_DIR}" "${${BIN_TARGET_NAME}_PRIVATE_HEADER_DIR}")
 binary_target(ADD_INCLUDE_DIRECTORIES "${BIN_TARGET_NAME}"
-  INCLUDE_DIRECTORIES "$<$<BOOL:${${BIN_TARGET_NAME}_PRIVATE_HEADER_DIR}>:${${BIN_TARGET_NAME}_PRIVATE_HEADER_DIR}>" "${${BIN_TARGET_NAME}_PUBLIC_HEADER_DIR}"
+  PRIVATE
+    "$<$<BOOL:${${BIN_TARGET_NAME}_PRIVATE_HEADER_DIR}>:${${BIN_TARGET_NAME}_PRIVATE_HEADER_DIR}>"
+    "${${BIN_TARGET_NAME}_PUBLIC_HEADER_DIR}"
 )
 
 list(POP_BACK CMAKE_MESSAGE_INDENT)
@@ -234,10 +233,10 @@ message(CHECK_PASS "done")
 message(CHECK_START "Linking external dependencies")
 list(APPEND CMAKE_MESSAGE_INDENT "  ")
 
-cmake_targets_file(GET_VALUE ${BIN_TARGET_NAME}_DEPENDENCIES
-  TARGET "${CONFIG_TARGET_ID}" KEY "dependencies"
+cmake_targets_file(GET_VALUE ${BIN_TARGET_NAME}_EXT_DEPENDENCIES
+  TARGET "${CONFIG_TARGET_ID}" KEY "extDependencies"
 )
-foreach(dep_name IN ITEMS ${${BIN_TARGET_NAME}_DEPENDENCIES})
+foreach(dep_name IN ITEMS ${${BIN_TARGET_NAME}_EXT_DEPENDENCIES})
   message(CHECK_START "Importing ${dep_name}")
   list(APPEND CMAKE_MESSAGE_INDENT "  ")
 
