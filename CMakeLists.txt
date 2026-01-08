@@ -192,19 +192,19 @@ endif()
 print(STATUS "Built files will be located into '@rp@/' or '@rp@/'" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
 
 ####################### Set C++ build environment #############################
-validate_cxx_standard_version(is_valid err_msg on "${PARAM_BUILD_STANDARD_VERSION}")
+validate_cxx_standard_version(is_valid err_msg true "${PARAM_BUILD_STANDARD_VERSION}")
 set(CMAKE_CXX_STANDARD "${PARAM_BUILD_STANDARD_VERSION}")
-set(CMAKE_CXX_STANDARD_REQUIRED on)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 message(STATUS "C++ standard version set to C++${CMAKE_CXX_STANDARD}")
 
 # CMAKE_BUILD_TYPE is set in CMakePresets.json
-validate_build_type(is_valid err_msg on "${CMAKE_BUILD_TYPE}")
+validate_build_type(is_valid err_msg true "${CMAKE_BUILD_TYPE}")
 message(STATUS "Build type set to '${CMAKE_BUILD_TYPE}'")
 
 if("${PARAM_DEFAULT_LIBS_TYPE}" STREQUAL "staticLib")
-  set(BUILD_SHARED_LIBS off)
+  set(BUILD_SHARED_LIBS OFF)
 elseif("${PARAM_DEFAULT_LIBS_TYPE}" STREQUAL "sharedLib")
-  set(BUILD_SHARED_LIBS on)
+  set(BUILD_SHARED_LIBS ON)
 else()
   message(FATAL_ERROR "Unknown default libraries type: ${PARAM_DEFAULT_LIBS_TYPE}. It must be 'staticLib' or 'sharedLib'!")
 endif()
@@ -212,12 +212,12 @@ message(STATUS "Build shared libs set to '${BUILD_SHARED_LIBS}'")
 
 ################### Organize IDE folders and configure generator settings #####
 set(CMAKE_FOLDER "PredefinedTargets")
-set_property(GLOBAL PROPERTY USE_FOLDERS on)
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "${CMAKE_FOLDER}")
 message(STATUS "Predefined targets moved to folder '${CMAKE_FOLDER}'")
 
 # Enable compile_commands.json if requested
-set(CMAKE_EXPORT_COMPILE_COMMANDS "${PARAM_GENERATE_COMPILE_COMMANDS}")
+set(CMAKE_EXPORT_COMPILE_COMMANDS ${PARAM_GENERATE_COMPILE_COMMANDS})
 if(${CMAKE_EXPORT_COMPILE_COMMANDS})
   message(STATUS "Compile commands export enabled (compile_commands.json will be generated)")
 else()

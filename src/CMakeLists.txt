@@ -27,7 +27,7 @@ endif()
 cmake_targets_file(GET_VALUE CONFIG_TARGET_NAME
   TARGET "${CONFIG_TARGET_ID}" KEY "name"
 )
-validate_target_name(is_valid err_msg on "${CONFIG_TARGET_NAME}")
+validate_target_name(is_valid err_msg true "${CONFIG_TARGET_NAME}")
 
 message(CHECK_START "Making the binary target '${CONFIG_TARGET_NAME}'")
 list(APPEND CMAKE_MESSAGE_INDENT "  ")
@@ -120,12 +120,10 @@ if("${${BIN_TARGET_NAME}_HEADER_POLICY}" STREQUAL "split")
   cmake_targets_file(GET_VALUE ${BIN_TARGET_NAME}_INCLUDE_DIR
     TARGET "${CONFIG_TARGET_ID}" KEY "headerPolicy.includeDir"
   )
-  list(APPEND directory_collect_args
-    on
-    "${${PROJECT_NAME}_PROJECT_DIR}/${${BIN_TARGET_NAME}_INCLUDE_DIR}"
-  )
+  list(APPEND directory_collect_args true)
+  list(APPEND directory_collect_args "${${PROJECT_NAME}_PROJECT_DIR}/${${BIN_TARGET_NAME}_INCLUDE_DIR}")
 else()
-  list(APPEND directory_collect_args off)
+  list(APPEND directory_collect_args false)
 endif()
 directory(COLLECT_SOURCES_BY_POLICY
   ${directory_collect_args}
@@ -158,7 +156,7 @@ cmake_targets_file(GET_VALUE ${BIN_TARGET_NAME}_MAIN_FILE
   TARGET "${CONFIG_TARGET_ID}" KEY "mainFile"
 )
 set(${BIN_TARGET_NAME}_MAIN_FILE "${${PROJECT_NAME}_PROJECT_DIR}/${${BIN_TARGET_NAME}_MAIN_FILE}")
-validate_main_file_path(is_valid err_msg on "${${BIN_TARGET_NAME}_MAIN_FILE}")
+validate_main_file_path(is_valid err_msg true "${${BIN_TARGET_NAME}_MAIN_FILE}")
 print(VERBOSE "Main file is @rp@" "${${BIN_TARGET_NAME}_MAIN_FILE}")
 
 ####################### Set up precompile header (PCH) ########################
@@ -170,7 +168,7 @@ if(${has_pch_setting})
     TARGET "${CONFIG_TARGET_ID}" KEY "pchFile"
   )
   set(${BIN_TARGET_NAME}_PCH_FILE "${${PROJECT_NAME}_PROJECT_DIR}/${${BIN_TARGET_NAME}_PCH_FILE}")
-  validate_pch_file_path(is_valid err_msg on
+  validate_pch_file_path(is_valid err_msg true
     "${${BIN_TARGET_NAME}_PUBLIC_HEADER_DIR}" "${${BIN_TARGET_NAME}_PCH_FILE}")
   print(VERBOSE "Adding headers to precompile: @rp@" "${${BIN_TARGET_NAME}_PCH_FILE}")
   binary_target(ADD_PRECOMPILE_HEADER "${BIN_TARGET_NAME}"
@@ -240,7 +238,7 @@ foreach(dep_name IN ITEMS ${${BIN_TARGET_NAME}_EXT_DEPENDENCIES})
   message(CHECK_START "Importing ${dep_name}")
   list(APPEND CMAKE_MESSAGE_INDENT "  ")
 
-  validate_dep_name(is_valid err_msg on "${dep_name}")
+  validate_dep_name(is_valid err_msg true "${dep_name}")
   import_external_dependency("${BIN_TARGET_NAME}" "${CONFIG_TARGET_ID}" "${dep_name}")
 
   list(POP_BACK CMAKE_MESSAGE_INDENT)

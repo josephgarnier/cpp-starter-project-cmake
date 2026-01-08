@@ -102,7 +102,6 @@ else()
       "${DEP_NAME} v${${DEP_NAME}_MIN_VERSION} not found locally, try to download it in the build-tree"
     )
     include(FetchContent)
-    set(FETCHCONTENT_QUIET off)
     set(fetch_content_args "")
     if(${${DEP_NAME}_FETCH_KIND_IS_URL})
       list(APPEND fetch_content_args
@@ -113,8 +112,8 @@ else()
       list(APPEND fetch_content_args
         "GIT_REPOSITORY" "${${DEP_NAME}_FETCH_REPOSITORY}"
         "GIT_TAG" "${${DEP_NAME}_FETCH_TAG}"
-        "GIT_SHALLOW" "on"
-        "GIT_PROGRESS" "on"
+        "GIT_SHALLOW" "ON"
+        "GIT_PROGRESS" "ON"
       )
     elseif(${${DEP_NAME}_FETCH_KIND_IS_SVN})
       list(APPEND fetch_content_args
@@ -135,17 +134,17 @@ else()
       EXCLUDE_FROM_ALL
       SYSTEM
       STAMP_DIR "${${PROJECT_NAME}_BUILD_DIR}"
-      DOWNLOAD_NO_PROGRESS off
-      LOG_DOWNLOAD on
-      LOG_UPDATE on
-      LOG_PATCH on
-      LOG_CONFIGURE on
-      LOG_BUILD on
-      LOG_INSTALL on
-      LOG_TEST on
-      LOG_MERGED_STDOUTERR on
-      LOG_OUTPUT_ON_FAILURE on
-      USES_TERMINAL_DOWNLOAD on
+      DOWNLOAD_NO_PROGRESS OFF
+      LOG_DOWNLOAD ON
+      LOG_UPDATE ON
+      LOG_PATCH ON
+      LOG_CONFIGURE ON
+      LOG_BUILD ON
+      LOG_INSTALL ON
+      LOG_TEST ON
+      LOG_MERGED_STDOUTERR ON
+      LOG_OUTPUT_ON_FAILURE ON
+      USES_TERMINAL_DOWNLOAD ON
     )
     FetchContent_MakeAvailable("${DEP_NAME}")
     string(TOLOWER "${DEP_NAME}" DEP_NAME_LOWER)

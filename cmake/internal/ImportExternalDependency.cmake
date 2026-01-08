@@ -70,7 +70,7 @@ function(import_external_dependency target_name config_target_dir_path config_de
     set(rules_file_path "${${PROJECT_NAME}_PROJECT_DIR}/${rules_file_name}")
   endif()
   include("${rules_file_path}")
-  validate_dep_import_status(is_valid err_msg on
+  validate_dep_import_status(is_valid err_msg true
     "${config_dep_name}_FOUND" "${rules_file_name}")
 
   return(PROPAGATE "${config_dep_name}_FOUND")
@@ -141,7 +141,7 @@ function(_map_dep_settings_to_vars config_target_dir_path config_dep_name)
     KEY "extDependencies.${config_dep_name}.rulesFile"
   )
   if(NOT "${${config_dep_name}_RULES_FILE}" STREQUAL "generic")
-    validate_dep_rules_file_path(is_valid err_msg on
+    validate_dep_rules_file_path(is_valid err_msg true
       "${${PROJECT_NAME}_PROJECT_DIR}"
       "${${config_dep_name}_RULES_FILE}"
     )
@@ -195,18 +195,18 @@ function(_map_dep_settings_to_vars config_target_dir_path config_dep_name)
   #   <dep-name>_FETCH_KIND_IS_SVN
   #   <dep-name>_FETCH_KIND_IS_MERCURIAL
   if(DEFINED ${config_dep_name}_FETCH_KIND)
-    set(${config_dep_name}_FETCH_KIND_IS_URL off)
-    set(${config_dep_name}_FETCH_KIND_IS_GIT off)
-    set(${config_dep_name}_FETCH_KIND_IS_SVN off)
-    set(${config_dep_name}_FETCH_KIND_IS_MERCURIAL off)
+    set(${config_dep_name}_FETCH_KIND_IS_URL false)
+    set(${config_dep_name}_FETCH_KIND_IS_GIT false)
+    set(${config_dep_name}_FETCH_KIND_IS_SVN false)
+    set(${config_dep_name}_FETCH_KIND_IS_MERCURIAL false)
     if("${${config_dep_name}_FETCH_KIND}" STREQUAL "url")
-      set(${config_dep_name}_FETCH_KIND_IS_URL on)
+      set(${config_dep_name}_FETCH_KIND_IS_URL true)
     elseif("${${config_dep_name}_FETCH_KIND}" STREQUAL "git")
-      set(${config_dep_name}_FETCH_KIND_IS_GIT on)
+      set(${config_dep_name}_FETCH_KIND_IS_GIT true)
     elseif("${${config_dep_name}_FETCH_KIND}" STREQUAL "svn")
-      set(${config_dep_name}_FETCH_KIND_IS_SVN on)
+      set(${config_dep_name}_FETCH_KIND_IS_SVN true)
     elseif("${${config_dep_name}_FETCH_KIND}" STREQUAL "mercurial")
-      set(${config_dep_name}_FETCH_KIND_IS_MERCURIAL on)
+      set(${config_dep_name}_FETCH_KIND_IS_MERCURIAL true)
     endif()
   endif()
 
