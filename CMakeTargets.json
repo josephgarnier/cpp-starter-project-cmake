@@ -51,7 +51,7 @@
           "optional": true
         },
         "googletest": {
-          "rulesFile": "lib/googletest/googletest.cmake",
+          "rulesFile": "third_party/googletest/googletest.cmake",
           "minVersion": "1.17.0",
           "fetchInfo": {
             "autodownload": true,
