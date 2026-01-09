@@ -32,8 +32,8 @@ endif()
 
 #---- Add usage requirements for Build-Tree and Install-Tree. ----
 # Set output files, directories and names.
-if(DEFINED PARAM_INSTALL_DIRECTORY AND IS_DIRECTORY "${PARAM_INSTALL_DIRECTORY}")
-	set(CMAKE_INSTALL_PREFIX "${PARAM_INSTALL_DIRECTORY}")
+if(DEFINED CMAKE_INSTALL_PREFIX AND IS_DIRECTORY "${CMAKE_INSTALL_PREFIX}")
+	set(CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 endif()
 message(STATUS "Install-tree directory is set to \"${CMAKE_INSTALL_PREFIX}\"")
 print(STATUS "Install script will be generated in \"@rp@\"" "${${PROJECT_NAME}_BUILD_DIR}/cmake_install.cmake")
@@ -162,7 +162,7 @@ list(APPEND CMAKE_MESSAGE_INDENT "  ")
 # Set output files, directories and names.
 set(${PROJECT_NAME}_EXPORT_NAME                     "${PROJECT_NAME}")
 string_manip(SPLIT_TRANSFORM ${PROJECT_NAME}_EXPORT_NAME START_CASE)
-set(${PROJECT_NAME}_EXPORT_NAMESPACE                "${PARAM_EXPORT_NAMESPACE}")
+set(${PROJECT_NAME}_EXPORT_NAMESPACE                "${EXPORT_NAMESPACE}")
 set(${PROJECT_NAME}_EXPORT_FILE_NAME         "${${PROJECT_NAME}_EXPORT_NAME}Targets.cmake")
 set_target_properties("${${PROJECT_NAME}_MAIN_BIN_TARGET}" PROPERTIES EXPORT_NAME "${${PROJECT_NAME}_EXPORT_NAME}")
 set(${PROJECT_NAME}_EXPORT_INTERNAL_DEP_FILE_NAME   "DependenciesInternalTargets.cmake")

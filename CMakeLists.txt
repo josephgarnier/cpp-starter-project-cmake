@@ -12,33 +12,32 @@ cmake_minimum_required(VERSION 4.0.1 FATAL_ERROR)
 
 message(STATUS "=================================================================")
 message(STATUS "             🏗️  Buildsystem Generator Project                  ")
-message(STATUS "                     of '${PARAM_PROJECT_NAME}'                  ")
+message(STATUS "                     of '${PROJECT_NAME}'                  ")
 message(STATUS "=================================================================")
 message(STATUS "🔧 Project Info:")
-message(STATUS "   • Name              : ${PARAM_PROJECT_NAME}")
-message(STATUS "   • Version           : ${PARAM_PROJECT_VERSION_MAJOR}.${PARAM_PROJECT_VERSION_MINOR}.${PARAM_PROJECT_VERSION_PATCH}")
-message(STATUS "   • Author            : ${PARAM_PROJECT_VENDOR_NAME} (${PARAM_PROJECT_VENDOR_CONTACT})")
-message(STATUS "   • Description       : ${PARAM_PROJECT_SUMMARY}")
+message(STATUS "   • Name              : ${PROJECT_NAME}")
+message(STATUS "   • Version           : ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
+message(STATUS "   • Author            : ${PROJECT_VENDOR_NAME} (${PROJECT_VENDOR_CONTACT})")
+message(STATUS "   • Description       : ${PROJECT_SUMMARY}")
 message(STATUS "   • Generator         : ${CMAKE_GENERATOR}")
 message(STATUS "🔨 Build Settings:")
-message(STATUS "   • C++ Standard      : ${PARAM_BUILD_STANDARD_VERSION}")
+message(STATUS "   • C++ Standard      : ${CMAKE_CXX_STANDARD}")
 message(STATUS "   • Build Type        : ${CMAKE_BUILD_TYPE}")
-message(STATUS "   • Default Libs Type : ${PARAM_DEFAULT_LIBS_TYPE}")
+message(STATUS "   • Default Libs Type : ${DEFAULT_LIBS_TYPE}")
 message(STATUS "   • Toolchain File    : ${CMAKE_TOOLCHAIN_FILE}")
-message(STATUS "   • Compile Commands  : ${PARAM_GENERATE_COMPILE_COMMANDS}")
+message(STATUS "   • Compile Commands  : ${CMAKE_EXPORT_COMPILE_COMMANDS}")
 message(STATUS "🧪 Test Rules Generator:")
-message(STATUS "   • Enabled           : ${PARAM_ENABLE_TEST_MODULE}")
+message(STATUS "   • Enabled           : ${ENABLE_TEST_MODULE}")
 message(STATUS "📊 Code Analysis Rules Generator:")
-message(STATUS "   • Enabled           : ${PARAM_ENABLE_CODE_ANALYSIS_MODULE}")
+message(STATUS "   • Enabled           : ${ENABLE_CODE_ANALYSIS_MODULE}")
 message(STATUS "📚 Documentation Rules Generator:")
-message(STATUS "   • Enabled           : ${PARAM_ENABLE_DOC_MODULE}")
+message(STATUS "   • Enabled           : ${ENABLE_DOC_MODULE}")
 message(STATUS "📤 Export Rules Generator:")
-message(STATUS "   • Enabled           : ${PARAM_ENABLE_EXPORT_MODULE}")
-message(STATUS "   • Export Namespace  : ${PARAM_EXPORT_NAMESPACE}")
-message(STATUS "   • Install Dir       : ${PARAM_INSTALL_DIRECTORY}")
+message(STATUS "   • Enabled           : ${ENABLE_EXPORT_MODULE}")
+message(STATUS "   • Export Namespace  : ${EXPORT_NAMESPACE}")
+message(STATUS "   • Install Dir       : ${CMAKE_INSTALL_PREFIX}")
 message(STATUS "📦 Packaging Rules Generator:")
-message(STATUS "   • Enabled           : ${PARAM_ENABLE_PACKAGE_MODULE}")
-
+message(STATUS "   • Enabled           : ${ENABLE_PACKAGE_MODULE}")
 
 ###############################################################################
 ### 1. Buildsystem project setup
@@ -48,24 +47,23 @@ message(STATUS "================================================================
 message(STATUS "🔨 [1/7] Buildsystem Project Setup")
 
 ####################### Check the project identifier ##########################
-if(NOT DEFINED PARAM_PROJECT_NAME)
-  message(FATAL_ERROR "Project identifier is not valid: PARAM_PROJECT_NAME must be specified!")
+if(NOT DEFINED PROJECT_NAME)
+  message(FATAL_ERROR "Project identifier is not valid: PROJECT_NAME must be specified!")
 endif()
-if("${PARAM_PROJECT_NAME}" MATCHES " ")
-  message(FATAL_ERROR "Project identifier is not valid: PARAM_PROJECT_NAME '${PARAM_PROJECT_NAME}' cannot contain spaces!")
+if("${PROJECT_NAME}" MATCHES " ")
+  message(FATAL_ERROR "Project identifier is not valid: PROJECT_NAME '${PROJECT_NAME}' cannot contain spaces!")
 endif()
-message(VERBOSE "Project identifier '${PARAM_PROJECT_NAME}' validated")
+message(VERBOSE "Project identifier '${PROJECT_NAME}' validated")
 
 ####################### Declare project metadata ##############################
-set(PROJECT_NAME                    "${PARAM_PROJECT_NAME}")
-set(${PROJECT_NAME}_SUMMARY         "${PARAM_PROJECT_SUMMARY}")
-set(${PROJECT_NAME}_VENDOR_NAME     "${PARAM_PROJECT_VENDOR_NAME}")
-set(${PROJECT_NAME}_VENDOR_CONTACT  "${PARAM_PROJECT_VENDOR_CONTACT}")
-set(${PROJECT_NAME}_VERSION_MAJOR   "${PARAM_PROJECT_VERSION_MAJOR}")
-set(${PROJECT_NAME}_VERSION_MINOR   "${PARAM_PROJECT_VERSION_MINOR}")
-set(${PROJECT_NAME}_VERSION_PATCH   "${PARAM_PROJECT_VERSION_PATCH}")
+set(${PROJECT_NAME}_SUMMARY         "${PROJECT_SUMMARY}")
+set(${PROJECT_NAME}_VENDOR_NAME     "${PROJECT_VENDOR_NAME}")
+set(${PROJECT_NAME}_VENDOR_CONTACT  "${PROJECT_VENDOR_CONTACT}")
+set(${PROJECT_NAME}_VERSION_MAJOR   "${PROJECT_VERSION_MAJOR}")
+set(${PROJECT_NAME}_VERSION_MINOR   "${PROJECT_VERSION_MINOR}")
+set(${PROJECT_NAME}_VERSION_PATCH   "${PROJECT_VERSION_PATCH}")
 set(${PROJECT_NAME}_VERSION         "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_PATCH}")
-project("${PARAM_PROJECT_NAME}"
+project("${PROJECT_NAME}"
   VERSION "${${PROJECT_NAME}_VERSION}"
   DESCRIPTION "${${PROJECT_NAME}_SUMMARY}"
   HOMEPAGE_URL "${${PROJECT_NAME}_VENDOR_CONTACT}"
@@ -196,8 +194,7 @@ endif()
 print(STATUS "Built files will be located into '@rp@/' or '@rp@/'" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
 
 ####################### Set C++ build environment #############################
-validate_cxx_standard_version(is_valid err_msg true "${PARAM_BUILD_STANDARD_VERSION}")
-set(CMAKE_CXX_STANDARD "${PARAM_BUILD_STANDARD_VERSION}")
+validate_cxx_standard_version(is_valid err_msg true "${CMAKE_CXX_STANDARD}")
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 message(STATUS "C++ standard version set to C++${CMAKE_CXX_STANDARD}")
 
@@ -205,12 +202,12 @@ message(STATUS "C++ standard version set to C++${CMAKE_CXX_STANDARD}")
 validate_build_type(is_valid err_msg true "${CMAKE_BUILD_TYPE}")
 message(STATUS "Build type set to '${CMAKE_BUILD_TYPE}'")
 
-if("${PARAM_DEFAULT_LIBS_TYPE}" STREQUAL "staticLib")
+if("${DEFAULT_LIBS_TYPE}" STREQUAL "staticLib")
   set(BUILD_SHARED_LIBS OFF)
-elseif("${PARAM_DEFAULT_LIBS_TYPE}" STREQUAL "sharedLib")
+elseif("${DEFAULT_LIBS_TYPE}" STREQUAL "sharedLib")
   set(BUILD_SHARED_LIBS ON)
 else()
-  message(FATAL_ERROR "Unknown default libraries type: ${PARAM_DEFAULT_LIBS_TYPE}. It must be 'staticLib' or 'sharedLib'!")
+  message(FATAL_ERROR "Unknown default libraries type: ${DEFAULT_LIBS_TYPE}. It must be 'staticLib' or 'sharedLib'!")
 endif()
 message(STATUS "Build shared libs set to '${BUILD_SHARED_LIBS}'")
 
@@ -221,7 +218,6 @@ set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "${CMAKE_FOLDER}")
 message(STATUS "Predefined targets moved to folder '${CMAKE_FOLDER}'")
 
 # Enable compile_commands.json if requested
-set(CMAKE_EXPORT_COMPILE_COMMANDS ${PARAM_GENERATE_COMPILE_COMMANDS})
 if(${CMAKE_EXPORT_COMPILE_COMMANDS})
   message(STATUS "Compile commands export enabled (compile_commands.json will be generated)")
 else()
@@ -239,20 +235,18 @@ add_subdirectory(src)
 message(STATUS "Leave directory 'src/'")
 ###############################################################################
 
-
 ###############################################################################
 ### 3. Test Step (add target "X")
 ###############################################################################
 message(STATUS "")
 message(STATUS "=================================================================")
 message(STATUS "🧪 [3/7] Test Suite Configuration")
-if(${PARAM_ENABLE_TEST_MODULE})
+if(${ENABLE_TEST_MODULE})
   include(TestGenModule)
 else()
   message(STATUS "Test suite generation is disabled - skipping step")
 endif()
 ###############################################################################
-
 
 ###############################################################################
 ### 4. Code Analysis Step (add target "X")
@@ -260,13 +254,12 @@ endif()
 message(STATUS "")
 message(STATUS "=================================================================")
 message(STATUS "📊 [4/7] Code Analysis Configuration")
-if(${PARAM_ENABLE_CODE_ANALYSIS_MODULE})
+if(${ENABLE_CODE_ANALYSIS_MODULE})
   include(CodeAnalysisGenModule)
 else()
   message(STATUS "Code analysis generation is disabled - skipping step")
 endif()
 ###############################################################################
-
 
 ###############################################################################
 ### 5. Documentation Step (add target "X")
@@ -274,13 +267,12 @@ endif()
 message(STATUS "")
 message(STATUS "=================================================================")
 message(STATUS "📚 [5/7] Documentation System Setup")
-if(${PARAM_ENABLE_DOC_MODULE})
+if(${ENABLE_DOC_MODULE})
   include(DocGenModule)
 else()
   message(STATUS "Documentation generation is disabled - skipping step")
 endif()
 ###############################################################################
-
 
 ###############################################################################
 ### 6. Export Step (add target "X")
@@ -288,13 +280,12 @@ endif()
 message(STATUS "")
 message(STATUS "=================================================================")
 message(STATUS "📤 [6/7] Install Rules & Export Definitions")
-if(${PARAM_ENABLE_EXPORT_MODULE})
+if(${ENABLE_EXPORT_MODULE})
   include(ExportGenModule)
 else()
   message(STATUS "Export generation is disabled - skipping step")
 endif()
 ###############################################################################
-
 
 ###############################################################################
 ### 7. Packaging Step (add target "X")
@@ -302,13 +293,12 @@ endif()
 message(STATUS "")
 message(STATUS "=================================================================")
 message(STATUS "📦 [7/7] Packaging Specification & Artifact Output")
-if(${PARAM_ENABLE_PACKAGE_MODULE})
+if(${ENABLE_PACKAGE_MODULE})
   include(PackageGenModule)
 else()
   message(STATUS "Packaging generation is disabled - skipping step")
 endif()
 ###############################################################################
-
 
 ####################### Project summary ##########################################
 message(STATUS "")
