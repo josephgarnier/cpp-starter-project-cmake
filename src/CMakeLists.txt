@@ -20,7 +20,9 @@ cmake_path(GET CMAKE_CURRENT_SOURCE_DIR FILENAME CONFIG_TARGET_ID)
 message(VERBOSE "Getting target config associated to the path '${CONFIG_TARGET_ID}'")
 cmake_targets_file(HAS_CONFIG target_has_config TARGET "${CONFIG_TARGET_ID}")
 if(NOT ${target_has_config})
-  message(FATAL_ERROR "No target config found with the path '${CONFIG_TARGET_ID}': a JSON object '${CONFIG_TARGET_ID}' must be configured in the object 'targets' in CMakeTargets.json!")
+  message(FATAL_ERROR
+    "No target config found with the path '${CONFIG_TARGET_ID}': a JSON object '${CONFIG_TARGET_ID}' must be configured in the object 'targets' in CMakeTargets.json!"
+  )
 endif()
 
 ####################### Check the target identifier ###########################
@@ -101,10 +103,10 @@ print_string_list(VERBOSE
   "Applying link options" "${${BIN_TARGET_NAME}_LINK_OPTIONS}")
 
 binary_target(CONFIGURE_SETTINGS "${BIN_TARGET_NAME}"
-  COMPILE_FEATURES "${${BIN_TARGET_NAME}_COMPILE_FEATURES}"
-  COMPILE_DEFINITIONS "${${BIN_TARGET_NAME}_COMPILE_DEFINITIONS}"
-  COMPILE_OPTIONS "${${BIN_TARGET_NAME}_COMPILE_OPTIONS}"
-  LINK_OPTIONS "${${BIN_TARGET_NAME}_LINK_OPTIONS}"
+  COMPILE_FEATURES ${${BIN_TARGET_NAME}_COMPILE_FEATURES}
+  COMPILE_DEFINITIONS ${${BIN_TARGET_NAME}_COMPILE_DEFINITIONS}
+  COMPILE_OPTIONS ${${BIN_TARGET_NAME}_COMPILE_OPTIONS}
+  LINK_OPTIONS ${${BIN_TARGET_NAME}_LINK_OPTIONS}
 )
 
 ####################### Collect source and header files #######################
@@ -121,7 +123,7 @@ if("${${BIN_TARGET_NAME}_HEADER_POLICY}" STREQUAL "split")
     TARGET "${CONFIG_TARGET_ID}" KEY "headerPolicy.includeDir"
   )
   list(APPEND directory_collect_args true)
-  list(APPEND directory_collect_args "${${PROJECT_NAME}_PROJECT_DIR}/${${BIN_TARGET_NAME}_INCLUDE_DIR}")
+  list(APPEND directory_collect_args "${PROJECT_SOURCE_DIR}/${${BIN_TARGET_NAME}_INCLUDE_DIR}")
 else()
   list(APPEND directory_collect_args false)
 endif()
@@ -134,11 +136,12 @@ directory(COLLECT_SOURCES_BY_POLICY
   PRIVATE_HEADER_DIR ${BIN_TARGET_NAME}_PRIVATE_HEADER_DIR
   PRIVATE_HEADER_FILES ${BIN_TARGET_NAME}_PRIVATE_HEADERS
 )
-
 print_path_list(VERBOSE
-  "Header files collected" "${${BIN_TARGET_NAME}_PRIVATE_HEADERS};${${BIN_TARGET_NAME}_PUBLIC_HEADERS}")
+  "Header files collected" "${${BIN_TARGET_NAME}_PRIVATE_HEADERS};${${BIN_TARGET_NAME}_PUBLIC_HEADERS}"
+)
 print_path_list(VERBOSE
-  "Source files collected" "${${BIN_TARGET_NAME}_PRIVATE_SOURCES}")
+  "Source files collected" "${${BIN_TARGET_NAME}_PRIVATE_SOURCES}"
+)
 
 list(POP_BACK CMAKE_MESSAGE_INDENT)
 message(VERBOSE "Collecting sources and headers - done")
@@ -146,33 +149,34 @@ message(VERBOSE "Collecting sources and headers - done")
 ####################### Assign source and header files ########################
 # Add source and header files to target
 binary_target(ADD_SOURCES "${BIN_TARGET_NAME}"
-  SOURCE_FILES "${${BIN_TARGET_NAME}_PRIVATE_SOURCES}"
-  PRIVATE_HEADER_FILES "${${BIN_TARGET_NAME}_PRIVATE_HEADERS}"
-  PUBLIC_HEADER_FILES "${${BIN_TARGET_NAME}_PUBLIC_HEADERS}"
+  SOURCE_FILES ${${BIN_TARGET_NAME}_PRIVATE_SOURCES}
+  PRIVATE_HEADER_FILES ${${BIN_TARGET_NAME}_PRIVATE_HEADERS}
+  PUBLIC_HEADER_FILES ${${BIN_TARGET_NAME}_PUBLIC_HEADERS}
 )
 
 # Set the target "main file" var
 cmake_targets_file(GET_VALUE ${BIN_TARGET_NAME}_MAIN_FILE
   TARGET "${CONFIG_TARGET_ID}" KEY "mainFile"
 )
-set(${BIN_TARGET_NAME}_MAIN_FILE "${${PROJECT_NAME}_PROJECT_DIR}/${${BIN_TARGET_NAME}_MAIN_FILE}")
+set(${BIN_TARGET_NAME}_MAIN_FILE "${PROJECT_SOURCE_DIR}/${${BIN_TARGET_NAME}_MAIN_FILE}")
 validate_main_file_path(is_valid err_msg true "${${BIN_TARGET_NAME}_MAIN_FILE}")
 print(VERBOSE "Main file is @rp@" "${${BIN_TARGET_NAME}_MAIN_FILE}")
 
 ####################### Set up precompile header (PCH) ########################
-cmake_targets_file(HAS_SETTING has_pch_setting
+cmake_targets_file(HAS_SETTING has_pch_file_setting
   TARGET "${CONFIG_TARGET_ID}" KEY "pchFile"
 )
-if(${has_pch_setting})
+if(${has_pch_file_setting})
   cmake_targets_file(GET_VALUE ${BIN_TARGET_NAME}_PCH_FILE
     TARGET "${CONFIG_TARGET_ID}" KEY "pchFile"
   )
-  set(${BIN_TARGET_NAME}_PCH_FILE "${${PROJECT_NAME}_PROJECT_DIR}/${${BIN_TARGET_NAME}_PCH_FILE}")
+  set(${BIN_TARGET_NAME}_PCH_FILE "${PROJECT_SOURCE_DIR}/${${BIN_TARGET_NAME}_PCH_FILE}")
   validate_pch_file_path(is_valid err_msg true
     "${${BIN_TARGET_NAME}_PUBLIC_HEADER_DIR}" "${${BIN_TARGET_NAME}_PCH_FILE}")
   print(VERBOSE "Adding headers to precompile: @rp@" "${${BIN_TARGET_NAME}_PCH_FILE}")
-  binary_target(ADD_PRECOMPILE_HEADER "${BIN_TARGET_NAME}"
-    HEADER_FILE "${${BIN_TARGET_NAME}_PCH_FILE}"
+  target_precompile_headers("${BIN_TARGET_NAME}"
+    PRIVATE
+      "${${BIN_TARGET_NAME}_PCH_FILE}"
   )
 else()
   set(${BIN_TARGET_NAME}_PCH_FILE "")
@@ -181,7 +185,7 @@ endif()
 
 ####################### Add header include directories ########################
 print(VERBOSE "Adding include directories: @rpl@" "${${BIN_TARGET_NAME}_PUBLIC_HEADER_DIR}" "${${BIN_TARGET_NAME}_PRIVATE_HEADER_DIR}")
-binary_target(ADD_INCLUDE_DIRECTORIES "${BIN_TARGET_NAME}"
+target_include_directories("${BIN_TARGET_NAME}"
   PRIVATE
     "$<$<BOOL:${${BIN_TARGET_NAME}_PRIVATE_HEADER_DIR}>:${${BIN_TARGET_NAME}_PRIVATE_HEADER_DIR}>"
     "${${BIN_TARGET_NAME}_PUBLIC_HEADER_DIR}"
