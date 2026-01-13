@@ -20,15 +20,14 @@
       "extDependencies": {
         "AppleLib": {
           "rulesFile": "generic",
-          "integrationMethod": "FIND_PACKAGE|FETCH_CONTENT|FIND_AND_FETCH|EXTERNAL_PROJECT",
+          "minVersion": "1.15.0",
+          "integrationMethod": "FIND_AND_FETCH",
           "packageLocation": {
             "windows": "C:/Program Files/libs/apple/1.15.0",
             "unix": "/opt/apple/1.15.0",
             "macos": "/opt/apple/1.15.0"
           },
-          "minVersion": "1.15.0",
-          "fetchInfo": {
-            "autodownload": true,
+          "downloadInfo": {
             "kind": "git",
             "repository": "https://github.com/lib/apple.git",
             "tag": "1234567"
@@ -44,15 +43,12 @@
         "BananaLib": {
           "rulesFile": "cmake/rules/RulesBananaLib.cmake",
           "minVersion": "4",
-          "fetchInfo": {
-            "autodownload": false
-          },
+          "downloadInfo": {},
           "optional": true
         },
         "CarrotLib": {
           "rulesFile": "cmake/rules/RulesCarrotLib.cmake",
-          "fetchInfo": {
-            "autodownload": true,
+          "downloadInfo": {
             "kind": "svn",
             "repository": "svn://svn.carrot.lib.org/links/trunk",
             "revision": "1234567"
@@ -60,8 +56,7 @@
         },
         "OrangeLib": {
           "rulesFile": "cmake/rules/RulesOrangeLib.cmake",
-          "fetchInfo": {
-            "autodownload": true,
+          "downloadInfo": {
             "kind": "mercurial",
             "repository": "https://hg.example.com/RulesOrangeLib",
             "tag": "1234567"
@@ -69,8 +64,7 @@
         },
         "PineappleLib": {
           "rulesFile": "cmake/rules/RulesPineappleLib.cmake",
-          "fetchInfo": {
-            "autodownload": true,
+          "downloadInfo": {
             "kind": "url",
             "repository": "https://example.com/PineappleLib.zip",
             "hash": "1234567"
@@ -141,7 +135,7 @@
       "headerPolicy": {
         "mode": "merged"
       },
-      "dependencies": {}
+      "extDependencies": {}
     },
     "src/banana": {
       "name": "banana",
@@ -156,7 +150,7 @@
       "headerPolicy": {
         "mode": "merged"
       },
-      "dependencies": {}
+      "extDependencies": {}
     }
   }
 }

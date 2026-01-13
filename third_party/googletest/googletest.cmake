@@ -38,16 +38,15 @@
 #   <DEP_NAME>_PACKAGE_LOC_UNIX
 #   <DEP_NAME>_PACKAGE_LOC_MAC
 #   <DEP_NAME>_MIN_VERSION
-#   <DEP_NAME>_FETCH_AUTODOWNLOAD
-#   <DEP_NAME>_FETCH_KIND
-#   <DEP_NAME>_FETCH_KIND_IS_URL
-#   <DEP_NAME>_FETCH_KIND_IS_GIT
-#   <DEP_NAME>_FETCH_KIND_IS_SVN
-#   <DEP_NAME>_FETCH_KIND_IS_MERCURIAL
-#   <DEP_NAME>_FETCH_REPOSITORY
-#   <DEP_NAME>_FETCH_TAG
-#   <DEP_NAME>_FETCH_REVISION
-#   <DEP_NAME>_FETCH_HASH
+#   <DEP_NAME>_DL_INFO_KIND
+#   <DEP_NAME>_DL_INFO_KIND_IS_URL
+#   <DEP_NAME>_DL_INFO_KIND_IS_GIT
+#   <DEP_NAME>_DL_INFO_KIND_IS_SVN
+#   <DEP_NAME>_DL_INFO_KIND_IS_MERCURIAL
+#   <DEP_NAME>_DL_INFO_REPOSITORY
+#   <DEP_NAME>_DL_INFO_TAG
+#   <DEP_NAME>_DL_INFO_REVISION
+#   <DEP_NAME>_DL_INFO_HASH
 #   <DEP_NAME>_OPTIONAL
 #   <DEP_NAME>_BUILD_COMPILE_FEATURES
 #   <DEP_NAME>_BUILD_COMPILE_DEFINITIONS
@@ -63,54 +62,46 @@
 # =============================================================================
 
 set(${DEP_NAME}_FOUND 0)
-if(${${DEP_NAME}_FETCH_AUTODOWNLOAD})
-  # Searches for prebuilt dependency in local and common directories, or downloads
-  # it to build it from sources if not found
+# Searches for prebuilt dependency in local and common directories, or downloads
+# it to build it from sources if not found
+message(STATUS
+  "Trying to find ${DEP_NAME} v${${DEP_NAME}_MIN_VERSION} locally or downloading it in the build-tree if not found"
+)
+include(FetchContent)
+FetchContent_Declare(
+  "${DEP_NAME}"
+  GIT_REPOSITORY "${${DEP_NAME}_DL_INFO_REPOSITORY}"
+  GIT_TAG "${${DEP_NAME}_DL_INFO_TAG}"
+  GIT_SHALLOW ON
+  GIT_PROGRESS ON
+  LOG_DOWNLOAD ON
+  LOG_UPDATE ON
+  LOG_PATCH ON
+  LOG_CONFIGURE ON
+  LOG_BUILD ON
+  LOG_INSTALL ON
+  LOG_TEST ON
+  LOG_MERGED_STDOUTERR ON
+  LOG_OUTPUT_ON_FAILURE ON
+  USES_TERMINAL_DOWNLOAD ON
+  EXCLUDE_FROM_ALL
+  SYSTEM
+  FIND_PACKAGE_ARGS "${${DEP_NAME}_MIN_VERSION}" NO_MODULE NAMES "GTest"
+)
+FetchContent_MakeAvailable("${DEP_NAME}")
+string(TOLOWER "${DEP_NAME}" DEP_NAME_LOWER)
+if(${${DEP_NAME}_FOUND})
   message(STATUS
-    "Trying to find ${DEP_NAME} v${${DEP_NAME}_MIN_VERSION} locally or downloading it in the build-tree if not found"
+    "${DEP_NAME} v${${DEP_NAME}_MIN_VERSION} found locally: ${${DEP_NAME}_CONFIG}"
   )
-  include(FetchContent)
-  FetchContent_Declare(
-    "${DEP_NAME}"
-    GIT_REPOSITORY "${${DEP_NAME}_FETCH_REPOSITORY}"
-    GIT_TAG "${${DEP_NAME}_FETCH_TAG}"
-    GIT_SHALLOW ON
-    GIT_PROGRESS ON
-    FIND_PACKAGE_ARGS "${${DEP_NAME}_MIN_VERSION}" NAMES "GTest"
-    EXCLUDE_FROM_ALL
-    SYSTEM
-    STAMP_DIR "${${PROJECT_NAME}_BUILD_DIR}"
-    DOWNLOAD_NO_PROGRESS OFF
-    LOG_DOWNLOAD ON
-    LOG_UPDATE ON
-    LOG_PATCH ON
-    LOG_CONFIGURE ON
-    LOG_BUILD ON
-    LOG_INSTALL ON
-    LOG_TEST ON
-    LOG_MERGED_STDOUTERR ON
-    LOG_OUTPUT_ON_FAILURE ON
-    USES_TERMINAL_DOWNLOAD ON
-  )
-  FetchContent_MakeAvailable("${DEP_NAME}")
-  string(TOLOWER "${DEP_NAME}" DEP_NAME_LOWER)
-  if(${${DEP_NAME}_FOUND})
-    message(STATUS
-      "${DEP_NAME} v${${DEP_NAME}_MIN_VERSION} found locally: ${${DEP_NAME}_CONFIG}"
-    )
-    set(${DEP_NAME}_TARGET_IMPORTED true)
-  elseif(${${DEP_NAME_LOWER}_POPULATED})
-    message(STATUS "${DEP_NAME} downloaded with success")
-    set(${DEP_NAME}_SOURCE_DIR "${${DEP_NAME_LOWER}_SOURCE_DIR}")
-    set(${DEP_NAME}_BINARY_DIR "${${DEP_NAME_LOWER}_BINARY_DIR}")
-    set(${DEP_NAME}_TARGET_IMPORTED false)
-    set(${DEP_NAME}_FOUND 1)
-  else()
-    message(STATUS "${DEP_NAME} downloading failed")
-    set(${DEP_NAME}_FOUND 0)
-  endif()
+elseif(${${DEP_NAME_LOWER}_POPULATED})
+  set(${DEP_NAME}_SOURCE_DIR "${${DEP_NAME_LOWER}_SOURCE_DIR}")
+  set(${DEP_NAME}_BINARY_DIR "${${DEP_NAME_LOWER}_BINARY_DIR}")
+  set(${DEP_NAME}_FOUND 1)
+  message(STATUS "${DEP_NAME} downloaded with success")
 else()
-  message(STATUS "Autodownload for ${DEP_NAME} v${${DEP_NAME}_MIN_VERSION} is disabled")
+  set(${DEP_NAME}_FOUND 0)
+  message(STATUS "${DEP_NAME} downloading failed")
 endif()
 
 if(NOT ${${DEP_NAME}_FOUND})
@@ -124,7 +115,8 @@ if(NOT ${${DEP_NAME}_FOUND})
   return()
 endif()
 
-if(${${DEP_NAME}_TARGET_IMPORTED})
+get_target_property(dep_imported "GTest::gtest" IMPORTED)
+if(${dep_imported})
   # Add the dependency targets in a folder for IDE project
   set_target_properties("GTest::gtest" "GTest::gtest_main" "GTest::gmock" "GTest::gmock_main" 
     PROPERTIES FOLDER "${CMAKE_FOLDER}/GTest"
@@ -138,7 +130,9 @@ else()
   foreach(dep_target IN ITEMS "gtest" "gtest_main" "gmock" "gmock_main")
     target_compile_definitions("${dep_target}"
       PRIVATE
-        "GTEST_HAS_PTHREAD=0;GTEST_CREATE_SHARED_LIBRARY=1;GTEST_LINKED_AS_SHARED_LIBRARY=1"
+        "GTEST_HAS_PTHREAD=0"
+        "GTEST_CREATE_SHARED_LIBRARY=1"
+        "GTEST_LINKED_AS_SHARED_LIBRARY=1"
     )
   endforeach()
 endif()
@@ -147,5 +141,8 @@ endif()
 message(STATUS "Link ${DEP_NAME} to the target '${CURRENT_TARGET_NAME}'")
 target_link_libraries("${CURRENT_TARGET_NAME}"
   PRIVATE
-    "GTest::gtest;GTest::gtest_main;GTest::gmock;GTest::gmock_main"
+    "GTest::gtest"
+    "GTest::gtest_main"
+    "GTest::gmock"
+    "GTest::gmock_main"
 )

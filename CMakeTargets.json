@@ -20,17 +20,17 @@
       "extDependencies": {
         "spdlog": {
           "rulesFile": "generic",
+          "minVersion": "1.17.0",
+          "integrationMethod": "FIND_AND_FETCH",
           "packageLocation": {
-            "windows": "D:/Documents/Software_Libraries/spdlog/1.15.0",
-            "unix": "/opt/spdlog/1.15.0",
-            "macos": "/opt/spdlog/1.15.0"
+            "windows": "D:/Documents/Software_Libraries/spdlog-1.17.0/build",
+            "unix": "/opt/spdlog/1.17.0/build",
+            "macos": "/opt/spdlog/1.17.0/build"
           },
-          "minVersion": "1.15.0",
-          "fetchInfo": {
-            "autodownload": true,
+          "downloadInfo": {
             "kind": "git",
             "repository": "https://github.com/gabime/spdlog.git",
-            "tag": "8e56133"
+            "tag": "79524dd"
           },
           "optional": false,
           "build": {
@@ -53,8 +53,7 @@
         "googletest": {
           "rulesFile": "third_party/googletest/googletest.cmake",
           "minVersion": "1.17.0",
-          "fetchInfo": {
-            "autodownload": true,
+          "downloadInfo": {
             "kind": "git",
             "repository": "https://github.com/google/googletest.git",
             "tag": "52eb810"

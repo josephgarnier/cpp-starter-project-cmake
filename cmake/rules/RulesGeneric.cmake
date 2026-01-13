@@ -40,16 +40,16 @@
 #   <DEP_NAME>_PACKAGE_LOC_UNIX
 #   <DEP_NAME>_PACKAGE_LOC_MAC
 #   <DEP_NAME>_MIN_VERSION
-#   <DEP_NAME>_FETCH_AUTODOWNLOAD
-#   <DEP_NAME>_FETCH_KIND
-#   <DEP_NAME>_FETCH_KIND_IS_URL
-#   <DEP_NAME>_FETCH_KIND_IS_GIT
-#   <DEP_NAME>_FETCH_KIND_IS_SVN
-#   <DEP_NAME>_FETCH_KIND_IS_MERCURIAL
-#   <DEP_NAME>_FETCH_REPOSITORY
-#   <DEP_NAME>_FETCH_TAG
-#   <DEP_NAME>_FETCH_REVISION
-#   <DEP_NAME>_FETCH_HASH
+#   <DEP_NAME>_INTEGRATION_METHOD
+#   <DEP_NAME>_DL_INFO_KIND
+#   <DEP_NAME>_DL_INFO_KIND_IS_URL
+#   <DEP_NAME>_DL_INFO_KIND_IS_GIT
+#   <DEP_NAME>_DL_INFO_KIND_IS_SVN
+#   <DEP_NAME>_DL_INFO_KIND_IS_MERCURIAL
+#   <DEP_NAME>_DL_INFO_REPOSITORY
+#   <DEP_NAME>_DL_INFO_TAG
+#   <DEP_NAME>_DL_INFO_REVISION
+#   <DEP_NAME>_DL_INFO_HASH
 #   <DEP_NAME>_OPTIONAL
 #   <DEP_NAME>_BUILD_COMPILE_FEATURES
 #   <DEP_NAME>_BUILD_COMPILE_DEFINITIONS
@@ -67,97 +67,263 @@
 #   include(RulesGeneric)
 # =============================================================================
 
-# Set local dependency directory
-if(DEFINED ENV{${DEP_NAME}_DIR}) 
-  set(${DEP_NAME}_DIR "$ENV{${DEP_NAME}_DIR}")
-elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows"
-  AND DEFINED ${DEP_NAME}_PACKAGE_LOC_WIN)
-  set(${DEP_NAME}_DIR "${${DEP_NAME}_PACKAGE_LOC_WIN}")
-elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux"
-  AND DEFINED ${DEP_NAME}_PACKAGE_LOC_UNIX)
-  set(${DEP_NAME}_DIR "${${DEP_NAME}_PACKAGE_LOC_UNIX}")
-elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin"
-  AND DEFINED ${DEP_NAME}_PACKAGE_LOC_MAC)
-  set(${DEP_NAME}_DIR "${${DEP_NAME}_PACKAGE_LOC_MAC}")
-endif()
+###############################################################################
+### Internal macros and functions
+###############################################################################
 
-# Set search paths for find_package() command
-if(DEFINED ENV{CMAKE_PREFIX_PATH}) 
-  set(CMAKE_PREFIX_PATH "$ENV{CMAKE_PREFIX_PATH}")
-else()
-  set(CMAKE_PREFIX_PATH "${${DEP_NAME}_DIR}")
-endif()
+#------------------------------------------------------------------------------
+# [Internal use only]
+# Set CMAKE_PREFIX_PATH with 'packageLocation' setting values for adding custom
+# directories to ``find_package()`` command.
+#
+# Signature:
+#   add_search_path()
+#
+# Parameters:
+#   None
+#
+# Globals read:
+#   <DEP_NAME>_PACKAGE_LOC_WIN
+#   <DEP_NAME>_PACKAGE_LOC_UNIX
+#   <DEP_NAME>_PACKAGE_LOC_MAC
+#
+# Globals written:
+#   <DEP_NAME>_DIR
+#   CMAKE_PREFIX_PATH
+#
+# Returns:
+#   None
+#
+# Example:
+#   add_search_path()
+#------------------------------------------------------------------------------
+macro(add_search_path)
+  # Set local dependency directory
+  if(DEFINED ENV{${DEP_NAME}_DIR}) 
+    set(${DEP_NAME}_DIR "$ENV{${DEP_NAME}_DIR}")
+  elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows"
+      AND DEFINED ${DEP_NAME}_PACKAGE_LOC_WIN)
+    set(${DEP_NAME}_DIR "${${DEP_NAME}_PACKAGE_LOC_WIN}")
+  elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux"
+      AND DEFINED ${DEP_NAME}_PACKAGE_LOC_UNIX)
+    set(${DEP_NAME}_DIR "${${DEP_NAME}_PACKAGE_LOC_UNIX}")
+  elseif("${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin"
+      AND DEFINED ${DEP_NAME}_PACKAGE_LOC_MAC)
+    set(${DEP_NAME}_DIR "${${DEP_NAME}_PACKAGE_LOC_MAC}")
+  endif()
 
-# Searches for prebuilt dependency in local and common directories, or downloads
-# it to build it from sources if not found
-find_package("${DEP_NAME}" "${${DEP_NAME}_MIN_VERSION}" NO_MODULE QUIET)
-if(${${DEP_NAME}_FOUND})
-  message(STATUS
-    "${DEP_NAME} v${${DEP_NAME}_MIN_VERSION} found locally: ${${DEP_NAME}_CONFIG}"
+  # Set search paths for find_package() command
+  if(DEFINED ENV{CMAKE_PREFIX_PATH}) 
+    set(CMAKE_PREFIX_PATH "$ENV{CMAKE_PREFIX_PATH}")
+  else()
+    set(CMAKE_PREFIX_PATH "${${DEP_NAME}_DIR}")
+  endif()
+endmacro()
+
+#------------------------------------------------------------------------------
+# [Internal use only]
+# Append to ``command-args-var`` a list of arguments for the commands
+# ``fetch_content()`` and ``ExternalProject_Add()`` to defined how download the
+# files.
+#
+# Signature:
+#   append_download_options(<command-args-var>)
+#
+# Parameters:
+#   command-args-var: The list of command args to complete.
+#
+# Globals read:
+#   <DEP_NAME>_DL_INFO_KIND
+#   <DEP_NAME>_DL_INFO_KIND_IS_URL
+#   <DEP_NAME>_DL_INFO_KIND_IS_GIT
+#   <DEP_NAME>_DL_INFO_KIND_IS_SVN
+#   <DEP_NAME>_DL_INFO_KIND_IS_MERCURIAL
+#   <DEP_NAME>_DL_INFO_REPOSITORY
+#   <DEP_NAME>_DL_INFO_TAG
+#   <DEP_NAME>_DL_INFO_REVISION
+#   <DEP_NAME>_DL_INFO_HASH
+#
+# Returns:
+#   command-args-var: The list of command args filled.
+#
+# Example:
+#   append_download_options(fetch_content_args)
+#------------------------------------------------------------------------------
+function(append_download_options command_args_var)
+  if(${${DEP_NAME}_DL_INFO_KIND_IS_URL})
+    list(APPEND ${command_args_var}
+      URL                  "${${DEP_NAME}_DL_INFO_REPOSITORY}"
+      URL_HASH             "${${DEP_NAME}_DL_INFO_HASH}"
+      DOWNLOAD_NO_PROGRESS "OFF"
+    )
+  elseif(${${DEP_NAME}_DL_INFO_KIND_IS_GIT})
+    list(APPEND ${command_args_var}
+      GIT_REPOSITORY "${${DEP_NAME}_DL_INFO_REPOSITORY}"
+      GIT_TAG        "${${DEP_NAME}_DL_INFO_TAG}"
+      GIT_SHALLOW    "ON"
+      GIT_PROGRESS   "ON"
+    )
+  elseif(${${DEP_NAME}_DL_INFO_KIND_IS_SVN})
+    list(APPEND ${command_args_var}
+      SVN_REPOSITORY "${${DEP_NAME}_DL_INFO_REPOSITORY}"
+      SVN_REVISION   "${${DEP_NAME}_DL_INFO_REVISION}"
+    )
+  elseif(${${DEP_NAME}_DL_INFO_KIND_IS_MERCURIAL})
+    list(APPEND ${command_args_var}
+      HG_REPOSITORY  "${${DEP_NAME}_DL_INFO_REPOSITORY}"
+      HG_TAG         "${${DEP_NAME}_DL_INFO_TAG}"
+    )
+  else()
+    message(FATAL_ERROR "Unknown fetch method: ${${DEP_NAME}_DL_INFO_KIND}!")
+  endif()
+  return(PROPAGATE "${command_args_var}")
+endfunction()
+
+#------------------------------------------------------------------------------
+# [Internal use only]
+# Append to ``command-args-var`` a list of arguments for the commands
+# ``fetch_content()`` and ``ExternalProject_Add()`` to control logging.
+#
+# Signature:
+#   append_logging_options(<command-args-var>)
+#
+# Parameters:
+#   command-args-var: The list of command args to complete.
+#
+# Returns:
+#   command-args-var: The list of command args filled.
+#
+# Example:
+#   append_logging_options(fetch_content_args)
+#------------------------------------------------------------------------------
+function(append_logging_options command_args_var)
+  list(APPEND ${command_args_var}
+    LOG_DOWNLOAD ON
+    LOG_UPDATE ON
+    LOG_PATCH ON
+    LOG_CONFIGURE ON
+    LOG_BUILD ON
+    LOG_INSTALL ON
+    LOG_TEST ON
+    LOG_MERGED_STDOUTERR ON
+    LOG_OUTPUT_ON_FAILURE ON
   )
-else()
-  if(${${DEP_NAME}_FETCH_AUTODOWNLOAD})
-    # Download the dependency sources and bring them into scope
+  return(PROPAGATE "${command_args_var}")
+endfunction()
+
+#------------------------------------------------------------------------------
+# [Internal use only]
+# Append to ``command-args-var`` a list of arguments for the commands
+# ``fetch_content()`` and ``ExternalProject_Add()`` to define
+# ``FIND_PACKAGE_ARGS``.
+#
+# Signature:
+#   append_find_package_options(<command-args-var>)
+#
+# Globals read:
+#   DEP_NAME
+#   <DEP_NAME>_MIN_VERSION
+#
+# Parameters:
+#   command-args-var: The list of command args to complete.
+#
+# Returns:
+#   command-args-var: The list of command args filled.
+#
+# Example:
+#   append_find_package_options(fetch_content_args)
+#------------------------------------------------------------------------------
+function(append_find_package_options command_args_var)
+  list(APPEND ${command_args_var}
+    FIND_PACKAGE_ARGS "${${DEP_NAME}_MIN_VERSION}" NO_MODULE NAMES "${DEP_NAME}"
+  )
+  return(PROPAGATE "${command_args_var}")
+endfunction()
+###############################################################################
+
+
+###############################################################################
+### Main logic
+###############################################################################
+# Set search paths for find_package() command
+if(("${${DEP_NAME}_INTEGRATION_METHOD}" STREQUAL "FIND_PACKAGE")
+    OR ("${${DEP_NAME}_INTEGRATION_METHOD}" STREQUAL "FIND_AND_FETCH"))
+  add_search_path()
+endif()
+
+# Integration with 'FIND_PACKAGE' method
+if("${${DEP_NAME}_INTEGRATION_METHOD}" STREQUAL "FIND_PACKAGE")
+  # Searches for prebuilt dependency in local and common directories
+  find_package("${DEP_NAME}" "${${DEP_NAME}_MIN_VERSION}" NO_MODULE QUIET)
+  if(${${DEP_NAME}_FOUND})
     message(STATUS
-      "${DEP_NAME} v${${DEP_NAME}_MIN_VERSION} not found locally, try to download it in the build-tree"
+      "${DEP_NAME} v${${DEP_NAME}_MIN_VERSION} found locally: ${${DEP_NAME}_CONFIG}"
     )
-    include(FetchContent)
-    set(fetch_content_args "")
-    if(${${DEP_NAME}_FETCH_KIND_IS_URL})
-      list(APPEND fetch_content_args
-        "URL" "${${DEP_NAME}_FETCH_REPOSITORY}"
-        "URL_HASH" "${${DEP_NAME}_FETCH_HASH}"
-      )
-    elseif(${${DEP_NAME}_FETCH_KIND_IS_GIT})
-      list(APPEND fetch_content_args
-        "GIT_REPOSITORY" "${${DEP_NAME}_FETCH_REPOSITORY}"
-        "GIT_TAG" "${${DEP_NAME}_FETCH_TAG}"
-        "GIT_SHALLOW" "ON"
-        "GIT_PROGRESS" "ON"
-      )
-    elseif(${${DEP_NAME}_FETCH_KIND_IS_SVN})
-      list(APPEND fetch_content_args
-        "SVN_REPOSITORY" "${${DEP_NAME}_FETCH_REPOSITORY}"
-        "SVN_REVISION" "${${DEP_NAME}_FETCH_REVISION}"
-      )
-    elseif(${${DEP_NAME}_FETCH_KIND_IS_MERCURIAL})
-      list(APPEND fetch_content_args
-        "HG_REPOSITORY" "${${DEP_NAME}_FETCH_REPOSITORY}"
-        "HG_TAG" "${${DEP_NAME}_FETCH_TAG}"
-      )
-    else()
-      message(FATAL_ERROR "Unknown fetch method: ${${DEP_NAME}_FETCH_KIND}!")
-    endif()
-    FetchContent_Declare(
-      "${DEP_NAME}"
-      ${fetch_content_args}
-      EXCLUDE_FROM_ALL
-      SYSTEM
-      STAMP_DIR "${${PROJECT_NAME}_BUILD_DIR}"
-      DOWNLOAD_NO_PROGRESS OFF
-      LOG_DOWNLOAD ON
-      LOG_UPDATE ON
-      LOG_PATCH ON
-      LOG_CONFIGURE ON
-      LOG_BUILD ON
-      LOG_INSTALL ON
-      LOG_TEST ON
-      LOG_MERGED_STDOUTERR ON
-      LOG_OUTPUT_ON_FAILURE ON
-      USES_TERMINAL_DOWNLOAD ON
-    )
-    FetchContent_MakeAvailable("${DEP_NAME}")
-    string(TOLOWER "${DEP_NAME}" DEP_NAME_LOWER)
-    if(${${DEP_NAME_LOWER}_POPULATED})
-      message(STATUS "${DEP_NAME} downloaded with success")
-      set(${DEP_NAME}_FOUND 1)
-    else()
-      message(STATUS "${DEP_NAME} downloading failed")
-      set(${DEP_NAME}_FOUND 0)
-    endif()
   else()
     message(STATUS "${DEP_NAME} v${${DEP_NAME}_MIN_VERSION} not found locally")
   endif()
+
+# Integration with 'FETCH_CONTENT' or 'FIND_AND_FETCH' method
+elseif(("${${DEP_NAME}_INTEGRATION_METHOD}" STREQUAL "FETCH_CONTENT")
+    OR ("${${DEP_NAME}_INTEGRATION_METHOD}" STREQUAL "FIND_AND_FETCH"))
+  # Download the dependency sources and bring them into scope
+  include(FetchContent)
+  set(fetch_content_args "")
+  append_download_options(fetch_content_args)
+  append_logging_options(fetch_content_args)
+  set(find_package_args "")
+  # Specific arguments for 'FIND_AND_FETCH' method
+  if("${${DEP_NAME}_INTEGRATION_METHOD}" STREQUAL "FIND_AND_FETCH")
+    append_find_package_options(find_package_args)
+  endif()
+  FetchContent_Declare(
+    "${DEP_NAME}"
+    ${fetch_content_args}
+    USES_TERMINAL_DOWNLOAD ON
+    EXCLUDE_FROM_ALL
+    SYSTEM
+    ${find_package_args}
+  )
+  FetchContent_MakeAvailable("${DEP_NAME}")
+  string(TOLOWER "${DEP_NAME}" DEP_NAME_LOWER)
+  if(${${DEP_NAME}_FOUND})
+    set(${DEP_NAME}_FOUND 1)
+    message(STATUS
+      "${DEP_NAME} v${${DEP_NAME}_MIN_VERSION} found locally: ${${DEP_NAME}_CONFIG}"
+    )
+  elseif(${${DEP_NAME_LOWER}_POPULATED})
+    set(${DEP_NAME}_FOUND 1)
+    set(${DEP_NAME}_SOURCE_DIR "${${DEP_NAME_LOWER}_SOURCE_DIR}")
+    set(${DEP_NAME}_BINARY_DIR "${${DEP_NAME_LOWER}_BINARY_DIR}")
+    message(STATUS
+      "${DEP_NAME} downloaded with success in ${${DEP_NAME_LOWER}_SOURCE_DIR}"
+    )
+  else()
+    set(${DEP_NAME}_FOUND 0)
+    message(STATUS "${DEP_NAME} downloading failed")
+  endif()
+
+# Integration with 'EXTERNAL_PROJECT' method
+elseif("${${DEP_NAME}_INTEGRATION_METHOD}" STREQUAL "EXTERNAL_PROJECT")
+  message(FATAL_ERROR "EXTERNAL_PROJECT integration method not supported yet!")
+  # include(ExternalProject)
+  # set(external_project_args "")
+  # append_download_options(external_project_args)
+  # append_logging_options(external_project_args)
+  # ExternalProject_Add(
+  #   "${DEP_NAME}"
+  #   ${external_project_args}
+  #   USES_TERMINAL_DOWNLOAD ON
+  #   EXCLUDE_FROM_ALL
+  # )
+  # ExternalProject_Get_Property("${DEP_NAME}" SOURCE_DIR BINARY_DIR INSTALL_DIR)
+  # set(${DEP_NAME}_SOURCE_DIR "${SOURCE_DIR}")
+  # set(${DEP_NAME}_BINARY_DIR "${BINARY_DIR}")
+  # set(${DEP_NAME}_INSTALL_DIR "${INSTALL_DIR}")
+  # set(${DEP_NAME}_FOUND 1)
+  # message(STATUS "${DEP_NAME} will be downloaded in ${SOURCE_DIR}")
+else()
+  message(FATAL_ERROR "Unknown integration method: ${${DEP_NAME}_INTEGRATION_METHOD}!")
 endif()
 
 if(NOT ${${DEP_NAME}_FOUND})
@@ -171,32 +337,41 @@ if(NOT ${${DEP_NAME}_FOUND})
   return()
 endif()
 
+get_target_property(dep_imported "${DEP_NAME}::${DEP_NAME}" IMPORTED)
 # Add compile features to the dependency
-message(STATUS "Applying ${DEP_NAME} configuration")
-target_compile_features("${DEP_NAME}"
-  PRIVATE
-    ${${DEP_NAME}_BUILD_COMPILE_FEATURES} # don't add quote (yeah, the signature is inconsistent with other CMake target commands)
-)
+if(NOT ${dep_imported})
+  message(STATUS "Applying ${DEP_NAME} configuration")
+  target_compile_features("${DEP_NAME}"
+    PRIVATE
+      ${${DEP_NAME}_BUILD_COMPILE_FEATURES}
+  )
+endif()
 
 # Add compile definitions to the dependency
-target_compile_definitions("${DEP_NAME}"
-  PRIVATE
-    "${${DEP_NAME}_BUILD_COMPILE_DEFINITIONS}"
-)
+if(NOT ${dep_imported})
+  target_compile_definitions("${DEP_NAME}"
+    PRIVATE
+      ${${DEP_NAME}_BUILD_COMPILE_DEFINITIONS}
+  )
+endif()
 
 # Add compile options to the dependency
-target_compile_options("${DEP_NAME}"
-  PRIVATE
-    "${${DEP_NAME}_BUILD_COMPILE_OPTIONS}"
-)
+if(NOT ${dep_imported})
+  target_compile_options("${DEP_NAME}"
+    PRIVATE
+      ${${DEP_NAME}_BUILD_COMPILE_OPTIONS}
+  )
+endif()
 
 # Add link options to the dependency
-get_target_property(dep_type "${DEP_NAME}" TYPE)
-if(NOT dep_type STREQUAL "STATIC_LIBRARY")
-  target_link_options("${DEP_NAME}"
-    PRIVATE
-      "${${DEP_NAME}_BUILD_LINK_OPTIONS}"
-  )
+if(NOT ${dep_imported})
+  get_target_property(dep_type "${DEP_NAME}" TYPE)
+  if(NOT "${dep_type}" STREQUAL "STATIC_LIBRARY")
+    target_link_options("${DEP_NAME}"
+      PRIVATE
+        ${${DEP_NAME}_BUILD_LINK_OPTIONS}
+    )
+  endif()
 endif()
 
 # Links the dependency to the current target being built

@@ -145,6 +145,20 @@
                         }
                       ]
                     },
+                    "minVersion": {
+                      "description": "The minimum acceptable version of the dependency (only required if rulesFile is 'generic')",
+                      "type": "string"
+                    },
+                    "integrationMethod": {
+                      "description": "The method used to find the dependency between 'FIND_PACKAGE', 'FETCH_CONTENT', 'FIND_AND_FETCH' and 'EXTERNAL_PROJECT' (only required if rulesFile is 'generic')",
+                      "type": "string",
+                      "enum": [
+                        "FIND_PACKAGE",
+                        "FETCH_CONTENT",
+                        "FIND_AND_FETCH",
+                        "EXTERNAL_PROJECT"
+                      ]
+                    },
                     "packageLocation": {
                       "description": "Additional location to search for the dependency package (only required if rulesFile is 'generic')",
                       "type": "object",
@@ -168,20 +182,12 @@
                       "required": [],
                       "additionalProperties": false
                     },
-                    "minVersion": {
-                      "description": "The minimum acceptable version of the dependency (only required if rulesFile is 'generic')",
-                      "type": "string"
-                    },
-                    "fetchInfo": {
+                    "downloadInfo": {
                       "description": "The information required to download the dependency package (only required if rulesFile is 'generic')",
                       "type": "object",
                       "properties": {
-                        "autodownload": {
-                          "description": "Whether the dependency package can be automatically downloaded if not found locally",
-                          "type": "boolean"
-                        },
                         "kind": {
-                          "description": "The download method to use (only required if autodownload is 'true')",
+                          "description": "The download method to use (only required if rulesFile is 'generic')",
                           "type": "string",
                           "enum": [
                             "url",
@@ -191,7 +197,7 @@
                           ]
                         },
                         "repository": {
-                          "description": "URL of the repository (only required if autodownload is 'true')",
+                          "description": "URL of the repository (only required if rulesFile is 'generic')",
                           "type": "string",
                           "format": "uri"
                         },
@@ -208,73 +214,6 @@
                           "type": "string"
                         }
                       },
-                      "required": [
-                        "autodownload"
-                      ],
-                      "allOf": [
-                        {
-                          "if": {
-                            "properties": {
-                              "autodownload": {
-                                "const": true
-                              }
-                            }
-                          },
-                          "then": {
-                            "required": [
-                              "kind",
-                              "repository"
-                            ],
-                            "allOf": [
-                              {
-                                "if": {
-                                  "properties": {
-                                    "kind": {
-                                      "enum": [
-                                        "git",
-                                        "mercurial"
-                                      ]
-                                    }
-                                  }
-                                },
-                                "then": {
-                                  "required": [
-                                    "tag"
-                                  ]
-                                }
-                              },
-                              {
-                                "if": {
-                                  "properties": {
-                                    "kind": {
-                                      "const": "url"
-                                    }
-                                  }
-                                },
-                                "then": {
-                                  "required": [
-                                    "hash"
-                                  ]
-                                }
-                              },
-                              {
-                                "if": {
-                                  "properties": {
-                                    "kind": {
-                                      "const": "svn"
-                                    }
-                                  }
-                                },
-                                "then": {
-                                  "required": [
-                                    "revision"
-                                  ]
-                                }
-                              }
-                            ]
-                          }
-                        }
-                      ],
                       "additionalProperties": false
                     },
                     "optional": {
@@ -332,9 +271,8 @@
                       },
                       "then": {
                         "required": [
-                          "packageLocation",
                           "minVersion",
-                          "fetchInfo",
+                          "integrationMethod",
                           "optional",
                           "build"
                         ],
@@ -346,8 +284,111 @@
                               "compileOptions",
                               "linkOptions"
                             ]
+                          },
+                          "downloadInfo": {
+                            "required": [
+                              "kind",
+                              "repository"
+                            ],
+                            "allOf": [
+                              {
+                                "if": {
+                                  "required": [
+                                    "kind"
+                                  ],
+                                  "properties": {
+                                    "kind": {
+                                      "enum": [
+                                        "git",
+                                        "mercurial"
+                                      ]
+                                    }
+                                  }
+                                },
+                                "then": {
+                                  "required": [
+                                    "tag"
+                                  ]
+                                }
+                              },
+                              {
+                                "if": {
+                                  "required": [
+                                    "kind"
+                                  ],
+                                  "properties": {
+                                    "kind": {
+                                      "const": "url"
+                                    }
+                                  }
+                                },
+                                "then": {
+                                  "required": [
+                                    "hash"
+                                  ]
+                                }
+                              },
+                              {
+                                "if": {
+                                  "required": [
+                                    "kind"
+                                  ],
+                                  "properties": {
+                                    "kind": {
+                                      "const": "svn"
+                                    }
+                                  }
+                                },
+                                "then": {
+                                  "required": [
+                                    "revision"
+                                  ]
+                                }
+                              }
+                            ]
                           }
                         }
+                      }
+                    },
+                    {
+                      "if": {
+                        "properties": {
+                          "rulesFile": {
+                            "const": "generic"
+                          },
+                          "integrationMethod": {
+                            "enum": [
+                              "FIND_PACKAGE",
+                              "FIND_AND_FETCH"
+                            ]
+                          }
+                        }
+                      },
+                      "then": {
+                        "required": [
+                          "packageLocation"
+                        ]
+                      }
+                    },
+                    {
+                      "if": {
+                        "properties": {
+                          "rulesFile": {
+                            "const": "generic"
+                          },
+                          "integrationMethod": {
+                            "enum": [
+                              "FETCH_CONTENT",
+                              "FIND_AND_FETCH",
+                              "EXTERNAL_PROJECT"
+                            ]
+                          }
+                        }
+                      },
+                      "then": {
+                        "required": [
+                          "downloadInfo"
+                        ]
                       }
                     }
                   ],

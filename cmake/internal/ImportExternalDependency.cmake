@@ -97,16 +97,16 @@ endfunction()
 #   <dep-name>_PACKAGE_LOC_UNIX
 #   <dep-name>_PACKAGE_LOC_MAC
 #   <dep-name>_MIN_VERSION
-#   <dep-name>_FETCH_AUTODOWNLOAD
-#   <dep-name>_FETCH_KIND
-#   <dep-name>_FETCH_KIND_IS_URL
-#   <dep-name>_FETCH_KIND_IS_GIT
-#   <dep-name>_FETCH_KIND_IS_SVN
-#   <dep-name>_FETCH_KIND_IS_MERCURIAL
-#   <dep-name>_FETCH_REPOSITORY
-#   <dep-name>_FETCH_TAG
-#   <dep-name>_FETCH_REVISION
-#   <dep-name>_FETCH_HASH
+#   <dep-name>_INTEGRATION_METHOD
+#   <dep-name>_DL_INFO_KIND
+#   <dep-name>_DL_INFO_KIND_IS_URL
+#   <dep-name>_DL_INFO_KIND_IS_GIT
+#   <dep-name>_DL_INFO_KIND_IS_SVN
+#   <dep-name>_DL_INFO_KIND_IS_MERCURIAL
+#   <dep-name>_DL_INFO_REPOSITORY
+#   <dep-name>_DL_INFO_TAG
+#   <dep-name>_DL_INFO_REVISION
+#   <dep-name>_DL_INFO_HASH
 #   <dep-name>_OPTIONAL
 #   <dep-name>_BUILD_COMPILE_FEATURES
 #   <dep-name>_BUILD_COMPILE_DEFINITIONS
@@ -175,68 +175,68 @@ function(_map_dep_settings_to_vars config_target_dir_path config_dep_name)
   )
   _unset_var_if_not_found(${config_dep_name}_MIN_VERSION)
 
-  # Set <dep-name>_FETCH_AUTODOWNLOAD
-  cmake_targets_file(TRY_GET_VALUE ${config_dep_name}_FETCH_AUTODOWNLOAD
+  # Set <dep-name>_INTEGRATION_METHOD
+  cmake_targets_file(TRY_GET_VALUE ${config_dep_name}_INTEGRATION_METHOD
     TARGET "${config_target_dir_path}"
-    KEY "extDependencies.${config_dep_name}.fetchInfo.autodownload"
+    KEY "extDependencies.${config_dep_name}.integrationMethod"
   )
-  _unset_var_if_not_found(${config_dep_name}_FETCH_AUTODOWNLOAD)
+  _unset_var_if_not_found(${config_dep_name}_INTEGRATION_METHOD)
 
-  # Set <dep-name>_FETCH_KIND
-  cmake_targets_file(TRY_GET_VALUE ${config_dep_name}_FETCH_KIND
+  # Set <dep-name>_DL_INFO_KIND
+  cmake_targets_file(TRY_GET_VALUE ${config_dep_name}_DL_INFO_KIND
     TARGET "${config_target_dir_path}"
-    KEY "extDependencies.${config_dep_name}.fetchInfo.kind"
+    KEY "extDependencies.${config_dep_name}.downloadInfo.kind"
   )
-  _unset_var_if_not_found(${config_dep_name}_FETCH_KIND)
+  _unset_var_if_not_found(${config_dep_name}_DL_INFO_KIND)
 
   # Set
-  #   <dep-name>_FETCH_KIND_IS_URL
-  #   <dep-name>_FETCH_KIND_IS_GIT
-  #   <dep-name>_FETCH_KIND_IS_SVN
-  #   <dep-name>_FETCH_KIND_IS_MERCURIAL
-  if(DEFINED ${config_dep_name}_FETCH_KIND)
-    set(${config_dep_name}_FETCH_KIND_IS_URL false)
-    set(${config_dep_name}_FETCH_KIND_IS_GIT false)
-    set(${config_dep_name}_FETCH_KIND_IS_SVN false)
-    set(${config_dep_name}_FETCH_KIND_IS_MERCURIAL false)
-    if("${${config_dep_name}_FETCH_KIND}" STREQUAL "url")
-      set(${config_dep_name}_FETCH_KIND_IS_URL true)
-    elseif("${${config_dep_name}_FETCH_KIND}" STREQUAL "git")
-      set(${config_dep_name}_FETCH_KIND_IS_GIT true)
-    elseif("${${config_dep_name}_FETCH_KIND}" STREQUAL "svn")
-      set(${config_dep_name}_FETCH_KIND_IS_SVN true)
-    elseif("${${config_dep_name}_FETCH_KIND}" STREQUAL "mercurial")
-      set(${config_dep_name}_FETCH_KIND_IS_MERCURIAL true)
+  #   <dep-name>_DL_INFO_KIND_IS_URL
+  #   <dep-name>_DL_INFO_KIND_IS_GIT
+  #   <dep-name>_DL_INFO_KIND_IS_SVN
+  #   <dep-name>_DL_INFO_KIND_IS_MERCURIAL
+  if(DEFINED ${config_dep_name}_DL_INFO_KIND)
+    set(${config_dep_name}_DL_INFO_KIND_IS_URL false)
+    set(${config_dep_name}_DL_INFO_KIND_IS_GIT false)
+    set(${config_dep_name}_DL_INFO_KIND_IS_SVN false)
+    set(${config_dep_name}_DL_INFO_KIND_IS_MERCURIAL false)
+    if("${${config_dep_name}_DL_INFO_KIND}" STREQUAL "url")
+      set(${config_dep_name}_DL_INFO_KIND_IS_URL true)
+    elseif("${${config_dep_name}_DL_INFO_KIND}" STREQUAL "git")
+      set(${config_dep_name}_DL_INFO_KIND_IS_GIT true)
+    elseif("${${config_dep_name}_DL_INFO_KIND}" STREQUAL "svn")
+      set(${config_dep_name}_DL_INFO_KIND_IS_SVN true)
+    elseif("${${config_dep_name}_DL_INFO_KIND}" STREQUAL "mercurial")
+      set(${config_dep_name}_DL_INFO_KIND_IS_MERCURIAL true)
     endif()
   endif()
 
-  # Set <dep-name>_FETCH_REPOSITORY
-  cmake_targets_file(TRY_GET_VALUE ${config_dep_name}_FETCH_REPOSITORY
+  # Set <dep-name>_DL_INFO_REPOSITORY
+  cmake_targets_file(TRY_GET_VALUE ${config_dep_name}_DL_INFO_REPOSITORY
     TARGET "${config_target_dir_path}"
-    KEY "extDependencies.${config_dep_name}.fetchInfo.repository"
+    KEY "extDependencies.${config_dep_name}.downloadInfo.repository"
   )
-  _unset_var_if_not_found(${config_dep_name}_FETCH_REPOSITORY)
+  _unset_var_if_not_found(${config_dep_name}_DL_INFO_REPOSITORY)
 
-  # Set <dep-name>_FETCH_TAG
-  cmake_targets_file(TRY_GET_VALUE ${config_dep_name}_FETCH_TAG
+  # Set <dep-name>_DL_INFO_TAG
+  cmake_targets_file(TRY_GET_VALUE ${config_dep_name}_DL_INFO_TAG
     TARGET "${config_target_dir_path}"
-    KEY "extDependencies.${config_dep_name}.fetchInfo.tag"
+    KEY "extDependencies.${config_dep_name}.downloadInfo.tag"
   )
-  _unset_var_if_not_found(${config_dep_name}_FETCH_TAG)
+  _unset_var_if_not_found(${config_dep_name}_DL_INFO_TAG)
 
-  # Set <dep-name>_FETCH_REVISION
-  cmake_targets_file(TRY_GET_VALUE ${config_dep_name}_FETCH_REVISION
+  # Set <dep-name>_DL_INFO_REVISION
+  cmake_targets_file(TRY_GET_VALUE ${config_dep_name}_DL_INFO_REVISION
     TARGET "${config_target_dir_path}"
-    KEY "extDependencies.${config_dep_name}.fetchInfo.revision"
+    KEY "extDependencies.${config_dep_name}.downloadInfo.revision"
   )
-  _unset_var_if_not_found(${config_dep_name}_FETCH_REVISION)
+  _unset_var_if_not_found(${config_dep_name}_DL_INFO_REVISION)
 
-  # Set <dep-name>_FETCH_HASH
-  cmake_targets_file(TRY_GET_VALUE ${config_dep_name}_FETCH_HASH
+  # Set <dep-name>_DL_INFO_HASH
+  cmake_targets_file(TRY_GET_VALUE ${config_dep_name}_DL_INFO_HASH
     TARGET "${config_target_dir_path}"
-    KEY "extDependencies.${config_dep_name}.fetchInfo.hash"
+    KEY "extDependencies.${config_dep_name}.downloadInfo.hash"
   )
-  _unset_var_if_not_found(${config_dep_name}_FETCH_HASH)
+  _unset_var_if_not_found(${config_dep_name}_DL_INFO_HASH)
 
   # Set <dep-name>_OPTIONAL
   cmake_targets_file(TRY_GET_VALUE ${config_dep_name}_OPTIONAL
@@ -250,7 +250,6 @@ function(_map_dep_settings_to_vars config_target_dir_path config_dep_name)
     TARGET "${config_target_dir_path}"
     KEY "extDependencies.${config_dep_name}.build.compileFeatures"
   )
-
   _unset_var_if_not_found(${config_dep_name}_BUILD_COMPILE_FEATURES)
 
   # Set <dep-name>_BUILD_COMPILE_DEFINITIONS
@@ -280,16 +279,16 @@ function(_map_dep_settings_to_vars config_target_dir_path config_dep_name)
     "${config_dep_name}_PACKAGE_LOC_UNIX"
     "${config_dep_name}_PACKAGE_LOC_MAC"
     "${config_dep_name}_MIN_VERSION"
-    "${config_dep_name}_FETCH_AUTODOWNLOAD"
-    "${config_dep_name}_FETCH_KIND"
-    "${config_dep_name}_FETCH_KIND_IS_URL"
-    "${config_dep_name}_FETCH_KIND_IS_GIT"
-    "${config_dep_name}_FETCH_KIND_IS_SVN"
-    "${config_dep_name}_FETCH_KIND_IS_MERCURIAL"
-    "${config_dep_name}_FETCH_REPOSITORY"
-    "${config_dep_name}_FETCH_TAG"
-    "${config_dep_name}_FETCH_REVISION"
-    "${config_dep_name}_FETCH_HASH"
+    "${config_dep_name}_INTEGRATION_METHOD"
+    "${config_dep_name}_DL_INFO_KIND"
+    "${config_dep_name}_DL_INFO_KIND_IS_URL"
+    "${config_dep_name}_DL_INFO_KIND_IS_GIT"
+    "${config_dep_name}_DL_INFO_KIND_IS_SVN"
+    "${config_dep_name}_DL_INFO_KIND_IS_MERCURIAL"
+    "${config_dep_name}_DL_INFO_REPOSITORY"
+    "${config_dep_name}_DL_INFO_TAG"
+    "${config_dep_name}_DL_INFO_REVISION"
+    "${config_dep_name}_DL_INFO_HASH"
     "${config_dep_name}_OPTIONAL"
     "${config_dep_name}_BUILD_COMPILE_FEATURES"
     "${config_dep_name}_BUILD_COMPILE_DEFINITIONS"
