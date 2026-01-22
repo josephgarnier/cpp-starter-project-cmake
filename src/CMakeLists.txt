@@ -29,7 +29,7 @@ endif()
 cmake_targets_file(GET_VALUE CONFIG_TARGET_NAME
   TARGET "${CONFIG_TARGET_ID}" KEY "name"
 )
-validate_target_name(is_valid err_msg true "${CONFIG_TARGET_NAME}")
+validate_target_name("${CONFIG_TARGET_NAME}" true is_valid err_msg)
 
 message(CHECK_START "Making the binary target '${CONFIG_TARGET_NAME}'")
 list(APPEND CMAKE_MESSAGE_INDENT "  ")
@@ -159,7 +159,7 @@ cmake_targets_file(GET_VALUE ${BIN_TARGET_NAME}_MAIN_FILE
   TARGET "${CONFIG_TARGET_ID}" KEY "mainFile"
 )
 set(${BIN_TARGET_NAME}_MAIN_FILE "${PROJECT_SOURCE_DIR}/${${BIN_TARGET_NAME}_MAIN_FILE}")
-validate_main_file_path(is_valid err_msg true "${${BIN_TARGET_NAME}_MAIN_FILE}")
+validate_main_file_path("${${BIN_TARGET_NAME}_MAIN_FILE}" true is_valid err_msg)
 print(VERBOSE "Main file is @rp@" "${${BIN_TARGET_NAME}_MAIN_FILE}")
 
 ####################### Set up precompile header (PCH) ########################
@@ -171,8 +171,10 @@ if(${has_pch_file_setting})
     TARGET "${CONFIG_TARGET_ID}" KEY "pchFile"
   )
   set(${BIN_TARGET_NAME}_PCH_FILE "${PROJECT_SOURCE_DIR}/${${BIN_TARGET_NAME}_PCH_FILE}")
-  validate_pch_file_path(is_valid err_msg true
-    "${${BIN_TARGET_NAME}_PUBLIC_HEADER_DIR}" "${${BIN_TARGET_NAME}_PCH_FILE}")
+  validate_pch_file_path(
+    "${${BIN_TARGET_NAME}_PUBLIC_HEADER_DIR}"
+    "${${BIN_TARGET_NAME}_PCH_FILE}"
+    true is_valid err_msg)
   print(VERBOSE "Adding headers to precompile: @rp@" "${${BIN_TARGET_NAME}_PCH_FILE}")
   target_precompile_headers("${BIN_TARGET_NAME}"
     PRIVATE
@@ -242,7 +244,7 @@ foreach(dep_name IN ITEMS ${${BIN_TARGET_NAME}_EXT_DEPENDENCIES})
   message(CHECK_START "Importing ${dep_name}")
   list(APPEND CMAKE_MESSAGE_INDENT "  ")
 
-  validate_dep_name(is_valid err_msg true "${dep_name}")
+  validate_dep_name("${dep_name}" true is_valid err_msg)
   import_external_dependency("${BIN_TARGET_NAME}" "${CONFIG_TARGET_ID}" "${dep_name}")
 
   list(POP_BACK CMAKE_MESSAGE_INDENT)

@@ -40,7 +40,7 @@ function(print_target_status_summaries target_summary_var_suffix)
     message(FATAL_ERROR "target_summary_var_suffix argument is missing!")
   endif()
 
-  _collect_all_targets(list_of_targets "${CMAKE_SOURCE_DIR}")
+  _collect_all_targets("${CMAKE_SOURCE_DIR}" list_of_targets)
   foreach(target IN ITEMS ${list_of_targets})
     if(DEFINED ${target}${target_summary_var_suffix})
       message(STATUS "🎯 Target '${target}' Status Checks:")
@@ -59,12 +59,12 @@ endfunction()
 # and its subdirectories, and stores them in ``<output-list-var>``.
 #
 # Signature:
-#   _collect_all_targets(<output-list-var>
-#                        <root-dir>)
+#   _collect_all_targets(<root-dir>
+#                        <output-list-var>)
 #
 # Parameters:
-#   output-list-var  : The variable in which to store the collected targets.
 #   root-dir         : The root directory to scan for targets.
+#   output-list-var  : The variable in which to store the collected targets.
 #
 # Returns:
 #   output-list-var: The list of collected targets.
@@ -73,14 +73,11 @@ endfunction()
 #   If the specified root directory does not exist or is not a directory.
 #
 # Example:
-#   _collect_all_targets(list_of_targets "${CMAKE_SOURCE_DIR}")
+#   _collect_all_targets("${CMAKE_SOURCE_DIR}" list_of_targets)
 #------------------------------------------------------------------------------
-function(_collect_all_targets output_list_var root_dir)
+function(_collect_all_targets root_dir output_list_var)
   if(NOT ${ARGC} EQUAL 2)
     message(FATAL_ERROR "_collect_all_targets() requires exactly 2 arguments, got ${ARGC}!")
-  endif()
-  if("${output_list_var}" STREQUAL "")
-    message(FATAL_ERROR "output_list_var argument is missing!")
   endif()
   if("${root_dir}" STREQUAL "")
     message(FATAL_ERROR "root_dir argument is missing!")
@@ -88,6 +85,9 @@ function(_collect_all_targets output_list_var root_dir)
   if((NOT EXISTS "${root_dir}")
     OR (NOT IS_DIRECTORY "${root_dir}"))
       message(FATAL_ERROR "Given path: ${root_dir} does not refer to an existing path or directory on disk!")
+  endif()
+  if("${output_list_var}" STREQUAL "")
+    message(FATAL_ERROR "output_list_var argument is missing!")
   endif()
 
   unset(${output_list_var})
@@ -99,7 +99,7 @@ function(_collect_all_targets output_list_var root_dir)
 
   get_directory_property(subdirs DIRECTORY "${root_dir}" SUBDIRECTORIES)
   foreach(subdir IN ITEMS ${subdirs})
-    _collect_all_targets(sub_collected "${subdir}")
+    _collect_all_targets("${subdir}" sub_collected)
     list(APPEND collected "${sub_collected}")
   endforeach()
 

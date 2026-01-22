@@ -70,8 +70,10 @@ function(import_external_dependency target_name config_target_dir_path config_de
     set(rules_file_path "${${PROJECT_NAME}_PROJECT_DIR}/${rules_file_name}")
   endif()
   include("${rules_file_path}")
-  validate_dep_import_status(is_valid err_msg true
-    "${config_dep_name}_FOUND" "${rules_file_name}")
+  validate_dep_import_status(
+    "${config_dep_name}_FOUND" "${rules_file_name}"
+    true is_valid err_msg
+  )
 
   return(PROPAGATE "${config_dep_name}_FOUND")
 endfunction()
@@ -141,9 +143,10 @@ function(_map_dep_settings_to_vars config_target_dir_path config_dep_name)
     KEY "extDependencies.${config_dep_name}.rulesFile"
   )
   if(NOT "${${config_dep_name}_RULES_FILE}" STREQUAL "generic")
-    validate_dep_rules_file_path(is_valid err_msg true
+    validate_dep_rules_file_path(
       "${${PROJECT_NAME}_PROJECT_DIR}"
       "${${config_dep_name}_RULES_FILE}"
+      true is_valid err_msg
     )
   endif()
 

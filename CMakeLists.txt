@@ -194,12 +194,12 @@ endif()
 print(STATUS "Built files will be located into '@rp@/' or '@rp@/'" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
 
 ####################### Set C++ build environment #############################
-validate_cxx_standard_version(is_valid err_msg true "${CMAKE_CXX_STANDARD}")
+validate_cxx_standard_version("${CMAKE_CXX_STANDARD}" true is_valid err_msg)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 message(STATUS "C++ standard version set to C++${CMAKE_CXX_STANDARD}")
 
 # CMAKE_BUILD_TYPE is set in CMakePresets.json
-validate_build_type(is_valid err_msg true "${CMAKE_BUILD_TYPE}")
+validate_build_type("${CMAKE_BUILD_TYPE}" true is_valid err_msg)
 message(STATUS "Build type set to '${CMAKE_BUILD_TYPE}'")
 
 if("${DEFAULT_LIBS_TYPE}" STREQUAL "staticLib")
